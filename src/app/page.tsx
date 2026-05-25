@@ -1026,7 +1026,7 @@ export default function DnDCharacterSheet() {
                 </div>
                 <div className="px-4 pb-4">
                   <div className="space-y-2">
-                    <div className="hidden sm:grid grid-cols-7 gap-1 text-xs font-medium px-1" style={{ color: '#8B6914' }}>
+                    <div className="hidden sm:grid gap-1 text-xs font-medium px-1" style={{ color: '#8B6914', gridTemplateColumns: '2fr repeat(6, 1fr)' }}>
                       <span>Характ.</span><span className="text-center">База</span><span className="text-center">Раса</span><span className="text-center">АСИ</span><span className="text-center">Итого</span><span className="text-center">Мод.</span><span className="text-center">Спасбр.</span>
                     </div>
                     {ABILITY_NAMES.map(abbr => {
@@ -1068,8 +1068,8 @@ export default function DnDCharacterSheet() {
                             </div>
                           </div>
                           {/* Desktop layout */}
-                          <div className={`hidden sm:grid grid-cols-7 gap-1 items-center p-1.5 rounded ${isProf ? 'parchment-prof' : 'parchment-no-prof'}`}>
-                            <span className="text-xs font-bold" style={{ color: '#3C2415' }}>{ABILITY_FULL[abbr]}</span>
+                          <div className={`hidden sm:grid gap-1 items-center p-1.5 rounded ${isProf ? 'parchment-prof' : 'parchment-no-prof'}`} style={{ gridTemplateColumns: '2fr repeat(6, 1fr)' }}>
+                            <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3C2415' }}>{ABILITY_FULL[abbr]}</span>
                             <input type="number" value={base} onChange={e => updateAbility(abbr, 'abilityScores', Number(e.target.value) || 10)} className={inputClassCenter + " text-xs"} />
                             <input type="number" value={racial} onChange={e => updateAbility(abbr, 'abilityBonuses', Number(e.target.value) || 0)} className={inputClassCenter + " text-xs"} title="Расовый бонус" />
                             <CalcBadge value={asi > 0 ? `+${asi}` : '0'} />

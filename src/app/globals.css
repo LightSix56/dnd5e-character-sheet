@@ -733,3 +733,134 @@
 .parchment-header-btn-primary:hover {
   background: linear-gradient(180deg, #A0522D, #8B4513);
 }
+
+/* ── Dice Roll Styles ── */
+
+/* Rollable badge — clickable modifier/saving throw */
+.roll-badge {
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.roll-badge:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 12px rgba(201, 168, 76, 0.4), inset 0 1px 2px rgba(255,255,255,0.15);
+}
+
+.roll-badge:active {
+  transform: scale(0.95);
+}
+
+/* Dice icon indicator on hover */
+.roll-badge::before {
+  content: '🎲';
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 8px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  filter: grayscale(0.3);
+}
+
+.roll-badge:hover::before {
+  opacity: 1;
+}
+
+/* Roll result popup */
+.roll-result-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  z-index: 300;
+  background: rgba(245, 230, 200, 0.98);
+  border: 3px solid rgba(201, 168, 76, 0.6);
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(60, 36, 21, 0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+  outline: 2px solid rgba(139, 105, 20, 0.15);
+  outline-offset: -6px;
+  padding: 24px 36px;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  animation: rollPopupIn 0.25s ease-out forwards;
+  min-width: 200px;
+}
+
+@keyframes rollPopupIn {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  60% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.roll-result-popup.closing {
+  animation: rollPopupOut 0.3s ease-in forwards;
+}
+
+@keyframes rollPopupOut {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+}
+
+.roll-result-die {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #3C2415;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(60, 36, 21, 0.2);
+}
+
+.roll-result-die.nat20 {
+  color: #4a7c3f;
+  text-shadow: 0 0 12px rgba(74, 124, 63, 0.4);
+}
+
+.roll-result-die.nat1 {
+  color: #8B2500;
+  text-shadow: 0 0 12px rgba(139, 37, 0, 0.3);
+}
+
+.roll-result-label {
+  font-size: 0.75rem;
+  color: #8B6914;
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+
+.roll-result-total {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #6B3A2A;
+  margin-top: 6px;
+  text-shadow: 0 1px 2px rgba(60, 36, 21, 0.2);
+}
+
+.roll-result-breakdown {
+  font-size: 0.8rem;
+  color: #8B6914;
+  margin-top: 2px;
+}
+
+.roll-result-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.roll-result-tag.crit {
+  background: rgba(74, 124, 63, 0.15);
+  color: #4a7c3f;
+  border: 1px solid rgba(74, 124, 63, 0.3);
+}
+
+.roll-result-tag.fumble {
+  background: rgba(139, 37, 0, 0.1);
+  color: #8B2500;
+  border: 1px solid rgba(139, 37, 0, 0.25);
+}

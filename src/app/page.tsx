@@ -22,6 +22,87 @@ function CalcBadge({ value, label }: { value: string | number; label?: string })
   );
 }
 
+// ── Crypto-random dice roller (true uniform distribution) ──
+
+function rollD20(): number {
+  // Use crypto.getRandomValues for unbiased randomness
+  // Rejection sampling to avoid modulo bias: reject values >= 256 - (256 % 20) = 240
+  const arr = new Uint8Array(1);
+  let val: number;
+  do {
+    crypto.getRandomValues(arr);
+    val = arr[0];
+  } while (val >= 240); // reject to ensure uniform distribution
+  return (val % 20) + 1; // 1..20
+}
+
+// ── Roll Result Popup ──
+
+interface RollResult {
+  dieResult: number;   // the d20 roll (1-20)
+  modifier: number;    // the modifier value (can be negative)
+  total: number;       // dieResult + modifier
+  label: string;       // what was rolled, e.g. "Проверка Силы" or "Спасбросок Лов"
+}
+
+function RollResultPopup({ result, onClose }: { result: RollResult; onClose: () => void }) {
+  const [closing, setClosing] = useState(false);
+  const isNat20 = result.dieResult === 20;
+  const isNat1 = result.dieResult === 1;
+
+  const handleClose = () => {
+    setClosing(true);
+    setTimeout(onClose, 300);
+  };
+
+  // Auto-close after 3 seconds
+  React.useEffect(() => {
+    const timer = setTimeout(handleClose, 3500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[300] flex items-center justify-center" onClick={handleClose}>
+      <div className={`roll-result-popup ${closing ? 'closing' : ''}`} onClick={e => e.stopPropagation()}>
+        <div className="roll-result-label">{result.label}</div>
+        <div className={`roll-result-die ${isNat20 ? 'nat20' : ''} ${isNat1 ? 'nat1' : ''}`}>
+          {result.dieResult}
+        </div>
+        <div className="roll-result-breakdown">
+          d20 ({result.dieResult}) {result.modifier >= 0 ? '+' : ''}{result.modifier}
+        </div>
+        <div className="roll-result-total">
+          = {result.total}
+        </div>
+        {isNat20 && <div className="roll-result-tag crit">Критический успех!</div>}
+        {isNat1 && <div className="roll-result-tag fumble">Критический провал!</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── Rollable Badge (clickable modifier badge for checks & saves) ──
+
+function RollBadge({ value, label, modifier, onRoll }: {
+  value: string | number;
+  label?: string;
+  modifier: number;  // the numeric modifier to add to d20
+  onRoll: (result: RollResult) => void;
+}) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const dieResult = rollD20();
+    const total = dieResult + modifier;
+    onRoll({ dieResult, modifier, total, label: label || 'Проверка' });
+  };
+
+  return (
+    <span className="calc-badge roll-badge" title={label ? `${label} — нажмите для броска d20` : 'Нажмите для броска d20'} onClick={handleClick}>
+      {value}
+    </span>
+  );
+}
+
 function StatInput({ label, value, onChange, type = 'number', placeholder, className = '' }: {
   label: string; value: string | number; onChange: (v: any) => void;
   type?: string; placeholder?: string; className?: string;
@@ -584,6 +665,11 @@ export default function DnDCharacterSheet() {
   const [showLevelDown, setShowLevelDown] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [rollResult, setRollResult] = useState<RollResult | null>(null);
+
+  const handleRoll = useCallback((result: RollResult) => {
+    setRollResult(result);
+  }, []);
 
   const showToast = useCallback((title: string, description: string) => {
     setToast({ title, description });
@@ -939,6 +1025,7 @@ export default function DnDCharacterSheet() {
       {showLevelDown && <LevelDownModal char={char} onConfirm={handleLevelDown} onCancel={() => setShowLevelDown(false)} />}
       {showHistory && <LevelHistoryModal char={char} onClose={() => setShowHistory(false)} />}
       {showTemplates && <TemplateModal onSelect={handleApplyTemplate} onCancel={() => setShowTemplates(false)} />}
+      {rollResult && <RollResultPopup result={rollResult} onClose={() => setRollResult(null)} />}
 
       <header className="sticky top-0 z-50 parchment-header">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
@@ -1063,7 +1150,7 @@ export default function DnDCharacterSheet() {
                               <div className="flex items-end gap-1">
                                 <label className="text-[10px]" style={{ color: '#8B6914' }}>Спасбр.</label>
                                 <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} /><span className="checkmark"></span></label>
-                                <CalcBadge value={formatModifier(save)} />
+                                <RollBadge value={formatModifier(save)} label={`Спасбросок ${ABILITY_FULL[abbr]}`} modifier={save} onRoll={handleRoll} />
                               </div>
                             </div>
                           </div>
@@ -1074,16 +1161,16 @@ export default function DnDCharacterSheet() {
                             <input type="number" value={racial} onChange={e => updateAbility(abbr, 'abilityBonuses', Number(e.target.value) || 0)} className={inputClassCenter + " text-xs"} title="Расовый бонус" />
                             <CalcBadge value={asi > 0 ? `+${asi}` : '0'} />
                             <CalcBadge value={total} />
-                            <CalcBadge value={formatModifier(mod)} />
+                            <RollBadge value={formatModifier(mod)} label={`Проверка ${ABILITY_FULL[abbr]}`} modifier={mod} onRoll={handleRoll} />
                             <div className="flex items-center gap-1">
                               <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} /><span className="checkmark"></span></label>
-                              <CalcBadge value={formatModifier(save)} />
+                              <RollBadge value={formatModifier(save)} label={`Спасбросок ${ABILITY_FULL[abbr]}`} modifier={save} onRoll={handleRoll} />
                             </div>
                           </div>
                         </div>
                       );
                     })}
-                    <p className="text-[10px] text-right" style={{ color: '#8B6914' }}>База | Раса | АСИ (от уровней)</p>
+                    <p className="text-[10px] text-right" style={{ color: '#8B6914' }}>База | Раса | АСИ (от уровней) · 🎲 Нажми Мод./Спасбр. для броска</p>
                   </div>
                 </div>
               </div>
@@ -1134,7 +1221,7 @@ export default function DnDCharacterSheet() {
 
               {/* Skills */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">✨ Навыки <span className="ml-auto text-xs font-normal" style={{ color: '#8B6914' }}>☑ = владение · ☑☑ = экспертиза</span></h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">✨ Навыки <span className="ml-auto text-xs font-normal" style={{ color: '#8B6914' }}>☑ = владение · ☑☑ = экспертиза · 🎲 бросок</span></h3></div>
                 <div className="px-4 pb-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
                     {ALL_SKILLS.map(skill => {
@@ -1147,7 +1234,7 @@ export default function DnDCharacterSheet() {
                           <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSkillProf(skill, 'skillProficiencies', e.target.checked)} /><span className="checkmark"></span></label>
                           <label className="parchment-checkbox parchment-checkbox-sm parchment-checkbox-expert"><input type="checkbox" checked={isExpert} onChange={e => updateSkillProf(skill, 'skillExpertise', e.target.checked)} disabled={!isProf} /><span className="checkmark"></span></label>
                           <span className="flex-1 text-xs" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>{skill} <span style={{ color: '#8B6914' }}>({ability})</span></span>
-                          <CalcBadge value={formatModifier(bonus)} />
+                          <RollBadge value={formatModifier(bonus)} label={`Проверка ${skill}`} modifier={bonus} onRoll={handleRoll} />
                         </div>
                       );
                     })}

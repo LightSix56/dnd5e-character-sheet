@@ -1181,7 +1181,7 @@ export default function DnDCharacterSheet() {
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div className="space-y-1"><label className="parchment-label">КД</label><input type="number" value={char.armorClass ?? ''} onChange={e => update('armorClass', e.target.value === '' ? null : Number(e.target.value))} placeholder={String(getAC(char))} className={inputClass} /></div>
-                    <div className="space-y-1"><label className="parchment-label">Инициатива</label><div className="flex items-center gap-1"><CalcBadge value={formatModifier(getInitiative(char))} /><input type="number" value={char.initiativeOverride ?? ''} onChange={e => update('initiativeOverride', e.target.value === '' ? null : Number(e.target.value))} placeholder="Авто" className={inputClass + " flex-1"} /></div></div>
+                    <div className="space-y-1"><label className="parchment-label">Инициатива</label><div className="flex items-center gap-1"><RollBadge value={formatModifier(getInitiative(char))} label="Инициатива" modifier={getInitiative(char)} onRoll={handleRoll} /><input type="number" value={char.initiativeOverride ?? ''} onChange={e => update('initiativeOverride', e.target.value === '' ? null : Number(e.target.value))} placeholder="Авто" className={inputClass + " flex-1"} /></div></div>
                     <div className="space-y-1"><label className="parchment-label">Скорость (фт.)</label><input type="number" value={char.speed} onChange={e => update('speed', Number(e.target.value) || 30)} className={inputClass} /></div>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

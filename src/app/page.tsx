@@ -294,7 +294,7 @@ function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
             <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>📖 Новые заклинания (→ вкладка Заклинания):</h3>
             {newSpells.map((s, i) => (
               <div key={i} className="flex items-center gap-2 mb-1">
-                <select value={s.level} onChange={e => updateSpellRow(i, 'level', Number(e.target.value))} className="parchment-select h-7 w-16 shrink-0">
+                <select value={s.level} onChange={e => updateSpellRow(i, 'level', Number(e.target.value))} className="parchment-select h-7 shrink-0" style={{ width: '64px' }}>
                   {[1,2,3,4,5,6,7,8,9].map(l => <option key={l} value={l}>{l} ур.</option>)}
                 </select>
                 <input value={s.name} onChange={e => updateSpellRow(i, 'name', e.target.value)} placeholder="Название заклинания" className="flex-1 min-w-0 parchment-input" />

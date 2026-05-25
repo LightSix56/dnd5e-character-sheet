@@ -390,15 +390,96 @@
   box-shadow: 0 4px 16px rgba(60, 36, 21, 0.35);
 }
 
-/* Checkbox — medieval style */
-input[type="checkbox"].parchment-check {
-  accent-color: #6B3A2A;
-  width: 14px;
-  height: 14px;
+/* ── Custom Parchment Checkboxes ── */
+
+/* Base checkbox — hidden, styled via label wrapper */
+.parchment-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-input[type="checkbox"] {
-  accent-color: #6B3A2A;
+.parchment-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* The visual box */
+.parchment-checkbox .checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(139, 105, 20, 0.5);
+  border-radius: 3px;
+  background: rgba(251, 240, 220, 0.6);
+  transition: all 0.15s ease;
+  font-size: 11px;
+  line-height: 1;
+  color: transparent;
+}
+
+.parchment-checkbox:hover .checkmark {
+  border-color: #C9A84C;
+  background: rgba(201, 168, 76, 0.08);
+}
+
+/* Checked state — filled seal */
+.parchment-checkbox input:checked + .checkmark {
+  background: linear-gradient(145deg, #6B3A2A, #4A2518);
+  border-color: #C9A84C;
+  color: #F5E6C8;
+  box-shadow: 0 1px 4px rgba(60, 36, 21, 0.3), inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+/* The tick mark via CSS */
+.parchment-checkbox input:checked + .checkmark::after {
+  content: '✓';
+  font-size: 11px;
+  font-weight: 700;
+  color: #D4A957;
+  text-shadow: 0 0 3px rgba(212, 169, 87, 0.4);
+}
+
+/* Disabled */
+.parchment-checkbox input:disabled + .checkmark {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.parchment-checkbox input:disabled:checked + .checkmark {
+  opacity: 0.5;
+}
+
+/* Small variant for dense rows */
+.parchment-checkbox-sm .checkmark {
+  width: 14px;
+  height: 14px;
+  border-width: 1.5px;
+  font-size: 9px;
+}
+
+.parchment-checkbox-sm input:checked + .checkmark::after {
+  font-size: 9px;
+}
+
+/* Expertise variant — purple seal when checked */
+.parchment-checkbox-expert input:checked + .checkmark {
+  background: linear-gradient(145deg, #5C3A6E, #3D2548);
+  border-color: #9B7FBF;
+}
+
+.parchment-checkbox-expert input:checked + .checkmark::after {
+  color: #D4B8F0;
+  text-shadow: 0 0 3px rgba(212, 184, 240, 0.4);
 }
 
 /* Select dropdown — parchment style */

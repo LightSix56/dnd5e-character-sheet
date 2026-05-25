@@ -174,7 +174,7 @@ function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
           {/* ASI */}
           <div className="parchment-modal-section">
             <div className="flex items-center gap-2 mb-2">
-              <input type="checkbox" checked={asiUsed} onChange={e => setAsiUsed(e.target.checked)} className="w-4 h-4" style={{ accentColor: '#6B3A2A' }} />
+              <label className="parchment-checkbox"><input type="checkbox" checked={asiUsed} onChange={e => setAsiUsed(e.target.checked)} /><span className="checkmark"></span></label>
               <h3 className="text-sm font-bold" style={{ color: '#3C2415' }}>📈 Улучшение характеристики (АСИ)</h3>
             </div>
             {asiUsed && (
@@ -217,7 +217,7 @@ function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
                   {[1,2,3,4,5,6,7,8,9].map(l => <option key={l} value={l}>{l} ур.</option>)}
                 </select>
                 <input value={s.name} onChange={e => updateSpellRow(i, 'name', e.target.value)} placeholder="Название заклинания" className="flex-1 parchment-input" />
-                <label className="flex items-center gap-1 text-xs" style={{ color: '#8B6914' }}><input type="checkbox" checked={s.prepared} onChange={e => updateSpellRow(i, 'prepared', e.target.checked)} className="w-3.5 h-3.5" style={{ accentColor: '#6B3A2A' }} />Подг.</label>
+                <label className="parchment-checkbox parchment-checkbox-sm" style={{ color: '#8B6914' }}><input type="checkbox" checked={s.prepared} onChange={e => updateSpellRow(i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label><span className="text-xs" style={{ color: '#8B6914' }}>Подг.</span>
                 <button onClick={() => removeSpellRow(i)} className="parchment-remove-btn">✕</button>
               </div>
             ))}
@@ -230,7 +230,7 @@ function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
             <div className="flex flex-wrap gap-2">
               {ABILITY_NAMES.map(abbr => (
                 <label key={abbr} className={`flex items-center gap-1 px-2 py-1 rounded text-xs cursor-pointer ${newSaveProfs.includes(abbr) ? 'parchment-skill-expert font-bold' : char.savingThrowProficiencies[abbr] ? 'opacity-40' : 'parchment-no-prof'}`}>
-                  <input type="checkbox" checked={newSaveProfs.includes(abbr)} onChange={() => toggleSaveProf(abbr)} disabled={char.savingThrowProficiencies[abbr]} className="w-3.5 h-3.5" style={{ accentColor: '#6B3A2A' }} />
+                  <span className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={newSaveProfs.includes(abbr)} onChange={() => toggleSaveProf(abbr)} disabled={char.savingThrowProficiencies[abbr]} /><span className="checkmark"></span></span>
                   {ABILITY_FULL[abbr]}
                 </label>
               ))}
@@ -247,8 +247,8 @@ function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
                 const isNewExpert = newSkillExpertise.includes(skill);
                 return (
                   <div key={skill} className={`flex items-center gap-1.5 py-0.5 px-1.5 rounded text-xs ${isNewExpert ? 'parchment-skill-expert font-bold' : isNewProf ? 'parchment-skill-prof' : alreadyProf ? 'opacity-40' : ''}`}>
-                    <input type="checkbox" checked={isNewProf} onChange={() => toggleSkillProf(skill)} disabled={alreadyProf} className="w-3 h-3" style={{ accentColor: '#6B3A2A' }} title="Владение" />
-                    <input type="checkbox" checked={isNewExpert} onChange={() => toggleSkillExpertise(skill)} disabled={alreadyProf || !isNewProf} className="w-3 h-3" style={{ accentColor: '#6B3A2A' }} title="Экспертиза" />
+                    <span className="parchment-checkbox parchment-checkbox-sm" title="Владение"><input type="checkbox" checked={isNewProf} onChange={() => toggleSkillProf(skill)} disabled={alreadyProf} /><span className="checkmark"></span></span>
+                    <span className="parchment-checkbox parchment-checkbox-sm parchment-checkbox-expert" title="Экспертиза"><input type="checkbox" checked={isNewExpert} onChange={() => toggleSkillExpertise(skill)} disabled={alreadyProf || !isNewProf} /><span className="checkmark"></span></span>
                     <span>{skill}</span>
                   </div>
                 );
@@ -1010,8 +1010,8 @@ export default function DnDCharacterSheet() {
                     <StatInput label="Очки опыта" value={char.experiencePoints} onChange={v => update('experiencePoints', v)} placeholder="0" className="col-span-2 sm:col-span-1" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <input type="checkbox" checked={char.inspiration} onChange={e => update('inspiration', e.target.checked)} className="w-4 h-4" style={{ accentColor: '#6B3A2A' }} />
-                    <label className="text-sm" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>Вдохновение</label>
+                    <label className="parchment-checkbox"><input type="checkbox" checked={char.inspiration} onChange={e => update('inspiration', e.target.checked)} /><span className="checkmark"></span></label>
+                    <span className="text-sm" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>Вдохновение</span>
                   </div>
                 </div>
               </div>
@@ -1062,7 +1062,7 @@ export default function DnDCharacterSheet() {
                               </div>
                               <div className="flex items-end gap-1">
                                 <label className="text-[10px]" style={{ color: '#8B6914' }}>Спасбр.</label>
-                                <input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} className="w-3.5 h-3.5" style={{ accentColor: '#6B3A2A' }} />
+                                <span className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} /><span className="checkmark"></span></span>
                                 <CalcBadge value={formatModifier(save)} />
                               </div>
                             </div>
@@ -1076,7 +1076,7 @@ export default function DnDCharacterSheet() {
                             <CalcBadge value={total} />
                             <CalcBadge value={formatModifier(mod)} />
                             <div className="flex items-center gap-1">
-                              <input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} className="w-3.5 h-3.5" style={{ accentColor: '#6B3A2A' }} />
+                              <span className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} /><span className="checkmark"></span></span>
                               <CalcBadge value={formatModifier(save)} />
                             </div>
                           </div>
@@ -1144,8 +1144,8 @@ export default function DnDCharacterSheet() {
                       const bonus = getSkillBonus(char, skill);
                       return (
                         <div key={skill} className={`flex items-center gap-2 py-1 px-2 rounded text-sm ${isExpert ? 'parchment-skill-expert' : isProf ? 'parchment-skill-prof' : ''}`}>
-                          <input type="checkbox" checked={isProf} onChange={e => updateSkillProf(skill, 'skillProficiencies', e.target.checked)} className="w-3.5 h-3.5" style={{ accentColor: '#6B3A2A' }} />
-                          <input type="checkbox" checked={isExpert} onChange={e => updateSkillProf(skill, 'skillExpertise', e.target.checked)} className="w-3.5 h-3.5" style={{ accentColor: '#6B3A2A' }} disabled={!isProf} />
+                          <span className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSkillProf(skill, 'skillProficiencies', e.target.checked)} /><span className="checkmark"></span></span>
+                          <span className="parchment-checkbox parchment-checkbox-sm parchment-checkbox-expert"><input type="checkbox" checked={isExpert} onChange={e => updateSkillProf(skill, 'skillExpertise', e.target.checked)} disabled={!isProf} /><span className="checkmark"></span></span>
                           <span className="flex-1 text-xs" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>{skill} <span style={{ color: '#8B6914' }}>({ability})</span></span>
                           <CalcBadge value={formatModifier(bonus)} />
                         </div>
@@ -1287,7 +1287,7 @@ export default function DnDCharacterSheet() {
                   <div className="px-4 pb-4 space-y-2">
                     {spells.map((spell, i) => (
                       <div key={i} className="flex gap-2 items-center">
-                        <input type="checkbox" checked={spell.prepared} onChange={e => updateSpellEntry(lvl, i, 'prepared', e.target.checked)} className="w-4 h-4" style={{ accentColor: '#6B3A2A' }} />
+                        <label className="parchment-checkbox"><input type="checkbox" checked={spell.prepared} onChange={e => updateSpellEntry(lvl, i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label>
                         <input value={spell.name} onChange={e => updateSpellEntry(lvl, i, 'name', e.target.value)} placeholder="Название" className={inputClass + " flex-1"} />
                         <button onClick={() => removeSpell(lvl, i)} className="parchment-remove-btn">✕</button>
                       </div>

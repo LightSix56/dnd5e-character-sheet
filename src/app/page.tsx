@@ -81,7 +81,7 @@ const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }:
       </div>
     </div>
   );
-}
+});
 
 // ── Rollable Badge (clickable modifier badge for checks & saves) ──
 
@@ -103,7 +103,7 @@ const RollBadge = React.memo(function RollBadge({ value, label, modifier, onRoll
       {value}
     </span>
   );
-}
+});
 
 function StatInput({ label, value, onChange, type = 'number', placeholder, className = '' }: {
   label: string; value: string | number; onChange: (v: any) => void;
@@ -401,7 +401,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
       </div>
     </div>
   );
-}
+});
 
 // ── Level Down Confirm ──
 
@@ -442,7 +442,7 @@ const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onC
       </div>
     </div>
   );
-}
+});
 
 // ── Level History ──
 
@@ -498,7 +498,7 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose 
       </div>
     </div>
   );
-}
+});
 
 // ── Class Template Modal ──
 
@@ -655,7 +655,7 @@ const TemplateModal = React.memo(function TemplateModal({ onSelect, onCancel }: 
       </div>
     </div>
   );
-}
+});
 
 // ── Auth Modal ──
 
@@ -713,7 +713,7 @@ const AuthModal = React.memo(function AuthModal({ onClose, onAuth, onGoogleAuth,
       </div>
     </div>
   );
-}
+});
 
 // ── Cloud Saves Modal ──
 
@@ -752,12 +752,47 @@ const CloudSavesModal = React.memo(function CloudSavesModal({ characters, onLoad
       </div>
     </div>
   );
-}
+});
 
 // ── Main Component ──
 
 export default function DnDCharacterSheet() {
-  const [char, setChar] = useState<CharacterData>(createDefaultCharacter());
+  // ── Load initial data from localStorage (before other state) ──
+  const [initialChar] = useState<CharacterData>(() => {
+    if (typeof window === 'undefined') return createDefaultCharacter();
+    try {
+      const saved = localStorage.getItem('dnd5e_character');
+      if (saved) {
+        const raw = JSON.parse(saved);
+        const defaults = createDefaultCharacter();
+        return {
+          ...defaults,
+          ...raw,
+          abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
+          abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
+          asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
+          savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
+          skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
+          skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
+          attacks: raw.attacks || defaults.attacks,
+          spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
+          spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
+          cantrips: raw.cantrips || defaults.cantrips,
+          levelHistory: raw.levelHistory || [],
+        };
+      }
+    } catch { /* ignore corrupt data */ }
+    return createDefaultCharacter();
+  });
+
+  const [initialPortrait] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return localStorage.getItem('dnd5e_portrait') || null;
+    } catch { return null; }
+  });
+
+  const [char, setChar] = useState<CharacterData>(initialChar);
   const [activeTab, setActiveTab] = useState<'page1' | 'page2' | 'page3'>('page1');
   const [toast, setToast] = useState<{ title: string; description: string } | null>(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -774,14 +809,72 @@ export default function DnDCharacterSheet() {
   const [authError, setAuthError] = useState('');
   const [showCloudSaves, setShowCloudSaves] = useState(false);
   const [cloudCharacters, setCloudCharacters] = useState<any[]>([]);
-  const [portraitUrl, setPortraitUrl] = useState<string | null>(null);
+  const [portraitUrl, setPortraitUrl] = useState<string | null>(initialPortrait);
 
   const supabase = useMemo(() => createClient(), []);
 
+  // ── Auto-save to localStorage on every change ──
+  useEffect(() => {
+    try {
+      localStorage.setItem('dnd5e_character', JSON.stringify(char));
+    } catch { /* quota exceeded — ignore */ }
+  }, [char]);
+
+  useEffect(() => {
+    try {
+      if (portraitUrl) localStorage.setItem('dnd5e_portrait', portraitUrl);
+      else localStorage.removeItem('dnd5e_portrait');
+    } catch { /* ignore */ }
+  }, [portraitUrl]);
+
+  // ── Auto-save to cloud (debounced 3s) when logged in ──
+  const cloudSaveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastCloudSaveRef = React.useRef<string>('');
+  const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
+  useEffect(() => {
+    if (!user) { setCloudSaveStatus('idle'); return; }
+    // Debounce cloud save by 3 seconds
+    setCloudSaveStatus('saving');
+    if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current);
+    cloudSaveTimerRef.current = setTimeout(async () => {
+      const snapshot = JSON.stringify({ ...char, _portraitUrl: portraitUrl });
+      // Skip if data hasn't actually changed since last save
+      if (snapshot === lastCloudSaveRef.current) { setCloudSaveStatus('saved'); return; }
+      lastCloudSaveRef.current = snapshot;
+      try {
+        await fetch('/api/characters', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: char.name || 'Безымянный', data: char, portrait_url: portraitUrl }),
+        });
+        setCloudSaveStatus('saved');
+      } catch { /* silent fail — localStorage already saved */ setCloudSaveStatus('idle'); }
+    }, 3000);
+    return () => { if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current); };
+  }, [user, char, portraitUrl]);
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const newUser = session?.user ?? null;
+      setUser(newUser);
+      // On login: load latest cloud save (cloud > localStorage)
+      if (newUser && _event === 'SIGNED_IN') {
+        try {
+          const res = await fetch('/api/characters');
+          const data = await res.json();
+          if (data.characters && data.characters.length > 0) {
+            const latest = data.characters[0];
+            if (latest.data) {
+              const defaults = createDefaultCharacter();
+              setChar({ ...defaults, ...latest.data });
+              if (latest.portrait_url) setPortraitUrl(latest.portrait_url);
+              else setPortraitUrl(null);
+            }
+          }
+        } catch { /* keep localStorage version */ }
+      }
     });
     return () => subscription.unsubscribe();
   }, [supabase]);
@@ -1075,7 +1168,9 @@ export default function DnDCharacterSheet() {
 
   const handleReset = useCallback(() => {
     setChar(createDefaultCharacter());
-    showToast('Сброшено', '');
+    setPortraitUrl(null);
+    localStorage.removeItem('dnd5e_portrait');
+    showToast('Сброшено', 'Данные очищены');
   }, [showToast]);
 
   const handleApplyTemplate = useCallback((templateId: string) => {
@@ -1313,12 +1408,18 @@ export default function DnDCharacterSheet() {
             <button type="button" onClick={handleExport} className="parchment-header-btn-primary">📥 DOCX</button>
             {user ? (
               <>
+                <span className="text-xs flex items-center gap-1" style={{ color: cloudSaveStatus === 'saving' ? '#8B6914' : cloudSaveStatus === 'saved' ? '#4a7c3f' : '#999', fontFamily: 'Georgia, serif' }}>
+                  {cloudSaveStatus === 'saving' ? '⏳ Сохранение...' : cloudSaveStatus === 'saved' ? '✅ Сохранено' : '☁️'}
+                </span>
                 <button type="button" onClick={handleCloudSave} className="parchment-header-btn-primary">☁️ Сохранить</button>
                 <button type="button" onClick={handleCloudLoad} className="parchment-header-btn">📂 Облако</button>
                 <button type="button" onClick={handleSignOut} className="parchment-header-btn">🚪 Выйти</button>
               </>
             ) : (
-              <button type="button" onClick={() => setShowAuth(true)} className="parchment-header-btn-primary">🔑 Войти</button>
+              <>
+                <span className="text-xs" style={{ color: '#4a7c3f', fontFamily: 'Georgia, serif' }}>💾 Автосохранение</span>
+                <button type="button" onClick={() => setShowAuth(true)} className="parchment-header-btn-primary">🔑 Войти</button>
+              </>
             )}
           </div>
         </div>

@@ -887,12 +887,16 @@ export default function DnDCharacterSheet() {
   }, [user, char, portraitUrl, saveToCloud]);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // DO NOT use getUser() here — it makes a network request that can resolve
+    // with null after OAuth redirect and overwrite the correct user set by
+    // onAuthStateChange.  Rely solely on onAuthStateChange which fires
+    // INITIAL_SESSION synchronously from cookies.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       const newUser = session?.user ?? null;
       setUser(newUser);
-      // On login: load latest cloud save (cloud > localStorage)
-      if (newUser && _event === 'SIGNED_IN') {
+      // On login / page load with existing session: load latest cloud save (cloud > localStorage)
+      // After OAuth redirect the event is INITIAL_SESSION, not SIGNED_IN — handle both.
+      if (newUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
         try {
           const res = await fetch('/api/characters');
           const data = await res.json();

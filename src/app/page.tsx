@@ -47,7 +47,7 @@ interface RollResult {
   label: string;       // what was rolled, e.g. "Проверка Силы" or "Спасбросок Лов"
 }
 
-function RollResultPopup({ result, onClose }: { result: RollResult; onClose: () => void }) {
+const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }: { result: RollResult; onClose: () => void }) {
   const [closing, setClosing] = useState(false);
   const isNat20 = result.dieResult === 20;
   const isNat1 = result.dieResult === 1;
@@ -85,10 +85,10 @@ function RollResultPopup({ result, onClose }: { result: RollResult; onClose: () 
 
 // ── Rollable Badge (clickable modifier badge for checks & saves) ──
 
-function RollBadge({ value, label, modifier, onRoll }: {
+const RollBadge = React.memo(function RollBadge({ value, label, modifier, onRoll }: {
   value: string | number;
   label?: string;
-  modifier: number;  // the numeric modifier to add to d20
+  modifier: number;
   onRoll: (result: RollResult) => void;
 }) {
   const handleClick = (e: React.MouseEvent) => {
@@ -132,7 +132,7 @@ interface LevelUpModalProps {
   onCancel: () => void;
 }
 
-function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
+const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
   const newLevel = char.level + 1;
   const dieSize = char.hitDice ? getHitDieSize(char.hitDice) : 8;
   const diceNotation = char.hitDice ? getHitDiceNotation(char.hitDice) : 'd';
@@ -411,7 +411,7 @@ interface LevelDownModalProps {
   onCancel: () => void;
 }
 
-function LevelDownModal({ char, onConfirm, onCancel }: LevelDownModalProps) {
+const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onCancel }: LevelDownModalProps) {
   const last = char.levelHistory[char.levelHistory.length - 1];
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
@@ -451,7 +451,7 @@ interface LevelHistoryModalProps {
   onClose: () => void;
 }
 
-function LevelHistoryModal({ char, onClose }: LevelHistoryModalProps) {
+const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose }: LevelHistoryModalProps) {
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
       <div className="parchment-modal max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
@@ -507,7 +507,7 @@ interface TemplateModalProps {
   onCancel: () => void;
 }
 
-function TemplateModal({ onSelect, onCancel }: TemplateModalProps) {
+const TemplateModal = React.memo(function TemplateModal({ onSelect, onCancel }: TemplateModalProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'martial' | 'caster' | 'hybrid'>('all');
 
@@ -659,7 +659,7 @@ function TemplateModal({ onSelect, onCancel }: TemplateModalProps) {
 
 // ── Auth Modal ──
 
-function AuthModal({ onClose, onAuth, onGoogleAuth, email, setEmail, password, setPassword, isSignUp, setIsSignUp, loading, error }: {
+const AuthModal = React.memo(function AuthModal({ onClose, onAuth, onGoogleAuth, email, setEmail, password, setPassword, isSignUp, setIsSignUp, loading, error }: {
   onClose: () => void;
   onAuth: () => void;
   onGoogleAuth: () => void;
@@ -717,7 +717,7 @@ function AuthModal({ onClose, onAuth, onGoogleAuth, email, setEmail, password, s
 
 // ── Cloud Saves Modal ──
 
-function CloudSavesModal({ characters, onLoad, onDelete, onClose }: {
+const CloudSavesModal = React.memo(function CloudSavesModal({ characters, onLoad, onDelete, onClose }: {
   characters: any[];
   onLoad: (char: any) => void;
   onDelete: (id: string) => void;
@@ -785,6 +785,15 @@ export default function DnDCharacterSheet() {
     });
     return () => subscription.unsubscribe();
   }, [supabase]);
+
+  // Stable callbacks for modal close (prevents re-renders when using React.memo)
+  const closeRollResult = useCallback(() => setRollResult(null), []);
+  const closeLevelUp = useCallback(() => setShowLevelUp(false), []);
+  const closeLevelDown = useCallback(() => setShowLevelDown(false), []);
+  const closeHistory = useCallback(() => setShowHistory(false), []);
+  const closeTemplates = useCallback(() => setShowTemplates(false), []);
+  const closeAuth = useCallback(() => setShowAuth(false), []);
+  const closeCloudSaves = useCallback(() => setShowCloudSaves(false), []);
 
   const handleRoll = useCallback((result: RollResult) => {
     setRollResult(result);
@@ -1277,13 +1286,13 @@ export default function DnDCharacterSheet() {
         </div>
       )}
 
-      {showLevelUp && <LevelUpModal char={char} onConfirm={handleLevelUp} onCancel={() => setShowLevelUp(false)} />}
-      {showLevelDown && <LevelDownModal char={char} onConfirm={handleLevelDown} onCancel={() => setShowLevelDown(false)} />}
-      {showHistory && <LevelHistoryModal char={char} onClose={() => setShowHistory(false)} />}
-      {showTemplates && <TemplateModal onSelect={handleApplyTemplate} onCancel={() => setShowTemplates(false)} />}
-      {rollResult && <RollResultPopup result={rollResult} onClose={() => setRollResult(null)} />}
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={handleAuth} onGoogleAuth={handleGoogleAuth} email={authEmail} setEmail={setAuthEmail} password={authPassword} setPassword={setAuthPassword} isSignUp={isSignUp} setIsSignUp={setIsSignUp} loading={authLoading} error={authError} />}
-      {showCloudSaves && <CloudSavesModal characters={cloudCharacters} onLoad={loadCloudCharacter} onDelete={deleteCloudCharacter} onClose={() => setShowCloudSaves(false)} />}
+      {showLevelUp && <LevelUpModal char={char} onConfirm={handleLevelUp} onCancel={closeLevelUp} />}
+      {showLevelDown && <LevelDownModal char={char} onConfirm={handleLevelDown} onCancel={closeLevelDown} />}
+      {showHistory && <LevelHistoryModal char={char} onClose={closeHistory} />}
+      {showTemplates && <TemplateModal onSelect={handleApplyTemplate} onCancel={closeTemplates} />}
+      {rollResult && <RollResultPopup result={rollResult} onClose={closeRollResult} />}
+      {showAuth && <AuthModal onClose={closeAuth} onAuth={handleAuth} onGoogleAuth={handleGoogleAuth} email={authEmail} setEmail={setAuthEmail} password={authPassword} setPassword={setAuthPassword} isSignUp={isSignUp} setIsSignUp={setIsSignUp} loading={authLoading} error={authError} />}
+      {showCloudSaves && <CloudSavesModal characters={cloudCharacters} onLoad={loadCloudCharacter} onDelete={deleteCloudCharacter} onClose={closeCloudSaves} />}
 
       <header className="sticky top-0 z-50 parchment-header">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">

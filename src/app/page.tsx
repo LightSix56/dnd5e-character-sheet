@@ -738,7 +738,7 @@ const CloudSavesModal = React.memo(function CloudSavesModal({ characters, onLoad
                     <img src={c.portrait_url} alt="" className="w-10 h-10 rounded object-cover" style={{ border: '1px solid rgba(139, 105, 20, 0.3)' }} />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate" style={{ color: '#3C2415' }}>{c.name}</p>
+                    <p className="text-sm font-bold truncate" style={{ color: '#3C2415' }}>{c.name}{c.data?.level ? ` — ${c.data.level} ур.` : ''}{c.data?.className ? ` ${c.data.className}` : ''}</p>
                     <p className="text-[10px]" style={{ color: '#8B6914' }}>{new Date(c.updated_at).toLocaleString('ru')}</p>
                   </div>
                   <button onClick={() => onLoad(c)} className="parchment-btn-sm" style={{ color: '#4a7c3f' }}>Загрузить</button>
@@ -832,9 +832,17 @@ export default function DnDCharacterSheet() {
   const lastCloudSaveRef = React.useRef<string>('');
   const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const cloudCharIdRef = React.useRef<string | null>(null);
+  const cloudSaveInProgressRef = React.useRef(false);
+  const pendingCloudSaveRef = React.useRef(false);
 
   // Helper: save to cloud (POST with id = upsert, server handles update/insert)
-  const saveToCloud = useCallback(async () => {
+  const saveToCloud = useCallback(async (): Promise<boolean> => {
+    // If a save is already in progress, mark as pending and skip
+    if (cloudSaveInProgressRef.current) {
+      pendingCloudSaveRef.current = true;
+      return false;
+    }
+    cloudSaveInProgressRef.current = true;
     try {
       const res = await fetch('/api/characters', {
         method: 'POST',
@@ -852,6 +860,14 @@ export default function DnDCharacterSheet() {
       }
       return !!result.character;
     } catch { return false; }
+    finally {
+      cloudSaveInProgressRef.current = false;
+      // If changes happened while we were saving, trigger another save
+      if (pendingCloudSaveRef.current) {
+        pendingCloudSaveRef.current = false;
+        setTimeout(() => saveToCloud(), 100);
+      }
+    }
   }, [char, portraitUrl]);
 
   useEffect(() => {

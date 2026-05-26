@@ -1538,30 +1538,32 @@ export default function DnDCharacterSheet() {
                       const isProf = char.savingThrowProficiencies[abbr];
                       return (
                         <div key={abbr} className={`p-2 rounded ${isProf ? 'parchment-prof' : 'parchment-no-prof'}`}>
-                          {/* Mobile layout — compact two-row design */}
-                          <div className="sm:hidden">
-                            {/* Row 1: Name + key values */}
-                            <div className="flex items-center justify-between mb-1.5">
-                              <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3C2415' }}>{ABILITY_FULL[abbr]} ({abbr})</span>
-                              <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                                <span className="text-[11px]" style={{ color: '#8B6914' }}>Итого:<strong className="ml-0.5" style={{ color: '#3C2415' }}>{total}</strong></span>
-                                <span className="text-[11px]" style={{ color: '#8B6914' }}>Мод:<strong className="ml-0.5" style={{ color: '#6B3A2A' }}>{formatModifier(mod)}</strong></span>
-                                <span className="text-[11px]" style={{ color: '#8B6914' }}>АСИ:<strong className="ml-0.5" style={{ color: '#5C3A6E' }}>{asi > 0 ? `+${asi}` : '0'}</strong></span>
-                              </div>
+                          {/* Mobile layout — stacked grid for narrow screens */}
+                          <div className="sm:hidden" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 8px', alignItems: 'center' }}>
+                            {/* Name + total+mod in top-left */}
+                            <div className="flex items-baseline gap-1.5">
+                              <span className="text-xs font-bold" style={{ color: '#3C2415' }}>{abbr}</span>
+                              <span className="text-xs font-bold" style={{ color: '#6B3A2A' }}>{total}</span>
+                              <span className="text-[11px]" style={{ color: '#8B6914' }}>({formatModifier(mod)})</span>
                             </div>
-                            {/* Row 2: Editable inputs + save */}
-                            <div className="flex items-center gap-1.5">
+                            {/* Save throw in top-right */}
+                            <div className="flex items-center justify-end gap-1">
+                              <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} /><span className="checkmark"></span></label>
+                              <RollBadge value={formatModifier(save)} label={`Спасбросок ${ABILITY_FULL[abbr]}`} modifier={save} onRoll={handleRoll} />
+                            </div>
+                            {/* База input bottom-left */}
+                            <div>
+                              <label className="text-[10px] block leading-tight" style={{ color: '#8B6914' }}>База</label>
+                              <input type="number" value={base} onChange={e => updateAbility(abbr, 'abilityScores', Number(e.target.value) || 10)} className={inputClassCenter + " text-xs"} style={{ height: '24px' }} />
+                            </div>
+                            {/* Раса input + АСИ bottom-right */}
+                            <div className="flex items-end gap-1.5">
                               <div className="flex-1 min-w-0">
-                                <label className="text-[10px] block" style={{ color: '#8B6914' }}>База</label>
-                                <input type="number" value={base} onChange={e => updateAbility(abbr, 'abilityScores', Number(e.target.value) || 10)} className={inputClassCenter + " text-xs w-full"} />
+                                <label className="text-[10px] block leading-tight" style={{ color: '#8B6914' }}>Раса</label>
+                                <input type="number" value={racial} onChange={e => updateAbility(abbr, 'abilityBonuses', Number(e.target.value) || 0)} className={inputClassCenter + " text-xs"} style={{ height: '24px' }} />
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <label className="text-[10px] block" style={{ color: '#8B6914' }}>Раса</label>
-                                <input type="number" value={racial} onChange={e => updateAbility(abbr, 'abilityBonuses', Number(e.target.value) || 0)} className={inputClassCenter + " text-xs w-full"} />
-                              </div>
-                              <div className="flex items-end shrink-0 gap-0.5 pb-0.5">
-                                <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} /><span className="checkmark"></span></label>
-                                <RollBadge value={formatModifier(save)} label={`Спасбросок ${ABILITY_FULL[abbr]}`} modifier={save} onRoll={handleRoll} />
+                              <div className="shrink-0 pb-0.5">
+                                <span className="text-[10px]" style={{ color: '#5C3A6E' }}>АСИ:{asi > 0 ? `+${asi}` : '0'}</span>
                               </div>
                             </div>
                           </div>

@@ -1538,29 +1538,28 @@ export default function DnDCharacterSheet() {
                       const isProf = char.savingThrowProficiencies[abbr];
                       return (
                         <div key={abbr} className={`p-2 rounded ${isProf ? 'parchment-prof' : 'parchment-no-prof'}`}>
-                          {/* Mobile layout */}
+                          {/* Mobile layout — compact two-row design */}
                           <div className="sm:hidden">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs font-bold" style={{ color: '#3C2415' }}>{ABILITY_FULL[abbr]} ({abbr})</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs" style={{ color: '#8B6914' }}>Итого: <strong style={{ color: '#3C2415' }}>{total}</strong></span>
-                                <span className="text-xs" style={{ color: '#8B6914' }}>Мод: <strong style={{ color: '#6B3A2A' }}>{formatModifier(mod)}</strong></span>
+                            {/* Row 1: Name + key values */}
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3C2415' }}>{ABILITY_FULL[abbr]} ({abbr})</span>
+                              <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                                <span className="text-[11px]" style={{ color: '#8B6914' }}>Итого:<strong className="ml-0.5" style={{ color: '#3C2415' }}>{total}</strong></span>
+                                <span className="text-[11px]" style={{ color: '#8B6914' }}>Мод:<strong className="ml-0.5" style={{ color: '#6B3A2A' }}>{formatModifier(mod)}</strong></span>
+                                <span className="text-[11px]" style={{ color: '#8B6914' }}>АСИ:<strong className="ml-0.5" style={{ color: '#5C3A6E' }}>{asi > 0 ? `+${asi}` : '0'}</strong></span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1">
-                                <label className="text-[10px]" style={{ color: '#8B6914' }}>База</label>
-                                <input type="number" value={base} onChange={e => updateAbility(abbr, 'abilityScores', Number(e.target.value) || 10)} className={inputClassCenter + " text-xs"} />
+                            {/* Row 2: Editable inputs + save */}
+                            <div className="flex items-center gap-1.5">
+                              <div className="flex-1 min-w-0">
+                                <label className="text-[10px] block" style={{ color: '#8B6914' }}>База</label>
+                                <input type="number" value={base} onChange={e => updateAbility(abbr, 'abilityScores', Number(e.target.value) || 10)} className={inputClassCenter + " text-xs w-full"} />
                               </div>
-                              <div className="flex-1">
-                                <label className="text-[10px]" style={{ color: '#8B6914' }}>Раса</label>
-                                <input type="number" value={racial} onChange={e => updateAbility(abbr, 'abilityBonuses', Number(e.target.value) || 0)} className={inputClassCenter + " text-xs"} />
+                              <div className="flex-1 min-w-0">
+                                <label className="text-[10px] block" style={{ color: '#8B6914' }}>Раса</label>
+                                <input type="number" value={racial} onChange={e => updateAbility(abbr, 'abilityBonuses', Number(e.target.value) || 0)} className={inputClassCenter + " text-xs w-full"} />
                               </div>
-                              <div className="flex items-end gap-1">
-                                <CalcBadge value={asi > 0 ? `+${asi}` : '0'} />
-                              </div>
-                              <div className="flex items-end gap-1">
-                                <label className="text-[10px]" style={{ color: '#8B6914' }}>Спасбр.</label>
+                              <div className="flex items-end shrink-0 gap-0.5 pb-0.5">
                                 <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} /><span className="checkmark"></span></label>
                                 <RollBadge value={formatModifier(save)} label={`Спасбросок ${ABILITY_FULL[abbr]}`} modifier={save} onRoll={handleRoll} />
                               </div>

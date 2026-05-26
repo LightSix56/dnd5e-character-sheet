@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   CharacterData, AbilityName, ABILITY_NAMES, ABILITY_FULL, ALL_SKILLS, SKILL_MAP,
   formatModifier, calcModifier, calcProficiencyBonus, getTotalScore, getModifier,
@@ -11,6 +11,8 @@ import {
   getHitDieSize, getHitDieAverage, getHitDiceNotation, isStandardASILevel, getMilestonesAtLevel, createEmptyLevelUpEntry,
   CLASS_TEMPLATES, ClassTemplate, applyClassTemplate,
 } from '@/lib/dnd-types';
+import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 // ── Small helper components ──
 
@@ -655,6 +657,103 @@ function TemplateModal({ onSelect, onCancel }: TemplateModalProps) {
   );
 }
 
+// ── Auth Modal ──
+
+function AuthModal({ onClose, onAuth, onGoogleAuth, email, setEmail, password, setPassword, isSignUp, setIsSignUp, loading, error }: {
+  onClose: () => void;
+  onAuth: () => void;
+  onGoogleAuth: () => void;
+  email: string; setEmail: (v: string) => void;
+  password: string; setPassword: (v: string) => void;
+  isSignUp: boolean; setIsSignUp: (v: boolean) => void;
+  loading: boolean; error: string;
+}) {
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="parchment-modal max-w-sm w-full" onClick={e => e.stopPropagation()}>
+        <div className="p-6">
+          <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            {isSignUp ? '📝 Регистрация' : '🔑 Вход'}
+          </h2>
+
+          <button onClick={onGoogleAuth} disabled={loading}
+            className="w-full parchment-btn-secondary mb-4 flex items-center justify-center gap-2 py-2.5">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Войти через Google
+          </button>
+
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex-1 h-px" style={{ background: 'rgba(139, 105, 20, 0.3)' }}></div>
+            <span className="text-xs" style={{ color: '#8B6914' }}>или</span>
+            <div className="flex-1 h-px" style={{ background: 'rgba(139, 105, 20, 0.3)' }}></div>
+          </div>
+
+          <div className="space-y-3 mb-4">
+            <div className="space-y-1">
+              <label className="parchment-label">Email</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="parchment-input" />
+            </div>
+            <div className="space-y-1">
+              <label className="parchment-label">Пароль</label>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Минимум 6 символов" className="parchment-input" />
+            </div>
+          </div>
+
+          {error && <p className="text-xs mb-3 p-2 rounded" style={{ color: error.includes('Проверьте') ? '#4a7c3f' : '#8B2500', background: error.includes('Проверьте') ? 'rgba(74,124,63,0.08)' : 'rgba(139,37,0,0.06)' }}>{error}</p>}
+
+          <button onClick={onAuth} disabled={loading || !email || !password}
+            className="w-full parchment-btn py-2.5 mb-3">
+            {loading ? 'Загрузка...' : isSignUp ? 'Зарегистрироваться' : 'Войти'}
+          </button>
+
+          <button onClick={() => setIsSignUp(!isSignUp)} className="w-full text-xs" style={{ color: '#8B6914', fontFamily: 'Georgia, "Times New Roman", serif', cursor: 'pointer', background: 'none', border: 'none' }}>
+            {isSignUp ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Cloud Saves Modal ──
+
+function CloudSavesModal({ characters, onLoad, onDelete, onClose }: {
+  characters: any[];
+  onLoad: (char: any) => void;
+  onDelete: (id: string) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="parchment-modal max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="p-6">
+          <h2 className="text-xl font-bold mb-4">☁️ Облачные сохранения</h2>
+          {characters.length === 0 ? (
+            <p className="text-sm mb-4" style={{ color: '#8B6914' }}>Нет сохранённых персонажей</p>
+          ) : (
+            <div className="space-y-2">
+              {characters.map((c: any) => (
+                <div key={c.id} className="parchment-modal-section flex items-center gap-3">
+                  {c.portrait_url && (
+                    <img src={c.portrait_url} alt="" className="w-10 h-10 rounded object-cover" style={{ border: '1px solid rgba(139, 105, 20, 0.3)' }} />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate" style={{ color: '#3C2415' }}>{c.name}</p>
+                    <p className="text-[10px]" style={{ color: '#8B6914' }}>{new Date(c.updated_at).toLocaleString('ru')}</p>
+                  </div>
+                  <button onClick={() => onLoad(c)} className="parchment-btn-sm" style={{ color: '#4a7c3f' }}>Загрузить</button>
+                  <button onClick={() => onDelete(c.id)} className="parchment-remove-btn" title="Удалить">✕</button>
+                </div>
+              ))}
+            </div>
+          )}
+          <button onClick={onClose} className="mt-4 w-full parchment-btn-secondary">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Component ──
 
 export default function DnDCharacterSheet() {
@@ -666,6 +765,26 @@ export default function DnDCharacterSheet() {
   const [showHistory, setShowHistory] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [rollResult, setRollResult] = useState<RollResult | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [showAuth, setShowAuth] = useState(false);
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [showCloudSaves, setShowCloudSaves] = useState(false);
+  const [cloudCharacters, setCloudCharacters] = useState<any[]>([]);
+  const [portraitUrl, setPortraitUrl] = useState<string | null>(null);
+
+  const supabase = useMemo(() => createClient(), []);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   const handleRoll = useCallback((result: RollResult) => {
     setRollResult(result);
@@ -957,6 +1076,125 @@ export default function DnDCharacterSheet() {
     showToast(`${template?.emoji || ''} ${template?.name || ''}`, 'Шаблон применён — 1 уровень');
   }, [showToast]);
 
+  // ── Auth / Cloud handlers ──
+  const handleAuth = useCallback(async () => {
+    setAuthLoading(true);
+    setAuthError('');
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({ email: authEmail, password: authPassword });
+        if (error) throw error;
+        setAuthError('Проверьте почту для подтверждения!');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password: authPassword });
+        if (error) throw error;
+        setShowAuth(false);
+      }
+    } catch (err: any) {
+      setAuthError(err.message || 'Ошибка авторизации');
+    } finally {
+      setAuthLoading(false);
+    }
+  }, [supabase, authEmail, authPassword, isSignUp]);
+
+  const handleGoogleAuth = useCallback(async () => {
+    setAuthLoading(true);
+    setAuthError('');
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}` },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      setAuthError(err.message || 'Ошибка авторизации');
+      setAuthLoading(false);
+    }
+  }, [supabase]);
+
+  const handleSignOut = useCallback(async () => {
+    await supabase.auth.signOut();
+    setPortraitUrl(null);
+  }, [supabase]);
+
+  const handlePortraitUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('/api/upload-portrait', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.url) {
+        setPortraitUrl(data.url);
+        showToast('Портрет', 'Изображение загружено');
+      } else {
+        showToast('Ошибка', data.error || 'Не удалось загрузить');
+      }
+    } catch {
+      showToast('Ошибка', 'Не удалось загрузить изображение');
+    }
+  }, [showToast]);
+
+  const handleCloudSave = useCallback(async () => {
+    if (!user) { showToast('Ошибка', 'Войдите в аккаунт'); return; }
+    try {
+      const saveData = { ...char };
+      // Remove portrait from JSON data - it's stored separately
+      const res = await fetch('/api/characters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: char.name || 'Безымянный', data: saveData, portrait_url: portraitUrl }),
+      });
+      const data = await res.json();
+      if (data.character) {
+        showToast('Сохранено', `"${data.character.name}" сохранён в облако`);
+      } else {
+        showToast('Ошибка', data.error || 'Не удалось сохранить');
+      }
+    } catch {
+      showToast('Ошибка', 'Не удалось сохранить в облако');
+    }
+  }, [user, char, portraitUrl, showToast]);
+
+  const handleCloudLoad = useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await fetch('/api/characters');
+      const data = await res.json();
+      if (data.characters) {
+        setCloudCharacters(data.characters);
+        setShowCloudSaves(true);
+      }
+    } catch {
+      showToast('Ошибка', 'Не удалось загрузить список');
+    }
+  }, [user, showToast]);
+
+  const loadCloudCharacter = useCallback(async (cloudChar: any) => {
+    if (cloudChar.data) {
+      setChar(prev => ({ ...createDefaultCharacter(), ...cloudChar.data }));
+      if (cloudChar.portrait_url) setPortraitUrl(cloudChar.portrait_url);
+      else setPortraitUrl(null);
+      setShowCloudSaves(false);
+      showToast('Загружено', `"${cloudChar.name}" загружен из облака`);
+    }
+  }, [showToast]);
+
+  const deleteCloudCharacter = useCallback(async (id: string) => {
+    try {
+      await fetch('/api/characters', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      setCloudCharacters(prev => prev.filter((c: any) => c.id !== id));
+      showToast('Удалено', 'Персонаж удалён из облака');
+    } catch {
+      showToast('Ошибка', 'Не удалось удалить');
+    }
+  }, [showToast]);
+
   // ── Save / Load JSON ──
   const handleSaveJSON = useCallback(() => {
     const data = JSON.stringify(char, null, 2);
@@ -1026,6 +1264,8 @@ export default function DnDCharacterSheet() {
       {showHistory && <LevelHistoryModal char={char} onClose={() => setShowHistory(false)} />}
       {showTemplates && <TemplateModal onSelect={handleApplyTemplate} onCancel={() => setShowTemplates(false)} />}
       {rollResult && <RollResultPopup result={rollResult} onClose={() => setRollResult(null)} />}
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onAuth={handleAuth} onGoogleAuth={handleGoogleAuth} email={authEmail} setEmail={setAuthEmail} password={authPassword} setPassword={setAuthPassword} isSignUp={isSignUp} setIsSignUp={setIsSignUp} loading={authLoading} error={authError} />}
+      {showCloudSaves && <CloudSavesModal characters={cloudCharacters} onLoad={loadCloudCharacter} onDelete={deleteCloudCharacter} onClose={() => setShowCloudSaves(false)} />}
 
       <header className="sticky top-0 z-50 parchment-header">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
@@ -1044,6 +1284,15 @@ export default function DnDCharacterSheet() {
             <button type="button" onClick={handleLoadJSON} className="parchment-header-btn">📂 Загр.</button>
             <button type="button" onClick={handleReset} className="parchment-header-btn">🔄 Сброс</button>
             <button type="button" onClick={handleExport} className="parchment-header-btn-primary">📥 DOCX</button>
+            {user ? (
+              <>
+                <button type="button" onClick={handleCloudSave} className="parchment-header-btn-primary">☁️ Сохранить</button>
+                <button type="button" onClick={handleCloudLoad} className="parchment-header-btn">📂 Облако</button>
+                <button type="button" onClick={handleSignOut} className="parchment-header-btn">🚪 Выйти</button>
+              </>
+            ) : (
+              <button type="button" onClick={() => setShowAuth(true)} className="parchment-header-btn-primary">🔑 Войти</button>
+            )}
           </div>
         </div>
       </header>
@@ -1286,6 +1535,38 @@ export default function DnDCharacterSheet() {
             <div className="parchment-card">
               <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">👤 Физическое описание</h3></div>
               <div className="px-4 pb-4 space-y-3">
+                {/* Portrait */}
+                <div className="mb-4">
+                  <div className="flex items-start gap-4">
+                    <div className="shrink-0">
+                      {portraitUrl ? (
+                        <div className="relative w-24 h-24 rounded" style={{ border: '2px solid rgba(139, 105, 20, 0.4)', overflow: 'hidden' }}>
+                          <label className="w-full h-full cursor-pointer block">
+                            <img src={portraitUrl} alt="Портрет" className="w-full h-full object-cover" />
+                            <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
+                          </label>
+                          <button onClick={() => setPortraitUrl(null)} className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center text-[10px] cursor-pointer" style={{ background: 'rgba(139, 37, 0, 0.7)', color: '#FBF0DC', border: 'none', borderRadius: '0 0 0 3px' }}>✕</button>
+                        </div>
+                      ) : (
+                        <label className="w-24 h-24 flex flex-col items-center justify-center cursor-pointer rounded" style={{ border: '2px dashed rgba(139, 105, 20, 0.3)', background: 'rgba(251, 240, 220, 0.3)' }}>
+                          <span className="text-2xl mb-1">📷</span>
+                          <span className="text-[9px] text-center px-1" style={{ color: '#8B6914' }}>Загрузить портрет</span>
+                          <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <label className="parchment-label">Внешность (описание)</label>
+                      <textarea value={char.appearance} onChange={e => update('appearance', e.target.value)} rows={4} className={textareaClass} placeholder="Опишите внешность персонажа: цвет волос, глаз, отличительные черты..." />
+                    </div>
+                  </div>
+                  {!portraitUrl && (
+                    <label className="mt-2 inline-flex items-center gap-1 cursor-pointer text-xs" style={{ color: '#8B6914' }}>
+                      <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
+                      + Добавить картинку
+                    </label>
+                  )}
+                </div>
                 <div className="grid grid-cols-3 gap-3">
                   <StatInput label="Возраст" value={char.age} onChange={v => update('age', v)} type="text" />
                   <StatInput label="Рост" value={char.height} onChange={v => update('height', v)} type="text" />

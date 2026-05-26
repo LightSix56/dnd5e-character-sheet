@@ -42,16 +42,34 @@ export async function POST(request: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const body = await request.json();
-  const { name, data, portrait_url } = body;
+  const { id, name, data, portrait_url } = body;
 
-  const { data: character, error } = await supabase
+  // If ID provided — try to UPDATE existing character first
+  if (id) {
+    const { data: updated, error: updateError } = await supabase
+      .from('characters')
+      .update({ name: name || 'Безымянный', data, portrait_url, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .select('id, name, portrait_url, created_at, updated_at')
+      .maybeSingle();
+
+    if (!updateError && updated) {
+      return NextResponse.json({ character: updated });
+    }
+    // If update failed (deleted/wrong ID) — fall through to insert
+  }
+
+  // No ID or update failed — INSERT new character
+  const { data: inserted, error: insertError } = await supabase
     .from('characters')
     .insert({ user_id: user.id, name: name || 'Безымянный', data, portrait_url })
     .select('id, name, portrait_url, created_at, updated_at')
-    .single();
+    .maybeSingle();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ character });
+  if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
+  if (!inserted) return NextResponse.json({ error: 'Failed to save character' }, { status: 500 });
+  return NextResponse.json({ character: inserted });
 }
 
 export async function PUT(request: NextRequest) {
@@ -72,15 +90,18 @@ export async function PUT(request: NextRequest) {
   const body = await request.json();
   const { id, name, data, portrait_url } = body;
 
+  if (!id) return NextResponse.json({ error: 'Character ID is required' }, { status: 400 });
+
   const { data: character, error } = await supabase
     .from('characters')
-    .update({ name: name || 'Безымянный', data, portrait_url })
+    .update({ name: name || 'Безымянный', data, portrait_url, updated_at: new Date().toISOString() })
     .eq('id', id)
     .eq('user_id', user.id)
     .select('id, name, portrait_url, created_at, updated_at')
-    .single();
+    .maybeSingle();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!character) return NextResponse.json({ error: 'Character not found' }, { status: 404 });
   return NextResponse.json({ character });
 }
 

@@ -833,6 +833,27 @@ export default function DnDCharacterSheet() {
   const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const cloudCharIdRef = React.useRef<string | null>(null);
 
+  // Helper: save to cloud (POST with id = upsert, server handles update/insert)
+  const saveToCloud = useCallback(async () => {
+    try {
+      const res = await fetch('/api/characters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: cloudCharIdRef.current || undefined,
+          name: char.name || 'Безымянный',
+          data: char,
+          portrait_url: portraitUrl,
+        }),
+      });
+      const result = await res.json();
+      if (result.character?.id) {
+        cloudCharIdRef.current = result.character.id;
+      }
+      return !!result.character;
+    } catch { return false; }
+  }, [char, portraitUrl]);
+
   useEffect(() => {
     if (!user) { setCloudSaveStatus('idle'); cloudCharIdRef.current = null; return; }
     // Debounce cloud save by 3 seconds
@@ -843,32 +864,11 @@ export default function DnDCharacterSheet() {
       // Skip if data hasn't actually changed since last save
       if (snapshot === lastCloudSaveRef.current) { setCloudSaveStatus('saved'); return; }
       lastCloudSaveRef.current = snapshot;
-      try {
-        const charId = cloudCharIdRef.current;
-        if (charId) {
-          // UPDATE existing character
-          await fetch('/api/characters', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: charId, name: char.name || 'Безымянный', data: char, portrait_url: portraitUrl }),
-          });
-        } else {
-          // INSERT new character and remember its ID
-          const res = await fetch('/api/characters', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: char.name || 'Безымянный', data: char, portrait_url: portraitUrl }),
-          });
-          const result = await res.json();
-          if (result.character?.id) {
-            cloudCharIdRef.current = result.character.id;
-          }
-        }
-        setCloudSaveStatus('saved');
-      } catch { /* silent fail — localStorage already saved */ setCloudSaveStatus('idle'); }
+      const ok = await saveToCloud();
+      setCloudSaveStatus(ok ? 'saved' : 'idle');
     }, 3000);
     return () => { if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current); };
-  }, [user, char, portraitUrl]);
+  }, [user, char, portraitUrl, saveToCloud]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
@@ -1282,36 +1282,13 @@ export default function DnDCharacterSheet() {
 
   const handleCloudSave = useCallback(async () => {
     if (!user) { showToast('Ошибка', 'Войдите в аккаунт'); return; }
-    try {
-      const charId = cloudCharIdRef.current;
-      let res: Response;
-      if (charId) {
-        // Update existing character
-        res = await fetch('/api/characters', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: charId, name: char.name || 'Безымянный', data: { ...char }, portrait_url: portraitUrl }),
-        });
-      } else {
-        // Insert new character
-        res = await fetch('/api/characters', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: char.name || 'Безымянный', data: { ...char }, portrait_url: portraitUrl }),
-        });
-      }
-      const data = await res.json();
-      if (data.character) {
-        // Remember the ID for future updates
-        cloudCharIdRef.current = data.character.id;
-        showToast('Сохранено', `"${data.character.name}" сохранён в облако`);
-      } else {
-        showToast('Ошибка', data.error || 'Не удалось сохранить');
-      }
-    } catch {
-      showToast('Ошибка', 'Не удалось сохранить в облако');
+    const ok = await saveToCloud();
+    if (ok) {
+      showToast('Сохранено', `"${char.name || 'Безымянный'}" сохранён в облако`);
+    } else {
+      showToast('Ошибка', 'Не удалось сохранить');
     }
-  }, [user, char, portraitUrl, showToast]);
+  }, [user, saveToCloud, char.name, showToast]);
 
   const handleCloudLoad = useCallback(async () => {
     if (!user) return;

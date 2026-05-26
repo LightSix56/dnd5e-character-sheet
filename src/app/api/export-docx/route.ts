@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   Document, Packer, Paragraph, Table, TableRow, TableCell,
   WidthType, AlignmentType, BorderStyle,
-  ShadingType, VerticalAlign, TextRun, PageBreak,
+  ShadingType, VerticalAlign, TextRun, PageBreak, ImageRun,
 } from 'docx';
 import {
   CharacterData, AbilityName, ABILITY_NAMES, ABILITY_FULL, ALL_SKILLS, SKILL_MAP,
@@ -73,7 +73,9 @@ function textPara(text: string, opts?: { bold?: boolean; color?: string; size?: 
 
 export async function POST(request: NextRequest) {
   try {
-    const char: CharacterData = await request.json();
+    const body = await request.json();
+    const char: CharacterData = body;
+    const portraitUrl: string | undefined = body._portraitUrl;
     const profBonus = calcProficiencyBonus(char.level);
     const content: (Paragraph | Table)[] = [];
 
@@ -83,6 +85,29 @@ export async function POST(request: NextRequest) {
       spacing: { after: 120 },
       children: [new TextRun({ text: 'ЛИСТ ПЕРСОНАЖА D&D 5e', bold: true, size: 36, color: COLOR_HEADER, font: 'Arial' })],
     }));
+
+    // ── Portrait ──
+    if (portraitUrl) {
+      try {
+        const imgRes = await fetch(portraitUrl);
+        if (imgRes.ok) {
+          const imgBuf = Buffer.from(await imgRes.arrayBuffer());
+          const contentType = imgRes.headers.get('content-type') || 'image/png';
+          const isJpeg = contentType.includes('jpeg') || contentType.includes('jpg');
+          content.push(new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            children: [new ImageRun({
+              data: imgBuf,
+              transformation: { width: 150, height: 150 },
+              type: isJpeg ? 'jpg' : 'png',
+            })],
+          }));
+        }
+      } catch {
+        // Portrait fetch failed — skip silently
+      }
+    }
 
     // ── Basic Info ──
     content.push(sectionHeader('ОСНОВНАЯ ИНФОРМАЦИЯ'));

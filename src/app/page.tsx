@@ -1047,7 +1047,7 @@ export default function DnDCharacterSheet() {
   // ── Export ──
   const handleExport = useCallback(async () => {
     try {
-      const r = await fetch('/api/export-docx', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(char) });
+      const r = await fetch('/api/export-docx', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...char, _portraitUrl: portraitUrl }) });
       if (!r.ok) throw new Error('Ошибка');
       const blob = await r.blob();
       const url = URL.createObjectURL(blob);
@@ -1057,7 +1057,7 @@ export default function DnDCharacterSheet() {
       URL.revokeObjectURL(url);
       showToast('Экспорт', 'DOCX сохранён');
     } catch (err: any) { showToast('Ошибка', err.message); }
-  }, [char, showToast]);
+  }, [char, portraitUrl, showToast]);
 
   const handleLoadExample = useCallback((type: 'warrior' | 'wizard') => {
     setChar(type === 'warrior' ? createExampleWarrior() : createExampleWizard());
@@ -1081,8 +1081,13 @@ export default function DnDCharacterSheet() {
     setAuthLoading(true);
     setAuthError('');
     try {
+      const redirectUrl = `${window.location.origin}/api/auth/callback`;
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email: authEmail, password: authPassword });
+        const { error } = await supabase.auth.signUp({
+          email: authEmail,
+          password: authPassword,
+          options: { emailRedirectTo: redirectUrl },
+        });
         if (error) throw error;
         setAuthError('Проверьте почту для подтверждения!');
       } else {
@@ -1103,7 +1108,10 @@ export default function DnDCharacterSheet() {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}` },
+        options: {
+          redirectTo: `${window.location.origin}/api/auth/callback`,
+          queryParams: { access_type: 'offline', prompt: 'consent' },
+        },
       });
       if (error) throw error;
     } catch (err: any) {
@@ -1113,8 +1121,18 @@ export default function DnDCharacterSheet() {
   }, [supabase]);
 
   const handleSignOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    try {
+      // Sign out from Supabase client
+      await supabase.auth.signOut({ scope: 'global' });
+      // Also call server-side signout to clear cookies
+      await fetch('/api/auth/signout', { method: 'POST' });
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
+    // Force clear state regardless of API result
+    setUser(null);
     setPortraitUrl(null);
+    setCloudCharacters([]);
   }, [supabase]);
 
   const handlePortraitUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {

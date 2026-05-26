@@ -1539,7 +1539,7 @@ export default function DnDCharacterSheet() {
                       return (
                         <div key={abbr} className={`p-2 rounded ${isProf ? 'parchment-prof' : 'parchment-no-prof'}`}>
                           {/* Mobile layout — stacked grid for narrow screens */}
-                          <div className="sm:hidden" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 8px', alignItems: 'center' }}>
+                          <div className="sm:hidden grid grid-cols-2 gap-x-2 gap-y-1 items-center">
                             {/* Name + total+mod in top-left */}
                             <div className="flex items-baseline gap-1.5">
                               <span className="text-xs font-bold" style={{ color: '#3C2415' }}>{abbr}</span>

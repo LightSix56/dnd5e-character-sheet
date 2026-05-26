@@ -831,9 +831,10 @@ export default function DnDCharacterSheet() {
   const cloudSaveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCloudSaveRef = React.useRef<string>('');
   const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const cloudCharIdRef = React.useRef<string | null>(null);
 
   useEffect(() => {
-    if (!user) { setCloudSaveStatus('idle'); return; }
+    if (!user) { setCloudSaveStatus('idle'); cloudCharIdRef.current = null; return; }
     // Debounce cloud save by 3 seconds
     setCloudSaveStatus('saving');
     if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current);
@@ -843,11 +844,26 @@ export default function DnDCharacterSheet() {
       if (snapshot === lastCloudSaveRef.current) { setCloudSaveStatus('saved'); return; }
       lastCloudSaveRef.current = snapshot;
       try {
-        await fetch('/api/characters', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: char.name || 'Безымянный', data: char, portrait_url: portraitUrl }),
-        });
+        const charId = cloudCharIdRef.current;
+        if (charId) {
+          // UPDATE existing character
+          await fetch('/api/characters', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: charId, name: char.name || 'Безымянный', data: char, portrait_url: portraitUrl }),
+          });
+        } else {
+          // INSERT new character and remember its ID
+          const res = await fetch('/api/characters', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: char.name || 'Безымянный', data: char, portrait_url: portraitUrl }),
+          });
+          const result = await res.json();
+          if (result.character?.id) {
+            cloudCharIdRef.current = result.character.id;
+          }
+        }
         setCloudSaveStatus('saved');
       } catch { /* silent fail — localStorage already saved */ setCloudSaveStatus('idle'); }
     }, 3000);
@@ -871,6 +887,8 @@ export default function DnDCharacterSheet() {
               setChar({ ...defaults, ...latest.data });
               if (latest.portrait_url) setPortraitUrl(latest.portrait_url);
               else setPortraitUrl(null);
+              // Remember the cloud character ID for auto-save updates
+              cloudCharIdRef.current = latest.id;
             }
           }
         } catch { /* keep localStorage version */ }
@@ -1170,6 +1188,8 @@ export default function DnDCharacterSheet() {
     setChar(createDefaultCharacter());
     setPortraitUrl(null);
     localStorage.removeItem('dnd5e_portrait');
+    cloudCharIdRef.current = null;
+    lastCloudSaveRef.current = '';
     showToast('Сброшено', 'Данные очищены');
   }, [showToast]);
 
@@ -1237,6 +1257,8 @@ export default function DnDCharacterSheet() {
     setUser(null);
     setPortraitUrl(null);
     setCloudCharacters([]);
+    cloudCharIdRef.current = null;
+    lastCloudSaveRef.current = '';
   }, [supabase]);
 
   const handlePortraitUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1261,15 +1283,27 @@ export default function DnDCharacterSheet() {
   const handleCloudSave = useCallback(async () => {
     if (!user) { showToast('Ошибка', 'Войдите в аккаунт'); return; }
     try {
-      const saveData = { ...char };
-      // Remove portrait from JSON data - it's stored separately
-      const res = await fetch('/api/characters', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: char.name || 'Безымянный', data: saveData, portrait_url: portraitUrl }),
-      });
+      const charId = cloudCharIdRef.current;
+      let res: Response;
+      if (charId) {
+        // Update existing character
+        res = await fetch('/api/characters', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: charId, name: char.name || 'Безымянный', data: { ...char }, portrait_url: portraitUrl }),
+        });
+      } else {
+        // Insert new character
+        res = await fetch('/api/characters', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: char.name || 'Безымянный', data: { ...char }, portrait_url: portraitUrl }),
+        });
+      }
       const data = await res.json();
       if (data.character) {
+        // Remember the ID for future updates
+        cloudCharIdRef.current = data.character.id;
         showToast('Сохранено', `"${data.character.name}" сохранён в облако`);
       } else {
         showToast('Ошибка', data.error || 'Не удалось сохранить');
@@ -1298,6 +1332,10 @@ export default function DnDCharacterSheet() {
       setChar(prev => ({ ...createDefaultCharacter(), ...cloudChar.data }));
       if (cloudChar.portrait_url) setPortraitUrl(cloudChar.portrait_url);
       else setPortraitUrl(null);
+      // Remember cloud character ID for auto-save
+      cloudCharIdRef.current = cloudChar.id;
+      // Reset dedup tracker so changes trigger a save
+      lastCloudSaveRef.current = '';
       setShowCloudSaves(false);
       showToast('Загружено', `"${cloudChar.name}" загружен из облака`);
     }

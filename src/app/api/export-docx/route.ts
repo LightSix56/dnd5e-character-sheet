@@ -9,7 +9,30 @@ import {
   formatModifier, calcProficiencyBonus, getTotalScore, getModifier,
   getSavingThrow, getSkillBonus, getInitiative, getPassivePerception, getAC,
   getHPMax, getSpellSaveDC, getSpellAttackBonus, getSpellAbilityMod,
+  createDefaultCharacter,
 } from '@/lib/dnd-types';
+
+// Частичный лист (например, от внешнего приложения) дополняем значениями по
+// умолчанию: расчётные функции обращаются к вложенным полям напрямую и падают,
+// если пришёл только abilityScores без abilityBonuses/asiBonuses.
+function normalizeCharacter(raw: Partial<CharacterData>): CharacterData {
+  const defaults = createDefaultCharacter();
+  return {
+    ...defaults,
+    ...raw,
+    abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
+    abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
+    asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
+    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
+    skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
+    skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
+    spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
+    spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
+    attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
+    cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
+    levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
+  };
+}
 
 const COLOR_HEADER = '2C3E50';
 const COLOR_SUBHEADER = '34495E';
@@ -74,7 +97,7 @@ function textPara(text: string, opts?: { bold?: boolean; color?: string; size?: 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const char: CharacterData = body;
+    const char: CharacterData = normalizeCharacter(body);
     const portraitUrl: string | undefined = body._portraitUrl;
     const profBonus = calcProficiencyBonus(char.level);
     const content: (Paragraph | Table)[] = [];

@@ -1407,6 +1407,31 @@ export default function DnDCharacterSheet() {
     input.click();
   }, [showToast]);
 
+  // ── Публичная ссылка для внешних приложений (AI Dungeon Master) ──
+  const handleShare = useCallback(async () => {
+    try {
+      const res = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: char.name || 'Безымянный', data: char, expiresInDays: 30 }),
+      });
+      const payload = await res.json();
+      if (!res.ok) {
+        showToast('Ошибка', payload?.error || 'Не удалось создать ссылку');
+        return;
+      }
+      const { code } = payload;
+      try {
+        await navigator.clipboard.writeText(code);
+        showToast('Код скопирован', `${code} — вставьте его в AI Dungeon Master`);
+      } catch {
+        showToast('Код для импорта', code);
+      }
+    } catch (err: any) {
+      showToast('Ошибка', err?.message || 'Сеть недоступна');
+    }
+  }, [char, showToast]);
+
   return (
     <div className="parchment-bg">
       {toast && (
@@ -1448,6 +1473,7 @@ export default function DnDCharacterSheet() {
                 </span>
                 <button type="button" onClick={handleCloudSave} className="parchment-header-btn-primary">☁️ Сохранить</button>
                 <button type="button" onClick={handleCloudLoad} className="parchment-header-btn">📂 Облако</button>
+                <button type="button" onClick={handleShare} className="parchment-header-btn" title="Код для импорта в AI Dungeon Master">🔗 Поделиться</button>
                 <button type="button" onClick={handleSignOut} className="parchment-header-btn">🚪 Выйти</button>
               </>
             ) : (

@@ -92,7 +92,7 @@
 
 /* Main book background */
 .parchment-bg {
-  background: url('/book-bg.png') center center / cover no-repeat fixed;
+  background: url('/book-bg.webp') center center / cover no-repeat fixed;
   min-height: 100vh;
 }
 

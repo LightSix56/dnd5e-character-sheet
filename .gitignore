@@ -23,7 +23,6 @@ next-env.d.ts
 bun.lock
 Caddyfile
 components.json
-eslint.config.mjs
 dnd_character_sheet_generator.py
 worklog.md
 worklog2.md

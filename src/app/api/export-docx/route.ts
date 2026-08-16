@@ -112,11 +112,26 @@ export async function POST(request: NextRequest) {
     // ── Portrait ──
     if (portraitUrl) {
       try {
-        const imgRes = await fetch(portraitUrl);
-        if (imgRes.ok) {
-          const imgBuf = Buffer.from(await imgRes.arrayBuffer());
-          const contentType = imgRes.headers.get('content-type') || 'image/png';
-          const isJpeg = contentType.includes('jpeg') || contentType.includes('jpg');
+        let imgBuf: Buffer | null = null;
+        let isJpeg = false;
+
+        if (portraitUrl.startsWith('data:image/')) {
+          const match = portraitUrl.match(/^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/i);
+          if (match) {
+            const format = match[1].toLowerCase();
+            isJpeg = format === 'jpeg' || format === 'jpg';
+            imgBuf = Buffer.from(match[2], 'base64');
+          }
+        } else if (portraitUrl.startsWith('http://') || portraitUrl.startsWith('https://')) {
+          const imgRes = await fetch(portraitUrl);
+          if (imgRes.ok) {
+            imgBuf = Buffer.from(await imgRes.arrayBuffer());
+            const contentType = imgRes.headers.get('content-type') || 'image/png';
+            isJpeg = contentType.includes('jpeg') || contentType.includes('jpg');
+          }
+        }
+
+        if (imgBuf && imgBuf.length > 0) {
           content.push(new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 200 },
@@ -127,8 +142,8 @@ export async function POST(request: NextRequest) {
             })],
           }));
         }
-      } catch {
-        // Portrait fetch failed — skip silently
+      } catch (err) {
+        console.warn('DOCX portrait processing skipped:', err);
       }
     }
 

@@ -54,13 +54,17 @@ export async function POST(request: NextRequest) {
       .select('id, name, portrait_url, created_at, updated_at')
       .maybeSingle();
 
-    if (!updateError && updated) {
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+
+    if (updated) {
       return NextResponse.json({ character: updated });
     }
-    // If update failed (deleted/wrong ID) — fall through to insert
+    // If character with this id does not exist, fall through to insert
   }
 
-  // No ID or update failed — INSERT new character
+  // No ID or not found — INSERT new character
   const { data: inserted, error: insertError } = await supabase
     .from('characters')
     .insert({ user_id: user.id, name: name || 'Безымянный', data, portrait_url })
@@ -120,7 +124,9 @@ export async function DELETE(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { id } = await request.json();
+  const body = await request.json().catch(() => ({}));
+  const { id } = body;
+  if (!id) return NextResponse.json({ error: 'Character ID is required' }, { status: 400 });
 
   const { error } = await supabase
     .from('characters')

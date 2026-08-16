@@ -52,16 +52,16 @@ const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }:
   const isNat20 = result.dieResult === 20;
   const isNat1 = result.dieResult === 1;
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setClosing(true);
     setTimeout(onClose, 300);
-  };
+  }, [onClose]);
 
-  // Auto-close after 3 seconds
+  // Auto-close after 3.5 seconds
   React.useEffect(() => {
     const timer = setTimeout(handleClose, 3500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [handleClose]);
 
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[300] flex items-center justify-center" onClick={handleClose}>
@@ -754,6 +754,27 @@ const CloudSavesModal = React.memo(function CloudSavesModal({ characters, onLoad
   );
 });
 
+// ── Universal Deep Merge Character Normalizer ──
+function normalizeCharacterData(raw: Partial<CharacterData> | null | undefined): CharacterData {
+  const defaults = createDefaultCharacter();
+  if (!raw) return defaults;
+  return {
+    ...defaults,
+    ...raw,
+    abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
+    abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
+    asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
+    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
+    skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
+    skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
+    spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
+    spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
+    attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
+    cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
+    levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
+  };
+}
+
 // ── Main Component ──
 
 export default function DnDCharacterSheet() {
@@ -763,23 +784,7 @@ export default function DnDCharacterSheet() {
     try {
       const saved = localStorage.getItem('dnd5e_character');
       if (saved) {
-        const raw = JSON.parse(saved);
-        const defaults = createDefaultCharacter();
-        return {
-          ...defaults,
-          ...raw,
-          abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
-          abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
-          asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
-          savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
-          skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
-          skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
-          attacks: raw.attacks || defaults.attacks,
-          spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
-          spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
-          cantrips: raw.cantrips || defaults.cantrips,
-          levelHistory: raw.levelHistory || [],
-        };
+        return normalizeCharacterData(JSON.parse(saved));
       }
     } catch { /* ignore corrupt data */ }
     return createDefaultCharacter();
@@ -834,6 +839,7 @@ export default function DnDCharacterSheet() {
   const cloudCharIdRef = React.useRef<string | null>(null);
   const cloudSaveInProgressRef = React.useRef(false);
   const pendingCloudSaveRef = React.useRef(false);
+  const isCloudSyncingRef = React.useRef(false);
 
   // Helper: save to cloud (POST with id = upsert, server handles update/insert)
   const saveToCloud = useCallback(async (): Promise<boolean> => {
@@ -871,14 +877,16 @@ export default function DnDCharacterSheet() {
   }, [char, portraitUrl]);
 
   useEffect(() => {
-    if (!user) { setCloudSaveStatus('idle'); cloudCharIdRef.current = null; return; }
-    // Debounce cloud save by 3 seconds
-    setCloudSaveStatus('saving');
+    if (!user || isCloudSyncingRef.current) return;
+
+    const snapshot = JSON.stringify({ ...char, _portraitUrl: portraitUrl });
+    // Skip if data hasn't actually changed since last save
+    if (snapshot === lastCloudSaveRef.current) return;
+
     if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current);
     cloudSaveTimerRef.current = setTimeout(async () => {
-      const snapshot = JSON.stringify({ ...char, _portraitUrl: portraitUrl });
-      // Skip if data hasn't actually changed since last save
-      if (snapshot === lastCloudSaveRef.current) { setCloudSaveStatus('saved'); return; }
+      if (isCloudSyncingRef.current) return;
+      setCloudSaveStatus('saving');
       lastCloudSaveRef.current = snapshot;
       const ok = await saveToCloud();
       setCloudSaveStatus(ok ? 'saved' : 'idle');
@@ -887,31 +895,39 @@ export default function DnDCharacterSheet() {
   }, [user, char, portraitUrl, saveToCloud]);
 
   useEffect(() => {
-    // DO NOT use getUser() here — it makes a network request that can resolve
-    // with null after OAuth redirect and overwrite the correct user set by
-    // onAuthStateChange.  Rely solely on onAuthStateChange which fires
-    // INITIAL_SESSION synchronously from cookies.
+    // Rely solely on onAuthStateChange which fires INITIAL_SESSION synchronously from cookies.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       const newUser = session?.user ?? null;
       setUser(newUser);
       // On login / page load with existing session: load latest cloud save (cloud > localStorage)
-      // After OAuth redirect the event is INITIAL_SESSION, not SIGNED_IN — handle both.
       if (newUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        isCloudSyncingRef.current = true;
         try {
           const res = await fetch('/api/characters');
           const data = await res.json();
           if (data.characters && data.characters.length > 0) {
             const latest = data.characters[0];
             if (latest.data) {
-              const defaults = createDefaultCharacter();
-              setChar({ ...defaults, ...latest.data });
+              const normalized = normalizeCharacterData(latest.data);
+              setChar(normalized);
               if (latest.portrait_url) setPortraitUrl(latest.portrait_url);
               else setPortraitUrl(null);
               // Remember the cloud character ID for auto-save updates
               cloudCharIdRef.current = latest.id;
+              lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: latest.portrait_url || null });
+              setCloudSaveStatus('saved');
             }
+          } else {
+            // No characters in cloud yet
+            lastCloudSaveRef.current = '';
           }
-        } catch { /* keep localStorage version */ }
+        } catch {
+          /* keep localStorage version */
+        } finally {
+          isCloudSyncingRef.current = false;
+        }
+      } else if (!newUser) {
+        isCloudSyncingRef.current = false;
       }
     });
     return () => subscription.unsubscribe();
@@ -1284,21 +1300,49 @@ export default function DnDCharacterSheet() {
   const handlePortraitUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-      const res = await fetch('/api/upload-portrait', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.url) {
-        setPortraitUrl(data.url);
-        showToast('Портрет', 'Изображение загружено');
-      } else {
-        showToast('Ошибка', data.error || 'Не удалось загрузить');
-      }
-    } catch {
-      showToast('Ошибка', 'Не удалось загрузить изображение');
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Ошибка', 'Выберите файл изображения');
+      return;
     }
-  }, [showToast]);
+
+    // If user is logged in, upload to Supabase Storage
+    if (user) {
+      if (file.size > 500 * 1024) {
+        showToast('Ошибка', 'Файл слишком большой (макс. 500 КБ)');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch('/api/upload-portrait', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.url) {
+          setPortraitUrl(data.url);
+          showToast('Портрет', 'Изображение загружено');
+        } else {
+          showToast('Ошибка', data.error || 'Не удалось загрузить');
+        }
+      } catch {
+        showToast('Ошибка', 'Не удалось загрузить изображение');
+      }
+    } else {
+      // Offline / unauthenticated mode: read as Base64 Data URL (limit 1MB)
+      if (file.size > 1024 * 1024) {
+        showToast('Ошибка', 'Файл слишком большой (макс. 1 МБ)');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result as string;
+        if (dataUrl) {
+          setPortraitUrl(dataUrl);
+          showToast('Портрет', 'Изображение сохранено');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }, [user, showToast]);
 
   const handleCloudSave = useCallback(async () => {
     if (!user) { showToast('Ошибка', 'Войдите в аккаунт'); return; }
@@ -1326,13 +1370,15 @@ export default function DnDCharacterSheet() {
 
   const loadCloudCharacter = useCallback(async (cloudChar: any) => {
     if (cloudChar.data) {
-      setChar(prev => ({ ...createDefaultCharacter(), ...cloudChar.data }));
+      const normalized = normalizeCharacterData(cloudChar.data);
+      setChar(normalized);
       if (cloudChar.portrait_url) setPortraitUrl(cloudChar.portrait_url);
       else setPortraitUrl(null);
       // Remember cloud character ID for auto-save
       cloudCharIdRef.current = cloudChar.id;
-      // Reset dedup tracker so changes trigger a save
-      lastCloudSaveRef.current = '';
+      // Reset dedup tracker with the fresh snapshot
+      lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: cloudChar.portrait_url || null });
+      setCloudSaveStatus('saved');
       setShowCloudSaves(false);
       showToast('Загружено', `"${cloudChar.name}" загружен из облака`);
     }
@@ -1379,26 +1425,10 @@ export default function DnDCharacterSheet() {
         try {
           const raw = JSON.parse(ev.target?.result as string);
           // Merge with defaults to ensure all fields exist (handles older/Partial JSON)
-          const defaults = createDefaultCharacter();
-          const merged: CharacterData = {
-            ...defaults,
-            ...raw,
-            // Nested objects need deep merge to preserve all keys
-            abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
-            abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
-            asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
-            savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
-            skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
-            skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
-            spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
-            spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
-            attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
-            cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
-            levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
-          };
+          const merged = normalizeCharacterData(raw);
           setChar(merged);
           showToast('Загружено', merged.name || 'Персонаж загружен из JSON');
-        } catch (err: any) {
+        } catch {
           showToast('Ошибка', 'Не удалось прочитать JSON файл');
         }
       };

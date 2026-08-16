@@ -48,6 +48,10 @@ CREATE POLICY "Users can insert own characters" ON characters FOR INSERT WITH CH
 CREATE POLICY "Users can update own characters" ON characters FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own characters" ON characters FOR DELETE USING (auth.uid() = user_id);
 
+-- Index for fast user_id queries, sorting and RLS evaluations
+CREATE INDEX IF NOT EXISTS characters_user_id_updated_at_idx ON characters (user_id, updated_at DESC);
+
+
 -- Auto-update updated_at
 CREATE OR REPLACE FUNCTION public.update_updated_at()
 RETURNS TRIGGER AS $$

@@ -217,14 +217,14 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
               <p className="text-sm font-medium" style={{ color: '#6B3A2A' }}>
                 🎯 Бонус мастерства: {formatModifier(calcProficiencyBonus(char.level))} → {formatModifier(calcProficiencyBonus(newLevel))}
               </p>
-              <p className="text-xs mt-1" style={{ color: '#8B6914' }}>Автоматически обновит все спасброски и навыки с владением</p>
+              <p className="text-xs mt-1" style={{ color: '#8B6914' }}>Бонус мастерства применяется ко всем спасброскам и навыкам с владением</p>
             </div>
           )}
 
           {/* Milestones */}
           {milestones.length > 0 && (
             <div className="parchment-modal-section">
-              <p className="text-sm font-medium mb-1" style={{ color: '#6B3A2A' }}>📌 Обычно на этом уровне:</p>
+              <p className="text-sm font-medium mb-1" style={{ color: '#6B3A2A' }}>📌 Классовые вехи уровня:</p>
               {milestones.map((m, i) => <p key={i} className="text-xs" style={{ color: '#8B6914' }}>{m}</p>)}
             </div>
           )}
@@ -258,7 +258,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
           <div className="parchment-modal-section">
             <div className="flex items-center gap-2 mb-2">
               <label className="parchment-checkbox"><input type="checkbox" checked={asiUsed} onChange={e => setAsiUsed(e.target.checked)} /><span className="checkmark"></span></label>
-              <h3 className="text-sm font-bold" style={{ color: '#3C2415' }}>📈 Улучшение характеристики (АСИ)</h3>
+              <h3 className="text-sm font-bold" style={{ color: '#3C2415' }}>📈 Улучшение характеристик (ASI)</h3>
             </div>
             {asiUsed && (
               <div className="grid grid-cols-2 gap-3 pl-6">
@@ -274,7 +274,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                     {ABILITY_NAMES.map(a => <option key={a} value={a}>{ABILITY_FULL[a]} ({getTotalScore(char, a)} → {getTotalScore(char, a) + 1})</option>)}
                   </select>
                 </div>
-                <p className="col-span-2 text-xs" style={{ color: '#8B6914' }}>Можно выбрать одну характеристику дважды (+2) или две разные (+1, +1). Или взять черту — тогда впиши её в заметки.</p>
+                <p className="col-span-2 text-xs" style={{ color: '#8B6914' }}>Выберите одну характеристику дважды (+2), две разные (+1, +1) или запишите черту в особенности.</p>
               </div>
             )}
           </div>
@@ -1481,38 +1481,50 @@ export default function DnDCharacterSheet() {
       {showCloudSaves && <CloudSavesModal characters={cloudCharacters} onLoad={loadCloudCharacter} onDelete={deleteCloudCharacter} onClose={closeCloudSaves} />}
 
       <header className="sticky top-0 z-50 parchment-header">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🎲</span>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2.5">
+            <span className="text-2xl select-none">🎲</span>
             <div>
-              <h1 className="text-lg font-bold">Генератор листа персонажа D&D 5e</h1>
-              <p className="text-xs">Авторасчёт · Повышение уровня · Экспорт DOCX</p>
+              <h1 className="text-base sm:text-lg font-bold leading-tight">Лист персонажа D&D 5e</h1>
+              <p className="text-[11px] leading-tight text-amber-100/70">Интерактивный бланк для игры</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <button onClick={() => setShowTemplates(true)} className="parchment-header-btn">📋 Шаблоны</button>
-            <button onClick={() => handleLoadExample('warrior')} className="parchment-header-btn">⚔️ Воин</button>
-            <button onClick={() => handleLoadExample('wizard')} className="parchment-header-btn">📖 Маг</button>
-            <button type="button" onClick={handleSaveJSON} className="parchment-header-btn">💾 JSON</button>
-            <button type="button" onClick={handleLoadJSON} className="parchment-header-btn">📂 Загр.</button>
-            <button type="button" onClick={handleReset} className="parchment-header-btn">🔄 Сброс</button>
-            <button type="button" onClick={handleExport} className="parchment-header-btn-primary">📥 DOCX</button>
+
+          <div className="parchment-toolbar">
+            {/* Template presets group */}
+            <div className="parchment-btn-group">
+              <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn" title="Выбрать готовый шаблон класса">📋 Шаблоны</button>
+              <button type="button" onClick={() => handleLoadExample('warrior')} className="parchment-header-btn hidden sm:inline-flex" title="Пример: Воин 5 ур.">⚔️ Воин</button>
+              <button type="button" onClick={() => handleLoadExample('wizard')} className="parchment-header-btn hidden sm:inline-flex" title="Пример: Волшебник 5 ур.">📖 Маг</button>
+            </div>
+
+            {/* File actions group */}
+            <div className="parchment-btn-group">
+              <button type="button" onClick={handleSaveJSON} className="parchment-header-btn" title="Сохранить в JSON">💾 JSON</button>
+              <button type="button" onClick={handleLoadJSON} className="parchment-header-btn" title="Загрузить из JSON">📂 Открыть</button>
+              <button type="button" onClick={handleReset} className="parchment-header-btn" title="Очистить лист">🔄 Сброс</button>
+            </div>
+
+            {/* Cloud / Auth group */}
             {user ? (
-              <>
-                <span className="text-xs flex items-center gap-1" style={{ color: cloudSaveStatus === 'saving' ? '#8B6914' : cloudSaveStatus === 'saved' ? '#4a7c3f' : '#999', fontFamily: 'Georgia, serif' }}>
-                  {cloudSaveStatus === 'saving' ? '⏳ Сохранение...' : cloudSaveStatus === 'saved' ? '✅ Сохранено' : '☁️'}
-                </span>
-                <button type="button" onClick={handleCloudSave} className="parchment-header-btn-primary">☁️ Сохранить</button>
-                <button type="button" onClick={handleCloudLoad} className="parchment-header-btn">📂 Облако</button>
+              <div className="parchment-btn-group">
+                <button type="button" onClick={handleCloudSave} className="parchment-header-btn" title="Синхронизировать с облаком">
+                  {cloudSaveStatus === 'saving' ? '⏳ Сохранение...' : cloudSaveStatus === 'saved' ? '✅ Сохранено' : '☁️ Сохранить'}
+                </button>
+                <button type="button" onClick={handleCloudLoad} className="parchment-header-btn" title="Список персонажей в облаке">☁️ Облако</button>
                 <button type="button" onClick={handleShare} className="parchment-header-btn" title="Код для импорта в AI Dungeon Master">🔗 Поделиться</button>
-                <button type="button" onClick={handleSignOut} className="parchment-header-btn">🚪 Выйти</button>
-              </>
+                <button type="button" onClick={handleSignOut} className="parchment-header-btn" title="Выйти">🚪 Выйти</button>
+              </div>
             ) : (
-              <>
-                <span className="text-xs" style={{ color: '#4a7c3f', fontFamily: 'Georgia, serif' }}>💾 Автосохранение</span>
-                <button type="button" onClick={() => setShowAuth(true)} className="parchment-header-btn-primary">🔑 Войти</button>
-              </>
+              <div className="parchment-btn-group">
+                <button type="button" onClick={() => setShowAuth(true)} className="parchment-header-btn" title="Вход в аккаунт для облачного сохранения">🔑 Войти</button>
+              </div>
             )}
+
+            {/* Primary export button */}
+            <button type="button" onClick={handleExport} className="parchment-header-btn-primary" title="Экспортировать лист персонажа в файл Word">
+              📥 Экспорт DOCX
+            </button>
           </div>
         </div>
       </header>
@@ -1893,6 +1905,47 @@ export default function DnDCharacterSheet() {
         <div className="mt-8 flex justify-center">
           <button onClick={handleExport} className="parchment-btn text-base px-8 py-3 shadow-lg flex items-center gap-2">📥 Экспортировать в DOCX</button>
         </div>
+
+        {/* ═══ FAQ & Mechanics Reference Section ═══ */}
+        <section className="parchment-faq-section" aria-label="Справочник по листу персонажа D&D 5e">
+          <h2 className="parchment-heading text-base sm:text-lg mb-3">📖 Справочник и частые вопросы</h2>
+          <div className="space-y-2">
+            <details className="parchment-faq-item" open>
+              <summary>Как рассчитываются характеристики и модификаторы?</summary>
+              <p>
+                Модификатор характеристики вычисляется по формуле 5-й редакции: <code>(Значение − 10) / 2</code> с округлением вниз. Лист автоматически суммирует базовое значение, расовый бонус и прибавки от уровней (ASI), пересчитывая спасброски, навыки, пассивную внимательность и класс доспеха.
+              </p>
+            </details>
+            <details className="parchment-faq-item">
+              <summary>Как работают броски кубиков (d20)?</summary>
+              <p>
+                Любой фиолетовый бейдж с модификатором (проверка характеристики, спасбросок, навык, инициатива, атака заклинанием) кликабелен. По клику выполняется криптографически равномерный бросок <code>d20 + модификатор</code> с отображением критического успеха (20) или провала (1).
+              </p>
+            </details>
+            <details className="parchment-faq-item">
+              <summary>Как устроено повышение и откат уровня?</summary>
+              <p>
+                Кнопки «+» и «−» возле уровня открывают пошаговый мастер. При повышении уровня рассчитывается прирост хитов (среднее или бросок кости хитов с модификатором ТЕЛ, минимум +1), распределяются очки характеристик (ASI) на ключевых уровнях (4, 8, 12, 16, 19) и добавляются заклинания. Полная история изменений сохраняется и позволяет корректно откатить персонажа назад.
+              </p>
+            </details>
+            <details className="parchment-faq-item">
+              <summary>Что входит в экспортируемый DOCX-документ?</summary>
+              <p>
+                При нажатии «Экспорт DOCX» формируется трёхстраничный файл Microsoft Word: 1-я страница — основные боевые параметры, навыки и снаряжение; 2-я страница — внешность, портрет и предыстория; 3-я страница — ячейки и книга заклинаний с параметрами заклинателя.
+              </p>
+            </details>
+            <details className="parchment-faq-item">
+              <summary>Как сохранить и перенести персонажа?</summary>
+              <p>
+                Все данные сохраняются локально в вашем браузере. Вы можете экспортировать персонажа в файл JSON для резервной копии или пересылки, а при входе в аккаунт — синхронизировать персонажей через облако Supabase и создавать публичные коды для импорта в AI Dungeon Master.
+              </p>
+            </details>
+          </div>
+        </section>
+
+        <footer className="parchment-footer">
+          <p>Лист персонажа D&D 5e · Совместимо с правилами 5-й редакции Dungeons & Dragons (SRD 5.1)</p>
+        </footer>
       </main>
     </div>
   );

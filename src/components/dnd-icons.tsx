@@ -160,7 +160,7 @@ export function CrossedSwordsIcon({ size = 18, className = '', ...props }: IconP
   );
 }
 
-// ── 14. Engraved Shield (Armor Class) ──
+// ── 14. Engraved Shield (Armor Class / Combat) ──
 export function EngravedShieldIcon({ size = 18, className = '', ...props }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
@@ -169,3 +169,80 @@ export function EngravedShieldIcon({ size = 18, className = '', ...props }: Icon
     </svg>
   );
 }
+
+// ── 15. Hero Profile / User ──
+export function UserHeroIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <circle cx="24" cy="14" r="8" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" />
+      <path d="M8 40c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="#7A4529" stroke="#E5C158" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// ── 16. Golden Sparkles (Attributes / Skills / Cantrips) ──
+export function SparklesDndIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <polygon points="24,4 28,18 42,22 28,26 24,40 20,26 6,22 20,18" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <polygon points="36,4 38,10 44,12 38,14 36,20 34,14 28,12 34,10" fill="#7A4529" stroke="#FFE58F" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// ── 17. Gold & Silver Coins (Currency) ──
+export function CoinsChestIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <circle cx="18" cy="28" r="12" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" />
+      <circle cx="30" cy="20" r="12" fill="#7A4529" stroke="#FFE58F" strokeWidth="2.5" />
+      <circle cx="30" cy="20" r="6" stroke="#FFE58F" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+// ── 18. Drama Masks (Personality) ──
+export function MasksDramaIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M6 14c0 10 8 18 18 18s18-8 18-18H6z" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <circle cx="16" cy="18" r="2.5" fill="#E5C158" />
+      <circle cx="32" cy="18" r="2.5" fill="#E5C158" />
+      <path d="M18 26c3 3 9 3 12 0" stroke="#E5C158" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// ── 19. Adventurer Backpack (Equipment) ──
+export function BackpackPackIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <rect x="10" y="16" width="28" height="26" rx="4" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" />
+      <path d="M16 16V10a4 4 0 0 1 8 0v6M24 16V10a4 4 0 0 1 8 0v6" stroke="#E5C158" strokeWidth="2" />
+      <rect x="16" y="24" width="16" height="10" rx="2" fill="#7A4529" stroke="#E5C158" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+// ── 20. Arcane Crystal Ball (Spell Slots) ──
+export function CrystalBallDndIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <circle cx="24" cy="20" r="14" fill="#4E3B20" stroke="#E5C158" strokeWidth="2.5" />
+      <ellipse cx="24" cy="17" rx="8" ry="4" stroke="#FFE58F" strokeWidth="1.5" />
+      <path d="M12 42h24M16 34l-4 8M32 34l4 8M18 34h12" stroke="#E5C158" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// ── 21. Magic Portrait Frame / Camera ──
+export function CameraPortraitIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <rect x="8" y="12" width="32" height="26" rx="3" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" />
+      <circle cx="24" cy="25" r="7" fill="#7A4529" stroke="#FFE58F" strokeWidth="2" />
+      <path d="M16 12l3-5h10l3 5" fill="#7A4529" stroke="#E5C158" strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  );
+}
+

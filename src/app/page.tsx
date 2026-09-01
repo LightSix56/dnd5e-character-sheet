@@ -16,7 +16,9 @@ import type { User } from '@supabase/supabase-js';
 import {
   D20Icon, ScrollIcon, SpellbookIcon, ChestIcon, HourglassIcon,
   GoldSealCheckIcon, MysticSpinnerIcon, MysticCloudIcon, PortalIcon,
-  QuillIcon, RunedKeyIcon, ArcaneLinkIcon, CrossedSwordsIcon, EngravedShieldIcon
+  QuillIcon, RunedKeyIcon, ArcaneLinkIcon, CrossedSwordsIcon, EngravedShieldIcon,
+  UserHeroIcon, SparklesDndIcon, CoinsChestIcon, MasksDramaIcon, BackpackPackIcon,
+  CrystalBallDndIcon, CameraPortraitIcon
 } from '@/components/dnd-icons';
 
 // ── Small helper components ──
@@ -1603,7 +1605,7 @@ export default function DnDCharacterSheet() {
               </button>
               <button type="button" onClick={handleLoadJSON} className="parchment-header-btn flex items-center gap-1.5" title="Загрузить из JSON">
                 <ChestIcon size={16} />
-                <span>Открыть</span>
+                <span>Загрузить JSON</span>
               </button>
               <button type="button" onClick={handleReset} className="parchment-header-btn flex items-center gap-1.5" title="Очистить лист">
                 <HourglassIcon size={16} />
@@ -1685,7 +1687,7 @@ export default function DnDCharacterSheet() {
 
               {/* Basic Info */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">👤 Основная информация</h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><UserHeroIcon size={20} /><span>Основная информация</span></h3></div>
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <StatInput label="Имя персонажа" value={char.name} onChange={v => update('name', v)} type="text" placeholder="Имя" />
@@ -1701,7 +1703,7 @@ export default function DnDCharacterSheet() {
                           className="parchment-level-btn" title="Понизить">−</button>
                         <button onClick={() => char.level < 20 && setShowLevelUp(true)} disabled={char.level >= 20}
                           className="parchment-level-btn" title="Повысить">+</button>
-                        <button onClick={() => setShowHistory(true)} className="parchment-level-btn" title="История">📜</button>
+                        <button onClick={() => setShowHistory(true)} className="parchment-level-btn" title="История уровней"><ScrollIcon size={14} /></button>
                       </div>
                     </div>
                     <StatInput label="Предыстория" value={char.background} onChange={v => update('background', v)} type="text" placeholder="Солдат" className="col-span-2 sm:col-span-1" />
@@ -1722,7 +1724,8 @@ export default function DnDCharacterSheet() {
               <div className="parchment-card">
                 <div className="px-4 pt-4 pb-3">
                   <h3 className="parchment-heading flex items-center gap-2">
-                    ✨ Характеристики
+                    <SparklesDndIcon size={20} />
+                    <span>Характеристики</span>
                     <span className="ml-auto text-xs font-normal" style={{ color: '#8B6914' }}>Бонус мастерства: {formatModifier(profBonus)}</span>
                   </h3>
                 </div>
@@ -1786,14 +1789,14 @@ export default function DnDCharacterSheet() {
                         </div>
                       );
                     })}
-                    <p className="text-[10px] text-right" style={{ color: '#8B6914' }}>База | Раса | АСИ (от уровней) · 🎲 Нажми Мод./Спасбр. для броска</p>
+                    <p className="text-[10px] text-right" style={{ color: '#8B6914' }}>База | Раса | АСИ (от уровней) · Нажмите Мод./Спасбр. для броска d20</p>
                   </div>
                 </div>
               </div>
 
               {/* Combat */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">🛡️ Боевые параметры</h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><EngravedShieldIcon size={20} /><span>Боевые параметры</span></h3></div>
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div className="space-y-1"><label className="parchment-label">КД</label><input type="number" value={char.armorClass ?? ''} onChange={e => update('armorClass', e.target.value === '' ? null : Number(e.target.value))} placeholder={String(getAC(char))} className={inputClass} /></div>
@@ -1821,7 +1824,7 @@ export default function DnDCharacterSheet() {
 
               {/* Currency */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">💰 Валюта</h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><CoinsChestIcon size={20} /><span>Валюта</span></h3></div>
                 <div className="px-4 pb-4">
                   <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                     {[{ key: 'cp' as const, label: 'ММ' },{ key: 'sp' as const, label: 'СМ' },{ key: 'ep' as const, label: 'ЭМ' },{ key: 'gp' as const, label: 'ЗМ' },{ key: 'pp' as const, label: 'ПМ' }].map(c => (
@@ -1837,7 +1840,7 @@ export default function DnDCharacterSheet() {
 
               {/* Skills */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">✨ Навыки <span className="ml-auto text-xs font-normal" style={{ color: '#8B6914' }}>☑ = владение · ☑☑ = экспертиза · 🎲 бросок</span></h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SparklesDndIcon size={20} /><span>Навыки</span> <span className="ml-auto text-xs font-normal" style={{ color: '#8B6914' }}>☑ = владение · ☑☑ = экспертиза · Нажмите для броска</span></h3></div>
                 <div className="px-4 pb-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
                     {ALL_SKILLS.map(skill => {
@@ -1860,7 +1863,7 @@ export default function DnDCharacterSheet() {
 
               {/* Attacks */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">⚔️ Атаки</h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><CrossedSwordsIcon size={20} /><span>Атаки и оружие</span></h3></div>
                 <div className="px-4 pb-4 space-y-2">
                   <div className="grid grid-cols-[1fr_auto_1fr_auto] sm:grid-cols-[1fr_auto_1fr_auto] gap-2 text-xs font-medium px-1" style={{ color: '#8B6914' }}><span>Название</span><span>Бонус</span><span>Урон / Вид</span><span /></div>
                   {char.attacks.map((atk, i) => (
@@ -1877,7 +1880,7 @@ export default function DnDCharacterSheet() {
 
               {/* Personality */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">🎭 Личность</h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><MasksDramaIcon size={20} /><span>Личность</span></h3></div>
                 <div className="px-4 pb-4 space-y-3">
                   {[{ label: 'Черты характера', key: 'personalityTraits' as const },{ label: 'Идеалы', key: 'ideals' as const },{ label: 'Привязанности', key: 'bonds' as const },{ label: 'Слабости', key: 'flaws' as const }].map(item => (
                     <div key={item.key} className="space-y-1"><label className="parchment-label">{item.label}</label><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={2} className={textareaClass} /></div>
@@ -1886,9 +1889,13 @@ export default function DnDCharacterSheet() {
               </div>
 
               {/* Other */}
-              {[{ label: 'Прочие владения и языки', key: 'otherProficienciesLanguages' as const, rows: 3 },{ label: 'Снаряжение', key: 'equipment' as const, rows: 3 },{ label: 'Умения и особенности', key: 'featuresTraits' as const, rows: 4 }].map(item => (
+              {[
+                { label: 'Прочие владения и языки', key: 'otherProficienciesLanguages' as const, rows: 3, icon: <ScrollIcon size={18} /> },
+                { label: 'Снаряжение', key: 'equipment' as const, rows: 3, icon: <BackpackPackIcon size={18} /> },
+                { label: 'Умения и особенности', key: 'featuresTraits' as const, rows: 4, icon: <SparklesDndIcon size={18} /> }
+              ].map(item => (
                 <div key={item.key} className="parchment-card">
-                  <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">{item.label}</h3></div>
+                  <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">{item.icon}<span>{item.label}</span></h3></div>
                   <div className="px-4 pb-4"><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={item.rows} className={textareaClass} /></div>
                 </div>
               ))}
@@ -1900,7 +1907,7 @@ export default function DnDCharacterSheet() {
         {activeTab === 'page2' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="parchment-card">
-              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">👤 Физическое описание</h3></div>
+              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><UserHeroIcon size={20} /><span>Физическое описание</span></h3></div>
               <div className="px-4 pb-4 space-y-3">
                 {/* Portrait */}
                 <div className="mb-4">
@@ -1916,9 +1923,9 @@ export default function DnDCharacterSheet() {
                           <button onClick={() => setPortraitUrl(null)} className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center text-[10px] cursor-pointer" style={{ background: 'rgba(139, 37, 0, 0.7)', color: '#FBF0DC', border: 'none', borderRadius: '0 0 0 3px' }}>✕</button>
                         </div>
                       ) : (
-                        <label className="w-24 h-24 flex flex-col items-center justify-center cursor-pointer rounded" style={{ border: '2px dashed rgba(139, 105, 20, 0.3)', background: 'rgba(251, 240, 220, 0.3)' }}>
-                          <span className="text-2xl mb-1">📷</span>
-                          <span className="text-[9px] text-center px-1" style={{ color: '#8B6914' }}>Загрузить портрет</span>
+                        <label className="w-24 h-24 flex flex-col items-center justify-center cursor-pointer rounded gap-1" style={{ border: '2px dashed rgba(139, 105, 20, 0.3)', background: 'rgba(251, 240, 220, 0.3)' }}>
+                          <CameraPortraitIcon size={24} />
+                          <span className="text-[10px] text-center px-1" style={{ color: '#8B6914' }}>Загрузить портрет</span>
                           <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
                         </label>
                       )}
@@ -1947,15 +1954,22 @@ export default function DnDCharacterSheet() {
                 </div>
               </div>
             </div>
-            {[{ label: 'Внешность', key: 'appearance' as const, rows: 5 },{ label: 'Союзники и организации', key: 'alliesOrganizations' as const, rows: 5 },{ label: 'Доп. умения и особенности', key: 'additionalFeaturesTraits' as const, rows: 5 }].map(item => (
+            {[
+              { label: 'Внешность', key: 'appearance' as const, rows: 5, icon: <UserHeroIcon size={18} /> },
+              { label: 'Союзники и организации', key: 'alliesOrganizations' as const, rows: 5, icon: <ArcaneLinkIcon size={18} /> },
+              { label: 'Доп. умения и особенности', key: 'additionalFeaturesTraits' as const, rows: 5, icon: <SparklesDndIcon size={18} /> }
+            ].map(item => (
               <div key={item.key} className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">{item.label}</h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">{item.icon}<span>{item.label}</span></h3></div>
                 <div className="px-4 pb-4"><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={item.rows} className={textareaClass} /></div>
               </div>
             ))}
-            {[{ label: 'Предыстория персонажа', key: 'backstory' as const, rows: 8 },{ label: 'Сокровища', key: 'treasure' as const, rows: 3 }].map(item => (
+            {[
+              { label: 'Предыстория персонажа', key: 'backstory' as const, rows: 8, icon: <ScrollIcon size={18} /> },
+              { label: 'Сокровища', key: 'treasure' as const, rows: 3, icon: <CoinsChestIcon size={18} /> }
+            ].map(item => (
               <div key={item.key} className="parchment-card lg:col-span-2">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">{item.label}</h3></div>
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">{item.icon}<span>{item.label}</span></h3></div>
                 <div className="px-4 pb-4"><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={item.rows} className={textareaClass} placeholder={item.key === 'backstory' ? 'Расскажите историю персонажа...' : ''} /></div>
               </div>
             ))}
@@ -1966,7 +1980,7 @@ export default function DnDCharacterSheet() {
         {activeTab === 'page3' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="parchment-card">
-              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">📖 Параметры заклинателя</h3></div>
+              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SpellbookIcon size={20} /><span>Параметры заклинателя</span></h3></div>
               <div className="px-4 pb-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <StatInput label="Класс заклинателя" value={char.spellcastingClass} onChange={v => update('spellcastingClass', v)} type="text" placeholder="Волшебник" />
@@ -1987,7 +2001,7 @@ export default function DnDCharacterSheet() {
               </div>
             </div>
             <div className="parchment-card">
-              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">🔮 Ячейки заклинаний</h3></div>
+              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><CrystalBallDndIcon size={20} /><span>Ячейки заклинаний</span></h3></div>
               <div className="px-4 pb-4 space-y-2">
                 {[1,2,3,4,5,6,7,8,9].map(lvl => {
                   const slot = char.spellSlots[lvl] || { totalSlots: 0, expendedSlots: 0 };
@@ -2003,7 +2017,7 @@ export default function DnDCharacterSheet() {
               </div>
             </div>
             <div className="parchment-card lg:col-span-2">
-              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading">✨ Заговоры (0 ур.)</h3></div>
+              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SparklesDndIcon size={20} /><span>Заговоры (0 ур.)</span></h3></div>
               <div className="px-4 pb-4 space-y-2">
                 {char.cantrips.map((c, i) => (
                   <div key={i} className="flex gap-2 items-center">
@@ -2019,7 +2033,7 @@ export default function DnDCharacterSheet() {
               // Always show all 9 spell levels on the website
               return (
                 <div key={lvl} className="parchment-card">
-                  <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">📖 Заклинания {lvl} ур. <span className="text-xs font-normal" style={{ color: '#8B6914' }}>({spells.length})</span></h3></div>
+                  <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SpellbookIcon size={18} /><span>Заклинания {lvl} ур.</span> <span className="text-xs font-normal" style={{ color: '#8B6914' }}>({spells.length})</span></h3></div>
                   <div className="px-4 pb-4 space-y-2">
                     {spells.map((spell, i) => (
                       <div key={i} className="flex gap-2 items-center">
@@ -2037,12 +2051,18 @@ export default function DnDCharacterSheet() {
         )}
 
         <div className="mt-8 flex justify-center">
-          <button onClick={handleExport} className="parchment-btn text-base px-8 py-3 shadow-lg flex items-center gap-2">📥 Экспортировать в DOCX</button>
+          <button onClick={handleExport} className="parchment-btn text-base px-8 py-3 shadow-lg flex items-center gap-2">
+            <QuillIcon size={20} />
+            <span>Экспортировать в DOCX</span>
+          </button>
         </div>
 
         {/* ═══ FAQ & Mechanics Reference Section ═══ */}
         <section className="parchment-faq-section" aria-label="Справочник по листу персонажа D&D 5e">
-          <h2 className="parchment-heading text-base sm:text-lg mb-3">📖 Справочник и частые вопросы</h2>
+          <h2 className="parchment-heading text-base sm:text-lg mb-3 flex items-center gap-2">
+            <ScrollIcon size={22} />
+            <span>Справочник и частые вопросы</span>
+          </h2>
           <div className="space-y-2">
             <details className="parchment-faq-item" open>
               <summary>Как рассчитываются характеристики и модификаторы?</summary>

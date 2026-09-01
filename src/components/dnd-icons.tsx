@@ -246,3 +246,15 @@ export function CameraPortraitIcon({ size = 18, className = '', ...props }: Icon
   );
 }
 
+
+// ── 22. Info Seal / Arcane Eye (Inspect / Detail) ──
+export function InfoSealIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <circle cx="24" cy="24" r="20" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" />
+      <circle cx="24" cy="24" r="16" stroke="#E5C158" strokeWidth="1.2" strokeDasharray="3 2" />
+      <circle cx="24" cy="15" r="2.5" fill="#FFE58F" stroke="#E5C158" strokeWidth="1" />
+      <path d="M22 21h3v14m-3 0h6" stroke="#FFE58F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

@@ -25,7 +25,7 @@ import {
   GoldSealCheckIcon, MysticSpinnerIcon, MysticCloudIcon, PortalIcon,
   QuillIcon, RunedKeyIcon, ArcaneLinkIcon, CrossedSwordsIcon, EngravedShieldIcon,
   UserHeroIcon, SparklesDndIcon, CoinsChestIcon, MasksDramaIcon, BackpackPackIcon,
-  CrystalBallDndIcon, CameraPortraitIcon
+  CrystalBallDndIcon, CameraPortraitIcon, InfoSealIcon
 } from '@/components/dnd-icons';
 
 // ── Small helper components ──
@@ -2104,7 +2104,7 @@ export default function DnDCharacterSheet() {
                             boxShadow: '0 1px 3px rgba(61, 32, 18, 0.15)'
                           }}
                         >
-                          ℹ️
+                          <InfoSealIcon size={18} />
                         </button>
                         <button onClick={() => removeAttack(i)} className="parchment-remove-btn w-8 h-8 flex items-center justify-center">✕</button>
                       </div>
@@ -2236,7 +2236,7 @@ export default function DnDCharacterSheet() {
                                   border: '1px solid #C9A84C'
                                 }}
                               >
-                                ℹ️
+                                <InfoSealIcon size={18} />
                               </button>
                               <button
                                 onClick={() => removeTraitItem(i)}
@@ -2406,7 +2406,7 @@ export default function DnDCharacterSheet() {
                           border: '1px solid #C9A84C'
                         }}
                       >
-                        ℹ️
+                        <InfoSealIcon size={18} />
                       </button>
                       <button onClick={() => removeCantrip(i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center">✕</button>
                     </div>
@@ -2449,7 +2449,7 @@ export default function DnDCharacterSheet() {
                               border: '1px solid #C9A84C'
                             }}
                           >
-                            ℹ️
+                            <InfoSealIcon size={18} />
                           </button>
                           <button onClick={() => removeSpell(lvl, i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center">✕</button>
                         </div>

@@ -13,6 +13,11 @@ import {
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import {
+  D20Icon, ScrollIcon, SpellbookIcon, ChestIcon, HourglassIcon,
+  GoldSealCheckIcon, MysticSpinnerIcon, MysticCloudIcon, PortalIcon,
+  QuillIcon, RunedKeyIcon, ArcaneLinkIcon, CrossedSwordsIcon, EngravedShieldIcon
+} from '@/components/dnd-icons';
 
 // ── Small helper components ──
 
@@ -208,7 +213,10 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-1">⬆️ Повышение до {newLevel} уровня</h2>
+          <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
+            <D20Icon size={22} />
+            <span>Повышение до {newLevel} уровня</span>
+          </h2>
           <p className="text-sm mb-4" style={{ color: '#8B6914' }}>{char.name || 'Персонаж'} — {char.className || 'Без класса'}</p>
 
           {/* Auto: Proficiency */}
@@ -417,7 +425,10 @@ const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onC
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-2" style={{ color: '#8B2500' }}>⬇️ Откат до {char.level - 1} уровня</h2>
+          <h2 className="text-xl font-bold mb-2 flex items-center gap-2" style={{ color: '#8B2500' }}>
+            <HourglassIcon size={22} />
+            <span>Откат до {char.level - 1} уровня</span>
+          </h2>
           {last ? (
             <div className="mb-4 p-3 rounded text-sm space-y-1" style={{ background: 'rgba(139, 37, 0, 0.06)', border: '1px solid rgba(139, 37, 0, 0.2)' }}>
               <p className="font-medium" style={{ color: '#8B2500' }}>Будет отменено:</p>
@@ -456,7 +467,10 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose 
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
       <div className="parchment-modal max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-4">📜 История уровней</h2>
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <ScrollIcon size={22} />
+            <span>История уровней</span>
+          </h2>
           {char.levelHistory.length === 0 ? (
             <p className="text-sm" style={{ color: '#8B6914' }}>Нет записей</p>
           ) : (
@@ -525,7 +539,10 @@ const TemplateModal = React.memo(function TemplateModal({ onSelect, onCancel }: 
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-1">📋 Шаблоны классов</h2>
+          <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
+            <ScrollIcon size={22} />
+            <span>Шаблоны классов</span>
+          </h2>
           <p className="text-sm mb-4" style={{ color: '#8B6914' }}>Выберите класс — лист заполнится типичными данными 1-го уровня. Всё можно изменить после.</p>
 
           {/* Filter */}
@@ -672,8 +689,9 @@ const AuthModal = React.memo(function AuthModal({ onClose, onAuth, onGoogleAuth,
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
       <div className="parchment-modal max-w-sm w-full" onClick={e => e.stopPropagation()}>
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-4" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-            {isSignUp ? '📝 Регистрация' : '🔑 Вход'}
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+            <RunedKeyIcon size={22} />
+            <span>{isSignUp ? 'Регистрация' : 'Вход в аккаунт'}</span>
           </h2>
 
           <button onClick={onGoogleAuth} disabled={loading}
@@ -727,7 +745,10 @@ const CloudSavesModal = React.memo(function CloudSavesModal({ characters, onLoad
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
       <div className="parchment-modal max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-4">☁️ Облачные сохранения</h2>
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <MysticCloudIcon size={22} />
+            <span>Облачные сохранения</span>
+          </h2>
           {characters.length === 0 ? (
             <p className="text-sm mb-4" style={{ color: '#8B6914' }}>Нет сохранённых персонажей</p>
           ) : (
@@ -766,7 +787,10 @@ const SignOutModal = React.memo(function SignOutModal({ userEmail, onConfirmSign
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-sm w-full" onClick={e => e.stopPropagation()}>
         <div className="p-6">
-          <h2 className="text-lg font-bold mb-3">🚪 Выход из аккаунта</h2>
+          <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
+            <PortalIcon size={20} />
+            <span>Выход из аккаунта</span>
+          </h2>
           <p className="text-sm mb-3" style={{ color: '#3C2415' }}>
             Вы вошли как: <strong>{userEmail || 'Пользователь'}</strong>
           </p>
@@ -1555,7 +1579,7 @@ export default function DnDCharacterSheet() {
       <header className="sticky top-0 z-50 parchment-header">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2.5">
-            <span className="text-2xl select-none">🎲</span>
+            <D20Icon size={28} />
             <div>
               <h1 className="text-base sm:text-lg font-bold leading-tight">Лист персонажа D&D 5e</h1>
               <p className="text-[11px] leading-tight text-amber-100/70">Интерактивный бланк для игры</p>
@@ -1565,14 +1589,26 @@ export default function DnDCharacterSheet() {
           <div className="parchment-toolbar">
             {/* Template presets group */}
             <div className="parchment-btn-group">
-              <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn" title="Выбрать готовый шаблон класса">📋 Шаблоны</button>
+              <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn flex items-center gap-1.5" title="Выбрать готовый шаблон класса">
+                <ScrollIcon size={16} />
+                <span>Шаблоны</span>
+              </button>
             </div>
 
             {/* File actions group */}
             <div className="parchment-btn-group">
-              <button type="button" onClick={handleSaveJSON} className="parchment-header-btn" title="Сохранить в JSON">💾 JSON</button>
-              <button type="button" onClick={handleLoadJSON} className="parchment-header-btn" title="Загрузить из JSON">📂 Открыть</button>
-              <button type="button" onClick={handleReset} className="parchment-header-btn" title="Очистить лист">🔄 Сброс</button>
+              <button type="button" onClick={handleSaveJSON} className="parchment-header-btn flex items-center gap-1.5" title="Сохранить в JSON">
+                <SpellbookIcon size={16} />
+                <span>JSON</span>
+              </button>
+              <button type="button" onClick={handleLoadJSON} className="parchment-header-btn flex items-center gap-1.5" title="Загрузить из JSON">
+                <ChestIcon size={16} />
+                <span>Открыть</span>
+              </button>
+              <button type="button" onClick={handleReset} className="parchment-header-btn flex items-center gap-1.5" title="Очистить лист">
+                <HourglassIcon size={16} />
+                <span>Сброс</span>
+              </button>
             </div>
 
             {/* Cloud / Auth group */}
@@ -1581,24 +1617,47 @@ export default function DnDCharacterSheet() {
                 <button
                   type="button"
                   onClick={handleCloudSave}
-                  className="parchment-header-btn min-w-[124px] inline-flex items-center justify-center text-center"
+                  className="parchment-header-btn min-w-[128px] inline-flex items-center justify-center gap-1.5 text-center"
                   title="Синхронизировать с облаком"
                 >
-                  {cloudSaveStatus === 'saving' ? '⏳ Сохранение...' : '✅ Сохранено'}
+                  {cloudSaveStatus === 'saving' ? (
+                    <>
+                      <MysticSpinnerIcon size={15} />
+                      <span>Сохранение...</span>
+                    </>
+                  ) : (
+                    <>
+                      <GoldSealCheckIcon size={15} />
+                      <span>Сохранено</span>
+                    </>
+                  )}
                 </button>
-                <button type="button" onClick={handleCloudLoad} className="parchment-header-btn" title="Список персонажей в облаке">☁️ Облако</button>
-                <button type="button" onClick={handleShare} className="parchment-header-btn" title="Код для импорта в AI Dungeon Master">🔗 Поделиться</button>
-                <button type="button" onClick={() => setShowSignOutModal(true)} className="parchment-header-btn" title="Выйти из аккаунта или сменить пользователя">🚪 Выйти из аккаунта</button>
+                <button type="button" onClick={handleCloudLoad} className="parchment-header-btn flex items-center gap-1.5" title="Список персонажей в облаке">
+                  <MysticCloudIcon size={16} />
+                  <span>Облако</span>
+                </button>
+                <button type="button" onClick={handleShare} className="parchment-header-btn flex items-center gap-1.5" title="Код для импорта в AI Dungeon Master">
+                  <ArcaneLinkIcon size={16} />
+                  <span>Поделиться</span>
+                </button>
+                <button type="button" onClick={() => setShowSignOutModal(true)} className="parchment-header-btn flex items-center gap-1.5" title="Выйти из аккаунта или сменить пользователя">
+                  <PortalIcon size={16} />
+                  <span>Выйти из аккаунта</span>
+                </button>
               </div>
             ) : (
               <div className="parchment-btn-group">
-                <button type="button" onClick={() => setShowAuth(true)} className="parchment-header-btn" title="Вход в аккаунт для облачного сохранения">🔑 Войти</button>
+                <button type="button" onClick={() => setShowAuth(true)} className="parchment-header-btn flex items-center gap-1.5" title="Вход в аккаунт для облачного сохранения">
+                  <RunedKeyIcon size={16} />
+                  <span>Войти</span>
+                </button>
               </div>
             )}
 
             {/* Primary export button */}
-            <button type="button" onClick={handleExport} className="parchment-header-btn-primary" title="Экспортировать лист персонажа в файл Word">
-              📥 Экспорт DOCX
+            <button type="button" onClick={handleExport} className="parchment-header-btn-primary flex items-center gap-1.5" title="Экспортировать лист персонажа в файл Word">
+              <QuillIcon size={16} />
+              <span>Экспорт DOCX</span>
             </button>
           </div>
         </div>

@@ -755,6 +755,61 @@ const CloudSavesModal = React.memo(function CloudSavesModal({ characters, onLoad
   );
 });
 
+// ── Sign Out Confirmation Modal ──
+const SignOutModal = React.memo(function SignOutModal({ userEmail, onConfirmSignOut, onSwitchAccount, onCancel }: {
+  userEmail?: string | null;
+  onConfirmSignOut: () => void;
+  onSwitchAccount: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
+      <div className="parchment-modal max-w-sm w-full" onClick={e => e.stopPropagation()}>
+        <div className="p-6">
+          <h2 className="text-lg font-bold mb-3">🚪 Выход из аккаунта</h2>
+          <p className="text-sm mb-3" style={{ color: '#3C2415' }}>
+            Вы вошли как: <strong>{userEmail || 'Пользователь'}</strong>
+          </p>
+          <p className="text-xs mb-5" style={{ color: '#8B6914', lineHeight: 1.4 }}>
+            Текущий лист персонажа останется в вашем браузере, а облачные копии сохранятся в вашем профиле.
+          </p>
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={onConfirmSignOut}
+              className="w-full font-medium text-xs py-2"
+              style={{
+                background: 'linear-gradient(180deg, #A0522D, #8B2500)',
+                color: '#FBF0DC',
+                border: '1px solid #C9A84C',
+                borderRadius: '3px',
+                cursor: 'pointer',
+                fontFamily: 'Georgia, serif',
+              }}
+            >
+              Выйти из аккаунта
+            </button>
+            <button
+              type="button"
+              onClick={onSwitchAccount}
+              className="w-full parchment-btn text-xs py-2"
+            >
+              Сменить аккаунт
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="w-full parchment-btn-secondary text-xs py-2 mt-1"
+            >
+              Отмена
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
 // ── Universal Deep Merge Character Normalizer ──
 function normalizeCharacterData(raw: Partial<CharacterData> | null | undefined): CharacterData {
   const defaults = createDefaultCharacter();
@@ -816,6 +871,7 @@ export default function DnDCharacterSheet() {
   const [showCloudSaves, setShowCloudSaves] = useState(false);
   const [cloudCharacters, setCloudCharacters] = useState<any[]>([]);
   const [portraitUrl, setPortraitUrl] = useState<string | null>(initialPortrait);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -942,6 +998,7 @@ export default function DnDCharacterSheet() {
   const closeTemplates = useCallback(() => setShowTemplates(false), []);
   const closeAuth = useCallback(() => setShowAuth(false), []);
   const closeCloudSaves = useCallback(() => setShowCloudSaves(false), []);
+  const closeSignOut = useCallback(() => setShowSignOutModal(false), []);
 
   const handleRoll = useCallback((result: RollResult) => {
     setRollResult(result);
@@ -1298,6 +1355,18 @@ export default function DnDCharacterSheet() {
     lastCloudSaveRef.current = '';
   }, [supabase]);
 
+  const handleConfirmSignOut = useCallback(async () => {
+    setShowSignOutModal(false);
+    await handleSignOut();
+    showToast('Выход', 'Вы успешно вышли из аккаунта');
+  }, [handleSignOut, showToast]);
+
+  const handleSwitchAccount = useCallback(async () => {
+    setShowSignOutModal(false);
+    await handleSignOut();
+    setShowAuth(true);
+  }, [handleSignOut]);
+
   const handlePortraitUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1479,6 +1548,7 @@ export default function DnDCharacterSheet() {
       {rollResult && <RollResultPopup result={rollResult} onClose={closeRollResult} />}
       {showAuth && <AuthModal onClose={closeAuth} onAuth={handleAuth} onGoogleAuth={handleGoogleAuth} email={authEmail} setEmail={setAuthEmail} password={authPassword} setPassword={setAuthPassword} isSignUp={isSignUp} setIsSignUp={setIsSignUp} loading={authLoading} error={authError} />}
       {showCloudSaves && <CloudSavesModal characters={cloudCharacters} onLoad={loadCloudCharacter} onDelete={deleteCloudCharacter} onClose={closeCloudSaves} />}
+      {showSignOutModal && <SignOutModal userEmail={user?.email} onConfirmSignOut={handleConfirmSignOut} onSwitchAccount={handleSwitchAccount} onCancel={closeSignOut} />}
 
       <header className="sticky top-0 z-50 parchment-header">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
@@ -1491,12 +1561,8 @@ export default function DnDCharacterSheet() {
           </div>
 
           <div className="parchment-toolbar">
-            {/* Template presets group */}
-            <div className="parchment-btn-group">
-              <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn" title="Выбрать готовый шаблон класса">📋 Шаблоны</button>
-              <button type="button" onClick={() => handleLoadExample('warrior')} className="parchment-header-btn hidden sm:inline-flex" title="Пример: Воин 5 ур.">⚔️ Воин</button>
-              <button type="button" onClick={() => handleLoadExample('wizard')} className="parchment-header-btn hidden sm:inline-flex" title="Пример: Волшебник 5 ур.">📖 Маг</button>
-            </div>
+            {/* Template presets */}
+            <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn" title="Выбрать готовый шаблон класса">📋 Шаблоны</button>
 
             {/* File actions group */}
             <div className="parchment-btn-group">
@@ -1513,7 +1579,7 @@ export default function DnDCharacterSheet() {
                 </button>
                 <button type="button" onClick={handleCloudLoad} className="parchment-header-btn" title="Список персонажей в облаке">☁️ Облако</button>
                 <button type="button" onClick={handleShare} className="parchment-header-btn" title="Код для импорта в AI Dungeon Master">🔗 Поделиться</button>
-                <button type="button" onClick={handleSignOut} className="parchment-header-btn" title="Выйти">🚪 Выйти</button>
+                <button type="button" onClick={() => setShowSignOutModal(true)} className="parchment-header-btn" title="Выйти из аккаунта или сменить пользователя">🚪 Выйти из аккаунта</button>
               </div>
             ) : (
               <div className="parchment-btn-group">

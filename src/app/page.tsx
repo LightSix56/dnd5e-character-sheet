@@ -889,10 +889,10 @@ export default function DnDCharacterSheet() {
     } catch { /* ignore */ }
   }, [portraitUrl]);
 
-  // ── Auto-save to cloud (debounced 3s) when logged in ──
+  // ── Auto-save to cloud (debounced 400ms with instant saving status) when logged in ──
   const cloudSaveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCloudSaveRef = React.useRef<string>('');
-  const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
   const cloudCharIdRef = React.useRef<string | null>(null);
   const cloudSaveInProgressRef = React.useRef(false);
   const pendingCloudSaveRef = React.useRef(false);
@@ -940,14 +940,16 @@ export default function DnDCharacterSheet() {
     // Skip if data hasn't actually changed since last save
     if (snapshot === lastCloudSaveRef.current) return;
 
+    // Immediately reflect saving status on first keystroke/change
+    setCloudSaveStatus('saving');
+
     if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current);
     cloudSaveTimerRef.current = setTimeout(async () => {
       if (isCloudSyncingRef.current) return;
-      setCloudSaveStatus('saving');
       lastCloudSaveRef.current = snapshot;
       const ok = await saveToCloud();
       setCloudSaveStatus(ok ? 'saved' : 'idle');
-    }, 3000);
+    }, 400);
     return () => { if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current); };
   }, [user, char, portraitUrl, saveToCloud]);
 
@@ -1561,8 +1563,10 @@ export default function DnDCharacterSheet() {
           </div>
 
           <div className="parchment-toolbar">
-            {/* Template presets */}
-            <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn" title="Выбрать готовый шаблон класса">📋 Шаблоны</button>
+            {/* Template presets group */}
+            <div className="parchment-btn-group">
+              <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn" title="Выбрать готовый шаблон класса">📋 Шаблоны</button>
+            </div>
 
             {/* File actions group */}
             <div className="parchment-btn-group">
@@ -1574,8 +1578,13 @@ export default function DnDCharacterSheet() {
             {/* Cloud / Auth group */}
             {user ? (
               <div className="parchment-btn-group">
-                <button type="button" onClick={handleCloudSave} className="parchment-header-btn" title="Синхронизировать с облаком">
-                  {cloudSaveStatus === 'saving' ? '⏳ Сохранение...' : cloudSaveStatus === 'saved' ? '✅ Сохранено' : '☁️ Сохранить'}
+                <button
+                  type="button"
+                  onClick={handleCloudSave}
+                  className="parchment-header-btn min-w-[124px] inline-flex items-center justify-center text-center"
+                  title="Синхронизировать с облаком"
+                >
+                  {cloudSaveStatus === 'saving' ? '⏳ Сохранение...' : '✅ Сохранено'}
                 </button>
                 <button type="button" onClick={handleCloudLoad} className="parchment-header-btn" title="Список персонажей в облаке">☁️ Облако</button>
                 <button type="button" onClick={handleShare} className="parchment-header-btn" title="Код для импорта в AI Dungeon Master">🔗 Поделиться</button>

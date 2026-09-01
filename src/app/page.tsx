@@ -2131,9 +2131,8 @@ export default function DnDCharacterSheet() {
                           title="Посмотреть свойства оружия"
                           className="w-8 h-8 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
                           style={{
-                            background: '#E8D3A2',
-                            color: '#5C341F',
-                            border: '1px solid #C9A84C',
+                            background: 'rgba(237, 224, 200, 0.6)',
+                            border: '1px solid rgba(139, 105, 20, 0.35)',
                             boxShadow: '0 1px 3px rgba(61, 32, 18, 0.15)'
                           }}
                         >
@@ -2198,16 +2197,16 @@ export default function DnDCharacterSheet() {
                     <button
                       type="button"
                       onClick={() => addTraitItem(undefined, traitSearchQuery)}
-                      className="parchment-btn text-xs px-3 py-1.5 shrink-0"
+                      className="parchment-btn-secondary text-xs px-3 py-1.5 shrink-0"
                     >
                       + Добавить
                     </button>
                   </div>
 
                   {traitAddSuccess && (
-                    <div className="text-xs font-bold px-3 py-1 rounded flex items-center justify-between" style={{ background: '#F6FFED', color: '#389E0D', border: '1px solid #B7EB8F' }}>
+                    <div className="text-xs font-medium px-3 py-1.5 rounded flex items-center justify-between" style={{ background: 'rgba(201, 168, 76, 0.15)', color: '#6B3A2A', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                       <span>{traitAddSuccess}</span>
-                      <button onClick={() => setTraitAddSuccess(null)} className="opacity-70 hover:opacity-100">✕</button>
+                      <button onClick={() => setTraitAddSuccess(null)} className="opacity-70 hover:opacity-100 font-bold ml-2">✕</button>
                     </div>
                   )}
 
@@ -2222,12 +2221,8 @@ export default function DnDCharacterSheet() {
                         return (
                           <div
                             key={traitItem.id || i}
-                            className="p-2.5 rounded flex flex-col gap-1.5 transition-all"
-                            style={{
-                              background: 'rgba(253, 247, 236, 0.85)',
-                              border: '1px solid rgba(201, 168, 76, 0.45)',
-                              boxShadow: '0 1px 3px rgba(61, 32, 18, 0.08)'
-                            }}
+                            className="py-2 border-b last:border-b-0 space-y-1"
+                            style={{ borderColor: 'rgba(139, 105, 20, 0.2)' }}
                           >
                             <div className="flex items-center gap-1.5">
                               <div className="flex-1">
@@ -2262,18 +2257,17 @@ export default function DnDCharacterSheet() {
                                   traitIndex: i
                                 })}
                                 title="Подробное описание правила"
-                                className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110 cursor-pointer"
+                                className="w-7 h-7 shrink-0 flex items-center justify-center rounded transition-all hover:scale-105 active:scale-95 cursor-pointer"
                                 style={{
-                                  background: '#E8D3A2',
-                                  color: '#5C341F',
-                                  border: '1px solid #C9A84C'
+                                  background: 'rgba(237, 224, 200, 0.6)',
+                                  border: '1px solid rgba(139, 105, 20, 0.35)'
                                 }}
                               >
-                                <InfoSealIcon size={18} />
+                                <InfoSealIcon size={16} />
                               </button>
                               <button
                                 onClick={() => removeTraitItem(i)}
-                                className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center cursor-pointer"
+                                className="parchment-remove-btn w-7 h-7 shrink-0 flex items-center justify-center cursor-pointer"
                               >
                                 ✕
                               </button>
@@ -2282,8 +2276,7 @@ export default function DnDCharacterSheet() {
                               value={traitItem.summary || ''}
                               onChange={e => updateTraitItem(i, 'summary', e.target.value)}
                               placeholder="Краткая суть умения (действие, урон, хиты...)"
-                              className={inputClass + " text-[11px] opacity-90"}
-                              style={{ background: 'rgba(255, 255, 255, 0.5)' }}
+                              className={inputClass + " text-[11px] opacity-85"}
                             />
                           </div>
                         );
@@ -2410,42 +2403,46 @@ export default function DnDCharacterSheet() {
               </div>
             </div>
             {/* Quick Spell Adder (Unified Search) */}
-            <div className="parchment-card lg:col-span-2 p-4 shadow-md" style={{ background: 'rgba(253, 247, 236, 0.95)', border: '2px solid #C9A84C' }}>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <div className="flex items-center gap-2 font-bold text-sm shrink-0" style={{ color: '#3D2012', fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                  <SpellbookIcon size={22} />
-                  <span>Поиск и быстрое добавление заклинания:</span>
-                </div>
-                <div className="flex-1 relative">
-                  <AutocompleteInput
-                    value={spellSearchQuery}
-                    onChange={setSpellSearchQuery}
-                    onSelect={handleQuickAddSpell}
-                    items={spellAutocompleteItems}
-                    placeholder="Введите название (например: Огненный шар, Щит, Лечащее слово)..."
-                    autoClearOnSelect={true}
-                    className={inputClass + " w-full font-medium"}
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (spellSearchQuery.trim()) {
-                      const matched = findSpellByName(spellSearchQuery.trim());
-                      handleQuickAddSpell({ name: spellSearchQuery.trim(), data: matched });
-                    }
-                  }}
-                  className="parchment-btn text-xs px-5 py-2 shrink-0 font-bold"
-                >
-                  + Добавить
-                </button>
+            <div className="parchment-card lg:col-span-2">
+              <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                <h3 className="parchment-heading flex items-center gap-2">
+                  <SpellbookIcon size={20} />
+                  <span>Поиск и быстрое добавление заклинания</span>
+                </h3>
               </div>
-              {spellAddSuccess && (
-                <div className="mt-2.5 text-xs font-bold px-3 py-1.5 rounded flex items-center justify-between animate-fade-in" style={{ background: '#E6F7FF', color: '#0050B3', border: '1px solid #91CAFF' }}>
-                  <span>{spellAddSuccess}</span>
-                  <button onClick={() => setSpellAddSuccess(null)} className="opacity-70 hover:opacity-100 font-bold ml-2">✕</button>
+              <div className="px-4 pb-4">
+                <div className="flex gap-2 items-center">
+                  <div className="flex-1 relative">
+                    <AutocompleteInput
+                      value={spellSearchQuery}
+                      onChange={setSpellSearchQuery}
+                      onSelect={handleQuickAddSpell}
+                      items={spellAutocompleteItems}
+                      placeholder="Введите заклинание (Огненный шар, Щит, Лечащее слово)..."
+                      autoClearOnSelect={true}
+                      className={inputClass + " w-full font-medium"}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (spellSearchQuery.trim()) {
+                        const matched = findSpellByName(spellSearchQuery.trim());
+                        handleQuickAddSpell({ name: spellSearchQuery.trim(), data: matched });
+                      }
+                    }}
+                    className="parchment-btn-secondary text-xs px-3 py-1.5 shrink-0"
+                  >
+                    + Добавить
+                  </button>
                 </div>
-              )}
+                {spellAddSuccess && (
+                  <div className="mt-2.5 text-xs font-medium px-3 py-1.5 rounded flex items-center justify-between" style={{ background: 'rgba(201, 168, 76, 0.15)', color: '#6B3A2A', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                    <span>{spellAddSuccess}</span>
+                    <button onClick={() => setSpellAddSuccess(null)} className="opacity-70 hover:opacity-100 font-bold ml-2">✕</button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="parchment-card lg:col-span-2">
@@ -2516,9 +2513,8 @@ export default function DnDCharacterSheet() {
                             title="Подробности заклинания"
                             className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
                             style={{
-                              background: '#E8D3A2',
-                              color: '#5C341F',
-                              border: '1px solid #C9A84C'
+                              background: 'rgba(237, 224, 200, 0.6)',
+                              border: '1px solid rgba(139, 105, 20, 0.35)'
                             }}
                           >
                             <InfoSealIcon size={18} />

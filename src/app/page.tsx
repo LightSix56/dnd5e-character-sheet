@@ -159,7 +159,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const [newProfText, setNewProfText] = useState('');
   const [newEquipText, setNewEquipText] = useState('');
 
-  const finalHP = hpMode === 'average' ? avgHP : (hpRoll + conMod);
+  const finalHP = Math.max(1, hpMode === 'average' ? avgHP : (hpRoll + conMod));
 
   const addCantripRow = () => setNewCantrips(prev => [...prev, '']);
   const removeCantripRow = (i: number) => setNewCantrips(prev => prev.filter((_, j) => j !== i));
@@ -735,6 +735,7 @@ const CloudSavesModal = React.memo(function CloudSavesModal({ characters, onLoad
               {characters.map((c: any) => (
                 <div key={c.id} className="parchment-modal-section flex items-center gap-3">
                   {c.portrait_url && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={c.portrait_url} alt="" className="w-10 h-10 rounded object-cover" style={{ border: '1px solid rgba(139, 105, 20, 0.3)' }} />
                   )}
                   <div className="flex-1 min-w-0">
@@ -1105,7 +1106,7 @@ export default function DnDCharacterSheet() {
   // ── Level Down ──
   const handleLevelDown = useCallback(() => {
     setChar(prev => {
-      const newLevel = prev.level - 1;
+      const newLevel = Math.max(1, prev.level - 1);
       const last = prev.levelHistory[prev.levelHistory.length - 1];
       let newHP = prev.hpMax || 0;
       if (last) newHP = Math.max(1, newHP - last.hpGained);
@@ -1762,6 +1763,7 @@ export default function DnDCharacterSheet() {
                       {portraitUrl ? (
                         <div className="relative w-24 h-24 rounded" style={{ border: '2px solid rgba(139, 105, 20, 0.4)', overflow: 'hidden' }}>
                           <label className="w-full h-full cursor-pointer block">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={portraitUrl} alt="Портрет" className="w-full h-full object-cover" />
                             <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
                           </label>
@@ -1832,7 +1834,7 @@ export default function DnDCharacterSheet() {
                 {char.spellcastingAbility && (
                   <div className="grid grid-cols-3 gap-3">
                     <div className="space-y-1"><label className="parchment-label">Сл. спасения</label><CalcBadge value={getSpellSaveDC(char)} /></div>
-                    <div className="space-y-1"><label className="parchment-label">Бонус атаки</label><CalcBadge value={formatModifier(getSpellAttackBonus(char))} /></div>
+                    <div className="space-y-1"><label className="parchment-label">Бонус атаки</label><RollBadge value={formatModifier(getSpellAttackBonus(char))} label="Атака заклинанием" modifier={getSpellAttackBonus(char)} onRoll={handleRoll} /></div>
                     <div className="space-y-1"><label className="parchment-label">Мод. хар-ки</label><CalcBadge value={formatModifier(getSpellAbilityMod(char))} /></div>
                   </div>
                 )}

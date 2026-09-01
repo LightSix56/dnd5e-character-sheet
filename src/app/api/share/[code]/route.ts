@@ -13,9 +13,11 @@ export async function GET(
     return NextResponse.json({ error: 'Некорректный код' }, { status: 400 });
   }
 
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() { return []; },
@@ -31,7 +33,7 @@ export async function GET(
     .maybeSingle();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  if (!data) {
+  if (!data || (data.expires_at && new Date(data.expires_at) < new Date())) {
     return NextResponse.json({ error: 'Ссылка не найдена или истекла' }, { status: 404 });
   }
 

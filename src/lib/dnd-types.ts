@@ -240,11 +240,7 @@ export function getInitiative(char: CharacterData): number {
 }
 
 export function getPassivePerception(char: CharacterData): number {
-  let mod = getModifier(char, 'МДР');
-  if (char.skillProficiencies['Внимательность']) {
-    mod += calcProficiencyBonus(char.level);
-  }
-  return 10 + mod;
+  return 10 + getSkillBonus(char, 'Внимательность');
 }
 
 export function getAC(char: CharacterData): number {
@@ -550,7 +546,7 @@ export const CLASS_TEMPLATES: ClassTemplate[] = [
     description: 'Мастер боевых искусств, использующий энергию ки. Скорость, оголённые удары и мистические способности.',
     role: 'Боец / Скаут',
     hitDieSize: 8,
-    primaryAbility: 'СИЛ и ЛОВ',
+    primaryAbility: 'ЛОВ и МДР',
     savingThrowProfs: ['СИЛ', 'ЛОВ'],
     skillChoices: 2,
     skillOptions: ['Акробатика', 'Атлетика', 'История', 'Проницательность', 'Религия', 'Скрытность'],
@@ -602,7 +598,7 @@ export const CLASS_TEMPLATES: ClassTemplate[] = [
     role: 'Боец дальнего боя / Скаут',
     hitDieSize: 10,
     primaryAbility: 'ЛОВ и МДР',
-    savingThrowProfs: ['ЛОВ', 'ТЕЛ'],
+    savingThrowProfs: ['СИЛ', 'ЛОВ'],
     skillChoices: 3,
     skillOptions: ['Анализ', 'Атлетика', 'Внимательность', 'Выживание', 'Природа', 'Проницательность', 'Скрытность', 'Уход за животными'],
     recommendedSkills: ['Выживание', 'Внимательность', 'Скрытность'],
@@ -685,7 +681,7 @@ export const CLASS_TEMPLATES: ClassTemplate[] = [
     primaryAbility: 'ХАР',
     savingThrowProfs: ['МДР', 'ХАР'],
     skillChoices: 2,
-    skillOptions: ['Анализ', 'Обман', 'История', 'Запугивание', 'Анализ', 'Природа', 'Религия'],
+    skillOptions: ['Анализ', 'Обман', 'История', 'Запугивание', 'Магия', 'Природа', 'Религия'],
     recommendedSkills: ['Запугивание', 'Обман'],
     armorWeaponProfs: 'Владение: Лёгкие доспехи, простое оружие\nИнструменты: Нет',
     features: 'Пакт с покровителем (Архифей, Демон, Великий Древний и др.)\nМагия пакта (заклинания)\nДар покровителя (доп. заклинание)\nМистическое возрождение (ячеек мало, но восстанавливаются после короткого отдыха)',
@@ -698,7 +694,7 @@ export const CLASS_TEMPLATES: ClassTemplate[] = [
       cantripsKnown: 2,
       spellsKnownAt1: 2,
       spellSlotsAt1: { 1: 1 },
-      cantripList: ['Маленькая иллюзия', 'Престидижитация'],
+      cantripList: ['Мистический заряд', 'Престидижитация'],
       spellListAt1: ['Проклятие гексблейда', 'Чарующий взгляд'],
     },
     recommendedScores: { 'ХАР': 15, 'ЛОВ': 14, 'ТЕЛ': 13, 'ИНТ': 12, 'МДР': 10, 'СИЛ': 8 },
@@ -715,7 +711,7 @@ export const CLASS_TEMPLATES: ClassTemplate[] = [
     primaryAbility: 'ИНТ',
     savingThrowProfs: ['ИНТ', 'МДР'],
     skillChoices: 2,
-    skillOptions: ['Анализ', 'История', 'Магия', 'Анализ', 'Природа', 'Проницательность', 'Религия'],
+    skillOptions: ['Анализ', 'История', 'Магия', 'Медицина', 'Природа', 'Проницательность', 'Религия'],
     recommendedSkills: ['Магия', 'Анализ'],
     armorWeaponProfs: 'Владение: Кинжалы, дротики, пращи, посохи\nИнструменты: Нет',
     features: 'Восстановление дуги (восст. ячейку уровня ≤ ИНТмод за короткий отдых)\nКнига заклинаний (6 заклинаний 1-го уровня)',

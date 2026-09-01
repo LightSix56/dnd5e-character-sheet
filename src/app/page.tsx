@@ -891,6 +891,10 @@ export default function DnDCharacterSheet() {
   const [activeSpellModal, setActiveSpellModal] = useState<{ spell: DndSpell | null; customName?: string } | null>(null);
   const [activeWeaponModal, setActiveWeaponModal] = useState<{ weapon: DndWeapon | null; customName?: string; customBonus?: string; customDamage?: string } | null>(null);
   const [activeTraitModal, setActiveTraitModal] = useState<{ trait: DndTrait | null; customName?: string; customSource?: string; customSummary?: string; customDescription?: string; traitIndex?: number } | null>(null);
+  const [spellSearchQuery, setSpellSearchQuery] = useState('');
+  const [spellAddSuccess, setSpellAddSuccess] = useState<string | null>(null);
+  const [traitSearchQuery, setTraitSearchQuery] = useState('');
+  const [traitAddSuccess, setTraitAddSuccess] = useState<string | null>(null);
 
   const weaponAutocompleteItems: AutocompleteItem[] = useMemo(() => {
     return DND_WEAPONS.map(w => ({
@@ -1142,38 +1146,90 @@ export default function DnDCharacterSheet() {
     return [];
   }, [char.traitsList, char.featuresTraits]);
 
+  const handleQuickAddSpell = useCallback((item: AutocompleteItem) => {
+    const spell = item.data as DndSpell | undefined;
+    const spellName = item.name.trim();
+    if (!spellName) return;
+
+    const level = spell ? spell.level : 0;
+
+    setChar(prev => {
+      if (level === 0) {
+        return {
+          ...prev,
+          cantrips: [...prev.cantrips, spellName],
+        };
+      } else {
+        const s = { ...prev.spellsByLevel };
+        s[level] = [...(s[level] || []), { name: spellName, prepared: true }];
+        return {
+          ...prev,
+          spellsByLevel: s,
+        };
+      }
+    });
+
+    const lvlLabel = level === 0 ? 'Заговоры (0 ур.)' : `Заклинания ${level} ур.`;
+    setSpellAddSuccess(`✨ «${spellName}» добавлено в ${lvlLabel}`);
+    setTimeout(() => setSpellAddSuccess(null), 3000);
+    setSpellSearchQuery('');
+  }, []);
+
   const updateTraitItem = useCallback((index: number, field: keyof TraitItem, value: string) => {
     setChar(prev => {
       const currentList = prev.traitsList && prev.traitsList.length > 0
         ? [...prev.traitsList]
-        : (prev.featuresTraits ? prev.featuresTraits.split('\n').filter(l => l.trim()).map((l, i) => ({ id: `t-${i}`, name: l, source: 'Умение', summary: '', description: '' })) : []);
+        : (prev.featuresTraits ? prev.featuresTraits.split('\n').filter(l => l.trim()).map((l, i) => {
+            const f = findTraitByName(l.trim());
+            return { id: `t-${i}`, name: l.trim(), source: f?.source || 'Умение', summary: f?.summary || '', description: f?.description || '' };
+          }) : []);
 
       if (currentList[index]) {
         currentList[index] = { ...currentList[index], [field]: value };
+        if (field === 'name') {
+          const matched = findTraitByName(value);
+          if (matched) {
+            currentList[index].source = matched.source;
+            currentList[index].summary = matched.summary;
+            currentList[index].description = matched.description;
+          }
+        }
       }
       const syncText = currentList.map(t => t.name).filter(Boolean).join('\n');
       return { ...prev, traitsList: currentList, featuresTraits: syncText };
     });
   }, []);
 
-  const addTraitItem = useCallback((traitData?: DndTrait) => {
+  const addTraitItem = useCallback((traitData?: DndTrait, customName?: string) => {
+    const name = (traitData?.name || customName || '').trim();
+    const matched = traitData || (name ? findTraitByName(name) : undefined);
+
     setChar(prev => {
       const currentList = prev.traitsList && prev.traitsList.length > 0
         ? [...prev.traitsList]
-        : (prev.featuresTraits ? prev.featuresTraits.split('\n').filter(l => l.trim()).map((l, i) => ({ id: `t-${i}`, name: l, source: 'Умение', summary: '', description: '' })) : []);
+        : (prev.featuresTraits ? prev.featuresTraits.split('\n').filter(l => l.trim()).map((l, i) => {
+            const f = findTraitByName(l.trim());
+            return { id: `t-${i}`, name: l.trim(), source: f?.source || 'Умение', summary: f?.summary || '', description: f?.description || '' };
+          }) : []);
 
       const newItem: TraitItem = {
         id: `trait-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-        name: traitData?.name || '',
-        source: traitData?.source || 'Умение',
-        summary: traitData?.summary || '',
-        description: traitData?.description || '',
+        name: matched?.name || name || '',
+        source: matched?.source || 'Умение',
+        summary: matched?.summary || '',
+        description: matched?.description || '',
       };
 
       const updated = [...currentList, newItem];
       const syncText = updated.map(t => t.name).filter(Boolean).join('\n');
       return { ...prev, traitsList: updated, featuresTraits: syncText };
     });
+
+    if (name) {
+      setTraitAddSuccess(`✨ Умение «${name}» добавлено`);
+      setTimeout(() => setTraitAddSuccess(null), 2500);
+    }
+    setTraitSearchQuery('');
   }, []);
 
   const removeTraitItem = useCallback((index: number) => {
@@ -2088,94 +2144,119 @@ export default function DnDCharacterSheet() {
                     <span>Умения и особенности</span>
                     <span className="text-xs font-normal opacity-70">({effectiveTraitsList.length})</span>
                   </h3>
-                  <button
-                    onClick={() => addTraitItem()}
-                    className="parchment-btn-secondary text-[11px] px-2.5 py-1"
-                  >
-                    + Добавить
-                  </button>
                 </div>
-                <div className="px-4 pb-4 space-y-2">
-                  {effectiveTraitsList.length === 0 ? (
-                    <div className="text-center py-4 text-xs italic" style={{ color: '#8B6914' }}>
-                      Список пуст. Нажмите «+ Добавить», чтобы выбрать умение из базы или ввести своё.
+                <div className="px-4 pb-4 space-y-3">
+                  {/* Search & Quick Add Trait */}
+                  <div className="flex gap-2 items-center">
+                    <div className="flex-1">
+                      <AutocompleteInput
+                        value={traitSearchQuery}
+                        onChange={setTraitSearchQuery}
+                        onSelect={item => {
+                          const t = item.data as DndTrait;
+                          addTraitItem(t);
+                        }}
+                        items={traitAutocompleteItems}
+                        placeholder="Поиск способности (Второе дыхание, Ярость, Темное зрение)..."
+                        autoClearOnSelect={true}
+                        className={inputClass + " w-full text-xs"}
+                      />
                     </div>
-                  ) : (
-                    effectiveTraitsList.map((traitItem, i) => {
-                      const matchedCompendium = findTraitByName(traitItem.name);
-                      return (
-                        <div
-                          key={traitItem.id || i}
-                          className="p-2 rounded flex flex-col gap-1.5 transition-all"
-                          style={{
-                            background: 'rgba(253, 247, 236, 0.8)',
-                            border: '1px solid rgba(201, 168, 76, 0.4)',
-                            boxShadow: '0 1px 3px rgba(61, 32, 18, 0.05)'
-                          }}
-                        >
-                          <div className="flex items-center gap-1.5">
-                            <div className="flex-1">
-                              <AutocompleteInput
-                                value={traitItem.name}
-                                onChange={val => updateTraitItem(i, 'name', val)}
-                                onSelect={item => {
-                                  const t = item.data as DndTrait;
-                                  if (t) {
-                                    updateTraitItem(i, 'name', t.name);
-                                    updateTraitItem(i, 'source', t.source);
-                                    updateTraitItem(i, 'summary', t.summary);
-                                    updateTraitItem(i, 'description', t.description);
-                                  }
-                                }}
-                                items={traitAutocompleteItems}
-                                placeholder="Название умения..."
-                                className={inputClass + " font-bold text-xs"}
+                    <button
+                      type="button"
+                      onClick={() => addTraitItem(undefined, traitSearchQuery)}
+                      className="parchment-btn text-xs px-3 py-1.5 shrink-0"
+                    >
+                      + Добавить
+                    </button>
+                  </div>
+
+                  {traitAddSuccess && (
+                    <div className="text-xs font-bold px-3 py-1 rounded flex items-center justify-between" style={{ background: '#F6FFED', color: '#389E0D', border: '1px solid #B7EB8F' }}>
+                      <span>{traitAddSuccess}</span>
+                      <button onClick={() => setTraitAddSuccess(null)} className="opacity-70 hover:opacity-100">✕</button>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    {effectiveTraitsList.length === 0 ? (
+                      <div className="text-center py-4 text-xs italic" style={{ color: '#8B6914' }}>
+                        Список пуст. Введите способность в поле выше или нажмите «+ Добавить».
+                      </div>
+                    ) : (
+                      effectiveTraitsList.map((traitItem, i) => {
+                        const matchedCompendium = findTraitByName(traitItem.name);
+                        return (
+                          <div
+                            key={traitItem.id || i}
+                            className="p-2.5 rounded flex flex-col gap-1.5 transition-all"
+                            style={{
+                              background: 'rgba(253, 247, 236, 0.85)',
+                              border: '1px solid rgba(201, 168, 76, 0.45)',
+                              boxShadow: '0 1px 3px rgba(61, 32, 18, 0.08)'
+                            }}
+                          >
+                            <div className="flex items-center gap-1.5">
+                              <div className="flex-1">
+                                <AutocompleteInput
+                                  value={traitItem.name}
+                                  onChange={val => updateTraitItem(i, 'name', val)}
+                                  onSelect={item => {
+                                    const t = item.data as DndTrait;
+                                    if (t) {
+                                      updateTraitItem(i, 'name', t.name);
+                                    }
+                                  }}
+                                  items={traitAutocompleteItems}
+                                  placeholder="Название умения..."
+                                  className={inputClass + " font-bold text-xs"}
+                                />
+                              </div>
+                              <input
+                                value={traitItem.source || ''}
+                                onChange={e => updateTraitItem(i, 'source', e.target.value)}
+                                placeholder="Источник"
+                                className={inputClass + " w-28 text-[11px]"}
                               />
+                              <button
+                                type="button"
+                                onClick={() => setActiveTraitModal({
+                                  trait: matchedCompendium || null,
+                                  customName: traitItem.name || 'Умение',
+                                  customSource: traitItem.source,
+                                  customSummary: traitItem.summary,
+                                  customDescription: traitItem.description,
+                                  traitIndex: i
+                                })}
+                                title="Подробное описание правила"
+                                className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110 cursor-pointer"
+                                style={{
+                                  background: '#E8D3A2',
+                                  color: '#5C341F',
+                                  border: '1px solid #C9A84C'
+                                }}
+                              >
+                                ℹ️
+                              </button>
+                              <button
+                                onClick={() => removeTraitItem(i)}
+                                className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center cursor-pointer"
+                              >
+                                ✕
+                              </button>
                             </div>
                             <input
-                              value={traitItem.source || ''}
-                              onChange={e => updateTraitItem(i, 'source', e.target.value)}
-                              placeholder="Источник"
-                              className={inputClass + " w-28 text-[11px]"}
+                              value={traitItem.summary || ''}
+                              onChange={e => updateTraitItem(i, 'summary', e.target.value)}
+                              placeholder="Краткая суть умения (действие, урон, хиты...)"
+                              className={inputClass + " text-[11px] opacity-90"}
+                              style={{ background: 'rgba(255, 255, 255, 0.5)' }}
                             />
-                            <button
-                              type="button"
-                              onClick={() => setActiveTraitModal({
-                                trait: matchedCompendium || null,
-                                customName: traitItem.name || 'Умение',
-                                customSource: traitItem.source,
-                                customSummary: traitItem.summary,
-                                customDescription: traitItem.description,
-                                traitIndex: i
-                              })}
-                              title="Подробное описание правила"
-                              className="w-7 h-7 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
-                              style={{
-                                background: '#E8D3A2',
-                                color: '#5C341F',
-                                border: '1px solid #C9A84C'
-                              }}
-                            >
-                              ℹ️
-                            </button>
-                            <button
-                              onClick={() => removeTraitItem(i)}
-                              className="parchment-remove-btn w-7 h-7 shrink-0 flex items-center justify-center"
-                            >
-                              ✕
-                            </button>
                           </div>
-                          <input
-                            value={traitItem.summary || ''}
-                            onChange={e => updateTraitItem(i, 'summary', e.target.value)}
-                            placeholder="Краткая суть умения (действие, урон, хиты...)"
-                            className={inputClass + " text-[11px] opacity-90"}
-                            style={{ background: 'rgba(255, 255, 255, 0.4)' }}
-                          />
-                        </div>
-                      );
-                    })
-                  )}
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

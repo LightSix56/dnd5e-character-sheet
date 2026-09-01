@@ -17,6 +17,7 @@ interface AutocompleteInputProps {
   placeholder?: string;
   className?: string;
   minChars?: number;
+  autoClearOnSelect?: boolean;
 }
 
 export function AutocompleteInput({
@@ -26,15 +27,16 @@ export function AutocompleteInput({
   items,
   placeholder = '',
   className = '',
-  minChars = 1
+  minChars = 1,
+  autoClearOnSelect = false,
 }: AutocompleteInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Filter items matching current value
-  const filtered = value.trim().length >= minChars
-    ? items.filter(it => it.name.toLowerCase().includes(value.trim().toLowerCase())).slice(0, 8)
+  const query = value.trim().toLowerCase();
+  const filtered = query.length >= minChars
+    ? items.filter(it => it.name.toLowerCase().includes(query)).slice(0, 10)
     : [];
 
   useEffect(() => {
@@ -67,7 +69,11 @@ export function AutocompleteInput({
   };
 
   const handleSelectItem = (item: AutocompleteItem) => {
-    onChange(item.name);
+    if (autoClearOnSelect) {
+      onChange('');
+    } else {
+      onChange(item.name);
+    }
     if (onSelect) onSelect(item);
     setIsOpen(false);
   };
@@ -94,17 +100,20 @@ export function AutocompleteInput({
 
       {isOpen && filtered.length > 0 && (
         <div
-          className="absolute left-0 right-0 top-full mt-1 z-50 rounded shadow-xl max-h-56 overflow-y-auto"
+          className="absolute left-0 right-0 top-full mt-1 z-[150] rounded-md shadow-2xl max-h-60 overflow-y-auto"
           style={{
             background: '#FDF7EC',
             border: '2px solid #C9A84C',
-            boxShadow: '0 8px 24px rgba(61, 32, 18, 0.25)'
+            boxShadow: '0 10px 30px rgba(61, 32, 18, 0.3)'
           }}
         >
           {filtered.map((item, idx) => (
             <div
               key={item.name + idx}
-              onClick={() => handleSelectItem(item)}
+              onMouseDown={e => {
+                e.preventDefault();
+                handleSelectItem(item);
+              }}
               onMouseEnter={() => setHighlightIndex(idx)}
               className={`px-3 py-2 cursor-pointer flex items-center justify-between text-xs transition-colors border-b last:border-b-0 ${
                 idx === highlightIndex ? 'bg-[#F0DEB4]' : 'hover:bg-[#F7EACD]'
@@ -112,20 +121,20 @@ export function AutocompleteInput({
               style={{ borderColor: 'rgba(201, 168, 76, 0.25)' }}
             >
               <div className="flex items-center gap-2 font-medium" style={{ color: '#3D2012', fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                <span>{item.name}</span>
+                <span className="font-bold">{item.name}</span>
                 {item.secondary && (
-                  <span className="text-[10px] opacity-70" style={{ color: '#8B6914' }}>
+                  <span className="text-[11px] opacity-75" style={{ color: '#8B6914' }}>
                     ({item.secondary})
                   </span>
                 )}
               </div>
               {item.badge && (
                 <span
-                  className="px-1.5 py-0.5 rounded text-[10px] font-bold"
+                  className="px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ml-2"
                   style={{
-                    background: 'rgba(139, 105, 20, 0.15)',
-                    color: '#6B3A2A',
-                    border: '1px solid rgba(201, 168, 76, 0.4)'
+                    background: '#E8D3A2',
+                    color: '#5C341F',
+                    border: '1px solid rgba(201, 168, 76, 0.5)'
                   }}
                 >
                   {item.badge}

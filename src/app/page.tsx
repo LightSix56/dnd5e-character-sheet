@@ -1769,6 +1769,39 @@ export default function DnDCharacterSheet() {
       {showCloudSaves && <CloudSavesModal characters={cloudCharacters} onLoad={loadCloudCharacter} onDelete={deleteCloudCharacter} onClose={closeCloudSaves} />}
       {showSignOutModal && <SignOutModal userEmail={user?.email} onConfirmSignOut={handleConfirmSignOut} onSwitchAccount={handleSwitchAccount} onCancel={closeSignOut} />}
 
+      {/* Compendium Detail Modals */}
+      {activeSpellModal && (
+        <SpellDetailModal
+          spell={activeSpellModal.spell}
+          customName={activeSpellModal.customName}
+          onClose={() => setActiveSpellModal(null)}
+        />
+      )}
+      {activeWeaponModal && (
+        <WeaponDetailModal
+          weapon={activeWeaponModal.weapon}
+          customName={activeWeaponModal.customName}
+          customBonus={activeWeaponModal.customBonus}
+          customDamage={activeWeaponModal.customDamage}
+          onClose={() => setActiveWeaponModal(null)}
+        />
+      )}
+      {activeTraitModal && (
+        <TraitDetailModal
+          trait={activeTraitModal.trait}
+          customName={activeTraitModal.customName}
+          customSource={activeTraitModal.customSource}
+          customSummary={activeTraitModal.customSummary}
+          customDescription={activeTraitModal.customDescription}
+          onSaveDescription={desc => {
+            if (typeof activeTraitModal.traitIndex === 'number') {
+              updateTraitItem(activeTraitModal.traitIndex, 'description', desc);
+            }
+          }}
+          onClose={() => setActiveTraitModal(null)}
+        />
+      )}
+
       <header className="sticky top-0 z-50 parchment-header">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2.5">

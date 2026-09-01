@@ -13,6 +13,13 @@ import {
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import { DND_SPELLS, findSpellByName, type DndSpell } from '@/data/dnd-spells';
+import { DND_WEAPONS, findWeaponByName, type DndWeapon } from '@/data/dnd-weapons';
+import { DND_TRAITS, findTraitByName, type DndTrait } from '@/data/dnd-traits';
+import { AutocompleteInput, type AutocompleteItem } from '@/components/compendium/AutocompleteInput';
+import { SpellDetailModal, WeaponDetailModal, TraitDetailModal } from '@/components/compendium/CompendiumModals';
+import type { TraitItem } from '@/lib/dnd-types';
+
 import {
   D20Icon, ScrollIcon, SpellbookIcon, ChestIcon, HourglassIcon,
   GoldSealCheckIcon, MysticSpinnerIcon, MysticCloudIcon, PortalIcon,
@@ -881,6 +888,36 @@ export default function DnDCharacterSheet() {
 
   const [char, setChar] = useState<CharacterData>(initialChar);
   const [activeTab, setActiveTab] = useState<'page1' | 'page2' | 'page3'>('page1');
+  const [activeSpellModal, setActiveSpellModal] = useState<{ spell: DndSpell | null; customName?: string } | null>(null);
+  const [activeWeaponModal, setActiveWeaponModal] = useState<{ weapon: DndWeapon | null; customName?: string; customBonus?: string; customDamage?: string } | null>(null);
+  const [activeTraitModal, setActiveTraitModal] = useState<{ trait: DndTrait | null; customName?: string; customSource?: string; customSummary?: string; customDescription?: string; traitIndex?: number } | null>(null);
+
+  const weaponAutocompleteItems: AutocompleteItem[] = useMemo(() => {
+    return DND_WEAPONS.map(w => ({
+      name: w.name,
+      badge: `${w.damageDice} ${w.damageType}`,
+      secondary: w.category,
+      data: w,
+    }));
+  }, []);
+
+  const spellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
+    return DND_SPELLS.map(s => ({
+      name: s.name,
+      badge: s.level === 0 ? 'Заговор' : `${s.level} ур.`,
+      secondary: s.school,
+      data: s,
+    }));
+  }, []);
+
+  const traitAutocompleteItems: AutocompleteItem[] = useMemo(() => {
+    return DND_TRAITS.map(t => ({
+      name: t.name,
+      badge: t.source,
+      secondary: t.category,
+      data: t,
+    }));
+  }, []);
   const [toast, setToast] = useState<{ title: string; description: string } | null>(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showLevelDown, setShowLevelDown] = useState(false);
@@ -1051,6 +1088,104 @@ export default function DnDCharacterSheet() {
 
   const updateSkillProf = useCallback((skill: string, field: 'skillProficiencies' | 'skillExpertise', value: boolean) => {
     setChar(prev => ({ ...prev, [field]: { ...prev[field], [skill]: value } }));
+  }, []);
+
+  const handleSelectWeapon = useCallback((index: number, item: AutocompleteItem) => {
+    const weapon = item.data as DndWeapon | undefined;
+    if (!weapon) return;
+
+    const strScore = char.abilityScores['СИЛ'] + (char.abilityBonuses['СИЛ'] || 0) + (char.asiBonuses['СИЛ'] || 0);
+    const dexScore = char.abilityScores['ЛОВ'] + (char.abilityBonuses['ЛОВ'] || 0) + (char.asiBonuses['ЛОВ'] || 0);
+    const strMod = calcModifier(strScore);
+    const dexMod = calcModifier(dexScore);
+
+    let bestMod = strMod;
+    if (weapon.category.includes('дальнобойное')) {
+      bestMod = dexMod;
+    } else if (weapon.finesse) {
+      bestMod = Math.max(strMod, dexMod);
+    }
+    const currentProf = calcProficiencyBonus(char.level);
+    const bonusNum = bestMod + currentProf;
+    const bonusStr = formatModifier(bonusNum);
+    const modSuffix = bestMod !== 0 ? (bestMod > 0 ? `+${bestMod}` : `${bestMod}`) : '';
+    const dmgStr = `${weapon.damageDice}${modSuffix} ${weapon.damageType}`;
+
+    setChar(prev => {
+      const a = [...prev.attacks];
+      a[index] = {
+        name: weapon.name,
+        attackBonus: bonusStr,
+        damageAndType: dmgStr,
+      };
+      return { ...prev, attacks: a };
+    });
+  }, [char.abilityScores, char.abilityBonuses, char.asiBonuses, char.level]);
+
+  const effectiveTraitsList = useMemo<TraitItem[]>(() => {
+    if (char.traitsList && char.traitsList.length > 0) {
+      return char.traitsList;
+    }
+    if (char.featuresTraits && char.featuresTraits.trim()) {
+      const lines = char.featuresTraits.split('\n').filter(l => l.trim());
+      return lines.map((line, idx) => {
+        const found = findTraitByName(line.trim());
+        return {
+          id: `legacy-${idx}`,
+          name: line.trim(),
+          source: found?.source || 'Умение',
+          summary: found?.summary || '',
+          description: found?.description || '',
+        };
+      });
+    }
+    return [];
+  }, [char.traitsList, char.featuresTraits]);
+
+  const updateTraitItem = useCallback((index: number, field: keyof TraitItem, value: string) => {
+    setChar(prev => {
+      const currentList = prev.traitsList && prev.traitsList.length > 0
+        ? [...prev.traitsList]
+        : (prev.featuresTraits ? prev.featuresTraits.split('\n').filter(l => l.trim()).map((l, i) => ({ id: `t-${i}`, name: l, source: 'Умение', summary: '', description: '' })) : []);
+
+      if (currentList[index]) {
+        currentList[index] = { ...currentList[index], [field]: value };
+      }
+      const syncText = currentList.map(t => t.name).filter(Boolean).join('\n');
+      return { ...prev, traitsList: currentList, featuresTraits: syncText };
+    });
+  }, []);
+
+  const addTraitItem = useCallback((traitData?: DndTrait) => {
+    setChar(prev => {
+      const currentList = prev.traitsList && prev.traitsList.length > 0
+        ? [...prev.traitsList]
+        : (prev.featuresTraits ? prev.featuresTraits.split('\n').filter(l => l.trim()).map((l, i) => ({ id: `t-${i}`, name: l, source: 'Умение', summary: '', description: '' })) : []);
+
+      const newItem: TraitItem = {
+        id: `trait-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        name: traitData?.name || '',
+        source: traitData?.source || 'Умение',
+        summary: traitData?.summary || '',
+        description: traitData?.description || '',
+      };
+
+      const updated = [...currentList, newItem];
+      const syncText = updated.map(t => t.name).filter(Boolean).join('\n');
+      return { ...prev, traitsList: updated, featuresTraits: syncText };
+    });
+  }, []);
+
+  const removeTraitItem = useCallback((index: number) => {
+    setChar(prev => {
+      const currentList = prev.traitsList && prev.traitsList.length > 0
+        ? [...prev.traitsList]
+        : (prev.featuresTraits ? prev.featuresTraits.split('\n').filter(l => l.trim()).map((l, i) => ({ id: `t-${i}`, name: l, source: 'Умение', summary: '', description: '' })) : []);
+
+      const updated = currentList.filter((_, i) => i !== index);
+      const syncText = updated.map(t => t.name).filter(Boolean).join('\n');
+      return { ...prev, traitsList: updated, featuresTraits: syncText };
+    });
   }, []);
 
   const updateAttack = useCallback((index: number, field: keyof Attack, value: string) => {
@@ -1865,16 +2000,61 @@ export default function DnDCharacterSheet() {
               <div className="parchment-card">
                 <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><CrossedSwordsIcon size={20} /><span>Атаки и оружие</span></h3></div>
                 <div className="px-4 pb-4 space-y-2">
-                  <div className="grid grid-cols-[1fr_auto_1fr_auto] sm:grid-cols-[1fr_auto_1fr_auto] gap-2 text-xs font-medium px-1" style={{ color: '#8B6914' }}><span>Название</span><span>Бонус</span><span>Урон / Вид</span><span /></div>
-                  {char.attacks.map((atk, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center">
-                      <input value={atk.name} onChange={e => updateAttack(i, 'name', e.target.value)} placeholder="Название" className={inputClass} />
-                      <input value={atk.attackBonus} onChange={e => updateAttack(i, 'attackBonus', e.target.value)} placeholder="+5" className={inputClassCenter + " w-20"} />
-                      <input value={atk.damageAndType} onChange={e => updateAttack(i, 'damageAndType', e.target.value)} placeholder="1d8+3 рубящий" className={inputClass} />
-                      <button onClick={() => removeAttack(i)} className="parchment-remove-btn">✕</button>
-                    </div>
-                  ))}
-                  <button onClick={addAttack} className="w-full parchment-btn-secondary text-xs">+ Добавить атаку</button>
+                  <div className="grid grid-cols-[1fr_70px_1fr_32px_32px] gap-1.5 text-xs font-medium px-1" style={{ color: '#8B6914' }}>
+                    <span>Оружие (автопоиск)</span>
+                    <span>Бонус</span>
+                    <span>Урон / Вид</span>
+                    <span className="text-center" title="Свойства и правила">Инфо</span>
+                    <span />
+                  </div>
+                  {char.attacks.map((atk, i) => {
+                    const weaponDef = findWeaponByName(atk.name);
+                    return (
+                      <div key={i} className="grid grid-cols-[1fr_70px_1fr_32px_32px] gap-1.5 items-center">
+                        <AutocompleteInput
+                          value={atk.name}
+                          onChange={val => updateAttack(i, 'name', val)}
+                          onSelect={item => handleSelectWeapon(i, item)}
+                          items={weaponAutocompleteItems}
+                          placeholder="Оружие или атака..."
+                          className={inputClass}
+                        />
+                        <input
+                          value={atk.attackBonus}
+                          onChange={e => updateAttack(i, 'attackBonus', e.target.value)}
+                          placeholder="+5"
+                          className={inputClassCenter + " w-full"}
+                        />
+                        <input
+                          value={atk.damageAndType}
+                          onChange={e => updateAttack(i, 'damageAndType', e.target.value)}
+                          placeholder="1d8+3 рубящий"
+                          className={inputClass}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setActiveWeaponModal({
+                            weapon: weaponDef || null,
+                            customName: atk.name || 'Атака',
+                            customBonus: atk.attackBonus,
+                            customDamage: atk.damageAndType
+                          })}
+                          title="Посмотреть свойства оружия"
+                          className="w-8 h-8 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
+                          style={{
+                            background: '#E8D3A2',
+                            color: '#5C341F',
+                            border: '1px solid #C9A84C',
+                            boxShadow: '0 1px 3px rgba(61, 32, 18, 0.15)'
+                          }}
+                        >
+                          ℹ️
+                        </button>
+                        <button onClick={() => removeAttack(i)} className="parchment-remove-btn w-8 h-8 flex items-center justify-center">✕</button>
+                      </div>
+                    );
+                  })}
+                  <button onClick={addAttack} className="w-full parchment-btn-secondary text-xs py-2">+ Добавить атаку</button>
                 </div>
               </div>
 
@@ -1888,17 +2068,116 @@ export default function DnDCharacterSheet() {
                 </div>
               </div>
 
-              {/* Other */}
-              {[
-                { label: 'Прочие владения и языки', key: 'otherProficienciesLanguages' as const, rows: 3, icon: <ScrollIcon size={18} /> },
-                { label: 'Снаряжение', key: 'equipment' as const, rows: 3, icon: <BackpackPackIcon size={18} /> },
-                { label: 'Умения и особенности', key: 'featuresTraits' as const, rows: 4, icon: <SparklesDndIcon size={18} /> }
-              ].map(item => (
-                <div key={item.key} className="parchment-card">
-                  <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">{item.icon}<span>{item.label}</span></h3></div>
-                  <div className="px-4 pb-4"><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={item.rows} className={textareaClass} /></div>
+              {/* Other Proficiencies & Languages */}
+              <div className="parchment-card">
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><ScrollIcon size={18} /><span>Прочие владения и языки</span></h3></div>
+                <div className="px-4 pb-4"><textarea value={char.otherProficienciesLanguages} onChange={e => update('otherProficienciesLanguages', e.target.value)} rows={3} className={textareaClass} /></div>
+              </div>
+
+              {/* Equipment */}
+              <div className="parchment-card">
+                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><BackpackPackIcon size={18} /><span>Снаряжение</span></h3></div>
+                <div className="px-4 pb-4"><textarea value={char.equipment} onChange={e => update('equipment', e.target.value)} rows={3} className={textareaClass} /></div>
+              </div>
+
+              {/* Features & Traits Table */}
+              <div className="parchment-card">
+                <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                  <h3 className="parchment-heading flex items-center gap-2">
+                    <SparklesDndIcon size={18} />
+                    <span>Умения и особенности</span>
+                    <span className="text-xs font-normal opacity-70">({effectiveTraitsList.length})</span>
+                  </h3>
+                  <button
+                    onClick={() => addTraitItem()}
+                    className="parchment-btn-secondary text-[11px] px-2.5 py-1"
+                  >
+                    + Добавить
+                  </button>
                 </div>
-              ))}
+                <div className="px-4 pb-4 space-y-2">
+                  {effectiveTraitsList.length === 0 ? (
+                    <div className="text-center py-4 text-xs italic" style={{ color: '#8B6914' }}>
+                      Список пуст. Нажмите «+ Добавить», чтобы выбрать умение из базы или ввести своё.
+                    </div>
+                  ) : (
+                    effectiveTraitsList.map((traitItem, i) => {
+                      const matchedCompendium = findTraitByName(traitItem.name);
+                      return (
+                        <div
+                          key={traitItem.id || i}
+                          className="p-2 rounded flex flex-col gap-1.5 transition-all"
+                          style={{
+                            background: 'rgba(253, 247, 236, 0.8)',
+                            border: '1px solid rgba(201, 168, 76, 0.4)',
+                            boxShadow: '0 1px 3px rgba(61, 32, 18, 0.05)'
+                          }}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex-1">
+                              <AutocompleteInput
+                                value={traitItem.name}
+                                onChange={val => updateTraitItem(i, 'name', val)}
+                                onSelect={item => {
+                                  const t = item.data as DndTrait;
+                                  if (t) {
+                                    updateTraitItem(i, 'name', t.name);
+                                    updateTraitItem(i, 'source', t.source);
+                                    updateTraitItem(i, 'summary', t.summary);
+                                    updateTraitItem(i, 'description', t.description);
+                                  }
+                                }}
+                                items={traitAutocompleteItems}
+                                placeholder="Название умения..."
+                                className={inputClass + " font-bold text-xs"}
+                              />
+                            </div>
+                            <input
+                              value={traitItem.source || ''}
+                              onChange={e => updateTraitItem(i, 'source', e.target.value)}
+                              placeholder="Источник"
+                              className={inputClass + " w-28 text-[11px]"}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setActiveTraitModal({
+                                trait: matchedCompendium || null,
+                                customName: traitItem.name || 'Умение',
+                                customSource: traitItem.source,
+                                customSummary: traitItem.summary,
+                                customDescription: traitItem.description,
+                                traitIndex: i
+                              })}
+                              title="Подробное описание правила"
+                              className="w-7 h-7 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
+                              style={{
+                                background: '#E8D3A2',
+                                color: '#5C341F',
+                                border: '1px solid #C9A84C'
+                              }}
+                            >
+                              ℹ️
+                            </button>
+                            <button
+                              onClick={() => removeTraitItem(i)}
+                              className="parchment-remove-btn w-7 h-7 shrink-0 flex items-center justify-center"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <input
+                            value={traitItem.summary || ''}
+                            onChange={e => updateTraitItem(i, 'summary', e.target.value)}
+                            placeholder="Краткая суть умения (действие, урон, хиты...)"
+                            className={inputClass + " text-[11px] opacity-90"}
+                            style={{ background: 'rgba(255, 255, 255, 0.4)' }}
+                          />
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -2019,30 +2298,83 @@ export default function DnDCharacterSheet() {
             <div className="parchment-card lg:col-span-2">
               <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SparklesDndIcon size={20} /><span>Заговоры (0 ур.)</span></h3></div>
               <div className="px-4 pb-4 space-y-2">
-                {char.cantrips.map((c, i) => (
-                  <div key={i} className="flex gap-2 items-center">
-                    <input value={c} onChange={e => updateCantrip(i, e.target.value)} placeholder="Название" className={inputClass + " flex-1"} />
-                    <button onClick={() => removeCantrip(i)} className="parchment-remove-btn">✕</button>
-                  </div>
-                ))}
-                <button onClick={addCantrip} className="parchment-btn-secondary text-xs">+ Добавить</button>
+                {char.cantrips.map((c, i) => {
+                  const spellDef = findSpellByName(c);
+                  return (
+                    <div key={i} className="flex gap-1.5 items-center">
+                      <div className="flex-1">
+                        <AutocompleteInput
+                          value={c}
+                          onChange={val => updateCantrip(i, val)}
+                          items={spellAutocompleteItems}
+                          placeholder="Название заговора..."
+                          className={inputClass}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveSpellModal({
+                          spell: spellDef || null,
+                          customName: c || 'Заговор'
+                        })}
+                        title="Подробности заговора"
+                        className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
+                        style={{
+                          background: '#E8D3A2',
+                          color: '#5C341F',
+                          border: '1px solid #C9A84C'
+                        }}
+                      >
+                        ℹ️
+                      </button>
+                      <button onClick={() => removeCantrip(i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center">✕</button>
+                    </div>
+                  );
+                })}
+                <button onClick={addCantrip} className="parchment-btn-secondary text-xs py-1.5">+ Добавить заговор</button>
               </div>
             </div>
             {[1,2,3,4,5,6,7,8,9].map(lvl => {
               const spells = char.spellsByLevel[lvl] || [];
-              // Always show all 9 spell levels on the website
               return (
                 <div key={lvl} className="parchment-card">
                   <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SpellbookIcon size={18} /><span>Заклинания {lvl} ур.</span> <span className="text-xs font-normal" style={{ color: '#8B6914' }}>({spells.length})</span></h3></div>
                   <div className="px-4 pb-4 space-y-2">
-                    {spells.map((spell, i) => (
-                      <div key={i} className="flex gap-2 items-center">
-                        <label className="parchment-checkbox"><input type="checkbox" checked={spell.prepared} onChange={e => updateSpellEntry(lvl, i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label>
-                        <input value={spell.name} onChange={e => updateSpellEntry(lvl, i, 'name', e.target.value)} placeholder="Название" className={inputClass + " flex-1"} />
-                        <button onClick={() => removeSpell(lvl, i)} className="parchment-remove-btn">✕</button>
-                      </div>
-                    ))}
-                    <button onClick={() => addSpell(lvl)} className="parchment-btn-secondary text-xs">+ Добавить</button>
+                    {spells.map((spell, i) => {
+                      const spellDef = findSpellByName(spell.name);
+                      return (
+                        <div key={i} className="flex gap-1.5 items-center">
+                          <label className="parchment-checkbox" title="Подготовлено"><input type="checkbox" checked={spell.prepared} onChange={e => updateSpellEntry(lvl, i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label>
+                          <div className="flex-1">
+                            <AutocompleteInput
+                              value={spell.name}
+                              onChange={val => updateSpellEntry(lvl, i, 'name', val)}
+                              items={spellAutocompleteItems}
+                              placeholder={`Заклинание ${lvl} ур....`}
+                              className={inputClass}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setActiveSpellModal({
+                              spell: spellDef || null,
+                              customName: spell.name || `Заклинание ${lvl} ур.`
+                            })}
+                            title="Подробности заклинания"
+                            className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
+                            style={{
+                              background: '#E8D3A2',
+                              color: '#5C341F',
+                              border: '1px solid #C9A84C'
+                            }}
+                          >
+                            ℹ️
+                          </button>
+                          <button onClick={() => removeSpell(lvl, i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center">✕</button>
+                        </div>
+                      );
+                    })}
+                    <button onClick={() => addSpell(lvl)} className="parchment-btn-secondary text-xs py-1.5">+ Добавить</button>
                   </div>
                 </div>
               );

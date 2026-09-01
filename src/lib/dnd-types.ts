@@ -52,6 +52,14 @@ export interface SpellEntry {
 }
 
 // ── Level-up entry: structured data for all changes ──
+export interface TraitItem {
+  id: string;
+  name: string;
+  source?: string;
+  summary?: string;
+  description?: string;
+}
+
 export interface LevelUpEntry {
   level: number;
   hpGained: number;
@@ -127,6 +135,7 @@ export interface CharacterData {
   // Other
   otherProficienciesLanguages: string;
   featuresTraits: string;
+  traitsList?: TraitItem[];
   equipment: string;
 
   // Page 2
@@ -352,6 +361,7 @@ export function createDefaultCharacter(): CharacterData {
     flaws: '',
     otherProficienciesLanguages: '',
     featuresTraits: '',
+    traitsList: [],
     equipment: '',
     age: '',
     height: '',

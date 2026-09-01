@@ -31,6 +31,7 @@ function normalizeCharacter(raw: Partial<CharacterData>): CharacterData {
     attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
     cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
     levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
+    traitsList: Array.isArray(raw.traitsList) ? raw.traitsList : defaults.traitsList,
   };
 }
 
@@ -308,7 +309,23 @@ export async function POST(request: NextRequest) {
     content.push(sectionHeader('СНАРЯЖЕНИЕ'));
     content.push(textPara(char.equipment));
     content.push(sectionHeader('УМЕНИЯ И ОСОБЕННОСТИ'));
-    content.push(textPara(char.featuresTraits));
+    if (char.traitsList && char.traitsList.length > 0) {
+      content.push(new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: borders(),
+        rows: [
+          new TableRow({ children: [hCell('Умение / Источник'), hCell('Краткая суть и описание')] }),
+          ...char.traitsList.filter(t => t.name.trim()).map(t => new TableRow({
+            children: [
+              dCell(`${t.name}${t.source ? ` (${t.source})` : ''}`, { bold: true, bg: COLOR_LIGHT_BG }),
+              dCell(`${t.summary ? t.summary + (t.description ? '\n' : '') : ''}${t.description || ''}`),
+            ]
+          }))
+        ]
+      }));
+    } else {
+      content.push(textPara(char.featuresTraits));
+    }
 
     // ═══ PAGE 2 ═══
     content.push(new Paragraph({ children: [new PageBreak()] }));

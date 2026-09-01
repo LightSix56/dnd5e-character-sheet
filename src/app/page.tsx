@@ -2452,15 +2452,12 @@ export default function DnDCharacterSheet() {
                   const spellDef = findSpellByName(c);
                   return (
                     <div key={i} className="flex gap-1.5 items-center">
-                      <div className="flex-1">
-                        <AutocompleteInput
-                          value={c}
-                          onChange={val => updateCantrip(i, val)}
-                          items={spellAutocompleteItems}
-                          placeholder="Название заговора..."
-                          className={inputClass}
-                        />
-                      </div>
+                      <input
+                        value={c}
+                        onChange={e => updateCantrip(i, e.target.value)}
+                        placeholder="Название заговора..."
+                        className={inputClass + " flex-1"}
+                      />
                       <button
                         type="button"
                         onClick={() => setActiveSpellModal({
@@ -2468,16 +2465,15 @@ export default function DnDCharacterSheet() {
                           customName: c || 'Заговор'
                         })}
                         title="Подробности заговора"
-                        className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
+                        className="w-8 h-8 shrink-0 flex items-center justify-center rounded transition-all hover:scale-105 active:scale-95 cursor-pointer"
                         style={{
-                          background: '#E8D3A2',
-                          color: '#5C341F',
-                          border: '1px solid #C9A84C'
+                          background: 'rgba(237, 224, 200, 0.6)',
+                          border: '1px solid rgba(139, 105, 20, 0.35)'
                         }}
                       >
                         <InfoSealIcon size={18} />
                       </button>
-                      <button onClick={() => removeCantrip(i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center">✕</button>
+                      <button onClick={() => removeCantrip(i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center cursor-pointer">✕</button>
                     </div>
                   );
                 })}

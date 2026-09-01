@@ -2409,6 +2409,45 @@ export default function DnDCharacterSheet() {
                 })}
               </div>
             </div>
+            {/* Quick Spell Adder (Unified Search) */}
+            <div className="parchment-card lg:col-span-2 p-4 shadow-md" style={{ background: 'rgba(253, 247, 236, 0.95)', border: '2px solid #C9A84C' }}>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="flex items-center gap-2 font-bold text-sm shrink-0" style={{ color: '#3D2012', fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                  <SpellbookIcon size={22} />
+                  <span>Поиск и быстрое добавление заклинания:</span>
+                </div>
+                <div className="flex-1 relative">
+                  <AutocompleteInput
+                    value={spellSearchQuery}
+                    onChange={setSpellSearchQuery}
+                    onSelect={handleQuickAddSpell}
+                    items={spellAutocompleteItems}
+                    placeholder="Введите название (например: Огненный шар, Щит, Лечащее слово)..."
+                    autoClearOnSelect={true}
+                    className={inputClass + " w-full font-medium"}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (spellSearchQuery.trim()) {
+                      const matched = findSpellByName(spellSearchQuery.trim());
+                      handleQuickAddSpell({ name: spellSearchQuery.trim(), data: matched });
+                    }
+                  }}
+                  className="parchment-btn text-xs px-5 py-2 shrink-0 font-bold"
+                >
+                  + Добавить
+                </button>
+              </div>
+              {spellAddSuccess && (
+                <div className="mt-2.5 text-xs font-bold px-3 py-1.5 rounded flex items-center justify-between animate-fade-in" style={{ background: '#E6F7FF', color: '#0050B3', border: '1px solid #91CAFF' }}>
+                  <span>{spellAddSuccess}</span>
+                  <button onClick={() => setSpellAddSuccess(null)} className="opacity-70 hover:opacity-100 font-bold ml-2">✕</button>
+                </div>
+              )}
+            </div>
+
             <div className="parchment-card lg:col-span-2">
               <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SparklesDndIcon size={20} /><span>Заговоры (0 ур.)</span></h3></div>
               <div className="px-4 pb-4 space-y-2">

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { DND_COMPENDIUM_RACES, type CompendiumRace, type CompendiumSubrace } from '@/data/compendium/races';
+import { DND_COMPENDIUM_RACES, type CompendiumRace, type CompendiumSubrace, type RaceCategory } from '@/data/compendium/races';
 import { UserHeroIcon, SparklesDndIcon } from '@/components/dnd-icons';
 
 interface RaceSelectorModalProps {
@@ -10,8 +10,18 @@ interface RaceSelectorModalProps {
   onClose: () => void;
 }
 
+const CATEGORIES: { id: 'all' | RaceCategory; label: string }[] = [
+  { id: 'all', label: 'Все' },
+  { id: 'core', label: 'PHB' },
+  { id: 'multiverse', label: 'Мультивселенная' },
+  { id: 'setting', label: 'Сеттинги' },
+  { id: 'spelljammer', label: 'Космос' },
+  { id: 'lineage', label: 'Родословные' },
+];
+
 export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelectorModalProps) {
   const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState<'all' | RaceCategory>('all');
   const [selectedRaceId, setSelectedRaceId] = useState<string>(() => {
     if (currentRace) {
       const match = DND_COMPENDIUM_RACES.find(r => 
@@ -28,10 +38,12 @@ export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelect
   const selectedSubrace = selectedRace?.subraces.find(sr => sr.id === selectedSubraceId);
 
   const filteredRaces = DND_COMPENDIUM_RACES.filter(r => {
+    if (activeCategory !== 'all' && r.category !== activeCategory) return false;
     if (!search.trim()) return true;
     const q = search.toLowerCase().trim();
     return r.name.toLowerCase().includes(q) || 
       r.nameEn.toLowerCase().includes(q) || 
+      (r.source && r.source.toLowerCase().includes(q)) ||
       r.subraces.some(sr => sr.name.toLowerCase().includes(q) || sr.nameEn.toLowerCase().includes(q));
   });
 
@@ -57,9 +69,14 @@ export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelect
         <div className="p-4 flex items-center justify-between border-b" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
           <div className="flex items-center gap-2">
             <UserHeroIcon size={24} />
-            <h3 className="text-lg font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, "Times New Roman", serif' }}>
-              Компендиум рас D&D 5e
-            </h3>
+            <div>
+              <h3 className="text-lg font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                Компендиум рас D&D 5e
+              </h3>
+              <span className="text-[11px]" style={{ color: '#8B6914' }}>
+                49 официальных рас и свыше 70 подрас/родословий
+              </span>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -73,15 +90,40 @@ export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelect
         {/* Content layout: Sidebar list + Detail panel */}
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           {/* Left: Races list */}
-          <div className="w-full md:w-64 border-r flex flex-col p-3 gap-2 overflow-y-auto max-h-[30vh] md:max-h-[70vh]" style={{ borderColor: 'rgba(201, 168, 76, 0.3)', background: 'rgba(232, 211, 162, 0.25)' }}>
+          <div className="w-full md:w-72 border-r flex flex-col p-3 gap-2 overflow-y-auto max-h-[35vh] md:max-h-[70vh]" style={{ borderColor: 'rgba(201, 168, 76, 0.3)', background: 'rgba(232, 211, 162, 0.25)' }}>
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Поиск расы..."
+              placeholder="Поиск расы или книги..."
               className="parchment-input text-xs w-full py-1.5 px-2.5"
             />
-            <div className="space-y-1 overflow-y-auto">
+
+            {/* Category tabs */}
+            <div className="flex flex-wrap gap-1 pb-1">
+              {CATEGORIES.map(cat => {
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
+                      isActive ? 'shadow-xs' : 'opacity-70 hover:opacity-100'
+                    }`}
+                    style={
+                      isActive
+                        ? { background: '#5C341F', color: '#FBF0DC' }
+                        : { background: 'rgba(201, 168, 76, 0.2)', color: '#5C341F' }
+                    }
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="space-y-1 overflow-y-auto flex-1">
               {filteredRaces.map(race => {
                 const isSelected = race.id === selectedRaceId;
                 return (
@@ -91,7 +133,7 @@ export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelect
                       setSelectedRaceId(race.id);
                       setSelectedSubraceId(race.subraces[0]?.id || '');
                     }}
-                    className={`w-full text-left px-3 py-2 rounded text-xs transition-all flex items-center justify-between ${
+                    className={`w-full text-left px-2.5 py-1.5 rounded text-xs transition-all flex items-center justify-between ${
                       isSelected
                         ? 'font-bold shadow-sm'
                         : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
@@ -102,15 +144,20 @@ export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelect
                         : { border: '1px solid transparent' }
                     }
                   >
-                    <div>
-                      <div>{race.name}</div>
-                      <div className="text-[10px] opacity-70">{race.nameEn}</div>
+                    <div className="min-w-0 pr-1">
+                      <div className="truncate">{race.name}</div>
+                      <div className="text-[10px] opacity-70 truncate">{race.nameEn}</div>
                     </div>
-                    {race.subraces.length > 0 && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(139, 105, 20, 0.15)' }}>
-                        +{race.subraces.length}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <span className="text-[9px] px-1 py-0.2 rounded font-mono font-bold" style={{ background: 'rgba(92, 52, 31, 0.1)', color: '#5C341F' }}>
+                        {race.source || 'PHB'}
                       </span>
-                    )}
+                      {race.subraces.length > 0 && (
+                        <span className="text-[9px] px-1 py-0.2 rounded font-mono" style={{ background: 'rgba(139, 105, 20, 0.15)', color: '#8B6914' }}>
+                          +{race.subraces.length}
+                        </span>
+                      )}
+                    </div>
                   </button>
                 );
               })}
@@ -124,9 +171,14 @@ export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelect
                 <div className="border-b pb-3" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
-                        {selectedRace.name}
-                      </h2>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-xl font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
+                          {selectedRace.name}
+                        </h2>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono" style={{ background: '#E8D3A2', border: '1px solid #C9A84C', color: '#5C341F' }}>
+                          {selectedRace.source}
+                        </span>
+                      </div>
                       <span className="text-xs font-semibold" style={{ color: '#8B6914' }}>
                         {selectedRace.nameEn} • Размер: {selectedRace.size} • Скорость: {selectedSubrace?.speed || selectedRace.speed} фт.
                         {selectedRace.darkvision > 0 && ` • Тёмное зрение ${selectedRace.darkvision} фт.`}

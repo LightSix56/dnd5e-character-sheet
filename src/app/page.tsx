@@ -32,7 +32,9 @@ import {
   getClassSubclassLevel,
   getSpellSlotsForClassLevel,
   getNewSpellLevelUnlocked,
-  DND_COMPENDIUM_FEATS
+  DND_COMPENDIUM_FEATS,
+  getRacialFeaturesForLevel,
+  getRacialHPBonusPerLevel
 } from '@/data/compendium';
 import type { TraitItem } from '@/lib/dnd-types';
 
@@ -174,7 +176,10 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   );
   const toughBonus = hasTough ? 2 : 0;
 
-  const avgHP = (char.hitDice ? getHitDieAverage(char.hitDice) : 5) + conMod + toughBonus;
+  // Racial HP bonus (Hill Dwarf: +1 HP per level)
+  const racialHPBonus = getRacialHPBonusPerLevel(char.race, char.subrace);
+
+  const avgHP = (char.hitDice ? getHitDieAverage(char.hitDice) : 5) + conMod + toughBonus + racialHPBonus;
   
   // Class progression data
   const classFeatures = useMemo(() => getClassFeaturesForLevel(char.className, newLevel), [char.className, newLevel]);
@@ -186,6 +191,12 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const unlockedCircle = useMemo(() => getNewSpellLevelUnlocked(char.className, newLevel), [char.className, newLevel]);
   const profChanged = calcProficiencyBonus(newLevel) !== calcProficiencyBonus(char.level);
 
+  // Racial progression data for this level (scaling breath, innate spells, Aasimar transformation, etc.)
+  const racialFeatures = useMemo(
+    () => getRacialFeaturesForLevel(char.race, char.subrace, newLevel),
+    [char.race, char.subrace, newLevel]
+  );
+
   // States
   const [hpMode, setHpMode] = useState<'average' | 'roll'>('average');
   const [hpRoll, setHpRoll] = useState(dieSize);
@@ -194,6 +205,13 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const [selectedFeatures, setSelectedFeatures] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     for (const f of classFeatures) init[f.name] = true;
+    return init;
+  });
+
+  // Selected racial features to add (default all checked)
+  const [selectedRacialFeatures, setSelectedRacialFeatures] = useState<Record<string, boolean>>(() => {
+    const init: Record<string, boolean> = {};
+    for (const rf of racialFeatures) init[rf.name] = true;
     return init;
   });
 
@@ -220,10 +238,14 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const [newProfText, setNewProfText] = useState('');
   const [newEquipText, setNewEquipText] = useState('');
 
-  const finalHP = Math.max(1, (hpMode === 'average' ? avgHP : (hpRoll + conMod + toughBonus)));
+  const finalHP = Math.max(1, (hpMode === 'average' ? avgHP : (hpRoll + conMod + toughBonus + racialHPBonus)));
 
   const toggleFeature = (name: string) => {
     setSelectedFeatures(prev => ({ ...prev, [name]: !prev[name] }));
+  };
+
+  const toggleRacialFeature = (name: string) => {
+    setSelectedRacialFeatures(prev => ({ ...prev, [name]: !prev[name] }));
   };
 
   const addCantripRow = () => setNewCantrips(prev => [...prev, '']);
@@ -262,6 +284,23 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
           summary: f.name,
           description: f.description,
         });
+      }
+    }
+
+    // Collect added racial features (scaling breath, innate spells, etc.)
+    const spellsToAdd = [...newSpells];
+    for (const rf of racialFeatures) {
+      if (selectedRacialFeatures[rf.name]) {
+        addedTraits.push({
+          id: `racefeat-${newLevel}-${Math.random().toString(36).substr(2, 6)}`,
+          name: rf.name,
+          source: `${char.subrace || char.race || 'Раса'} (${newLevel} ур.)`,
+          summary: rf.name,
+          description: rf.description,
+        });
+        if (rf.spell && !spellsToAdd.some(s => s.name.toLowerCase() === rf.spell!.name.toLowerCase())) {
+          spellsToAdd.push({ ...rf.spell });
+        }
       }
     }
 
@@ -304,7 +343,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
       spellSlotsGained: newSpellSlots || undefined,
       notes,
       newCantrips: newCantrips.filter(c => c.trim()),
-      newSpells: newSpells.filter(s => s.name.trim()),
+      newSpells: spellsToAdd.filter(s => s.name.trim()),
       newSavingThrowProfs: newSaveProfs,
       newSkillProfs: newSkillProfs,
       newSkillExpertise: newSkillExpertise,
@@ -375,12 +414,12 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                   className="parchment-input-center w-16 text-xs"
                 />
                 <span style={{ color: '#8B6914' }}>
-                  + мод. ТЕЛ ({formatModifier(conMod)}) {hasTough ? '+ Живучий (+2)' : ''} = <strong>{hpRoll + conMod + toughBonus}</strong>
+                  + мод. ТЕЛ ({formatModifier(conMod)}) {hasTough ? '+ Живучий (+2)' : ''} {racialHPBonus > 0 ? '+ Дворф (+1)' : ''} = <strong>{hpRoll + conMod + toughBonus + racialHPBonus}</strong>
                 </span>
               </div>
             )}
             <div className="text-[11px]" style={{ color: '#6B3A2A' }}>
-              Новый максимум здоровья: <strong>{(char.hpMax || 0) + finalHP} HP</strong> {hasTough ? '(включая +2 от черты «Живучий»)' : ''}
+              Новый максимум здоровья: <strong>{(char.hpMax || 0) + finalHP} HP</strong> {hasTough ? '(включая +2 от «Живучий») ' : ''}{racialHPBonus > 0 ? '(включая +1 от «Дворфская стойкость»)' : ''}
             </div>
           </div>
 
@@ -413,6 +452,50 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                       <div className="flex-1 min-w-0">
                         <span className="font-bold text-xs block" style={{ color: '#3D2012' }}>{f.name}</span>
                         <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{f.description}</p>
+                      </div>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 2.1. Racial Progression at this level */}
+          {racialFeatures.length > 0 && (
+            <div className="parchment-modal-section space-y-2" style={{ background: 'rgba(201, 168, 76, 0.12)', border: '1px solid rgba(201, 168, 76, 0.45)' }}>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#5C341F' }}>
+                  <span>🧬 Расовое развитие ({char.race || 'Раса'}{char.subrace ? ` — ${char.subrace}` : ''}, {newLevel} ур.):</span>
+                </h3>
+                <span className="text-[10px]" style={{ color: '#8B6914' }}>Врождённая магия и масштабирование</span>
+              </div>
+              <div className="space-y-2">
+                {racialFeatures.map(rf => (
+                  <div
+                    key={rf.name}
+                    className="p-2.5 rounded text-xs transition-colors"
+                    style={{
+                      background: selectedRacialFeatures[rf.name] ? 'rgba(232, 211, 162, 0.55)' : 'rgba(232, 211, 162, 0.2)',
+                      border: '1px solid rgba(201, 168, 76, 0.4)'
+                    }}
+                  >
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={!!selectedRacialFeatures[rf.name]}
+                        onChange={() => toggleRacialFeature(rf.name)}
+                        className="accent-[#8B6914] w-4 h-4 mt-0.5 shrink-0 cursor-pointer"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-xs" style={{ color: '#3D2012' }}>{rf.name}</span>
+                          {rf.spell && (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-bold font-mono" style={{ background: '#E8D3A2', color: '#5C341F', border: '1px solid #C9A84C' }}>
+                              Заклинание {rf.spell.level} круга
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{rf.description}</p>
                       </div>
                     </label>
                   </div>
@@ -681,6 +764,9 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
             {isASI && asiChoice === 'feat' && selectedFeat && <p>• Получена черта: <strong>{selectedFeat.name}</strong></p>}
             {Object.keys(selectedFeatures).filter(k => selectedFeatures[k]).length > 0 && (
               <p>• Классовые умения: {Object.keys(selectedFeatures).filter(k => selectedFeatures[k]).join(', ')}</p>
+            )}
+            {Object.keys(selectedRacialFeatures).filter(k => selectedRacialFeatures[k]).length > 0 && (
+              <p>• Расовые особенности: {Object.keys(selectedRacialFeatures).filter(k => selectedRacialFeatures[k]).join(', ')}</p>
             )}
             {unlockedCircle && <p>• Доступ к магии: <strong>{unlockedCircle}-й круг заклинаний!</strong></p>}
             {newCantrips.filter(c => c.trim()).length > 0 && <p>• Заговоры: {newCantrips.filter(c => c.trim()).join(', ')}</p>}

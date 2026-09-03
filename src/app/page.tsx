@@ -34,7 +34,9 @@ import {
   getNewSpellLevelUnlocked,
   DND_COMPENDIUM_FEATS,
   getRacialFeaturesForLevel,
-  getRacialHPBonusPerLevel
+  getRacialHPBonusPerLevel,
+  isSpellAllowedForCharacter,
+  getAvailableSpellsForCharacter
 } from '@/data/compendium';
 import type { TraitItem } from '@/lib/dnd-types';
 
@@ -248,6 +250,24 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const toggleRacialFeature = (name: string) => {
     setSelectedRacialFeatures(prev => ({ ...prev, [name]: !prev[name] }));
   };
+
+  const availableClassSpells = useMemo(() => getAvailableSpellsForCharacter(char), [char]);
+  const cantripAutocompleteItems: AutocompleteItem[] = useMemo(() => {
+    return availableClassSpells.filter(s => s.level === 0).map(s => ({
+      name: s.name,
+      badge: 'Заговор',
+      secondary: s.school,
+      data: s,
+    }));
+  }, [availableClassSpells]);
+  const leveledSpellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
+    return availableClassSpells.filter(s => s.level > 0).map(s => ({
+      name: s.name,
+      badge: `${s.level} ур.`,
+      secondary: s.school,
+      data: s,
+    }));
+  }, [availableClassSpells]);
 
   const addCantripRow = () => setNewCantrips(prev => [...prev, '']);
   const removeCantripRow = (i: number) => setNewCantrips(prev => prev.filter((_, j) => j !== i));
@@ -679,7 +699,15 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
             <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>✨ Новые заговоры (→ вкладка Заклинания):</h3>
             {newCantrips.map((c, i) => (
               <div key={i} className="flex items-center gap-2 mb-1">
-                <input value={c} onChange={e => updateCantripRow(i, e.target.value)} placeholder="Название заговора" className={inputClass} />
+                <div className="flex-1">
+                  <AutocompleteInput
+                    value={c}
+                    onChange={v => updateCantripRow(i, v)}
+                    items={cantripAutocompleteItems}
+                    placeholder="Название заговора вашего класса..."
+                    className={inputClass}
+                  />
+                </div>
                 <button onClick={() => removeCantripRow(i)} className="parchment-remove-btn">✕</button>
               </div>
             ))}
@@ -694,7 +722,15 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                 <select value={s.level} onChange={e => updateSpellRow(i, 'level', Number(e.target.value))} className="parchment-select h-7 shrink-0" style={{ width: '64px' }}>
                   {[1,2,3,4,5,6,7,8,9].map(l => <option key={l} value={l}>{l} ур.</option>)}
                 </select>
-                <input value={s.name} onChange={e => updateSpellRow(i, 'name', e.target.value)} placeholder="Название заклинания" className="flex-1 min-w-0 parchment-input" />
+                <div className="flex-1 min-w-0">
+                  <AutocompleteInput
+                    value={s.name}
+                    onChange={v => updateSpellRow(i, 'name', v)}
+                    items={leveledSpellAutocompleteItems}
+                    placeholder="Название заклинания вашего класса..."
+                    className="w-full parchment-input"
+                  />
+                </div>
                 <label className="parchment-checkbox parchment-checkbox-sm" style={{ color: '#8B6914' }}><input type="checkbox" checked={s.prepared} onChange={e => updateSpellRow(i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label><span className="text-xs" style={{ color: '#8B6914' }}>Подг.</span>
                 <button onClick={() => removeSpellRow(i)} className="parchment-remove-btn">✕</button>
               </div>
@@ -1248,6 +1284,89 @@ function InsufficientGoldModal({ required, current, action, onClose }: Insuffici
   );
 }
 
+// ── Non-Class Spell Confirmation Warning Modal ──
+
+interface NonClassSpellConfirmModalProps {
+  char: CharacterData;
+  spell: DndSpell;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function NonClassSpellConfirmModal({ char, spell, onConfirm, onCancel }: NonClassSpellConfirmModalProps) {
+  const allowedClasses = (spell.classes || []).join(', ') || 'Другие классы';
+  const charClass = char.className || char.spellcastingClass || 'Без класса';
+
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[360] flex items-center justify-center p-3 bg-black/65 backdrop-blur-sm" onClick={onCancel}>
+      <div
+        className="parchment-modal max-w-md w-full p-5 space-y-4 shadow-2xl relative rounded-lg"
+        style={{ background: '#F5E6C8', border: '3px solid #D9822B' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(217, 130, 43, 0.4)' }}>
+          <span className="text-2xl">⚠️</span>
+          <div>
+            <h3 className="text-base font-bold text-[#6B3A2A]" style={{ fontFamily: 'Georgia, serif' }}>
+              Заклинание другого класса
+            </h3>
+            <div className="text-[11px]" style={{ color: '#8B6914' }}>
+              Ограничение правил D&D 5e
+            </div>
+          </div>
+        </div>
+
+        <div className="text-xs space-y-2.5 leading-relaxed" style={{ color: '#4A2A18' }}>
+          <div className="p-2.5 rounded space-y-1.5" style={{ background: 'rgba(232, 211, 162, 0.4)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
+            <div className="flex justify-between">
+              <span>Заклинание:</span>
+              <strong className="text-[#3D2012]">«{spell.name}» ({spell.level === 0 ? 'Заговор' : `${spell.level} круг`})</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Доступно классам:</span>
+              <strong className="text-[#A04000]">{allowedClasses}</strong>
+            </div>
+            <div className="flex justify-between border-t pt-1.5 mt-1" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+              <span>Ваш персонаж:</span>
+              <strong className="text-[#5C341F]">{charClass} {char.subclass ? `(${char.subclass})` : ''}</strong>
+            </div>
+          </div>
+
+          <p>
+            В D&D 5e персонаж класса <strong>{charClass}</strong> не может изучать или готовить заклинания других классов (например, заклинания Друида, Волшебника или Барда) без соответствующего домена/покровителя, черты (например, <em>«Посвященный в магию»</em>, <em>«Фейский коснувшийся»</em>) или расового источника.
+          </p>
+
+          <div className="p-2 rounded text-[11px]" style={{ background: 'rgba(201, 168, 76, 0.2)', border: '1px dashed #C9A84C' }}>
+            <p className="font-semibold text-[#5C341F]">💡 Добавление из внешнего источника:</p>
+            <p className="opacity-90">
+              Вы можете добавить это заклинание, если оно получено от свитка, магического предмета, обучения у мастера или специальной черты.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 pt-2 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-3 py-1.5 rounded text-xs font-semibold cursor-pointer"
+            style={{ background: 'rgba(139, 105, 20, 0.15)', color: '#5C341F' }}
+          >
+            Отмена
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="px-4 py-1.5 rounded text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5 transition-transform active:scale-95"
+            style={{ background: '#7C3E08', color: '#FBF0DC', border: '1px solid #5C341F' }}
+          >
+            <span>Всё равно добавить (от черты / свитка)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Class Template Modal ──
 
 interface TemplateModalProps {
@@ -1620,6 +1739,8 @@ export default function DnDCharacterSheet() {
   const [spellAddSuccess, setSpellAddSuccess] = useState<string | null>(null);
   const [traitSearchQuery, setTraitSearchQuery] = useState('');
   const [traitAddSuccess, setTraitAddSuccess] = useState<string | null>(null);
+  const [filterOnlyMyClassSpells, setFilterOnlyMyClassSpells] = useState(true);
+  const [pendingForeignSpell, setPendingForeignSpell] = useState<{ spell: DndSpell; level: number; callback: () => void } | null>(null);
 
   const weaponAutocompleteItems: AutocompleteItem[] = useMemo(() => {
     return DND_WEAPONS.map(w => ({
@@ -1631,13 +1752,29 @@ export default function DnDCharacterSheet() {
   }, []);
 
   const spellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
-    return DND_SPELLS.map(s => ({
-      name: s.name,
-      badge: s.level === 0 ? 'Заговор' : `${s.level} ур.`,
-      secondary: s.school,
-      data: s,
-    }));
-  }, []);
+    return DND_SPELLS.map(s => {
+      const check = isSpellAllowedForCharacter(char, s);
+      return {
+        spell: s,
+        check,
+      };
+    })
+    .filter(({ check }) => {
+      if (!filterOnlyMyClassSpells) return true;
+      return check.allowed;
+    })
+    .map(({ spell: s, check }) => {
+      const levelBadge = s.level === 0 ? 'Заговор' : `${s.level} ур.`;
+      const badge = `${levelBadge} • ${check.sourceLabel}`;
+
+      return {
+        name: s.name,
+        badge,
+        secondary: s.nameEn ? `${s.nameEn} • ${s.school}` : s.school,
+        data: s,
+      };
+    });
+  }, [char, filterOnlyMyClassSpells]);
 
   const traitAutocompleteItems: AutocompleteItem[] = useMemo(() => {
     return DND_TRAITS.map(t => ({
@@ -1900,29 +2037,46 @@ export default function DnDCharacterSheet() {
     const spellName = item.name.trim();
     if (!spellName) return;
 
-    const level = spell ? spell.level : 0;
+    const matchedSpell = spell || findSpellByName(spellName);
+    const level = matchedSpell ? matchedSpell.level : 0;
 
-    setChar(prev => {
-      if (level === 0) {
-        return {
-          ...prev,
-          cantrips: [...prev.cantrips, spellName],
-        };
-      } else {
-        const s = { ...prev.spellsByLevel };
-        s[level] = [...(s[level] || []), { name: spellName, prepared: true }];
-        return {
-          ...prev,
-          spellsByLevel: s,
-        };
+    const doAdd = () => {
+      setChar(prev => {
+        if (level === 0) {
+          return {
+            ...prev,
+            cantrips: [...prev.cantrips, spellName],
+          };
+        } else {
+          const s = { ...prev.spellsByLevel };
+          s[level] = [...(s[level] || []), { name: spellName, prepared: true }];
+          return {
+            ...prev,
+            spellsByLevel: s,
+          };
+        }
+      });
+
+      const lvlLabel = level === 0 ? 'Заговоры (0 ур.)' : `Заклинания ${level} ур.`;
+      setSpellAddSuccess(`✨ «${spellName}» добавлено в ${lvlLabel}`);
+      setTimeout(() => setSpellAddSuccess(null), 3000);
+      setSpellSearchQuery('');
+    };
+
+    if (matchedSpell) {
+      const check = isSpellAllowedForCharacter(char, matchedSpell);
+      if (!check.allowed) {
+        setPendingForeignSpell({
+          spell: matchedSpell,
+          level,
+          callback: doAdd,
+        });
+        return;
       }
-    });
+    }
 
-    const lvlLabel = level === 0 ? 'Заговоры (0 ур.)' : `Заклинания ${level} ур.`;
-    setSpellAddSuccess(`✨ «${spellName}» добавлено в ${lvlLabel}`);
-    setTimeout(() => setSpellAddSuccess(null), 3000);
-    setSpellSearchQuery('');
-  }, []);
+    doAdd();
+  }, [char]);
 
   const updateTraitItem = useCallback((index: number, field: keyof TraitItem, value: string) => {
     setChar(prev => {
@@ -2971,6 +3125,17 @@ export default function DnDCharacterSheet() {
           onClose={() => setInsufficientGoldNotice(null)}
         />
       )}
+      {pendingForeignSpell && (
+        <NonClassSpellConfirmModal
+          char={char}
+          spell={pendingForeignSpell.spell}
+          onConfirm={() => {
+            pendingForeignSpell.callback();
+            setPendingForeignSpell(null);
+          }}
+          onCancel={() => setPendingForeignSpell(null)}
+        />
+      )}
       {activeItemModal && (
         <ItemDetailModal
           item={activeItemModal}
@@ -3742,11 +3907,22 @@ export default function DnDCharacterSheet() {
             </div>
             {/* Quick Spell Adder (Unified Search) */}
             <div className="parchment-card lg:col-span-2">
-              <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+              <div className="px-4 pt-4 pb-3 flex items-center justify-between flex-wrap gap-2">
                 <h3 className="parchment-heading flex items-center gap-2">
                   <SpellbookIcon size={20} />
                   <span>Поиск и быстрое добавление заклинания</span>
                 </h3>
+                <label className="flex items-center gap-1.5 cursor-pointer select-none text-[11px] font-semibold" style={{ color: '#5C341F' }}>
+                  <input
+                    type="checkbox"
+                    checked={filterOnlyMyClassSpells}
+                    onChange={e => setFilterOnlyMyClassSpells(e.target.checked)}
+                    className="rounded accent-[#5C341F] cursor-pointer"
+                  />
+                  <span>
+                    Только заклинания {char.className || char.spellcastingClass || 'моего класса'}{char.subclass ? ` (+ ${char.subclass})` : ''}
+                  </span>
+                </label>
               </div>
               <div className="px-4 pb-4">
                 <div className="flex gap-2 items-center">
@@ -3788,14 +3964,30 @@ export default function DnDCharacterSheet() {
               <div className="px-4 pb-4 space-y-2">
                 {char.cantrips.map((c, i) => {
                   const spellDef = findSpellByName(c);
+                  const check = c.trim() ? isSpellAllowedForCharacter(char, spellDef || c) : null;
                   return (
                     <div key={i} className="flex gap-1.5 items-center">
-                      <input
-                        value={c}
-                        onChange={e => updateCantrip(i, e.target.value)}
-                        placeholder="Название заговора..."
-                        className={inputClass + " flex-1"}
-                      />
+                      <div className="flex-1 relative flex items-center">
+                        <input
+                          value={c}
+                          onChange={e => updateCantrip(i, e.target.value)}
+                          placeholder="Название заговора..."
+                          className={inputClass + (check ? " pr-28" : "")}
+                        />
+                        {check && (
+                          <span
+                            className="absolute right-2 text-[10px] px-1.5 py-0.5 rounded font-mono pointer-events-none truncate max-w-[110px]"
+                            style={{
+                              background: check.allowed ? (check.source === 'class' ? 'rgba(40, 140, 40, 0.15)' : 'rgba(30, 100, 200, 0.15)') : 'rgba(217, 83, 79, 0.18)',
+                              color: check.allowed ? (check.source === 'class' ? '#276727' : '#1B4D89') : '#900',
+                              border: check.allowed ? (check.source === 'class' ? '1px solid rgba(40, 140, 40, 0.3)' : '1px solid rgba(30, 100, 200, 0.3)') : '1px solid rgba(217, 83, 79, 0.4)'
+                            }}
+                            title={check.reason || check.sourceLabel}
+                          >
+                            {check.allowed ? check.sourceLabel : '⚠️ Чужой'}
+                          </span>
+                        )}
+                      </div>
                       <button
                         type="button"
                         onClick={() => setActiveSpellModal({
@@ -3826,17 +4018,31 @@ export default function DnDCharacterSheet() {
                   <div className="px-4 pb-4 space-y-2">
                     {spells.map((spell, i) => {
                       const spellDef = findSpellByName(spell.name);
+                      const check = spell.name.trim() ? isSpellAllowedForCharacter(char, spellDef || spell.name) : null;
                       return (
                         <div key={i} className="flex gap-1.5 items-center">
                           <label className="parchment-checkbox" title="Подготовлено"><input type="checkbox" checked={spell.prepared} onChange={e => updateSpellEntry(lvl, i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label>
-                          <div className="flex-1">
+                          <div className="flex-1 relative flex items-center">
                             <AutocompleteInput
                               value={spell.name}
                               onChange={val => updateSpellEntry(lvl, i, 'name', val)}
                               items={spellAutocompleteItems}
                               placeholder={`Заклинание ${lvl} ур....`}
-                              className={inputClass}
+                              className={inputClass + (check ? " pr-28" : "")}
                             />
+                            {check && (
+                              <span
+                                className="absolute right-2 text-[10px] px-1.5 py-0.5 rounded font-mono pointer-events-none truncate max-w-[110px]"
+                                style={{
+                                  background: check.allowed ? (check.source === 'class' ? 'rgba(40, 140, 40, 0.15)' : 'rgba(30, 100, 200, 0.15)') : 'rgba(217, 83, 79, 0.18)',
+                                  color: check.allowed ? (check.source === 'class' ? '#276727' : '#1B4D89') : '#900',
+                                  border: check.allowed ? (check.source === 'class' ? '1px solid rgba(40, 140, 40, 0.3)' : '1px solid rgba(30, 100, 200, 0.3)') : '1px solid rgba(217, 83, 79, 0.4)'
+                                }}
+                                title={check.reason || check.sourceLabel}
+                              >
+                                {check.allowed ? check.sourceLabel : '⚠️ Чужой'}
+                              </span>
+                            )}
                           </div>
                           <button
                             type="button"

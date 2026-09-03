@@ -5,6 +5,7 @@ export * from './items';
 export * from './feats';
 export * from './class-progression';
 export * from './race-progression';
+export * from './class-spells';
 
 import { DND_COMPENDIUM_SPELLS } from './spells';
 import { DND_COMPENDIUM_ITEMS } from './items';

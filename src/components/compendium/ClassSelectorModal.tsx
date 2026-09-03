@@ -6,12 +6,13 @@ import { CrossedSwordsIcon, SparklesDndIcon, ScrollIcon, EngravedShieldIcon } fr
 
 interface ClassSelectorModalProps {
   currentClass?: string;
-  onSelect: (cls: CompendiumClass) => void;
+  onSelect: (cls: CompendiumClass, applyScores?: boolean) => void;
   onClose: () => void;
 }
 
 export function ClassSelectorModal({ currentClass, onSelect, onClose }: ClassSelectorModalProps) {
   const [search, setSearch] = useState('');
+  const [autoAssignScores, setAutoAssignScores] = useState(true);
   const [selectedClassId, setSelectedClassId] = useState<string>(() => {
     if (currentClass) {
       const match = DND_COMPENDIUM_CLASSES.find(c => 
@@ -35,7 +36,7 @@ export function ClassSelectorModal({ currentClass, onSelect, onClose }: ClassSel
 
   const handleApply = () => {
     if (selectedClass) {
-      onSelect(selectedClass);
+      onSelect(selectedClass, autoAssignScores);
       onClose();
     }
   };
@@ -194,6 +195,31 @@ export function ClassSelectorModal({ currentClass, onSelect, onClose }: ClassSel
                   </div>
                 </div>
 
+                {/* Recommended Abilities */}
+                {selectedClass.recommendedScores && (
+                  <div className="space-y-1.5 p-2.5 rounded" style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wide" style={{ color: '#8B6914' }}>
+                        Рекомендуемые характеристики (Standard Array):
+                      </span>
+                      <span className="text-[10px] font-mono" style={{ color: '#6B3A2A' }}>
+                        Сумма: 72
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {Object.entries(selectedClass.recommendedScores).map(([ab, val]) => (
+                        <span
+                          key={ab}
+                          className="px-2 py-0.5 rounded text-xs font-bold font-mono"
+                          style={{ background: '#E8D3A2', border: '1px solid #C9A84C', color: '#5C341F' }}
+                        >
+                          {ab} {val}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Subclasses preview */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
@@ -222,10 +248,18 @@ export function ClassSelectorModal({ currentClass, onSelect, onClose }: ClassSel
         </div>
 
         {/* Footer */}
-        <div className="p-3 flex items-center justify-between border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.4)', background: 'rgba(232, 211, 162, 0.2)' }}>
-          <div className="text-xs" style={{ color: '#6B3A2A' }}>
-            Выбрано: <strong>{selectedClass?.name}</strong> ({selectedClass?.nameEn})
-          </div>
+        <div className="p-3 flex flex-col sm:flex-row items-center justify-between gap-2 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.4)', background: 'rgba(232, 211, 162, 0.2)' }}>
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={autoAssignScores}
+              onChange={e => setAutoAssignScores(e.target.checked)}
+              className="accent-[#8B6914] w-4 h-4 cursor-pointer"
+            />
+            <span className="text-xs font-bold" style={{ color: '#3D2012' }}>
+              Распределить характеристики под этот класс (15, 14, 13, 12, 10, 8)
+            </span>
+          </label>
           <div className="flex gap-2">
             <button onClick={onClose} className="parchment-btn-secondary text-xs px-4 py-1.5">
               Отмена

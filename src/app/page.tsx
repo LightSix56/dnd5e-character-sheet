@@ -24,7 +24,7 @@ import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorM
 import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
 import type { CompendiumRace, CompendiumSubrace } from '@/data/compendium/races';
-import type { CompendiumClass, CompendiumSubclass } from '@/data/compendium/classes';
+import { DND_COMPENDIUM_CLASSES, type CompendiumClass, type CompendiumSubclass } from '@/data/compendium/classes';
 import { getCompendiumAutocompleteItems } from '@/data/compendium';
 import type { TraitItem } from '@/lib/dnd-types';
 
@@ -1310,6 +1310,42 @@ export default function DnDCharacterSheet() {
 
   const profBonus = useMemo(() => calcProficiencyBonus(char.level), [char.level]);
 
+  const compClass = useMemo(() => {
+    if (!char.className) return undefined;
+    return DND_COMPENDIUM_CLASSES.find(c =>
+      char.className.toLowerCase().includes(c.name.toLowerCase()) ||
+      char.className.toLowerCase().includes(c.nameEn.toLowerCase())
+    );
+  }, [char.className]);
+
+  const baseAbilitySum = useMemo(() => {
+    return ABILITY_NAMES.reduce((sum, abbr) => sum + (char.abilityScores[abbr] || 0), 0);
+  }, [char.abilityScores]);
+
+  const abilityWarnings = useMemo(() => {
+    const warnings: string[] = [];
+    const maxAllowed = (char.className === 'Варвар' && char.level >= 20) ? 24 : 20;
+    for (const abbr of ABILITY_NAMES) {
+      const total = getTotalScore(char, abbr);
+      if (total > maxAllowed) {
+        warnings.push(`${abbr} (${total}) превышает максимум ${maxAllowed}`);
+      }
+    }
+    if (baseAbilitySum > 75) {
+      warnings.push(`Сумма базы (${baseAbilitySum}) превышает стандарт D&D (72–75)`);
+    }
+    return warnings;
+  }, [char, baseAbilitySum]);
+
+  const handleResetToStandardScores = useCallback(() => {
+    const scores = compClass?.recommendedScores || { 'СИЛ': 15, 'ТЕЛ': 14, 'ЛОВ': 13, 'МДР': 12, 'ХАР': 10, 'ИНТ': 8 };
+    setChar(prev => ({
+      ...prev,
+      abilityScores: { ...scores }
+    }));
+    showToast('Характеристики', `Установлен стандартный набор (15, 14, 13, 12, 10, 8) для ${compClass?.name || 'класса'}.`);
+  }, [compClass, showToast]);
+
   // ── Level Up ──
   const handleLevelUp = useCallback((entry: LevelUpEntry) => {
     setChar(prev => {
@@ -1525,7 +1561,7 @@ export default function DnDCharacterSheet() {
     showToast(`${template?.emoji || ''} ${template?.name || ''}`, 'Шаблон применён — 1 уровень');
   }, [showToast]);
 
-  const handleSelectClass = useCallback((cls: CompendiumClass) => {
+  const handleSelectClass = useCallback((cls: CompendiumClass, applyScores?: boolean) => {
     setChar(prev => {
       const updated = { ...prev };
       updated.className = cls.name;
@@ -1542,6 +1578,10 @@ export default function DnDCharacterSheet() {
         updated.spellcastingAbility = cls.spellcasting.ability || '';
       }
 
+      if (applyScores && cls.recommendedScores) {
+        updated.abilityScores = { ...cls.recommendedScores };
+      }
+
       if (prev.className !== cls.name) {
         updated.subclass = '';
       }
@@ -1549,7 +1589,10 @@ export default function DnDCharacterSheet() {
       return updated;
     });
     setShowClassModal(false);
-    showToast(cls.name, `Класс «${cls.name}» выбран! Кость хитов: 1d${cls.hitDieSize}, спасброски настроены.`);
+    showToast(
+      cls.name,
+      `Класс «${cls.name}» выбран! Кость хитов: 1d${cls.hitDieSize}${applyScores ? ', характеристики распределены' : ''}.`
+    );
   }, [showToast]);
 
   const handleSelectRace = useCallback((race: CompendiumRace, subrace?: CompendiumSubrace) => {
@@ -2113,11 +2156,28 @@ export default function DnDCharacterSheet() {
               {/* Abilities */}
               <div className="parchment-card">
                 <div className="px-4 pt-4 pb-3">
-                  <h3 className="parchment-heading flex items-center gap-2">
-                    <SparklesDndIcon size={20} />
-                    <span>Характеристики</span>
-                    <span className="ml-auto text-xs font-normal" style={{ color: '#8B6914' }}>Бонус мастерства: {formatModifier(profBonus)}</span>
-                  </h3>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <h3 className="parchment-heading flex items-center gap-2">
+                      <SparklesDndIcon size={20} />
+                      <span>Характеристики</span>
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="text-xs px-2 py-0.5 rounded font-mono font-semibold"
+                        style={
+                          baseAbilitySum > 75
+                            ? { background: '#FFEBE6', color: '#D9381E', border: '1px solid #FF8F73' }
+                            : { background: 'rgba(232, 211, 162, 0.5)', color: '#6B3A2A', border: '1px solid rgba(201, 168, 76, 0.4)' }
+                        }
+                        title="Сумма базовых характеристик (Standard Array = 72, Point Buy = 72..75)"
+                      >
+                        База: {baseAbilitySum}/72
+                      </span>
+                      <span className="text-xs font-normal" style={{ color: '#8B6914' }}>
+                        Мастерство: {formatModifier(profBonus)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 <div className="px-4 pb-4">
                   <div className="space-y-2">
@@ -2132,6 +2192,9 @@ export default function DnDCharacterSheet() {
                       const mod = getModifier(char, abbr);
                       const save = getSavingThrow(char, abbr);
                       const isProf = char.savingThrowProficiencies[abbr];
+                      const maxAllowed = (char.className === 'Варвар' && char.level >= 20) ? 24 : 20;
+                      const isOverMax = total > maxAllowed;
+
                       return (
                         <div key={abbr} className={`p-2 rounded ${isProf ? 'parchment-prof' : 'parchment-no-prof'}`}>
                           {/* Mobile layout — stacked grid for narrow screens */}
@@ -2139,7 +2202,10 @@ export default function DnDCharacterSheet() {
                             {/* Name + total+mod in top-left */}
                             <div className="flex items-baseline gap-1.5">
                               <span className="text-xs font-bold" style={{ color: '#3C2415' }}>{abbr}</span>
-                              <span className="text-xs font-bold" style={{ color: '#6B3A2A' }}>{total}</span>
+                              <span className={`text-xs font-bold ${isOverMax ? 'text-red-700' : ''}`} style={{ color: isOverMax ? '#C92A2A' : '#6B3A2A' }}>
+                                {total}
+                              </span>
+                              {isOverMax && <span title={`Превышает обычный максимум D&D 5e (${maxAllowed})`} className="text-[10px] cursor-help">⚠️</span>}
                               <span className="text-[11px]" style={{ color: '#8B6914' }}>({formatModifier(mod)})</span>
                             </div>
                             {/* Save throw in top-right */}
@@ -2169,7 +2235,10 @@ export default function DnDCharacterSheet() {
                             <input type="number" value={base} onChange={e => updateAbility(abbr, 'abilityScores', Number(e.target.value) || 10)} className={inputClassCenter + " text-xs"} />
                             <input type="number" value={racial} onChange={e => updateAbility(abbr, 'abilityBonuses', Number(e.target.value) || 0)} className={inputClassCenter + " text-xs"} title="Расовый бонус" />
                             <CalcBadge value={asi > 0 ? `+${asi}` : '0'} />
-                            <CalcBadge value={total} />
+                            <div className="flex items-center justify-center gap-1">
+                              <CalcBadge value={total} />
+                              {isOverMax && <span title={`Превышает обычный максимум D&D 5e (${maxAllowed})`} className="text-[11px] cursor-help">⚠️</span>}
+                            </div>
                             <RollBadge value={formatModifier(mod)} label={`Проверка ${ABILITY_FULL[abbr]}`} modifier={mod} onRoll={handleRoll} />
                             <div className="flex items-center gap-1">
                               <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSaveProf(abbr, e.target.checked)} /><span className="checkmark"></span></label>
@@ -2179,7 +2248,33 @@ export default function DnDCharacterSheet() {
                         </div>
                       );
                     })}
-                    <p className="text-[10px] text-right" style={{ color: '#8B6914' }}>База | Раса | АСИ (от уровней) · Нажмите Мод./Спасбр. для броска d20</p>
+
+                    {/* Warning alert if stats exceed official limits */}
+                    {abilityWarnings.length > 0 && (
+                      <div className="p-2.5 rounded text-xs flex items-center gap-2 mt-2" style={{ background: 'rgba(230, 140, 20, 0.15)', border: '1px solid rgba(200, 120, 20, 0.4)', color: '#7C3E08' }}>
+                        <span className="text-base leading-none">⚠️</span>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-bold">Предупреждение по правилам D&D 5e:</span>
+                          <div className="text-[11px] opacity-90">{abilityWarnings.join(' • ')}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Footer controls & hint */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleResetToStandardScores}
+                        className="text-[11px] font-bold underline cursor-pointer hover:opacity-80"
+                        style={{ color: '#8B6914' }}
+                        title="Установить рекомендованный стандартный набор 15, 14, 13, 12, 10, 8 для этого класса"
+                      >
+                        🎯 Сбросить на стандарт класса ({compClass?.name || char.className || 'Воин'})
+                      </button>
+                      <p className="text-[10px]" style={{ color: '#8B6914' }}>
+                        База | Раса | АСИ · Нажмите Мод./Спасбр. для d20
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

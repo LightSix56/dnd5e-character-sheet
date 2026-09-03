@@ -18,12 +18,13 @@ import { DND_WEAPONS, findWeaponByName, type DndWeapon } from '@/data/dnd-weapon
 import { DND_TRAITS, findTraitByName, type DndTrait } from '@/data/dnd-traits';
 import { AutocompleteInput, type AutocompleteItem } from '@/components/compendium/AutocompleteInput';
 import { SpellDetailModal, WeaponDetailModal, TraitDetailModal } from '@/components/compendium/CompendiumModals';
+import { ClassSelectorModal } from '@/components/compendium/ClassSelectorModal';
 import { RaceSelectorModal } from '@/components/compendium/RaceSelectorModal';
 import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorModal';
 import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
 import type { CompendiumRace, CompendiumSubrace } from '@/data/compendium/races';
-import type { CompendiumSubclass } from '@/data/compendium/classes';
+import type { CompendiumClass, CompendiumSubclass } from '@/data/compendium/classes';
 import { getCompendiumAutocompleteItems } from '@/data/compendium';
 import type { TraitItem } from '@/lib/dnd-types';
 
@@ -934,6 +935,7 @@ export default function DnDCharacterSheet() {
   const [showLevelDown, setShowLevelDown] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showClassModal, setShowClassModal] = useState(false);
   const [showRaceModal, setShowRaceModal] = useState(false);
   const [showSubclassModal, setShowSubclassModal] = useState(false);
   const [activeItemModal, setActiveItemModal] = useState<CompendiumItem | null>(null);
@@ -1523,6 +1525,33 @@ export default function DnDCharacterSheet() {
     showToast(`${template?.emoji || ''} ${template?.name || ''}`, 'Шаблон применён — 1 уровень');
   }, [showToast]);
 
+  const handleSelectClass = useCallback((cls: CompendiumClass) => {
+    setChar(prev => {
+      const updated = { ...prev };
+      updated.className = cls.name;
+      updated.hitDice = `1d${cls.hitDieSize}`;
+
+      const newSaves = { 'СИЛ': false, 'ЛОВ': false, 'ТЕЛ': false, 'ИНТ': false, 'МДР': false, 'ХАР': false };
+      for (const prof of cls.savingThrowProfs) {
+        newSaves[prof] = true;
+      }
+      updated.savingThrowProficiencies = newSaves;
+
+      if (cls.spellcasting?.isCaster) {
+        updated.spellcastingClass = cls.name;
+        updated.spellcastingAbility = cls.spellcasting.ability || '';
+      }
+
+      if (prev.className !== cls.name) {
+        updated.subclass = '';
+      }
+
+      return updated;
+    });
+    setShowClassModal(false);
+    showToast(cls.name, `Класс «${cls.name}» выбран! Кость хитов: 1d${cls.hitDieSize}, спасброски настроены.`);
+  }, [showToast]);
+
   const handleSelectRace = useCallback((race: CompendiumRace, subrace?: CompendiumSubrace) => {
     setChar(prev => applyRaceTemplate(prev, race, subrace));
     setShowRaceModal(false);
@@ -1856,6 +1885,13 @@ export default function DnDCharacterSheet() {
         />
       )}
 
+      {showClassModal && (
+        <ClassSelectorModal
+          currentClass={char.className}
+          onSelect={handleSelectClass}
+          onClose={() => setShowClassModal(false)}
+        />
+      )}
       {showRaceModal && (
         <RaceSelectorModal
           currentRace={char.race}
@@ -2001,12 +2037,12 @@ export default function DnDCharacterSheet() {
                         <label className="parchment-label">Класс</label>
                         <button
                           type="button"
-                          onClick={() => setShowSubclassModal(true)}
+                          onClick={() => setShowClassModal(true)}
                           className="text-[10px] font-bold underline cursor-pointer hover:opacity-80"
                           style={{ color: '#8B6914' }}
-                          title="Выбрать архетип / подкласс"
+                          title="Выбрать класс из компендиума"
                         >
-                          {char.subclass ? `⚔️ ${char.subclass}` : '+ Подкласс'}
+                          📖 Каталог классов
                         </button>
                       </div>
                       <input
@@ -2016,6 +2052,18 @@ export default function DnDCharacterSheet() {
                         placeholder="Воин"
                         className={inputClass}
                       />
+                      <div className="flex items-center justify-between pt-0.5">
+                        <span className="text-[10px]" style={{ color: '#8B6914' }}>Архетип:</span>
+                        <button
+                          type="button"
+                          onClick={() => setShowSubclassModal(true)}
+                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 truncate max-w-[120px]"
+                          style={{ color: '#6B3A2A' }}
+                          title="Выбрать архетип / подкласс"
+                        >
+                          {char.subclass ? `⚔️ ${char.subclass}` : '+ Подкласс'}
+                        </button>
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <label className="parchment-label">Уровень</label>

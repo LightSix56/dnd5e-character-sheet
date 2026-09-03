@@ -797,34 +797,53 @@ interface LevelDownModalProps {
 }
 
 const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onCancel }: LevelDownModalProps) {
-  const last = char.levelHistory[char.levelHistory.length - 1];
+  const history = Array.isArray(char.levelHistory) ? char.levelHistory : [];
+  const last = history[history.length - 1];
+  const targetLevel = Math.max(1, char.level - 1);
+
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <h2 className="text-xl font-bold mb-2 flex items-center gap-2" style={{ color: '#8B2500' }}>
             <HourglassIcon size={22} />
-            <span>Откат до {char.level - 1} уровня</span>
+            <span>Откат до {targetLevel} уровня</span>
           </h2>
           {last ? (
-            <div className="mb-4 p-3 rounded text-sm space-y-1" style={{ background: 'rgba(139, 37, 0, 0.06)', border: '1px solid rgba(139, 37, 0, 0.2)' }}>
-              <p className="font-medium" style={{ color: '#8B2500' }}>Будет отменено:</p>
-              <p style={{ color: '#A0522D' }}>• −{last.hpGained} хитов</p>
-              {last.asiAbilities && <p style={{ color: '#A0522D' }}>• {last.asiAbilities.map(a => `${ABILITY_FULL[a]} +1`).join(', ')}</p>}
-              {last.newCantrips?.length > 0 && <p style={{ color: '#A0522D' }}>• Заговоры: {last.newCantrips.join(', ')}</p>}
-              {last.newSpells?.length > 0 && <p style={{ color: '#A0522D' }}>• Заклинания: {last.newSpells.map(s => `${s.name} (${s.level} ур.)`).join(', ')}</p>}
-              {last.newSavingThrowProfs?.length > 0 && <p style={{ color: '#A0522D' }}>• Влад. спасбросками: {last.newSavingThrowProfs.map(a => ABILITY_FULL[a]).join(', ')}</p>}
-              {last.newSkillProfs?.length > 0 && <p style={{ color: '#A0522D' }}>• Влад. навыками: {last.newSkillProfs.join(', ')}</p>}
-              {last.newSkillExpertise?.length > 0 && <p style={{ color: '#A0522D' }}>• Экспертиза: {last.newSkillExpertise.join(', ')}</p>}
-              {last.newAttacks?.length > 0 && <p style={{ color: '#A0522D' }}>• Атаки: {last.newAttacks.map(a => a.name).join(', ')}</p>}
+            <div className="mb-4 p-3 rounded text-sm space-y-1.5" style={{ background: 'rgba(139, 37, 0, 0.06)', border: '1px solid rgba(139, 37, 0, 0.2)' }}>
+              <p className="font-bold text-xs" style={{ color: '#8B2500' }}>Будут отменены изменения {last.level}-го уровня:</p>
+              <p className="text-xs" style={{ color: '#A0522D' }}>• −{last.hpGained} хитов</p>
+              {last.newSubclass && <p className="text-xs" style={{ color: '#A0522D' }}>• Сброс архетипа: {last.newSubclass}</p>}
+              {last.asiAbilities && last.asiAbilities.length > 0 && (
+                <p className="text-xs" style={{ color: '#A0522D' }}>
+                  • {last.asiAbilities[0] === last.asiAbilities[1]
+                    ? `−2 к характеристике ${ABILITY_FULL[last.asiAbilities[0]] || last.asiAbilities[0]}`
+                    : `−1 к характеристикам ${last.asiAbilities.map(a => ABILITY_FULL[a] || a).join(', ')}`}
+                </p>
+              )}
+              {last.selectedFeat && <p className="text-xs" style={{ color: '#A0522D' }}>• Отмена черты: {last.selectedFeat}</p>}
+              {last.addedTraits && last.addedTraits.length > 0 && (
+                <p className="text-xs" style={{ color: '#A0522D' }}>• Удаление умений: {last.addedTraits.map(t => t.name).join(', ')}</p>
+              )}
+              {last.newCantrips?.length > 0 && <p className="text-xs" style={{ color: '#A0522D' }}>• Заговоры: {last.newCantrips.join(', ')}</p>}
+              {last.newSpells?.length > 0 && <p className="text-xs" style={{ color: '#A0522D' }}>• Заклинания: {last.newSpells.map(s => `${s.name} (${s.level} ур.)`).join(', ')}</p>}
+              {last.newSavingThrowProfs?.length > 0 && <p className="text-xs" style={{ color: '#A0522D' }}>• Влад. спасбросками: {last.newSavingThrowProfs.map(a => ABILITY_FULL[a] || a).join(', ')}</p>}
+              {last.newSkillProfs?.length > 0 && <p className="text-xs" style={{ color: '#A0522D' }}>• Влад. навыками: {last.newSkillProfs.join(', ')}</p>}
+              {last.newSkillExpertise?.length > 0 && <p className="text-xs" style={{ color: '#A0522D' }}>• Экспертиза: {last.newSkillExpertise.join(', ')}</p>}
+              {last.newAttacks?.length > 0 && <p className="text-xs" style={{ color: '#A0522D' }}>• Атаки: {last.newAttacks.map(a => a.name).join(', ')}</p>}
               {last.notes && <p className="text-xs mt-1" style={{ color: '#8B6914' }}>{last.notes}</p>}
             </div>
           ) : (
-            <p className="text-sm mb-4" style={{ color: '#8B6914' }}>Нет записи. Будет просто −1 уровень.</p>
+            <div className="mb-4 p-3 rounded text-sm space-y-1" style={{ background: 'rgba(201, 168, 76, 0.15)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+              <p className="font-bold text-xs" style={{ color: '#8B6914' }}>⚠️ Запись о предыдущем уровне не найдена</p>
+              <p className="text-xs" style={{ color: '#6B3A2A' }}>
+                Персонаж будет понижен до {targetLevel} уровня, а здоровье скорректировано на среднее значение кости.
+              </p>
+            </div>
           )}
           <div className="flex gap-3">
-            <button onClick={onCancel} className="flex-1 parchment-btn-secondary">Отмена</button>
-            <button onClick={onConfirm} className="flex-1 font-medium" style={{ background: 'linear-gradient(180deg, #A0522D, #8B2500)', color: '#FBF0DC', border: '1px solid #C9A84C', borderRadius: '3px', padding: '8px 16px', cursor: 'pointer', fontSize: '0.875rem', fontFamily: 'Georgia, "Times New Roman", serif', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>⬇️ Откатить</button>
+            <button type="button" onClick={onCancel} className="flex-1 parchment-btn-secondary">Отмена</button>
+            <button type="button" onClick={onConfirm} className="flex-1 font-medium" style={{ background: 'linear-gradient(180deg, #A0522D, #8B2500)', color: '#FBF0DC', border: '1px solid #C9A84C', borderRadius: '3px', padding: '8px 16px', cursor: 'pointer', fontSize: '0.875rem', fontFamily: 'Georgia, "Times New Roman", serif', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>⬇️ Откатить</button>
           </div>
         </div>
       </div>
@@ -837,54 +856,149 @@ const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onC
 interface LevelHistoryModalProps {
   char: CharacterData;
   onClose: () => void;
+  onClearHistory?: () => void;
+  onDeleteEntry?: (index: number) => void;
 }
 
-const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose }: LevelHistoryModalProps) {
+const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose, onClearHistory, onDeleteEntry }: LevelHistoryModalProps) {
+  const history = Array.isArray(char.levelHistory) ? char.levelHistory : [];
+
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="parchment-modal max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+      <div className="parchment-modal max-w-lg w-full max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <ScrollIcon size={22} />
-            <span>История уровней</span>
-          </h2>
-          {char.levelHistory.length === 0 ? (
-            <p className="text-sm" style={{ color: '#8B6914' }}>Нет записей</p>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: '#3C2415' }}>
+              <ScrollIcon size={22} />
+              <span>История прокачки уровней</span>
+            </h2>
+            {history.length > 0 && onClearHistory && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Очистить всю историю прокачки? (Характеристики и умения персонажа останутся)')) {
+                    onClearHistory();
+                  }
+                }}
+                className="text-[11px] underline cursor-pointer hover:opacity-80 font-medium"
+                style={{ color: '#8B2500' }}
+                title="Очистить записи истории"
+              >
+                Очистить историю
+              </button>
+            )}
+          </div>
+
+          {history.length === 0 ? (
+            <div className="text-center py-8 space-y-2">
+              <div className="text-3xl opacity-60">📜</div>
+              <p className="font-bold text-sm" style={{ color: '#5C341F' }}>История прокачки пуста</p>
+              <p className="text-xs max-w-xs mx-auto leading-relaxed" style={{ color: '#8B6914' }}>
+                При каждом повышении уровня через кнопку «+» здесь автоматически сохраняются все выборы: здоровье, черты, характеристики, архетипы и умения.
+              </p>
+            </div>
           ) : (
-            <div className="space-y-2">
-              {char.levelHistory.map((entry, i) => (
-                <div key={i} className="parchment-modal-section">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold" style={{ color: '#6B3A2A' }}>{entry.level} ур.</span>
-                    <span className="text-xs" style={{ color: '#8B6914' }}>+{entry.hpGained} хитов</span>
+            <div className="space-y-3">
+              {history.map((entry, i) => (
+                <div key={i} className="parchment-modal-section space-y-1.5 relative group">
+                  <div className="flex items-center justify-between border-b pb-1.5" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-xs font-bold font-mono" style={{ background: '#5C3A6E', color: '#FBF0DC' }}>
+                        {entry.level} уровень
+                      </span>
+                      <span className="text-xs font-bold" style={{ color: '#8B2500' }}>+{entry.hpGained} HP</span>
+                    </div>
+                    {onDeleteEntry && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`Удалить запись о ${entry.level} уровне из истории?`)) {
+                            onDeleteEntry(i);
+                          }
+                        }}
+                        className="text-xs text-red-700 opacity-60 hover:opacity-100 hover:scale-110 transition-all p-1"
+                        title="Удалить эту запись"
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
-                  {entry.asiAbilities && (
-                    <p className="text-xs" style={{ color: '#4a7c3f' }}>📈 {entry.asiAbilities.map(a => `${ABILITY_FULL[a]} +1`).join(', ')}</p>
+
+                  {entry.newSubclass && (
+                    <p className="text-xs font-bold" style={{ color: '#5C3A6E' }}>👑 Архетип: {entry.newSubclass}</p>
                   )}
+
+                  {entry.selectedFeat && (
+                    <p className="text-xs font-bold" style={{ color: '#8B2500' }}>⚔️ Черта: {entry.selectedFeat}</p>
+                  )}
+
+                  {entry.asiAbilities && entry.asiAbilities.length > 0 && (
+                    <p className="text-xs font-medium" style={{ color: '#4a7c3f' }}>
+                      📈 {entry.asiAbilities[0] === entry.asiAbilities[1]
+                        ? `${ABILITY_FULL[entry.asiAbilities[0]] || entry.asiAbilities[0]} +2`
+                        : entry.asiAbilities.map(a => `${ABILITY_FULL[a] || a} +1`).join(', ')}
+                    </p>
+                  )}
+
+                  {entry.addedTraits && entry.addedTraits.length > 0 && (
+                    <div className="text-xs" style={{ color: '#3D2012' }}>
+                      <span className="font-semibold" style={{ color: '#5C341F' }}>✨ Умения: </span>
+                      {entry.addedTraits.map(t => t.name).join(', ')}
+                    </div>
+                  )}
+
+                  {entry.spellSlotsGained && Object.keys(entry.spellSlotsGained).length > 0 && (
+                    <div className="text-xs flex items-center gap-1 flex-wrap" style={{ color: '#5C3A6E' }}>
+                      <span className="font-semibold">🔮 Ячейки: </span>
+                      {Object.entries(entry.spellSlotsGained).map(([lvl, cnt]) => (
+                        <span key={lvl} className="px-1.5 py-0.2 rounded text-[10px] font-mono" style={{ background: '#E8D3A2', border: '1px solid #C9A84C' }}>
+                          {lvl} кр: {cnt}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   {entry.newCantrips?.length > 0 && (
                     <p className="text-xs" style={{ color: '#5C3A6E' }}>✨ Заговоры: {entry.newCantrips.join(', ')}</p>
                   )}
+
                   {entry.newSpells?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#6B3A2A' }}>📖 Заклинания: {entry.newSpells.map(s => `${s.name} (${s.level} ур.)`).join(', ')}</p>
+                    <p className="text-xs" style={{ color: '#6B3A2A' }}>
+                      📖 Заклинания: {entry.newSpells.map(s => `${s.name} (${s.level} ур.)`).join(', ')}
+                    </p>
                   )}
+
                   {entry.newSavingThrowProfs?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#8B6914' }}>🛡️ Влад. спасбросками: {entry.newSavingThrowProfs.map(a => ABILITY_FULL[a]).join(', ')}</p>
+                    <p className="text-xs" style={{ color: '#8B6914' }}>
+                      🛡️ Спасброски: {entry.newSavingThrowProfs.map(a => ABILITY_FULL[a] || a).join(', ')}
+                    </p>
                   )}
+
                   {entry.newSkillProfs?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#5C3A6E' }}>🎯 Влад. навыками: {entry.newSkillProfs.join(', ')}</p>
+                    <p className="text-xs" style={{ color: '#5C3A6E' }}>🎯 Навыки: {entry.newSkillProfs.join(', ')}</p>
                   )}
+
                   {entry.newSkillExpertise?.length > 0 && (
                     <p className="text-xs" style={{ color: '#5C3A6E' }}>🏆 Экспертиза: {entry.newSkillExpertise.join(', ')}</p>
                   )}
+
                   {entry.newAttacks?.length > 0 && (
                     <p className="text-xs" style={{ color: '#8B2500' }}>⚔️ Атаки: {entry.newAttacks.map(a => a.name).join(', ')}</p>
                   )}
-                  {entry.notes && <p className="text-xs mt-1 whitespace-pre-wrap" style={{ color: '#8B6914' }}>{entry.notes}</p>}
+
+                  {entry.notes && (
+                    <p className="text-xs mt-1 p-1.5 rounded whitespace-pre-wrap" style={{ background: 'rgba(232, 211, 162, 0.4)', color: '#5C341F' }}>
+                      {entry.notes}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
           )}
-          <button onClick={onClose} className="mt-4 w-full parchment-btn-secondary">Закрыть</button>
+
+          <div className="pt-4 border-t mt-4" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+            <button type="button" onClick={onClose} className="w-full parchment-btn-secondary py-2">Закрыть</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1441,14 +1555,30 @@ export default function DnDCharacterSheet() {
   const closeCloudSaves = useCallback(() => setShowCloudSaves(false), []);
   const closeSignOut = useCallback(() => setShowSignOutModal(false), []);
 
-  const handleRoll = useCallback((result: RollResult) => {
-    setRollResult(result);
-  }, []);
-
   const showToast = useCallback((title: string, description: string) => {
     setToast({ title, description });
     setTimeout(() => setToast(null), 3000);
   }, []);
+
+  const handleRoll = useCallback((result: RollResult) => {
+    setRollResult(result);
+  }, []);
+
+  const handleClearHistory = useCallback(() => {
+    setChar(prev => ({ ...prev, levelHistory: [] }));
+    showToast('История уровней', 'История прокачки очищена');
+  }, [showToast]);
+
+  const handleDeleteHistoryEntry = useCallback((index: number) => {
+    setChar(prev => {
+      const history = Array.isArray(prev.levelHistory) ? prev.levelHistory : [];
+      return {
+        ...prev,
+        levelHistory: history.filter((_, i) => i !== index),
+      };
+    });
+    showToast('История уровней', 'Запись удалена');
+  }, [showToast]);
 
   const update = useCallback(<K extends keyof CharacterData>(key: K, value: CharacterData[K]) => {
     setChar(prev => ({ ...prev, [key]: value }));
@@ -1813,7 +1943,7 @@ export default function DnDCharacterSheet() {
         attacks: updatedAttacks,
         otherProficienciesLanguages: updatedProfText,
         equipment: updatedEquipText,
-        levelHistory: [...prev.levelHistory, entry],
+        levelHistory: [...(Array.isArray(prev.levelHistory) ? prev.levelHistory : []), entry],
       };
     });
     setShowLevelUp(false);
@@ -1824,13 +1954,21 @@ export default function DnDCharacterSheet() {
   const handleLevelDown = useCallback(() => {
     setChar(prev => {
       const newLevel = Math.max(1, prev.level - 1);
-      const last = prev.levelHistory[prev.levelHistory.length - 1];
+      const history = Array.isArray(prev.levelHistory) ? prev.levelHistory : [];
+      const last = history[history.length - 1];
       let newHP = prev.hpMax || 0;
-      if (last) newHP = Math.max(1, newHP - last.hpGained);
+      if (last) {
+        newHP = Math.max(1, newHP - last.hpGained);
+      } else {
+        const avg = (prev.hitDice ? getHitDieAverage(prev.hitDice) : 5) + getModifier(prev, 'ТЕЛ');
+        newHP = Math.max(1, newHP - Math.max(1, avg));
+      }
       const newAsi = { ...prev.asiBonuses };
-      if (last?.asiAbilities) {
+      if (last?.asiAbilities && last.asiAbilities.length > 0) {
         newAsi[last.asiAbilities[0]] = Math.max(0, (newAsi[last.asiAbilities[0]] || 0) - 1);
-        newAsi[last.asiAbilities[1]] = Math.max(0, (newAsi[last.asiAbilities[1]] || 0) - 1);
+        if (last.asiAbilities[1]) {
+          newAsi[last.asiAbilities[1]] = Math.max(0, (newAsi[last.asiAbilities[1]] || 0) - 1);
+        }
       }
       let newHitDice = prev.hitDice;
       if (newHitDice) {
@@ -1950,7 +2088,7 @@ export default function DnDCharacterSheet() {
         attacks: updatedAttacks,
         otherProficienciesLanguages: updatedProfText,
         equipment: updatedEquipText,
-        levelHistory: prev.levelHistory.slice(0, -1),
+        levelHistory: history.slice(0, -1),
       };
     });
     setShowLevelDown(false);
@@ -1997,7 +2135,7 @@ export default function DnDCharacterSheet() {
     setChar(prev => {
       const updated = { ...prev };
       updated.className = cls.name;
-      updated.hitDice = `1d${cls.hitDieSize}`;
+      updated.hitDice = `${prev.level || 1}d${cls.hitDieSize}`;
 
       const newSaves = { 'СИЛ': false, 'ЛОВ': false, 'ТЕЛ': false, 'ИНТ': false, 'МДР': false, 'ХАР': false };
       for (const prof of cls.savingThrowProfs) {
@@ -2320,7 +2458,14 @@ export default function DnDCharacterSheet() {
 
       {showLevelUp && <LevelUpModal char={char} onConfirm={handleLevelUp} onCancel={closeLevelUp} />}
       {showLevelDown && <LevelDownModal char={char} onConfirm={handleLevelDown} onCancel={closeLevelDown} />}
-      {showHistory && <LevelHistoryModal char={char} onClose={closeHistory} />}
+      {showHistory && (
+        <LevelHistoryModal
+          char={char}
+          onClose={closeHistory}
+          onClearHistory={handleClearHistory}
+          onDeleteEntry={handleDeleteHistoryEntry}
+        />
+      )}
       {showTemplates && <TemplateModal onSelect={handleApplyTemplate} onCancel={closeTemplates} />}
       {rollResult && <RollResultPopup result={rollResult} onClose={closeRollResult} />}
       {showAuth && <AuthModal onClose={closeAuth} onAuth={handleAuth} onGoogleAuth={handleGoogleAuth} email={authEmail} setEmail={setAuthEmail} password={authPassword} setPassword={setAuthPassword} isSignUp={isSignUp} setIsSignUp={setIsSignUp} loading={authLoading} error={authError} />}

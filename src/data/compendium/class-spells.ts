@@ -5,6 +5,7 @@
 import type { CharacterData } from '@/lib/dnd-types';
 import { DND_COMPENDIUM_SPELLS, findSpellByName, type DndSpell } from './spells';
 import { getRacialFeaturesForLevel } from './race-progression';
+import { getSpellSlotsForClassLevel } from './class-progression';
 
 // ── Subclass Expanded / Bonus Spell Lists ──
 // Subclasses granting spells not normally on their class list or granting prepared spells
@@ -300,8 +301,77 @@ export function isSpellAllowedForCharacter(char: CharacterData, spell: DndSpell 
 }
 
 /**
- * Returns filtered list of spells suitable for this character's class, subclass, feats, and race.
+ * Returns the highest spell slot level currently available to the character (1-9), or 0 if no slots.
  */
-export function getAvailableSpellsForCharacter(char: CharacterData): DndSpell[] {
-  return DND_COMPENDIUM_SPELLS.filter(s => isSpellAllowedForCharacter(char, s).allowed);
+export function getMaxAvailableSpellSlotLevel(char: CharacterData, customLevel?: number): number {
+  let maxSlot = 0;
+  // 1. Check char.spellSlots from sheet
+  for (let lvl = 1; lvl <= 9; lvl++) {
+    if (char.spellSlots && char.spellSlots[lvl] && char.spellSlots[lvl].totalSlots > 0) {
+      maxSlot = Math.max(maxSlot, lvl);
+    }
+  }
+  // 2. Also check class progression table for char.className / spellcastingClass and level
+  const effectiveClass = char.className || char.spellcastingClass || '';
+  const level = customLevel || char.level || 1;
+  if (effectiveClass) {
+    const classSlots = getSpellSlotsForClassLevel(effectiveClass, level);
+    if (classSlots) {
+      for (const [lvlStr, count] of Object.entries(classSlots)) {
+        if (count > 0) {
+          maxSlot = Math.max(maxSlot, Number(lvlStr));
+        }
+      }
+    }
+    // Third casters: Eldritch Knight (Мистический рыцарь) / Arcane Trickster (Мистический ловкач)
+    const sub = (char.subclass || '').toLowerCase();
+    if (sub.includes('мистический рыцарь') || sub.includes('мистический ловкач')) {
+      if (level >= 19) maxSlot = Math.max(maxSlot, 4);
+      else if (level >= 13) maxSlot = Math.max(maxSlot, 3);
+      else if (level >= 7) maxSlot = Math.max(maxSlot, 2);
+      else if (level >= 3) maxSlot = Math.max(maxSlot, 1);
+    }
+  }
+  return maxSlot;
+}
+
+/**
+ * Checks if a spell level is supported by the character's available spell slots.
+ * Cantrips (level 0) are always allowed.
+ * Leveled spells (1-9) require spell slots of that level or higher.
+ */
+export function isSpellLevelAllowedForCharacter(char: CharacterData, spellLevel: number, customLevel?: number): {
+  allowed: boolean;
+  maxSlot: number;
+  reason?: string;
+} {
+  if (spellLevel === 0) {
+    return { allowed: true, maxSlot: getMaxAvailableSpellSlotLevel(char, customLevel) };
+  }
+  const maxSlot = getMaxAvailableSpellSlotLevel(char, customLevel);
+  if (spellLevel > maxSlot) {
+    return {
+      allowed: false,
+      maxSlot,
+      reason: `Заклинание требует ячейки ${spellLevel}-го уровня. У вашего персонажа доступны ячейки только до ${maxSlot || '0 (нет ячеек)'}-го уровня.`
+    };
+  }
+  return { allowed: true, maxSlot };
+}
+
+/**
+ * Returns filtered list of spells suitable for this character's class, subclass, feats, and race.
+ * Optionally also filters strictly by available spell slots.
+ */
+export function getAvailableSpellsForCharacter(
+  char: CharacterData,
+  options?: { checkSlots?: boolean; customLevel?: number }
+): DndSpell[] {
+  const maxSlot = options?.checkSlots ? getMaxAvailableSpellSlotLevel(char, options.customLevel) : 9;
+  return DND_COMPENDIUM_SPELLS.filter(s => {
+    if (options?.checkSlots && s.level > maxSlot) {
+      return false;
+    }
+    return isSpellAllowedForCharacter(char, s).allowed;
+  });
 }

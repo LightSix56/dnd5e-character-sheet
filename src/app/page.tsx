@@ -36,7 +36,9 @@ import {
   getRacialFeaturesForLevel,
   getRacialHPBonusPerLevel,
   isSpellAllowedForCharacter,
-  getAvailableSpellsForCharacter
+  getAvailableSpellsForCharacter,
+  getMaxAvailableSpellSlotLevel,
+  isSpellLevelAllowedForCharacter
 } from '@/data/compendium';
 import type { TraitItem } from '@/lib/dnd-types';
 
@@ -260,20 +262,26 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
       data: s,
     }));
   }, [availableClassSpells]);
+  const maxSlotLevelAtNewLevel = useMemo(() => {
+    return getMaxAvailableSpellSlotLevel(char, newLevel);
+  }, [char, newLevel]);
+
   const leveledSpellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
-    return availableClassSpells.filter(s => s.level > 0).map(s => ({
-      name: s.name,
-      badge: `${s.level} ур.`,
-      secondary: s.school,
-      data: s,
-    }));
-  }, [availableClassSpells]);
+    return availableClassSpells
+      .filter(s => s.level > 0 && s.level <= maxSlotLevelAtNewLevel)
+      .map(s => ({
+        name: s.name,
+        badge: `${s.level} ур.`,
+        secondary: s.school,
+        data: s,
+      }));
+  }, [availableClassSpells, maxSlotLevelAtNewLevel]);
 
   const addCantripRow = () => setNewCantrips(prev => [...prev, '']);
   const removeCantripRow = (i: number) => setNewCantrips(prev => prev.filter((_, j) => j !== i));
   const updateCantripRow = (i: number, v: string) => setNewCantrips(prev => { const a = [...prev]; a[i] = v; return a; });
 
-  const addSpellRow = () => setNewSpells(prev => [...prev, { level: unlockedCircle || 1, name: '', prepared: false }]);
+  const addSpellRow = () => setNewSpells(prev => [...prev, { level: Math.min(unlockedCircle || 1, Math.max(1, maxSlotLevelAtNewLevel)), name: '', prepared: false }]);
   const removeSpellRow = (i: number) => setNewSpells(prev => prev.filter((_, j) => j !== i));
   const updateSpellRow = (i: number, field: 'level' | 'name' | 'prepared', value: any) =>
     setNewSpells(prev => { const a = [...prev]; a[i] = { ...a[i], [field]: value }; return a; });
@@ -364,7 +372,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
       spellSlotsGained: newSpellSlots || undefined,
       notes,
       newCantrips: newCantrips.filter(c => c.trim()),
-      newSpells: spellsToAdd.filter(s => s.name.trim()),
+      newSpells: spellsToAdd.filter(s => s.name.trim() && (maxSlotLevelAtNewLevel > 0 ? s.level <= maxSlotLevelAtNewLevel : false)),
       newSavingThrowProfs: newSaveProfs,
       newSkillProfs: newSkillProfs,
       newSkillExpertise: newSkillExpertise,
@@ -716,26 +724,44 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* ── NEW SPELLS ── */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>📖 Новые заклинания (→ вкладка Заклинания):</h3>
-            {newSpells.map((s, i) => (
-              <div key={i} className="flex items-center gap-2 mb-1">
-                <select value={s.level} onChange={e => updateSpellRow(i, 'level', Number(e.target.value))} className="parchment-select h-7 shrink-0" style={{ width: '64px' }}>
-                  {[1,2,3,4,5,6,7,8,9].map(l => <option key={l} value={l}>{l} ур.</option>)}
-                </select>
-                <div className="flex-1 min-w-0">
-                  <AutocompleteInput
-                    value={s.name}
-                    onChange={v => updateSpellRow(i, 'name', v)}
-                    items={leveledSpellAutocompleteItems}
-                    placeholder="Название заклинания вашего класса..."
-                    className="w-full parchment-input"
-                  />
-                </div>
-                <label className="parchment-checkbox parchment-checkbox-sm" style={{ color: '#8B6914' }}><input type="checkbox" checked={s.prepared} onChange={e => updateSpellRow(i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label><span className="text-xs" style={{ color: '#8B6914' }}>Подг.</span>
-                <button onClick={() => removeSpellRow(i)} className="parchment-remove-btn">✕</button>
-              </div>
-            ))}
-            <button onClick={addSpellRow} className="parchment-btn-sm" style={{ color: '#6B3A2A' }}>+ Заклинание</button>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-bold" style={{ color: '#3C2415' }}>📖 Новые заклинания (→ вкладка Заклинания):</h3>
+              {maxSlotLevelAtNewLevel > 0 && (
+                <span className="text-[11px] font-mono" style={{ color: '#8B6914' }}>
+                  Доступны ячейки до {maxSlotLevelAtNewLevel} ур.
+                </span>
+              )}
+            </div>
+            {maxSlotLevelAtNewLevel === 0 ? (
+              <p className="text-xs italic p-2 rounded" style={{ background: 'rgba(201, 168, 76, 0.15)', color: '#8B6914' }}>
+                Класс «{char.className || 'Без класса'}» не обладает ячейками магии на {newLevel}-м уровне.
+              </p>
+            ) : (
+              <>
+                {newSpells.map((s, i) => (
+                  <div key={i} className="flex items-center gap-2 mb-1">
+                    <select value={s.level} onChange={e => updateSpellRow(i, 'level', Number(e.target.value))} className="parchment-select h-7 shrink-0" style={{ width: '64px' }}>
+                      {[1,2,3,4,5,6,7,8,9]
+                        .filter(l => l <= Math.max(1, maxSlotLevelAtNewLevel))
+                        .map(l => <option key={l} value={l}>{l} ур.</option>)
+                      }
+                    </select>
+                    <div className="flex-1 min-w-0">
+                      <AutocompleteInput
+                        value={s.name}
+                        onChange={v => updateSpellRow(i, 'name', v)}
+                        items={leveledSpellAutocompleteItems}
+                        placeholder="Название заклинания вашего класса..."
+                        className="w-full parchment-input"
+                      />
+                    </div>
+                    <label className="parchment-checkbox parchment-checkbox-sm" style={{ color: '#8B6914' }}><input type="checkbox" checked={s.prepared} onChange={e => updateSpellRow(i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label><span className="text-xs" style={{ color: '#8B6914' }}>Подг.</span>
+                    <button onClick={() => removeSpellRow(i)} className="parchment-remove-btn">✕</button>
+                  </div>
+                ))}
+                <button onClick={addSpellRow} className="parchment-btn-sm" style={{ color: '#6B3A2A' }}>+ Заклинание</button>
+              </>
+            )}
           </div>
 
           {/* ── NEW SAVING THROW PROFS ── */}
@@ -1751,21 +1777,26 @@ export default function DnDCharacterSheet() {
     }));
   }, []);
 
+  const maxAvailableSlot = useMemo(() => getMaxAvailableSpellSlotLevel(char), [char]);
+
   const spellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
     return DND_SPELLS.map(s => {
       const check = isSpellAllowedForCharacter(char, s);
+      const slotAllowed = s.level === 0 || s.level <= maxAvailableSlot;
       return {
         spell: s,
         check,
+        slotAllowed,
       };
     })
-    .filter(({ check }) => {
+    .filter(({ check, slotAllowed }) => {
       if (!filterOnlyMyClassSpells) return true;
-      return check.allowed;
+      return check.allowed && slotAllowed;
     })
-    .map(({ spell: s, check }) => {
+    .map(({ spell: s, check, slotAllowed }) => {
       const levelBadge = s.level === 0 ? 'Заговор' : `${s.level} ур.`;
-      const badge = `${levelBadge} • ${check.sourceLabel}`;
+      const slotNote = slotAllowed ? '' : ` • 🔒 Нет ячеек (макс. ${maxAvailableSlot || '0'} ур.)`;
+      const badge = `${levelBadge} • ${check.sourceLabel}${slotNote}`;
 
       return {
         name: s.name,
@@ -1774,7 +1805,7 @@ export default function DnDCharacterSheet() {
         data: s,
       };
     });
-  }, [char, filterOnlyMyClassSpells]);
+  }, [char, filterOnlyMyClassSpells, maxAvailableSlot]);
 
   const traitAutocompleteItems: AutocompleteItem[] = useMemo(() => {
     return DND_TRAITS.map(t => ({
@@ -2040,6 +2071,18 @@ export default function DnDCharacterSheet() {
     const matchedSpell = spell || findSpellByName(spellName);
     const level = matchedSpell ? matchedSpell.level : 0;
 
+    // 1. Strict spell slot validation: cannot take spells higher than available slots
+    if (level > 0) {
+      const maxSlot = getMaxAvailableSpellSlotLevel(char);
+      if (level > maxSlot) {
+        showToast(
+          'Недоступный круг ячеек',
+          `Заклинание «${matchedSpell?.name || spellName}» (${level} ур.) требует ячейки ${level}-го уровня. У вашего персонажа доступны ячейки только до ${maxSlot || '0 (нет ячеек)'}-го уровня.`
+        );
+        return;
+      }
+    }
+
     const doAdd = () => {
       setChar(prev => {
         if (level === 0) {
@@ -2076,7 +2119,7 @@ export default function DnDCharacterSheet() {
     }
 
     doAdd();
-  }, [char]);
+  }, [char, showToast]);
 
   const updateTraitItem = useCallback((index: number, field: keyof TraitItem, value: string) => {
     setChar(prev => {
@@ -4014,7 +4057,18 @@ export default function DnDCharacterSheet() {
               const spells = char.spellsByLevel[lvl] || [];
               return (
                 <div key={lvl} className="parchment-card">
-                  <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SpellbookIcon size={18} /><span>Заклинания {lvl} ур.</span> <span className="text-xs font-normal" style={{ color: '#8B6914' }}>({spells.length})</span></h3></div>
+                  <div className="px-4 pt-4 pb-3 flex items-center justify-between flex-wrap gap-1">
+                    <h3 className="parchment-heading flex items-center gap-2">
+                      <SpellbookIcon size={18} />
+                      <span>Заклинания {lvl} ур.</span>
+                      <span className="text-xs font-normal" style={{ color: '#8B6914' }}>({spells.length})</span>
+                    </h3>
+                    {lvl > maxAvailableSlot && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded font-mono" style={{ background: 'rgba(217, 130, 43, 0.15)', color: '#A04000', border: '1px solid rgba(217, 130, 43, 0.3)' }} title={`Ячейки ${lvl}-го круга еще не доступны вашему персонажу`}>
+                        🔒 Ячейки не открыты
+                      </span>
+                    )}
+                  </div>
                   <div className="px-4 pb-4 space-y-2">
                     {spells.map((spell, i) => {
                       const spellDef = findSpellByName(spell.name);
@@ -4063,7 +4117,19 @@ export default function DnDCharacterSheet() {
                         </div>
                       );
                     })}
-                    <button onClick={() => addSpell(lvl)} className="parchment-btn-secondary text-xs py-1.5">+ Добавить</button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (lvl > maxAvailableSlot) {
+                          showToast('Ячейки не открыты', `У персонажа еще нет ячеек ${lvl}-го круга. Повысьте уровень персонажа.`);
+                          return;
+                        }
+                        addSpell(lvl);
+                      }}
+                      className="parchment-btn-secondary text-xs py-1.5"
+                    >
+                      + Добавить
+                    </button>
                   </div>
                 </div>
               );

@@ -67,6 +67,10 @@ export interface LevelUpEntry {
   notes: string;             // freeform: subclass, new features, etc. → goes to featuresTraits
 
   // Structured additions (tracked for level-down rollback)
+  selectedFeat?: string;                              // Feat chosen instead of ASI
+  newSubclass?: string;                               // Subclass chosen at this level
+  addedTraits?: TraitItem[];                          // Traits added to traitsList
+  spellSlotsGained?: Record<number, number>;          // Updated spell slots at this level
   newCantrips: string[];                              // cantrip names added
   newSpells: { level: number; name: string; prepared: boolean }[];  // spells by level
   newSavingThrowProfs: AbilityName[];                 // new saving throw proficiencies
@@ -188,7 +192,16 @@ export function calcProficiencyBonus(level: number): number {
 // Universal ASI levels (standard 5e: 4,8,12,16,19)
 export const STANDARD_ASI_LEVELS = [4, 8, 12, 16, 19];
 
-export function isStandardASILevel(level: number): boolean {
+export function isStandardASILevel(level: number, className?: string): boolean {
+  if (className) {
+    const c = className.trim().toLowerCase();
+    if (c.includes('воин') || c.includes('fighter')) {
+      return [4, 6, 8, 12, 14, 16, 19].includes(level);
+    }
+    if (c.includes('плут') || c.includes('rogue')) {
+      return [4, 8, 10, 12, 16, 19].includes(level);
+    }
+  }
   return STANDARD_ASI_LEVELS.includes(level);
 }
 

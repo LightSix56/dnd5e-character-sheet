@@ -3,6 +3,7 @@ export * from './classes';
 export * from './spells';
 export * from './items';
 export * from './feats';
+export * from './class-progression';
 
 import { DND_COMPENDIUM_SPELLS } from './spells';
 import { DND_COMPENDIUM_ITEMS } from './items';

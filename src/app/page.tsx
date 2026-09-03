@@ -24,8 +24,16 @@ import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorM
 import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
 import type { CompendiumRace, CompendiumSubrace } from '@/data/compendium/races';
-import { DND_COMPENDIUM_CLASSES, type CompendiumClass, type CompendiumSubclass } from '@/data/compendium/classes';
-import { getCompendiumAutocompleteItems } from '@/data/compendium';
+import { DND_COMPENDIUM_CLASSES, getSubclassesForClass, type CompendiumClass, type CompendiumSubclass } from '@/data/compendium/classes';
+import {
+  getCompendiumAutocompleteItems,
+  getClassFeaturesForLevel,
+  isClassASILevel,
+  getClassSubclassLevel,
+  getSpellSlotsForClassLevel,
+  getNewSpellLevelUnlocked,
+  DND_COMPENDIUM_FEATS
+} from '@/data/compendium';
 import type { TraitItem } from '@/lib/dnd-types';
 
 import {
@@ -158,17 +166,48 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const newLevel = char.level + 1;
   const dieSize = char.hitDice ? getHitDieSize(char.hitDice) : 8;
   const diceNotation = char.hitDice ? getHitDiceNotation(char.hitDice) : 'd';
-  const avgHP = (char.hitDice ? getHitDieAverage(char.hitDice) : 5) + getModifier(char, 'ТЕЛ');
   const conMod = getModifier(char, 'ТЕЛ');
-  const isASI = isStandardASILevel(newLevel);
-  const milestones = getMilestonesAtLevel(newLevel);
+  
+  // Tough feat bonus (+2 HP per level)
+  const hasTough = (char.traitsList || []).some(t => 
+    t.name.toLowerCase().includes('живучий') || t.name.toLowerCase().includes('tough')
+  );
+  const toughBonus = hasTough ? 2 : 0;
+
+  const avgHP = (char.hitDice ? getHitDieAverage(char.hitDice) : 5) + conMod + toughBonus;
+  
+  // Class progression data
+  const classFeatures = useMemo(() => getClassFeaturesForLevel(char.className, newLevel), [char.className, newLevel]);
+  const isASI = useMemo(() => isClassASILevel(char.className, newLevel), [char.className, newLevel]);
+  const subclassReqLevel = useMemo(() => getClassSubclassLevel(char.className), [char.className]);
+  const isSubclassChoice = !char.subclass && newLevel >= subclassReqLevel;
+  const availableSubclasses = useMemo(() => getSubclassesForClass(char.className), [char.className]);
+  const newSpellSlots = useMemo(() => getSpellSlotsForClassLevel(char.className, newLevel), [char.className, newLevel]);
+  const unlockedCircle = useMemo(() => getNewSpellLevelUnlocked(char.className, newLevel), [char.className, newLevel]);
   const profChanged = calcProficiencyBonus(newLevel) !== calcProficiencyBonus(char.level);
 
+  // States
   const [hpMode, setHpMode] = useState<'average' | 'roll'>('average');
   const [hpRoll, setHpRoll] = useState(dieSize);
+  
+  // Selected class features to add (default all checked)
+  const [selectedFeatures, setSelectedFeatures] = useState<Record<string, boolean>>(() => {
+    const init: Record<string, boolean> = {};
+    for (const f of classFeatures) init[f.name] = true;
+    return init;
+  });
+
+  // Subclass choice
+  const [chosenSubclass, setChosenSubclass] = useState<string>(availableSubclasses[0]?.name || '');
+
+  // ASI / Feat choice
+  const [asiChoice, setAsiChoice] = useState<'stats' | 'feat'>('stats');
   const [asiAbility1, setAsiAbility1] = useState<AbilityName>('СИЛ');
   const [asiAbility2, setAsiAbility2] = useState<AbilityName>('ЛОВ');
-  const [asiUsed, setAsiUsed] = useState(isASI);
+  const allFeats = useMemo(() => DND_COMPENDIUM_FEATS.filter(f => f.category === 'Черта'), []);
+  const [selectedFeatId, setSelectedFeatId] = useState<string>(allFeats[0]?.id || 'alert');
+  const selectedFeat = allFeats.find(f => f.id === selectedFeatId);
+
   const [notes, setNotes] = useState('');
 
   // Structured additions
@@ -181,13 +220,17 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const [newProfText, setNewProfText] = useState('');
   const [newEquipText, setNewEquipText] = useState('');
 
-  const finalHP = Math.max(1, hpMode === 'average' ? avgHP : (hpRoll + conMod));
+  const finalHP = Math.max(1, (hpMode === 'average' ? avgHP : (hpRoll + conMod + toughBonus)));
+
+  const toggleFeature = (name: string) => {
+    setSelectedFeatures(prev => ({ ...prev, [name]: !prev[name] }));
+  };
 
   const addCantripRow = () => setNewCantrips(prev => [...prev, '']);
   const removeCantripRow = (i: number) => setNewCantrips(prev => prev.filter((_, j) => j !== i));
   const updateCantripRow = (i: number, v: string) => setNewCantrips(prev => { const a = [...prev]; a[i] = v; return a; });
 
-  const addSpellRow = () => setNewSpells(prev => [...prev, { level: 1, name: '', prepared: false }]);
+  const addSpellRow = () => setNewSpells(prev => [...prev, { level: unlockedCircle || 1, name: '', prepared: false }]);
   const removeSpellRow = (i: number) => setNewSpells(prev => prev.filter((_, j) => j !== i));
   const updateSpellRow = (i: number, field: 'level' | 'name' | 'prepared', value: any) =>
     setNewSpells(prev => { const a = [...prev]; a[i] = { ...a[i], [field]: value }; return a; });
@@ -207,102 +250,332 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
     setNewSkillExpertise(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]);
   };
 
-  const buildEntry = (): LevelUpEntry => ({
-    level: newLevel,
-    hpGained: finalHP,
-    asiAbilities: asiUsed ? [asiAbility1, asiAbility2] : null,
-    notes,
-    newCantrips: newCantrips.filter(c => c.trim()),
-    newSpells: newSpells.filter(s => s.name.trim()),
-    newSavingThrowProfs: newSaveProfs,
-    newSkillProfs: newSkillProfs,
-    newSkillExpertise: newSkillExpertise,
-    newAttacks: newAttacks.filter(a => a.name.trim()),
-    newProficienciesText: newProfText.trim(),
-    newEquipmentText: newEquipText.trim(),
-  });
+  const buildEntry = (): LevelUpEntry => {
+    // Collect added class features as TraitItem
+    const addedTraits: TraitItem[] = [];
+    for (const f of classFeatures) {
+      if (selectedFeatures[f.name]) {
+        addedTraits.push({
+          id: `feat-${newLevel}-${Math.random().toString(36).substr(2, 6)}`,
+          name: f.name,
+          source: `${char.className || 'Класс'} (${newLevel} ур.)`,
+          summary: f.name,
+          description: f.description,
+        });
+      }
+    }
 
-  const hasAdditions = newCantrips.some(c => c.trim()) || newSpells.some(s => s.name.trim()) ||
-    newSaveProfs.length > 0 || newSkillProfs.length > 0 || newSkillExpertise.length > 0 ||
-    newAttacks.some(a => a.name.trim()) || newProfText.trim() || newEquipText.trim();
+    // If subclass chosen, add its initial features
+    if (isSubclassChoice && chosenSubclass) {
+      const sc = availableSubclasses.find(s => s.name === chosenSubclass);
+      if (sc && sc.features) {
+        for (const sf of sc.features) {
+          addedTraits.push({
+            id: `subfeat-${newLevel}-${Math.random().toString(36).substr(2, 6)}`,
+            name: sf.name,
+            source: `${chosenSubclass} (${newLevel} ур.)`,
+            summary: sf.name,
+            description: sf.description,
+          });
+        }
+      }
+    }
+
+    // If Feat chosen
+    let featName: string | undefined = undefined;
+    if (isASI && asiChoice === 'feat' && selectedFeat) {
+      featName = selectedFeat.name;
+      addedTraits.push({
+        id: `feat-${newLevel}-${Math.random().toString(36).substr(2, 6)}`,
+        name: selectedFeat.name,
+        source: `Черта (${newLevel} ур.)`,
+        summary: selectedFeat.summary,
+        description: selectedFeat.description,
+      });
+    }
+
+    return {
+      level: newLevel,
+      hpGained: finalHP,
+      asiAbilities: (isASI && asiChoice === 'stats') ? [asiAbility1, asiAbility2] : null,
+      selectedFeat: featName,
+      newSubclass: (isSubclassChoice && chosenSubclass) ? chosenSubclass : undefined,
+      addedTraits,
+      spellSlotsGained: newSpellSlots || undefined,
+      notes,
+      newCantrips: newCantrips.filter(c => c.trim()),
+      newSpells: newSpells.filter(s => s.name.trim()),
+      newSavingThrowProfs: newSaveProfs,
+      newSkillProfs: newSkillProfs,
+      newSkillExpertise: newSkillExpertise,
+      newAttacks: newAttacks.filter(a => a.name.trim()),
+      newProficienciesText: newProfText.trim(),
+      newEquipmentText: newEquipText.trim(),
+    };
+  };
 
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="p-6">
-          <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
-            <D20Icon size={22} />
-            <span>Повышение до {newLevel} уровня</span>
-          </h2>
-          <p className="text-sm mb-4" style={{ color: '#8B6914' }}>{char.name || 'Персонаж'} — {char.className || 'Без класса'}</p>
+        <div className="p-6 space-y-4">
+          {/* Header */}
+          <div className="border-b pb-3" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+            <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: '#3D2012' }}>
+              <D20Icon size={24} />
+              <span>Повышение до {newLevel}-го уровня</span>
+            </h2>
+            <div className="flex items-center justify-between text-xs mt-1" style={{ color: '#8B6914' }}>
+              <span>{char.name || 'Персонаж'} — <strong>{char.className || 'Без класса'}</strong> {char.subclass ? `(${char.subclass})` : ''}</span>
+              <span className="font-mono">Кость хитов: 1{diceNotation}{dieSize}</span>
+            </div>
+          </div>
 
-          {/* Auto: Proficiency */}
+          {/* Proficiency Bonus Notification */}
           {profChanged && (
-            <div className="parchment-modal-section-accent">
-              <p className="text-sm font-medium" style={{ color: '#6B3A2A' }}>
-                🎯 Бонус мастерства: {formatModifier(calcProficiencyBonus(char.level))} → {formatModifier(calcProficiencyBonus(newLevel))}
-              </p>
-              <p className="text-xs mt-1" style={{ color: '#8B6914' }}>Бонус мастерства применяется ко всем спасброскам и навыкам с владением</p>
+            <div className="p-2.5 rounded text-xs flex items-center gap-2" style={{ background: 'rgba(230, 140, 20, 0.15)', border: '1px solid rgba(200, 120, 20, 0.4)', color: '#7C3E08' }}>
+              <span className="text-base">🎯</span>
+              <div>
+                <strong>Бонус мастерства увеличивается:</strong> {formatModifier(calcProficiencyBonus(char.level))} → <span className="font-bold text-sm">{formatModifier(calcProficiencyBonus(newLevel))}</span>
+                <div className="opacity-80 text-[11px]">Автоматически увеличит все ваши профильные атаки, спасброски и навыки.</div>
+              </div>
             </div>
           )}
 
-          {/* Milestones */}
-          {milestones.length > 0 && (
-            <div className="parchment-modal-section">
-              <p className="text-sm font-medium mb-1" style={{ color: '#6B3A2A' }}>📌 Классовые вехи уровня:</p>
-              {milestones.map((m, i) => <p key={i} className="text-xs" style={{ color: '#8B6914' }}>{m}</p>)}
-            </div>
-          )}
-
-          {/* HP */}
+          {/* 1. HP Gain Section */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>❤️ Прирост хитов:</h3>
+            <h3 className="text-sm font-bold mb-2 flex items-center justify-between" style={{ color: '#3C2415' }}>
+              <span>❤️ Прирост хитов на {newLevel} уровне:</span>
+              <span className="text-sm font-extrabold" style={{ color: '#8B2500' }}>+{finalHP} HP</span>
+            </h3>
             <div className="flex gap-2 mb-2">
-              <button onClick={() => setHpMode('average')}
-                className={hpMode === 'average' ? 'parchment-btn text-xs' : 'parchment-btn-secondary text-xs'}>
+              <button
+                type="button"
+                onClick={() => setHpMode('average')}
+                className={hpMode === 'average' ? 'parchment-btn text-xs py-1' : 'parchment-btn-secondary text-xs py-1'}
+              >
                 Среднее ({avgHP})
               </button>
-              <button onClick={() => setHpMode('roll')}
-                className={hpMode === 'roll' ? 'parchment-btn text-xs' : 'parchment-btn-secondary text-xs'}>
-                Бросок кубика
+              <button
+                type="button"
+                onClick={() => setHpMode('roll')}
+                className={hpMode === 'roll' ? 'parchment-btn text-xs py-1' : 'parchment-btn-secondary text-xs py-1'}
+              >
+                Бросок кубика (1{diceNotation}{dieSize})
               </button>
             </div>
             {hpMode === 'roll' && (
-              <div className="flex items-center gap-2 mb-2">
-                <label className="text-xs" style={{ color: '#8B6914' }}>Бросок {diceNotation}{dieSize}:</label>
-                <input type="number" min={1} max={dieSize} value={hpRoll}
+              <div className="flex items-center gap-2 p-2 rounded text-xs mb-2" style={{ background: 'rgba(232, 211, 162, 0.3)' }}>
+                <label style={{ color: '#8B6914' }}>Выпало на {diceNotation}{dieSize}:</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={dieSize}
+                  value={hpRoll}
                   onChange={e => setHpRoll(Number(e.target.value) || 1)}
-                  className="parchment-input-center w-16" />
-                <span className="text-xs" style={{ color: '#8B6914' }}>+ {formatModifier(conMod)} ТЕЛ = <strong>{hpRoll + conMod}</strong></span>
+                  className="parchment-input-center w-16 text-xs"
+                />
+                <span style={{ color: '#8B6914' }}>
+                  + мод. ТЕЛ ({formatModifier(conMod)}) {hasTough ? '+ Живучий (+2)' : ''} = <strong>{hpRoll + conMod + toughBonus}</strong>
+                </span>
               </div>
             )}
-            <p className="text-sm" style={{ color: '#3C2415' }}>Итого: <strong style={{ color: '#6B3A2A' }}>+{finalHP}</strong> хитов</p>
+            <div className="text-[11px]" style={{ color: '#6B3A2A' }}>
+              Новый максимум здоровья: <strong>{(char.hpMax || 0) + finalHP} HP</strong> {hasTough ? '(включая +2 от черты «Живучий»)' : ''}
+            </div>
           </div>
 
-          {/* ASI */}
-          <div className="parchment-modal-section">
-            <div className="flex items-center gap-2 mb-2">
-              <label className="parchment-checkbox"><input type="checkbox" checked={asiUsed} onChange={e => setAsiUsed(e.target.checked)} /><span className="checkmark"></span></label>
-              <h3 className="text-sm font-bold" style={{ color: '#3C2415' }}>📈 Улучшение характеристик (ASI)</h3>
-            </div>
-            {asiUsed && (
-              <div className="grid grid-cols-2 gap-3 pl-6">
-                <div>
-                  <label className="parchment-label">Характеристика +1:</label>
-                  <select value={asiAbility1} onChange={e => setAsiAbility1(e.target.value as AbilityName)} className="parchment-select">
-                    {ABILITY_NAMES.map(a => <option key={a} value={a}>{ABILITY_FULL[a]} ({getTotalScore(char, a)} → {getTotalScore(char, a) + 1})</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="parchment-label">Характеристика +1:</label>
-                  <select value={asiAbility2} onChange={e => setAsiAbility2(e.target.value as AbilityName)} className="parchment-select">
-                    {ABILITY_NAMES.map(a => <option key={a} value={a}>{ABILITY_FULL[a]} ({getTotalScore(char, a)} → {getTotalScore(char, a) + 1})</option>)}
-                  </select>
-                </div>
-                <p className="col-span-2 text-xs" style={{ color: '#8B6914' }}>Выберите одну характеристику дважды (+2), две разные (+1, +1) или запишите черту в особенности.</p>
+          {/* 2. Class Features at this level */}
+          {classFeatures.length > 0 && (
+            <div className="parchment-modal-section space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <span>⚔️ Классовые умения {newLevel}-го уровня:</span>
+                </h3>
+                <span className="text-[10px]" style={{ color: '#8B6914' }}>Отмеченные умения добавятся в особенности листа</span>
               </div>
-            )}
-          </div>
+              <div className="space-y-2">
+                {classFeatures.map(f => (
+                  <div
+                    key={f.name}
+                    className="p-2.5 rounded text-xs transition-colors"
+                    style={{
+                      background: selectedFeatures[f.name] ? 'rgba(232, 211, 162, 0.45)' : 'rgba(232, 211, 162, 0.15)',
+                      border: '1px solid rgba(201, 168, 76, 0.4)'
+                    }}
+                  >
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={!!selectedFeatures[f.name]}
+                        onChange={() => toggleFeature(f.name)}
+                        className="accent-[#8B6914] w-4 h-4 mt-0.5 shrink-0 cursor-pointer"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <span className="font-bold text-xs block" style={{ color: '#3D2012' }}>{f.name}</span>
+                        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{f.description}</p>
+                      </div>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 3. Subclass Choice (if reached archetype level and not yet chosen) */}
+          {isSubclassChoice && availableSubclasses.length > 0 && (
+            <div className="p-3 rounded-lg border space-y-2" style={{ background: 'rgba(92, 58, 110, 0.08)', borderColor: '#8A5D9D' }}>
+              <div className="flex items-center gap-2">
+                <span className="text-base">👑</span>
+                <h3 className="text-sm font-bold" style={{ color: '#5C3A6E' }}>
+                  Выбор воинского пути / Архетипа ({newLevel} уровень):
+                </h3>
+              </div>
+              <p className="text-xs" style={{ color: '#5C3A6E' }}>
+                Ваш класс <strong>{char.className}</strong> открывает выбор специализации на {newLevel} уровне. Выберите архетип:
+              </p>
+              <select
+                value={chosenSubclass}
+                onChange={e => setChosenSubclass(e.target.value)}
+                className="parchment-select w-full font-bold text-xs"
+              >
+                {availableSubclasses.map(sc => (
+                  <option key={sc.id} value={sc.name}>
+                    {sc.name} ({sc.nameEn}) — {sc.source || 'PHB'}
+                  </option>
+                ))}
+              </select>
+              {availableSubclasses.find(s => s.name === chosenSubclass) && (
+                <div className="p-2 rounded text-[11px] leading-relaxed" style={{ background: 'rgba(255, 255, 255, 0.6)', color: '#3D2012' }}>
+                  <p className="font-semibold mb-1">
+                    {availableSubclasses.find(s => s.name === chosenSubclass)?.description}
+                  </p>
+                  {availableSubclasses.find(s => s.name === chosenSubclass)?.features?.[0] && (
+                    <div className="text-[10px] mt-1 border-t pt-1" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+                      <strong>Стартовое умение архетипа: </strong>
+                      {availableSubclasses.find(s => s.name === chosenSubclass)?.features[0].name} —{' '}
+                      {availableSubclasses.find(s => s.name === chosenSubclass)?.features[0].description}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 4. ASI or Feat Choice */}
+          {isASI && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <span>📈 Улучшение характеристик (ASI) или Черта:</span>
+                </h3>
+                <span className="text-[10px] font-bold" style={{ color: '#8B6914' }}>Уровень {newLevel}</span>
+              </div>
+
+              {/* Tabs: Stats vs Feat */}
+              <div className="flex gap-2 border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <button
+                  type="button"
+                  onClick={() => setAsiChoice('stats')}
+                  className={asiChoice === 'stats' ? 'parchment-btn text-xs py-1 px-3 font-bold' : 'parchment-btn-secondary text-xs py-1 px-3'}
+                >
+                  📊 Характеристики (+2 или +1/+1)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAsiChoice('feat')}
+                  className={asiChoice === 'feat' ? 'parchment-btn text-xs py-1 px-3 font-bold' : 'parchment-btn-secondary text-xs py-1 px-3'}
+                >
+                  ⚔️ Выбрать черту (Feat)
+                </button>
+              </div>
+
+              {asiChoice === 'stats' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="parchment-label text-xs">Первая характеристика +1:</label>
+                    <select
+                      value={asiAbility1}
+                      onChange={e => setAsiAbility1(e.target.value as AbilityName)}
+                      className="parchment-select text-xs w-full"
+                    >
+                      {ABILITY_NAMES.map(a => (
+                        <option key={a} value={a}>
+                          {ABILITY_FULL[a]} ({getTotalScore(char, a)} → {getTotalScore(char, a) + 1})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="parchment-label text-xs">Вторая характеристика +1:</label>
+                    <select
+                      value={asiAbility2}
+                      onChange={e => setAsiAbility2(e.target.value as AbilityName)}
+                      className="parchment-select text-xs w-full"
+                    >
+                      {ABILITY_NAMES.map(a => (
+                        <option key={a} value={a}>
+                          {ABILITY_FULL[a]} ({getTotalScore(char, a)} → {getTotalScore(char, a) + 1})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <p className="col-span-full text-[11px]" style={{ color: '#8B6914' }}>
+                    * Если выбрать одну и ту же характеристику в обоих полях, она получит +2.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2 pt-1">
+                  <label className="parchment-label text-xs">Выберите официальную черту D&D 5e:</label>
+                  <select
+                    value={selectedFeatId}
+                    onChange={e => setSelectedFeatId(e.target.value)}
+                    className="parchment-select text-xs w-full font-bold"
+                  >
+                    {allFeats.map(f => (
+                      <option key={f.id} value={f.id}>
+                        {f.name} ({f.nameEn}) {f.abilityBonus ? `[+1 к ${f.abilityBonus}]` : ''}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedFeat && (
+                    <div className="p-2.5 rounded text-xs space-y-1" style={{ background: 'rgba(232, 211, 162, 0.4)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                      <div className="font-bold text-sm" style={{ color: '#3D2012' }}>{selectedFeat.name}</div>
+                      <div className="text-[11px] font-medium" style={{ color: '#8B6914' }}>{selectedFeat.summary}</div>
+                      <div className="text-[11px] leading-relaxed whitespace-pre-line pt-1 border-t border-amber-900/10" style={{ color: '#5C341F' }}>
+                        {selectedFeat.description}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 5. Spellcasting Progression */}
+          {newSpellSlots && (
+            <div className="parchment-modal-section space-y-2">
+              <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                <span>✨ Магия и ячейки заклинаний:</span>
+              </h3>
+              {unlockedCircle && (
+                <div className="p-2 rounded text-xs font-bold flex items-center gap-2" style={{ background: 'rgba(92, 58, 110, 0.12)', border: '1px solid #8A5D9D', color: '#5C3A6E' }}>
+                  <span className="text-base">🌟</span>
+                  <span>Поздравляем! Открыт доступ к заклинаниям {unlockedCircle}-го круга!</span>
+                </div>
+              )}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {Object.entries(newSpellSlots).map(([circle, count]) => (
+                  <span
+                    key={circle}
+                    className="px-2 py-0.5 rounded text-xs font-mono font-semibold"
+                    style={{ background: '#E8D3A2', border: '1px solid #C9A84C', color: '#5C341F' }}
+                  >
+                    {circle} круг: {count} {count === 1 ? 'ячейка' : count < 5 ? 'ячейки' : 'ячеек'}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* ── NEW CANTRIPS ── */}
           <div className="parchment-modal-section">
@@ -381,45 +654,46 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* ── NEW PROFICIENCIES TEXT ── */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>📋 Новые владения / языки (→ добавится к существующим):</h3>
+            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>📋 Новые владения / языки:</h3>
             <textarea value={newProfText} onChange={e => setNewProfText(e.target.value)} rows={2} className={textareaClass} placeholder="Владение тяжёлыми доспехами&#10;Язык: Драконий" />
           </div>
 
           {/* ── NEW EQUIPMENT TEXT ── */}
           <div className="parchment-modal-section-accent">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>🎒 Новое снаряжение (→ добавится к существующему):</h3>
+            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>🎒 Новое снаряжение:</h3>
             <textarea value={newEquipText} onChange={e => setNewEquipText(e.target.value)} rows={2} className={textareaClass} placeholder="Кольчуга, Длинный меч" />
           </div>
 
           {/* ── FREEFORM NOTES → FEATURES ── */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>📝 Умения и особенности (→ добавится к существующим):</h3>
-            <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} className={textareaClass}
-              placeholder={"Новые умения, подкласс, черты...\nНапример:\n- Выбор подкласса: Школа Воплощения\n- Черта: Мастер тяжёлого оружия"} />
+            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>📝 Заметки к уровню:</h3>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className={textareaClass} placeholder="Дополнительные примечания..." />
           </div>
 
           {/* Summary */}
-          <div className="parchment-modal-section-accent text-xs space-y-0.5" style={{ color: '#3C2415' }}>
-            <p className="font-bold mb-1" style={{ color: '#5C3A6E' }}>Итого:</p>
+          <div className="parchment-modal-section-accent text-xs space-y-1" style={{ color: '#3C2415' }}>
+            <p className="font-bold text-sm mb-1" style={{ color: '#5C3A6E' }}>Итоговые изменения {newLevel}-го уровня:</p>
             <p>• Уровень: {char.level} → <strong>{newLevel}</strong></p>
-            <p>• Хиты: +{finalHP} (итого: {(char.hpMax || 0) + finalHP})</p>
+            <p>• Хиты: +{finalHP} (новый максимум: {(char.hpMax || 0) + finalHP})</p>
             {profChanged && <p>• Бонус мастерства: {formatModifier(calcProficiencyBonus(char.level))} → {formatModifier(calcProficiencyBonus(newLevel))}</p>}
-            {asiUsed && <p>• АСИ: {ABILITY_FULL[asiAbility1]} +1, {ABILITY_FULL[asiAbility2]} +1</p>}
+            {isSubclassChoice && chosenSubclass && <p>• Выбран архетип: <strong>{chosenSubclass}</strong></p>}
+            {isASI && asiChoice === 'stats' && <p>• Улучшение характеристик: {ABILITY_FULL[asiAbility1]} +1, {ABILITY_FULL[asiAbility2]} +1</p>}
+            {isASI && asiChoice === 'feat' && selectedFeat && <p>• Получена черта: <strong>{selectedFeat.name}</strong></p>}
+            {Object.keys(selectedFeatures).filter(k => selectedFeatures[k]).length > 0 && (
+              <p>• Классовые умения: {Object.keys(selectedFeatures).filter(k => selectedFeatures[k]).join(', ')}</p>
+            )}
+            {unlockedCircle && <p>• Доступ к магии: <strong>{unlockedCircle}-й круг заклинаний!</strong></p>}
             {newCantrips.filter(c => c.trim()).length > 0 && <p>• Заговоры: {newCantrips.filter(c => c.trim()).join(', ')}</p>}
             {newSpells.filter(s => s.name.trim()).length > 0 && <p>• Заклинания: {newSpells.filter(s => s.name.trim()).map(s => `${s.name} (${s.level} ур.)`).join(', ')}</p>}
-            {newSaveProfs.length > 0 && <p>• Влад. спасбросками: {newSaveProfs.map(a => ABILITY_FULL[a]).join(', ')}</p>}
-            {newSkillProfs.length > 0 && <p>• Влад. навыками: {newSkillProfs.join(', ')}</p>}
-            {newSkillExpertise.length > 0 && <p>• Экспертиза: {newSkillExpertise.join(', ')}</p>}
-            {newAttacks.filter(a => a.name.trim()).length > 0 && <p>• Атаки: {newAttacks.filter(a => a.name.trim()).map(a => a.name).join(', ')}</p>}
-            {newProfText.trim() && <p>• Владения/языки: {newProfText.trim().split('\n').join('; ')}</p>}
-            {newEquipText.trim() && <p>• Снаряжение: {newEquipText.trim().split('\n').join('; ')}</p>}
-            {notes && <p>• Особенности: {notes.split('\n').join('; ')}</p>}
           </div>
 
-          <div className="flex gap-3">
-            <button onClick={onCancel} className="flex-1 parchment-btn-secondary">Отмена</button>
-            <button onClick={() => onConfirm(buildEntry())} className="flex-1 parchment-btn font-medium">
-              ⬆️ Повысить
+          {/* Buttons */}
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={onCancel} className="flex-1 parchment-btn-secondary">
+              Отмена
+            </button>
+            <button type="button" onClick={() => onConfirm(buildEntry())} className="flex-1 parchment-btn font-bold text-sm py-2">
+              ⬆️ Повысить до {newLevel}-го уровня
             </button>
           </div>
         </div>
@@ -1362,11 +1636,41 @@ export default function DnDCharacterSheet() {
         const notation = getHitDiceNotation(newHitDice);
         newHitDice = `${prev.level + 1}${notation}${dieSize}`;
       }
+
+      // Add traits to traitsList
+      let updatedTraits = [...(prev.traitsList || [])];
+      if (entry.addedTraits && entry.addedTraits.length > 0) {
+        updatedTraits = [...updatedTraits, ...entry.addedTraits];
+      }
+
+      // Set subclass if chosen
+      let updatedSubclass = prev.subclass;
+      if (entry.newSubclass) {
+        updatedSubclass = entry.newSubclass;
+      }
+
+      // Update spell slots if caster
+      let updatedSpellSlots = { ...prev.spellSlots };
+      if (entry.spellSlotsGained) {
+        for (const [lvlStr, count] of Object.entries(entry.spellSlotsGained)) {
+          const l = Number(lvlStr);
+          updatedSpellSlots[l] = {
+            totalSlots: count,
+            expendedSlots: prev.spellSlots?.[l]?.expendedSlots || 0,
+          };
+        }
+      }
+
       // Add notes to features
       let newFeatures = prev.featuresTraits;
       if (entry.notes) {
         newFeatures = newFeatures ? newFeatures + '\n' + entry.notes : entry.notes;
       }
+      if (entry.selectedFeat) {
+        const featNote = `[Черта ${entry.level} ур.]: ${entry.selectedFeat}`;
+        newFeatures = newFeatures ? newFeatures + '\n' + featNote : featNote;
+      }
+
       // Add cantrips
       const addCantrips = entry.newCantrips.filter(c => c.trim());
       const updatedCantrips = [...prev.cantrips, ...addCantrips];
@@ -1410,7 +1714,10 @@ export default function DnDCharacterSheet() {
         hpMax: newHP,
         hpCurrent: newHP,
         hitDice: newHitDice,
+        subclass: updatedSubclass,
         asiBonuses: newAsi,
+        traitsList: updatedTraits,
+        spellSlots: updatedSpellSlots,
         featuresTraits: newFeatures,
         cantrips: updatedCantrips,
         spellsByLevel: updatedSpells,
@@ -1424,7 +1731,7 @@ export default function DnDCharacterSheet() {
       };
     });
     setShowLevelUp(false);
-    showToast(`${entry.level} уровень!`, 'Персонаж повышен');
+    showToast(`${entry.level} уровень!`, `Персонаж успешно повышен до ${entry.level}-го уровня.`);
   }, [showToast]);
 
   // ── Level Down ──
@@ -1445,11 +1752,47 @@ export default function DnDCharacterSheet() {
         const notation = getHitDiceNotation(newHitDice);
         newHitDice = `${newLevel}${notation}${dieSize}`;
       }
+
+      // Revert added traits
+      let updatedTraits = [...(prev.traitsList || [])];
+      if (last?.addedTraits && last.addedTraits.length > 0) {
+        const addedIds = new Set(last.addedTraits.map(t => t.id));
+        const addedNames = new Set(last.addedTraits.map(t => t.name.toLowerCase()));
+        updatedTraits = updatedTraits.filter(t => !addedIds.has(t.id) && !addedNames.has(t.name.toLowerCase()));
+      }
+
+      // Revert subclass if set at this level
+      let updatedSubclass = prev.subclass;
+      if (last?.newSubclass && prev.subclass === last.newSubclass) {
+        updatedSubclass = '';
+      }
+
+      // Revert spell slots
+      const prevSlots = getSpellSlotsForClassLevel(prev.className, newLevel);
+      let updatedSpellSlots = { ...prev.spellSlots };
+      if (prevSlots) {
+        for (let l = 1; l <= 9; l++) {
+          if (prevSlots[l]) {
+            updatedSpellSlots[l] = {
+              totalSlots: prevSlots[l],
+              expendedSlots: Math.min(prevSlots[l], prev.spellSlots?.[l]?.expendedSlots || 0),
+            };
+          } else {
+            delete updatedSpellSlots[l];
+          }
+        }
+      }
+
       // Remove notes from features
       let newFeatures = prev.featuresTraits;
       if (last?.notes) {
         newFeatures = newFeatures.replace(last.notes, '').replace(/\n{2,}/g, '\n').trim();
       }
+      if (last?.selectedFeat) {
+        const featNote = `[Черта ${prev.level} ур.]: ${last.selectedFeat}`;
+        newFeatures = newFeatures.replace(featNote, '').replace(/\n{2,}/g, '\n').trim();
+      }
+
       // Remove cantrips added at this level
       let updatedCantrips = [...prev.cantrips];
       if (last?.newCantrips) {
@@ -1508,7 +1851,10 @@ export default function DnDCharacterSheet() {
         hpMax: newHP,
         hpCurrent: Math.min(prev.hpCurrent, newHP),
         hitDice: newHitDice,
+        subclass: updatedSubclass,
         asiBonuses: newAsi,
+        traitsList: updatedTraits,
+        spellSlots: updatedSpellSlots,
         featuresTraits: newFeatures,
         cantrips: updatedCantrips,
         spellsByLevel: updatedSpells,

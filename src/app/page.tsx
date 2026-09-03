@@ -162,9 +162,10 @@ interface LevelUpModalProps {
   char: CharacterData;
   onConfirm: (entry: LevelUpEntry) => void;
   onCancel: () => void;
+  respecProgress?: { current: number; target: number } | null;
 }
 
-const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
+const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCancel, respecProgress }: LevelUpModalProps) {
   const newLevel = char.level + 1;
   const dieSize = char.hitDice ? getHitDieSize(char.hitDice) : 8;
   const diceNotation = char.hitDice ? getHitDiceNotation(char.hitDice) : 'd';
@@ -368,6 +369,19 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
               <span className="font-mono">Кость хитов: 1{diceNotation}{dieSize}</span>
             </div>
           </div>
+
+          {/* Respec progress indicator */}
+          {respecProgress && (
+            <div className="p-2.5 rounded text-xs flex items-center justify-between font-bold" style={{ background: 'rgba(201, 168, 76, 0.25)', border: '1px solid #C9A84C', color: '#5C341F' }}>
+              <div className="flex items-center gap-2">
+                <span className="text-base">🔄</span>
+                <span>Пошаговое переобучение: уровень {respecProgress.current} из {respecProgress.target}</span>
+              </div>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded" style={{ background: '#5C341F', color: '#FFF' }}>
+                Шаг {respecProgress.current - 1} из {respecProgress.target - 1}
+              </span>
+            </div>
+          )}
 
           {/* Proficiency Bonus Notification */}
           {profChanged && (
@@ -1005,6 +1019,235 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose,
   );
 });
 
+// ── Class Respec Confirmation Modal (100 GP) ──
+
+interface ClassRespecConfirmModalProps {
+  char: CharacterData;
+  newClass: CompendiumClass;
+  applyScores?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function ClassRespecConfirmModal({ char, newClass, onConfirm, onCancel }: ClassRespecConfirmModalProps) {
+  const currentGold = char.gp || 0;
+  const remainingGold = Math.max(0, currentGold - 100);
+
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[360] flex items-center justify-center p-3 bg-black/65 backdrop-blur-sm" onClick={onCancel}>
+      <div
+        className="parchment-modal max-w-md w-full p-5 space-y-4 shadow-2xl relative rounded-lg"
+        style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+          <CoinsChestIcon size={24} />
+          <div>
+            <h3 className="text-base font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
+              Смена класса (Переобучение)
+            </h3>
+            <div className="text-[11px]" style={{ color: '#8B6914' }}>
+              Стоимость услуги: 100 золотых монет
+            </div>
+          </div>
+        </div>
+
+        <div className="text-xs space-y-2.5 leading-relaxed" style={{ color: '#4A2A18' }}>
+          <div className="p-2.5 rounded space-y-1" style={{ background: 'rgba(232, 211, 162, 0.4)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
+            <div className="flex justify-between">
+              <span>Текущий класс:</span>
+              <strong className="text-[#3D2012]">{char.className || 'Без класса'} ({char.level} ур.)</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Новый класс:</span>
+              <strong className="text-[#7C3E08]">{newClass.name} ({newClass.nameEn})</strong>
+            </div>
+            <div className="flex justify-between border-t pt-1 mt-1" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+              <span>Золото в инвентаре:</span>
+              <span><strong>{currentGold} зм</strong> ➔ <strong className="text-[#8B2500]">{remainingGold} зм</strong> (-100 зм)</span>
+            </div>
+          </div>
+
+          <div className="p-2.5 rounded text-[11px] space-y-1" style={{ background: 'rgba(201, 168, 76, 0.2)', border: '1px dashed #C9A84C' }}>
+            <p className="font-semibold text-[#5C341F]">📜 Правила переобучения:</p>
+            <ul className="list-disc pl-4 space-y-1">
+              <li>Персонаж будет сброшен до <strong>1-го уровня</strong> с костью хитов <strong>1d{newClass.hitDieSize}</strong> и спасбросками нового класса.</li>
+              <li>Старые классовые умения и заклинания будут сброшены (расовые умения сохраняются).</li>
+              <li>Сразу после этого запустится <strong>пошаговая интерактивная прокачка</strong> со 2-го до {char.level}-го уровня по очереди без повторных нажатий!</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 pt-2 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-3 py-1.5 rounded text-xs font-semibold cursor-pointer"
+            style={{ background: 'rgba(139, 105, 20, 0.15)', color: '#5C341F' }}
+          >
+            Отмена
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="px-4 py-1.5 rounded text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5 transition-transform active:scale-95"
+            style={{ background: '#5C341F', color: '#FBF0DC', border: '1px solid #3D2012' }}
+          >
+            <span>💰 Списать 100 зм и начать</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Race Change Confirmation Modal (100 GP) ──
+
+interface RaceChangeConfirmModalProps {
+  char: CharacterData;
+  newRace: CompendiumRace;
+  newSubrace?: CompendiumSubrace;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function RaceChangeConfirmModal({ char, newRace, newSubrace, onConfirm, onCancel }: RaceChangeConfirmModalProps) {
+  const currentGold = char.gp || 0;
+  const remainingGold = Math.max(0, currentGold - 100);
+
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[360] flex items-center justify-center p-3 bg-black/65 backdrop-blur-sm" onClick={onCancel}>
+      <div
+        className="parchment-modal max-w-md w-full p-5 space-y-4 shadow-2xl relative rounded-lg"
+        style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+          <CoinsChestIcon size={24} />
+          <div>
+            <h3 className="text-base font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
+              Смена расы
+            </h3>
+            <div className="text-[11px]" style={{ color: '#8B6914' }}>
+              Стоимость услуги: 100 золотых монет
+            </div>
+          </div>
+        </div>
+
+        <div className="text-xs space-y-2.5 leading-relaxed" style={{ color: '#4A2A18' }}>
+          <div className="p-2.5 rounded space-y-1" style={{ background: 'rgba(232, 211, 162, 0.4)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
+            <div className="flex justify-between">
+              <span>Текущая раса:</span>
+              <strong className="text-[#3D2012]">{char.race || 'Без расы'}</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Новая раса:</span>
+              <strong className="text-[#7C3E08]">{newRace.name} {newSubrace ? `(${newSubrace.name})` : ''}</strong>
+            </div>
+            <div className="flex justify-between border-t pt-1 mt-1" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+              <span>Золото в инвентаре:</span>
+              <span><strong>{currentGold} зм</strong> ➔ <strong className="text-[#8B2500]">{remainingGold} зм</strong> (-100 зм)</span>
+            </div>
+          </div>
+
+          <div className="p-2.5 rounded text-[11px] space-y-1" style={{ background: 'rgba(201, 168, 76, 0.2)', border: '1px dashed #C9A84C' }}>
+            <p className="font-semibold text-[#5C341F]">🧬 Особенности смены расы:</p>
+            <ul className="list-disc pl-4 space-y-1">
+              <li>Уровень персонажа <strong>({char.level} ур.)</strong> сохраняется!</li>
+              <li>Старые расовые особенности и бонусы характеристик удаляются.</li>
+              <li>Новые расовые черты, скорость, модификаторы и уровневые умения применяются.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 pt-2 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-3 py-1.5 rounded text-xs font-semibold cursor-pointer"
+            style={{ background: 'rgba(139, 105, 20, 0.15)', color: '#5C341F' }}
+          >
+            Отмена
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="px-4 py-1.5 rounded text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5 transition-transform active:scale-95"
+            style={{ background: '#5C341F', color: '#FBF0DC', border: '1px solid #3D2012' }}
+          >
+            <span>💰 Списать 100 зм и сменить</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Insufficient Gold Modal ──
+
+interface InsufficientGoldModalProps {
+  required: number;
+  current: number;
+  action: string;
+  onClose: () => void;
+}
+
+function InsufficientGoldModal({ required, current, action, onClose }: InsufficientGoldModalProps) {
+  const diff = required - current;
+
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[360] flex items-center justify-center p-3 bg-black/65 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="parchment-modal max-w-sm w-full p-5 space-y-4 shadow-2xl relative rounded-lg"
+        style={{ background: '#F5E6C8', border: '3px solid #D9381E' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(217, 56, 30, 0.3)' }}>
+          <span className="text-2xl">⚠️</span>
+          <div>
+            <h3 className="text-base font-bold text-[#8B2500]" style={{ fontFamily: 'Georgia, serif' }}>
+              Недостаточно золота
+            </h3>
+            <div className="text-[11px] text-[#A04000]">
+              Требуется 100 золотых монет (зм)
+            </div>
+          </div>
+        </div>
+
+        <div className="text-xs space-y-2 leading-relaxed" style={{ color: '#4A2A18' }}>
+          <p>
+            Для <strong>{action}</strong> на уровнях выше 1-го требуется <strong>{required} золотых монет</strong> в инвентаре.
+          </p>
+          <div className="p-2 rounded font-mono text-[11px] space-y-1" style={{ background: 'rgba(255, 235, 230, 0.6)', border: '1px solid #FF8F73' }}>
+            <div className="flex justify-between">
+              <span>В кошельке:</span>
+              <strong className="text-[#8B2500]">{current} зм</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Не хватает:</span>
+              <strong className="text-[#D9381E]">+{diff} зм</strong>
+            </div>
+          </div>
+          <p className="text-[11px] opacity-80">
+            Пополните графу золотых монет (зм) в блоке снаряжения персонажа, чтобы получить доступ к услуге.
+          </p>
+        </div>
+
+        <div className="flex justify-end pt-2 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-1.5 rounded text-xs font-bold cursor-pointer"
+            style={{ background: '#5C341F', color: '#FBF0DC' }}
+          >
+            Понятно
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Class Template Modal ──
 
 interface TemplateModalProps {
@@ -1412,6 +1655,10 @@ export default function DnDCharacterSheet() {
   const [showClassModal, setShowClassModal] = useState(false);
   const [showRaceModal, setShowRaceModal] = useState(false);
   const [showSubclassModal, setShowSubclassModal] = useState(false);
+  const [respecTargetLevel, setRespecTargetLevel] = useState<number | null>(null);
+  const [pendingClassChange, setPendingClassChange] = useState<{ cls: CompendiumClass; applyScores?: boolean } | null>(null);
+  const [pendingRaceChange, setPendingRaceChange] = useState<{ race: CompendiumRace; subrace?: CompendiumSubrace } | null>(null);
+  const [insufficientGoldNotice, setInsufficientGoldNotice] = useState<{ required: number; current: number; action: string } | null>(null);
   const [activeItemModal, setActiveItemModal] = useState<CompendiumItem | null>(null);
   const [rollResult, setRollResult] = useState<RollResult | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -1946,9 +2193,23 @@ export default function DnDCharacterSheet() {
         levelHistory: [...(Array.isArray(prev.levelHistory) ? prev.levelHistory : []), entry],
       };
     });
-    setShowLevelUp(false);
-    showToast(`${entry.level} уровень!`, `Персонаж успешно повышен до ${entry.level}-го уровня.`);
-  }, [showToast]);
+
+    if (respecTargetLevel && entry.level < respecTargetLevel) {
+      showToast(`${entry.level} уровень настроен!`, `Переходим к уровню ${entry.level + 1} из ${respecTargetLevel}...`);
+      setShowLevelUp(false);
+      setTimeout(() => {
+        setShowLevelUp(true);
+      }, 100);
+    } else {
+      if (respecTargetLevel && entry.level >= respecTargetLevel) {
+        setRespecTargetLevel(null);
+        showToast('Переобучение завершено!', `Персонаж успешно прокачан до ${entry.level}-го уровня.`);
+      } else {
+        showToast(`${entry.level} уровень!`, `Персонаж успешно повышен до ${entry.level}-го уровня.`);
+      }
+      setShowLevelUp(false);
+    }
+  }, [respecTargetLevel, showToast]);
 
   // ── Level Down ──
   const handleLevelDown = useCallback(() => {
@@ -2131,45 +2392,190 @@ export default function DnDCharacterSheet() {
     showToast(`${template?.emoji || ''} ${template?.name || ''}`, 'Шаблон применён — 1 уровень');
   }, [showToast]);
 
-  const handleSelectClass = useCallback((cls: CompendiumClass, applyScores?: boolean) => {
+  const handleConfirmClassChange = useCallback((cls: CompendiumClass, applyScores?: boolean) => {
     setChar(prev => {
-      const updated = { ...prev };
-      updated.className = cls.name;
-      updated.hitDice = `${prev.level || 1}d${cls.hitDieSize}`;
+      const currentGold = prev.gp || 0;
+      const newGold = Math.max(0, currentGold - 100);
+      const oldLevel = prev.level || 1;
 
+      // Calculate level 1 HP for new class
+      const conMod = getModifier(prev, 'ТЕЛ');
+      const racialHP = getRacialHPBonusPerLevel(prev.race, prev.subrace);
+      const lvl1HP = Math.max(1, cls.hitDieSize + conMod + racialHP);
+
+      // Keep only racial traits in traitsList
+      const preservedTraits = (prev.traitsList || []).filter(t => 
+        t.source?.startsWith('Раса:') || t.id.startsWith('race-')
+      );
+
+      // New class saving throws
       const newSaves = { 'СИЛ': false, 'ЛОВ': false, 'ТЕЛ': false, 'ИНТ': false, 'МДР': false, 'ХАР': false };
       for (const prof of cls.savingThrowProfs) {
         newSaves[prof] = true;
       }
-      updated.savingThrowProficiencies = newSaves;
 
-      if (cls.spellcasting?.isCaster) {
-        updated.spellcastingClass = cls.name;
-        updated.spellcastingAbility = cls.spellcasting.ability || '';
+      // Reset spell slots for level 1
+      const lvl1Slots = getSpellSlotsForClassLevel(cls.name, 1);
+      const newSpellSlots: Record<number, { totalSlots: number; expendedSlots: number }> = {};
+      if (lvl1Slots) {
+        for (let l = 1; l <= 9; l++) {
+          if (lvl1Slots[l]) {
+            newSpellSlots[l] = { totalSlots: lvl1Slots[l], expendedSlots: 0 };
+          }
+        }
       }
 
-      if (applyScores && cls.recommendedScores) {
-        updated.abilityScores = { ...cls.recommendedScores };
+      const updatedScores = (applyScores && cls.recommendedScores) ? { ...cls.recommendedScores } : prev.abilityScores;
+
+      const updatedChar: CharacterData = {
+        ...prev,
+        gp: newGold,
+        level: 1,
+        className: cls.name,
+        subclass: '',
+        hitDice: `1d${cls.hitDieSize}`,
+        hpMax: lvl1HP,
+        hpCurrent: lvl1HP,
+        abilityScores: updatedScores,
+        asiBonuses: { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 },
+        savingThrowProficiencies: newSaves,
+        traitsList: preservedTraits,
+        spellSlots: newSpellSlots,
+        spellcastingClass: cls.spellcasting?.isCaster ? cls.name : '',
+        spellcastingAbility: cls.spellcasting?.ability || '',
+        cantrips: [],
+        spellsByLevel: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] },
+        levelHistory: [],
+      };
+
+      if (oldLevel > 1) {
+        setRespecTargetLevel(oldLevel);
+        setTimeout(() => {
+          setShowLevelUp(true);
+        }, 150);
       }
 
-      if (prev.className !== cls.name) {
-        updated.subclass = '';
+      return updatedChar;
+    });
+
+    setPendingClassChange(null);
+    showToast('Смена класса', `Класс изменён на «${cls.name}». Списано 100 золотых монет.`);
+  }, [showToast]);
+
+  const handleSelectClass = useCallback((cls: CompendiumClass, applyScores?: boolean) => {
+    setShowClassModal(false);
+    if (char.level >= 2) {
+      if ((char.gp || 0) < 100) {
+        setInsufficientGoldNotice({
+          required: 100,
+          current: char.gp || 0,
+          action: `смены класса на «${cls.name}»`,
+        });
+        return;
+      }
+      setPendingClassChange({ cls, applyScores });
+    } else {
+      // Level 1: free class selection
+      setChar(prev => {
+        const updated = { ...prev };
+        updated.className = cls.name;
+        updated.hitDice = `1d${cls.hitDieSize}`;
+        const newSaves = { 'СИЛ': false, 'ЛОВ': false, 'ТЕЛ': false, 'ИНТ': false, 'МДР': false, 'ХАР': false };
+        for (const prof of cls.savingThrowProfs) {
+          newSaves[prof] = true;
+        }
+        updated.savingThrowProficiencies = newSaves;
+        if (cls.spellcasting?.isCaster) {
+          updated.spellcastingClass = cls.name;
+          updated.spellcastingAbility = cls.spellcasting.ability || '';
+        }
+        if (applyScores && cls.recommendedScores) {
+          updated.abilityScores = { ...cls.recommendedScores };
+        }
+        if (prev.className !== cls.name) {
+          updated.subclass = '';
+        }
+        return updated;
+      });
+      showToast(cls.name, `Класс «${cls.name}» выбран! Кость хитов: 1d${cls.hitDieSize}.`);
+    }
+  }, [char.level, char.gp, showToast]);
+
+  const handleConfirmRaceChange = useCallback((race: CompendiumRace, subrace?: CompendiumSubrace) => {
+    setChar(prev => {
+      const currentGold = prev.gp || 0;
+      const newGold = Math.max(0, currentGold - 100);
+
+      // Remove old racial traits
+      const nonRacialTraits = (prev.traitsList || []).filter(t => 
+        !t.source?.startsWith('Раса:') && !t.id.startsWith('race-')
+      );
+
+      // Reset racial ability bonuses
+      const cleaned: CharacterData = {
+        ...prev,
+        gp: newGold,
+        traitsList: nonRacialTraits,
+        abilityBonuses: { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 },
+      };
+
+      // Apply new race template
+      let updated = applyRaceTemplate(cleaned, race, subrace);
+
+      // Add any level-scaling traits for new race up to current level
+      for (let lvl = 2; lvl <= updated.level; lvl++) {
+        const racialFeats = getRacialFeaturesForLevel(updated.race, updated.subrace, lvl);
+        if (racialFeats.length > 0) {
+          const existingNames = new Set((updated.traitsList || []).map(t => t.name.toLowerCase()));
+          const newItems: TraitItem[] = racialFeats
+            .filter(rf => !existingNames.has(rf.name.toLowerCase()))
+            .map(rf => ({
+              id: `race-lvl-${lvl}-${Math.random().toString(36).substr(2, 5)}`,
+              name: rf.name,
+              source: `Раса: ${updated.race} (${lvl} ур.)`,
+              summary: rf.name,
+              description: rf.description,
+            }));
+          if (newItems.length > 0) {
+            updated.traitsList = [...(updated.traitsList || []), ...newItems];
+          }
+        }
+      }
+
+      // Check if Hill Dwarf HP bonus changed
+      const oldRacialHP = getRacialHPBonusPerLevel(prev.race, prev.subrace) * prev.level;
+      const newRacialHP = getRacialHPBonusPerLevel(updated.race, updated.subrace) * updated.level;
+      const hpDiff = newRacialHP - oldRacialHP;
+      if (hpDiff !== 0) {
+        updated.hpMax = Math.max(1, (updated.hpMax || 0) + hpDiff);
+        updated.hpCurrent = Math.max(1, (updated.hpCurrent || 0) + hpDiff);
       }
 
       return updated;
     });
-    setShowClassModal(false);
-    showToast(
-      cls.name,
-      `Класс «${cls.name}» выбран! Кость хитов: 1d${cls.hitDieSize}${applyScores ? ', характеристики распределены' : ''}.`
-    );
+
+    setPendingRaceChange(null);
+    showToast('Смена расы', `Раса изменена на «${race.name}». Списано 100 золотых монет.`);
   }, [showToast]);
 
   const handleSelectRace = useCallback((race: CompendiumRace, subrace?: CompendiumSubrace) => {
-    setChar(prev => applyRaceTemplate(prev, race, subrace));
     setShowRaceModal(false);
-    showToast(race.name, `Раса ${race.name}${subrace ? ` (${subrace.name})` : ''} применена! Бонусы характеристик и скорость обновлены.`);
-  }, [showToast]);
+    if (char.level >= 2) {
+      if ((char.gp || 0) < 100) {
+        setInsufficientGoldNotice({
+          required: 100,
+          current: char.gp || 0,
+          action: `смены расы на «${race.name}»`,
+        });
+        return;
+      }
+      setPendingRaceChange({ race, subrace });
+    } else {
+      // Level 1: free
+      setChar(prev => applyRaceTemplate(prev, race, subrace));
+      showToast(race.name, `Раса ${race.name}${subrace ? ` (${subrace.name})` : ''} применена!`);
+    }
+  }, [char.level, char.gp, showToast]);
 
   const handleSelectSubclass = useCallback((subclass: CompendiumSubclass) => {
     setChar(prev => {
@@ -2456,7 +2862,17 @@ export default function DnDCharacterSheet() {
         </div>
       )}
 
-      {showLevelUp && <LevelUpModal char={char} onConfirm={handleLevelUp} onCancel={closeLevelUp} />}
+      {showLevelUp && (
+        <LevelUpModal
+          char={char}
+          onConfirm={handleLevelUp}
+          onCancel={() => {
+            setRespecTargetLevel(null);
+            setShowLevelUp(false);
+          }}
+          respecProgress={respecTargetLevel ? { current: char.level + 1, target: respecTargetLevel } : null}
+        />
+      )}
       {showLevelDown && <LevelDownModal char={char} onConfirm={handleLevelDown} onCancel={closeLevelDown} />}
       {showHistory && (
         <LevelHistoryModal
@@ -2508,6 +2924,7 @@ export default function DnDCharacterSheet() {
       {showClassModal && (
         <ClassSelectorModal
           currentClass={char.className}
+          currentLevel={char.level}
           onSelect={handleSelectClass}
           onClose={() => setShowClassModal(false)}
         />
@@ -2515,6 +2932,7 @@ export default function DnDCharacterSheet() {
       {showRaceModal && (
         <RaceSelectorModal
           currentRace={char.race}
+          currentLevel={char.level}
           onSelect={handleSelectRace}
           onClose={() => setShowRaceModal(false)}
         />
@@ -2525,6 +2943,32 @@ export default function DnDCharacterSheet() {
           currentSubclass={char.subclass}
           onSelect={handleSelectSubclass}
           onClose={() => setShowSubclassModal(false)}
+        />
+      )}
+      {pendingClassChange && (
+        <ClassRespecConfirmModal
+          char={char}
+          newClass={pendingClassChange.cls}
+          applyScores={pendingClassChange.applyScores}
+          onConfirm={() => handleConfirmClassChange(pendingClassChange.cls, pendingClassChange.applyScores)}
+          onCancel={() => setPendingClassChange(null)}
+        />
+      )}
+      {pendingRaceChange && (
+        <RaceChangeConfirmModal
+          char={char}
+          newRace={pendingRaceChange.race}
+          newSubrace={pendingRaceChange.subrace}
+          onConfirm={() => handleConfirmRaceChange(pendingRaceChange.race, pendingRaceChange.subrace)}
+          onCancel={() => setPendingRaceChange(null)}
+        />
+      )}
+      {insufficientGoldNotice && (
+        <InsufficientGoldModal
+          required={insufficientGoldNotice.required}
+          current={insufficientGoldNotice.current}
+          action={insufficientGoldNotice.action}
+          onClose={() => setInsufficientGoldNotice(null)}
         />
       )}
       {activeItemModal && (
@@ -2658,11 +3102,11 @@ export default function DnDCharacterSheet() {
                         <button
                           type="button"
                           onClick={() => setShowClassModal(true)}
-                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80"
-                          style={{ color: '#8B6914' }}
-                          title="Выбрать класс из компендиума"
+                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5"
+                          style={{ color: char.level >= 2 ? '#B35900' : '#8B6914' }}
+                          title={char.level >= 2 ? "Сменить класс (требуется 100 зм)" : "Выбрать класс из компендиума"}
                         >
-                          📖 Каталог классов
+                          {char.level >= 2 ? '🔄 Сменить класс (100 зм)' : '📖 Каталог классов'}
                         </button>
                       </div>
                       <input
@@ -2705,11 +3149,11 @@ export default function DnDCharacterSheet() {
                         <button
                           type="button"
                           onClick={() => setShowRaceModal(true)}
-                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80"
-                          style={{ color: '#8B6914' }}
-                          title="Открыть полный компендиум рас"
+                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5"
+                          style={{ color: char.level >= 2 ? '#B35900' : '#8B6914' }}
+                          title={char.level >= 2 ? "Сменить расу (требуется 100 зм)" : "Открыть полный компендиум рас"}
                         >
-                          📖 Каталог рас
+                          {char.level >= 2 ? '🔄 Сменить расу (100 зм)' : '📖 Каталог рас'}
                         </button>
                       </div>
                       <input

@@ -6,11 +6,12 @@ import { CrossedSwordsIcon, SparklesDndIcon, ScrollIcon, EngravedShieldIcon } fr
 
 interface ClassSelectorModalProps {
   currentClass?: string;
+  currentLevel?: number;
   onSelect: (cls: CompendiumClass, applyScores?: boolean) => void;
   onClose: () => void;
 }
 
-export function ClassSelectorModal({ currentClass, onSelect, onClose }: ClassSelectorModalProps) {
+export function ClassSelectorModal({ currentClass, currentLevel, onSelect, onClose }: ClassSelectorModalProps) {
   const [search, setSearch] = useState('');
   const [autoAssignScores, setAutoAssignScores] = useState(true);
   const [selectedClassId, setSelectedClassId] = useState<string>(() => {
@@ -265,7 +266,7 @@ export function ClassSelectorModal({ currentClass, onSelect, onClose }: ClassSel
               Отмена
             </button>
             <button onClick={handleApply} className="parchment-btn text-xs px-6 py-1.5 font-bold">
-              Применить класс
+              {currentLevel && currentLevel >= 2 ? 'Сменить класс (100 зм)' : 'Применить класс'}
             </button>
           </div>
         </div>

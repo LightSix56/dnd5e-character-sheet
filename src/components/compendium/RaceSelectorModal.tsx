@@ -6,6 +6,7 @@ import { UserHeroIcon, SparklesDndIcon } from '@/components/dnd-icons';
 
 interface RaceSelectorModalProps {
   currentRace?: string;
+  currentLevel?: number;
   onSelect: (race: CompendiumRace, subrace?: CompendiumSubrace) => void;
   onClose: () => void;
 }
@@ -19,7 +20,7 @@ const CATEGORIES: { id: 'all' | RaceCategory; label: string }[] = [
   { id: 'lineage', label: 'Родословные' },
 ];
 
-export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelectorModalProps) {
+export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose }: RaceSelectorModalProps) {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | RaceCategory>('all');
   const [selectedRaceId, setSelectedRaceId] = useState<string>(() => {
@@ -297,7 +298,7 @@ export function RaceSelectorModal({ currentRace, onSelect, onClose }: RaceSelect
               Отмена
             </button>
             <button onClick={handleApply} className="parchment-btn text-xs px-6 py-1.5 font-bold">
-              Применить расу
+              {currentLevel && currentLevel >= 2 ? 'Сменить расу (100 зм)' : 'Применить расу'}
             </button>
           </div>
         </div>

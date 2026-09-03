@@ -85,6 +85,8 @@ export interface CharacterData {
   background: string;
   playerName: string;
   race: string;
+  subrace?: string;
+  subclass?: string;
   alignment: string;
   experiencePoints: number;
   inspiration: boolean;
@@ -105,6 +107,8 @@ export interface CharacterData {
 
   // Combat
   armorClass: number | null;
+  equippedArmor?: string;
+  equippedShield?: boolean;
   initiativeOverride: number | null;
   speed: number;
   hpMax: number | null;
@@ -252,9 +256,113 @@ export function getPassivePerception(char: CharacterData): number {
   return 10 + getSkillBonus(char, 'Внимательность');
 }
 
+export const ARMOR_AC_MAP: Record<string, { baseAC: number; type: 'light' | 'medium' | 'heavy' | 'shield'; maxDex?: number }> = {
+  'Стеганый доспех': { baseAC: 11, type: 'light' },
+  'Кожаный доспех': { baseAC: 11, type: 'light' },
+  'Проклепанный кожаный доспех': { baseAC: 12, type: 'light' },
+  'Шкурный доспех': { baseAC: 12, type: 'medium', maxDex: 2 },
+  'Кольчужная рубаха': { baseAC: 13, type: 'medium', maxDex: 2 },
+  'Чешуйчатый доспех': { baseAC: 14, type: 'medium', maxDex: 2 },
+  'Кираса': { baseAC: 14, type: 'medium', maxDex: 2 },
+  'Полулаты': { baseAC: 15, type: 'medium', maxDex: 2 },
+  'Колечный доспех': { baseAC: 14, type: 'heavy' },
+  'Кольчуга': { baseAC: 16, type: 'heavy' },
+  'Наборный доспех': { baseAC: 17, type: 'heavy' },
+  'Латы': { baseAC: 18, type: 'heavy' },
+  'Щит': { baseAC: 2, type: 'shield' },
+  'Padded Armor': { baseAC: 11, type: 'light' },
+  'Leather Armor': { baseAC: 11, type: 'light' },
+  'Studded Leather Armor': { baseAC: 12, type: 'light' },
+  'Hide Armor': { baseAC: 12, type: 'medium', maxDex: 2 },
+  'Chain Shirt': { baseAC: 13, type: 'medium', maxDex: 2 },
+  'Scale Mail': { baseAC: 14, type: 'medium', maxDex: 2 },
+  'Breastplate': { baseAC: 14, type: 'medium', maxDex: 2 },
+  'Half Plate Armor': { baseAC: 15, type: 'medium', maxDex: 2 },
+  'Ring Mail': { baseAC: 14, type: 'heavy' },
+  'Chain Mail': { baseAC: 16, type: 'heavy' },
+  'Splint Armor': { baseAC: 17, type: 'heavy' },
+  'Plate Armor': { baseAC: 18, type: 'heavy' },
+  'Shield': { baseAC: 2, type: 'shield' },
+};
+
 export function getAC(char: CharacterData): number {
   if (char.armorClass !== null) return char.armorClass;
-  return 10 + getModifier(char, 'ЛОВ');
+
+  const dexMod = getModifier(char, 'ЛОВ');
+  const shieldBonus = char.equippedShield ? 2 : 0;
+
+  if (char.equippedArmor && ARMOR_AC_MAP[char.equippedArmor]) {
+    const armor = ARMOR_AC_MAP[char.equippedArmor];
+    if (armor.type === 'light') {
+      return armor.baseAC + dexMod + shieldBonus;
+    } else if (armor.type === 'medium') {
+      return armor.baseAC + Math.min(armor.maxDex ?? 2, Math.max(0, dexMod)) + shieldBonus;
+    } else if (armor.type === 'heavy') {
+      return armor.baseAC + shieldBonus;
+    }
+  }
+
+  // Unarmored Defense for Barbarian and Monk
+  if (char.className === 'Варвар' || char.className === 'Barbarian') {
+    return 10 + dexMod + getModifier(char, 'ТЕЛ') + shieldBonus;
+  }
+  if ((char.className === 'Монах' || char.className === 'Monk') && !char.equippedShield) {
+    return 10 + dexMod + getModifier(char, 'МДР');
+  }
+
+  return 10 + dexMod + shieldBonus;
+}
+
+export function applyRaceTemplate(
+  char: CharacterData,
+  race: {
+    name: string;
+    speed: number;
+    languages?: string[];
+    abilityBonuses?: Partial<Record<AbilityName, number>>;
+    traits?: { name: string; description: string }[];
+  },
+  subrace?: {
+    name: string;
+    speed?: number;
+    abilityBonuses?: Partial<Record<AbilityName, number>>;
+    traits?: { name: string; description: string }[];
+  }
+): CharacterData {
+  const updated = { ...char };
+  updated.race = subrace ? `${race.name} (${subrace.name})` : race.name;
+  updated.subrace = subrace?.name || '';
+  updated.speed = subrace?.speed || race.speed || 30;
+
+  const newBonuses: Record<AbilityName, number> = { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 };
+  if (race.abilityBonuses) {
+    for (const [ab, val] of Object.entries(race.abilityBonuses)) {
+      if (ab in newBonuses) newBonuses[ab as AbilityName] += (val as number);
+    }
+  }
+  if (subrace?.abilityBonuses) {
+    for (const [ab, val] of Object.entries(subrace.abilityBonuses)) {
+      if (ab in newBonuses) newBonuses[ab as AbilityName] += (val as number);
+    }
+  }
+  updated.abilityBonuses = newBonuses;
+
+  const allTraits = [...(race.traits || []), ...(subrace?.traits || [])];
+  if (allTraits.length > 0) {
+    const existingNames = new Set((updated.traitsList || []).map(t => t.name.toLowerCase()));
+    const newItems: TraitItem[] = allTraits
+      .filter(t => !existingNames.has(t.name.toLowerCase()))
+      .map(t => ({
+        id: `race-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        name: t.name,
+        source: `Раса: ${race.name}`,
+        summary: t.name,
+        description: t.description
+      }));
+    updated.traitsList = [...(updated.traitsList || []), ...newItems];
+  }
+
+  return updated;
 }
 
 export function getHPMax(char: CharacterData): number {
@@ -335,6 +443,8 @@ export function createDefaultCharacter(): CharacterData {
     background: '',
     playerName: '',
     race: '',
+    subrace: '',
+    subclass: '',
     alignment: '',
     experiencePoints: 0,
     inspiration: false,
@@ -345,6 +455,8 @@ export function createDefaultCharacter(): CharacterData {
     skillProficiencies,
     skillExpertise,
     armorClass: null,
+    equippedArmor: '',
+    equippedShield: false,
     initiativeOverride: null,
     speed: 30,
     hpMax: null,
@@ -740,6 +852,36 @@ export const CLASS_TEMPLATES: ClassTemplate[] = [
     recommendedScores: { 'ИНТ': 15, 'ЛОВ': 14, 'ТЕЛ': 13, 'МДР': 12, 'ХАР': 10, 'СИЛ': 8 },
     typicalAC: 12, // 10 + 2 ЛОВ (без доспехов), Доспех мага временно даёт 13
     typicalAttacks: [{ name: 'Огненный снаряд', attackBonus: '+5', damageAndType: '1d10+3 огонь' }],
+  },
+  {
+    id: 'artificer',
+    name: 'Изобретатель',
+    emoji: '🔧',
+    description: 'Мастер магических изобретений, создающий зачарованные предметы и механизмы.',
+    role: 'Поддержка / Танк / Мастер артефактов',
+    hitDieSize: 8,
+    primaryAbility: 'ИНТ',
+    savingThrowProfs: ['ТЕЛ', 'ИНТ'],
+    skillChoices: 2,
+    skillOptions: ['Магия', 'История', 'Анализ', 'Медицина', 'Природа', 'Внимательность', 'Ловкость рук'],
+    recommendedSkills: ['Анализ', 'Магия'],
+    armorWeaponProfs: 'Владение: Лёгкие и средние доспехи, щиты, простое оружие, огнестрельное оружие, инструменты вора и жестянщика',
+    features: 'Магический напарник\nСотворение заклинаний изобретателя через инструменты',
+    equipment: 'Булава, легкий арбалет (20 болтов), чешуйчатый доспех, щит, инструменты вора, набор подземелий',
+    startingGold: '5d4 × 10 зм',
+    spellcasting: {
+      ability: 'ИНТ',
+      isCaster: true,
+      isPactMagic: false,
+      cantripsKnown: 2,
+      spellsKnownAt1: 0,
+      spellSlotsAt1: { 1: 2 },
+      cantripList: ['Починка', 'Огненный снаряд'],
+      spellListAt1: ['Исцеляющее слово', 'Доспех мага'],
+    },
+    recommendedScores: { 'ИНТ': 15, 'ТЕЛ': 14, 'ЛОВ': 14, 'МДР': 12, 'СИЛ': 10, 'ХАР': 8 },
+    typicalAC: 16,
+    typicalAttacks: [{ name: 'Булава', attackBonus: '+4', damageAndType: '1d6+2 дробящий' }],
   },
 ];
 

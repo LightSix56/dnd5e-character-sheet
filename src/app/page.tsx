@@ -9,7 +9,7 @@ import {
   createDefaultCharacter, createExampleWarrior, createExampleWizard,
   Attack, SpellEntry, LevelUpEntry,
   getHitDieSize, getHitDieAverage, getHitDiceNotation, isStandardASILevel, getMilestonesAtLevel, createEmptyLevelUpEntry,
-  CLASS_TEMPLATES, ClassTemplate, applyClassTemplate,
+  CLASS_TEMPLATES, ClassTemplate, applyClassTemplate, applyRaceTemplate, ARMOR_AC_MAP,
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -18,6 +18,13 @@ import { DND_WEAPONS, findWeaponByName, type DndWeapon } from '@/data/dnd-weapon
 import { DND_TRAITS, findTraitByName, type DndTrait } from '@/data/dnd-traits';
 import { AutocompleteInput, type AutocompleteItem } from '@/components/compendium/AutocompleteInput';
 import { SpellDetailModal, WeaponDetailModal, TraitDetailModal } from '@/components/compendium/CompendiumModals';
+import { RaceSelectorModal } from '@/components/compendium/RaceSelectorModal';
+import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorModal';
+import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
+import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
+import type { CompendiumRace, CompendiumSubrace } from '@/data/compendium/races';
+import type { CompendiumSubclass } from '@/data/compendium/classes';
+import { getCompendiumAutocompleteItems } from '@/data/compendium';
 import type { TraitItem } from '@/lib/dnd-types';
 
 import {
@@ -927,6 +934,9 @@ export default function DnDCharacterSheet() {
   const [showLevelDown, setShowLevelDown] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showRaceModal, setShowRaceModal] = useState(false);
+  const [showSubclassModal, setShowSubclassModal] = useState(false);
+  const [activeItemModal, setActiveItemModal] = useState<CompendiumItem | null>(null);
   const [rollResult, setRollResult] = useState<RollResult | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [showAuth, setShowAuth] = useState(false);
@@ -1513,6 +1523,50 @@ export default function DnDCharacterSheet() {
     showToast(`${template?.emoji || ''} ${template?.name || ''}`, 'Шаблон применён — 1 уровень');
   }, [showToast]);
 
+  const handleSelectRace = useCallback((race: CompendiumRace, subrace?: CompendiumSubrace) => {
+    setChar(prev => applyRaceTemplate(prev, race, subrace));
+    setShowRaceModal(false);
+    showToast(race.name, `Раса ${race.name}${subrace ? ` (${subrace.name})` : ''} применена! Бонусы характеристик и скорость обновлены.`);
+  }, [showToast]);
+
+  const handleSelectSubclass = useCallback((subclass: CompendiumSubclass) => {
+    setChar(prev => {
+      const updated = { ...prev, subclass: subclass.name };
+      const existingNames = new Set((updated.traitsList || []).map(t => t.name.toLowerCase()));
+      const newItems: TraitItem[] = subclass.features
+        .filter(f => f.level <= prev.level && !existingNames.has(f.name.toLowerCase()))
+        .map(f => ({
+          id: `subclass-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+          name: f.name,
+          source: `Подкласс: ${subclass.name} (${f.level} ур.)`,
+          summary: f.name,
+          description: f.description,
+        }));
+      if (newItems.length > 0) {
+        updated.traitsList = [...(updated.traitsList || []), ...newItems];
+      }
+      return updated;
+    });
+    setShowSubclassModal(false);
+    showToast(subclass.name, `Выбран подкласс «${subclass.name}» (${subclass.nameEn})`);
+  }, [showToast]);
+
+  const handleEquipArmor = useCallback((armorName: string) => {
+    setChar(prev => ({
+      ...prev,
+      equippedArmor: armorName === prev.equippedArmor ? '' : armorName,
+    }));
+    showToast('Доспех обновлен', armorName ? `Экипирован: ${armorName}` : 'Доспех снят');
+  }, [showToast]);
+
+  const handleToggleShield = useCallback((hasShield: boolean) => {
+    setChar(prev => ({
+      ...prev,
+      equippedShield: hasShield,
+    }));
+    showToast('Щит', hasShield ? 'Щит экипирован (+2 КД)' : 'Щит убран');
+  }, [showToast]);
+
   // ── Auth / Cloud handlers ──
   const handleAuth = useCallback(async () => {
     setAuthLoading(true);
@@ -1802,6 +1856,30 @@ export default function DnDCharacterSheet() {
         />
       )}
 
+      {showRaceModal && (
+        <RaceSelectorModal
+          currentRace={char.race}
+          onSelect={handleSelectRace}
+          onClose={() => setShowRaceModal(false)}
+        />
+      )}
+      {showSubclassModal && (
+        <SubclassSelectorModal
+          classNameString={char.className}
+          currentSubclass={char.subclass}
+          onSelect={handleSelectSubclass}
+          onClose={() => setShowSubclassModal(false)}
+        />
+      )}
+      {activeItemModal && (
+        <ItemDetailModal
+          item={activeItemModal}
+          onEquipArmor={handleEquipArmor}
+          onToggleShield={handleToggleShield}
+          onClose={() => setActiveItemModal(null)}
+        />
+      )}
+
       <header className="sticky top-0 z-50 parchment-header">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2.5">
@@ -1918,7 +1996,27 @@ export default function DnDCharacterSheet() {
                     <StatInput label="Имя игрока" value={char.playerName} onChange={v => update('playerName', v)} type="text" placeholder="Игрок" />
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <StatInput label="Класс" value={char.className} onChange={v => update('className', v)} type="text" placeholder="Воин" />
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="parchment-label">Класс</label>
+                        <button
+                          type="button"
+                          onClick={() => setShowSubclassModal(true)}
+                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80"
+                          style={{ color: '#8B6914' }}
+                          title="Выбрать архетип / подкласс"
+                        >
+                          {char.subclass ? `⚔️ ${char.subclass}` : '+ Подкласс'}
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        value={char.className}
+                        onChange={e => update('className', e.target.value)}
+                        placeholder="Воин"
+                        className={inputClass}
+                      />
+                    </div>
                     <div className="space-y-1">
                       <label className="parchment-label">Уровень</label>
                       <div className="flex items-center gap-1">
@@ -1933,7 +2031,27 @@ export default function DnDCharacterSheet() {
                     <StatInput label="Предыстория" value={char.background} onChange={v => update('background', v)} type="text" placeholder="Солдат" className="col-span-2 sm:col-span-1" />
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <StatInput label="Раса" value={char.race} onChange={v => update('race', v)} type="text" placeholder="Дворф" />
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="parchment-label">Раса</label>
+                        <button
+                          type="button"
+                          onClick={() => setShowRaceModal(true)}
+                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80"
+                          style={{ color: '#8B6914' }}
+                          title="Открыть полный компендиум рас"
+                        >
+                          📖 Каталог рас
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        value={char.race}
+                        onChange={e => update('race', e.target.value)}
+                        placeholder="Дворф"
+                        className={inputClass}
+                      />
+                    </div>
                     <StatInput label="Мировоззрение" value={char.alignment} onChange={v => update('alignment', v)} type="text" placeholder="Законно-добрый" />
                     <StatInput label="Очки опыта" value={char.experiencePoints} onChange={v => update('experiencePoints', v)} placeholder="0" className="col-span-2 sm:col-span-1" />
                   </div>
@@ -2026,6 +2144,62 @@ export default function DnDCharacterSheet() {
                     <div className="space-y-1"><label className="parchment-label">КД</label><input type="number" value={char.armorClass ?? ''} onChange={e => update('armorClass', e.target.value === '' ? null : Number(e.target.value))} placeholder={String(getAC(char))} className={inputClass} /></div>
                     <div className="space-y-1"><label className="parchment-label">Инициатива</label><div className="flex items-center gap-1"><RollBadge value={formatModifier(getInitiative(char))} label="Инициатива" modifier={getInitiative(char)} onRoll={handleRoll} /><input type="number" value={char.initiativeOverride ?? ''} onChange={e => update('initiativeOverride', e.target.value === '' ? null : Number(e.target.value))} placeholder="Авто" className={inputClass + " flex-1"} /></div></div>
                     <div className="space-y-1"><label className="parchment-label">Скорость (фт.)</label><input type="number" value={char.speed} onChange={e => update('speed', Number(e.target.value) || 30)} className={inputClass} /></div>
+                  </div>
+                  {/* Armor & Shield Selector */}
+                  <div className="p-2.5 rounded space-y-2" style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                    <div className="flex items-center justify-between">
+                      <label className="parchment-label text-[11px]">Экипированный доспех</label>
+                      {char.equippedArmor && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const item = findItemByName(char.equippedArmor || '');
+                            if (item) setActiveItemModal(item);
+                          }}
+                          className="text-[10px] underline font-bold cursor-pointer"
+                          style={{ color: '#8B6914' }}
+                          title="Свойства доспеха"
+                        >
+                          Свойства доспеха
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
+                      <select
+                        value={char.equippedArmor || ''}
+                        onChange={e => handleEquipArmor(e.target.value)}
+                        className="parchment-select text-xs sm:col-span-2 py-1"
+                      >
+                        <option value="">Без доспехов (КД 10 + ЛОВ)</option>
+                        <optgroup label="Лёгкие доспехи (+ ЛОВ)">
+                          <option value="Стеганый доспех">Стеганый доспех (11 + ЛОВ)</option>
+                          <option value="Кожаный доспех">Кожаный доспех (11 + ЛОВ)</option>
+                          <option value="Проклепанный кожаный доспех">Проклепанный кожаный (12 + ЛОВ)</option>
+                        </optgroup>
+                        <optgroup label="Средние доспехи (+ ЛОВ макс. +2)">
+                          <option value="Шкурный доспех">Шкурный доспех (12 + ЛОВ макс. 2)</option>
+                          <option value="Кольчужная рубаха">Кольчужная рубаха (13 + ЛОВ макс. 2)</option>
+                          <option value="Чешуйчатый доспех">Чешуйчатый доспех (14 + ЛОВ макс. 2)</option>
+                          <option value="Кираса">Кираса (14 + ЛОВ макс. 2)</option>
+                          <option value="Полулаты">Полулаты (15 + ЛОВ макс. 2)</option>
+                        </optgroup>
+                        <optgroup label="Тяжёлые доспехи (без ЛОВ)">
+                          <option value="Колечный доспех">Колечный доспех (14)</option>
+                          <option value="Кольчуга">Кольчуга (16, СИЛ 13)</option>
+                          <option value="Наборный доспех">Наборный доспех (17, СИЛ 15)</option>
+                          <option value="Латы">Латы (18, СИЛ 15)</option>
+                        </optgroup>
+                      </select>
+                      <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={!!char.equippedShield}
+                          onChange={e => handleToggleShield(e.target.checked)}
+                          className="accent-[#8B6914] w-4 h-4 cursor-pointer"
+                        />
+                        <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3D2012' }}>🛡️ Щит (+2 КД)</span>
+                      </label>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div className="space-y-1"><label className="parchment-label">Макс. хитов</label><input type="number" value={char.hpMax ?? ''} onChange={e => update('hpMax', e.target.value === '' ? null : Number(e.target.value))} className={inputClass} /></div>

@@ -95,6 +95,42 @@ function textPara(text: string, opts?: { bold?: boolean; color?: string; size?: 
   });
 }
 
+function isSafeImageUrl(rawUrl: string): boolean {
+  try {
+    const parsed = new URL(rawUrl);
+    // Only HTTPS
+    if (parsed.protocol !== 'https:') {
+      return false;
+    }
+    const hostname = parsed.hostname.toLowerCase();
+    // Disallow localhost and internal domains
+    if (
+      hostname === 'localhost' ||
+      hostname.endsWith('.localhost') ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.internal') ||
+      hostname === '127.0.0.1' ||
+      hostname === '::1' ||
+      hostname === '0.0.0.0'
+    ) {
+      return false;
+    }
+    // Disallow private IPv4 ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, 127.0.0.0/8)
+    const ipv4Match = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if (ipv4Match) {
+      const [a, b] = [Number(ipv4Match[1]), Number(ipv4Match[2])];
+      if (a === 10) return false;
+      if (a === 172 && b >= 16 && b <= 31) return false;
+      if (a === 192 && b === 168) return false;
+      if (a === 169 && b === 254) return false;
+      if (a === 127 || a === 0) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -110,25 +146,45 @@ export async function POST(request: NextRequest) {
       children: [new TextRun({ text: 'ЛИСТ ПЕРСОНАЖА D&D 5e', bold: true, size: 36, color: COLOR_HEADER, font: 'Arial' })],
     }));
 
-    // ── Portrait ──
-    if (portraitUrl) {
+    // ── Portrait (Secure with SSRF and DoS protection) ──
+    if (portraitUrl && typeof portraitUrl === 'string') {
       try {
         let imgBuf: Buffer | null = null;
         let isJpeg = false;
 
         if (portraitUrl.startsWith('data:image/')) {
           const match = portraitUrl.match(/^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/i);
-          if (match) {
+          if (match && match[2].length <= 7 * 1024 * 1024) { // ~5MB decoded limit
             const format = match[1].toLowerCase();
             isJpeg = format === 'jpeg' || format === 'jpg';
             imgBuf = Buffer.from(match[2], 'base64');
           }
-        } else if (portraitUrl.startsWith('http://') || portraitUrl.startsWith('https://')) {
-          const imgRes = await fetch(portraitUrl);
-          if (imgRes.ok) {
-            imgBuf = Buffer.from(await imgRes.arrayBuffer());
-            const contentType = imgRes.headers.get('content-type') || 'image/png';
-            isJpeg = contentType.includes('jpeg') || contentType.includes('jpg');
+        } else if (isSafeImageUrl(portraitUrl)) {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          try {
+            const imgRes = await fetch(portraitUrl, {
+              signal: controller.signal,
+              headers: { 'Accept': 'image/png,image/jpeg,image/webp' },
+            });
+            const contentType = (imgRes.headers.get('content-type') || '').toLowerCase();
+            const contentLength = Number(imgRes.headers.get('content-length') || 0);
+
+            const isAllowedImage =
+              contentType.includes('image/jpeg') ||
+              contentType.includes('image/jpg') ||
+              contentType.includes('image/png') ||
+              contentType.includes('image/webp');
+
+            if (imgRes.ok && isAllowedImage && contentLength <= 5 * 1024 * 1024) {
+              const arrayBuf = await imgRes.arrayBuffer();
+              if (arrayBuf.byteLength <= 5 * 1024 * 1024) {
+                imgBuf = Buffer.from(arrayBuf);
+                isJpeg = contentType.includes('jpeg') || contentType.includes('jpg');
+              }
+            }
+          } finally {
+            clearTimeout(timeoutId);
           }
         }
 

@@ -3008,6 +3008,10 @@ export default function DnDCharacterSheet() {
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Ошибка', 'Файл слишком большой (макс. 5 МБ)');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (ev) => {
         try {

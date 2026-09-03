@@ -4,11 +4,19 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/';
+  const rawNext = searchParams.get('next') ?? '/';
+  // Enforce safe relative path to prevent Open Redirect vulnerabilities (CWE-601, SonarQube S5146)
+  const isSafeRelative =
+    rawNext.startsWith('/') &&
+    !rawNext.startsWith('//') &&
+    !rawNext.startsWith('/\\') &&
+    !rawNext.includes('\\') &&
+    !rawNext.includes('://');
+  const safeNext = isSafeRelative ? rawNext : '/';
 
   if (code) {
     // Create response early so setAll can attach cookies to it
-    let response = NextResponse.redirect(`${origin}${next}`);
+    let response = NextResponse.redirect(`${origin}${safeNext}`);
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';

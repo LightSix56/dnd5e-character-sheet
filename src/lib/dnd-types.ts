@@ -232,8 +232,24 @@ export const UNIVERSAL_MILESTONES: Record<number, string[]> = {
   20: ['Классовые особенности 20-го уровня (макс.)'],
 };
 
-export function getMilestonesAtLevel(level: number): string[] {
-  return UNIVERSAL_MILESTONES[level] || [];
+export function getMilestonesAtLevel(level: number, className?: string): string[] {
+  const base = [...(UNIVERSAL_MILESTONES[level] || [])];
+  if (className) {
+    const c = className.trim().toLowerCase();
+    const isFighter = c.includes('воин') || c.includes('fighter');
+    const isRogue = c.includes('плут') || c.includes('rogue');
+    if (isFighter && (level === 6 || level === 14)) {
+      if (!base.includes('Улучшение характеристики (АСИ) или черта')) {
+        base.push('Дополнительное АСИ Воина или черта');
+      }
+    }
+    if (isRogue && level === 10) {
+      if (!base.includes('Улучшение характеристики (АСИ) или черта')) {
+        base.push('Дополнительное АСИ Плута или черта');
+      }
+    }
+  }
+  return base;
 }
 
 export function getTotalScore(char: CharacterData, ability: AbilityName): number {

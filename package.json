@@ -11,7 +11,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
-    "test:adversarial": "tsx --test test/wizard-engine-adversarial.test.ts"
+    "test:adversarial": "tsx --test test/*.test.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

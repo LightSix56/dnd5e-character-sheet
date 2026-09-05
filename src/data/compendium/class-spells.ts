@@ -212,6 +212,18 @@ export function isSpellAllowedForCharacter(char: CharacterData, spell: DndSpell 
     };
   }
 
+  // 1b. Check Bard Magical Secrets (Тайны магии: 10, 14, 18 levels, or Lore Bard at level 6)
+  if (charClass.includes('бард') || charClass.includes('bard')) {
+    const isLore = charSubclass.includes('знан') || charSubclass.includes('lore');
+    if ((char.level || 1) >= 10 || (isLore && (char.level || 1) >= 6)) {
+      return {
+        allowed: true,
+        source: 'class',
+        sourceLabel: 'Бард (Тайны магии)'
+      };
+    }
+  }
+
   // 2. Check full-class inherited subclasses (e.g. Divine Soul -> Cleric, Eldritch Knight -> Wizard, Arcane Trickster -> Wizard)
   if (charSubclass && SUBCLASS_FULL_CLASS_SPELLS[charSubclass]) {
     const inheritedClass = SUBCLASS_FULL_CLASS_SPELLS[charSubclass].toLowerCase();
@@ -323,9 +335,18 @@ export function getMaxAvailableSpellSlotLevel(char: CharacterData, customLevel?:
         }
       }
     }
+    // Warlock Mystic Arcanum: Warlocks get 6th circle at 11, 7th at 13, 8th at 15, 9th at 17
+    const cleanClass = effectiveClass.trim().toLowerCase();
+    if (cleanClass.includes('колдун') || cleanClass.includes('warlock')) {
+      if (level >= 17) maxSlot = Math.max(maxSlot, 9);
+      else if (level >= 15) maxSlot = Math.max(maxSlot, 8);
+      else if (level >= 13) maxSlot = Math.max(maxSlot, 7);
+      else if (level >= 11) maxSlot = Math.max(maxSlot, 6);
+    }
+
     // Third casters: Eldritch Knight (Мистический рыцарь) / Arcane Trickster (Мистический ловкач)
     const sub = (char.subclass || '').toLowerCase();
-    if (sub.includes('мистический рыцарь') || sub.includes('мистический ловкач')) {
+    if (sub.includes('мистический рыцарь') || sub.includes('eldritch knight') || sub.includes('мистический ловкач') || sub.includes('arcane trickster')) {
       if (level >= 19) maxSlot = Math.max(maxSlot, 4);
       else if (level >= 13) maxSlot = Math.max(maxSlot, 3);
       else if (level >= 7) maxSlot = Math.max(maxSlot, 2);

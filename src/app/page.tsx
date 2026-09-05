@@ -165,6 +165,19 @@ const inputClass = "parchment-input";
 const inputClassCenter = "parchment-input-center";
 const textareaClass = "parchment-textarea";
 
+// ── Third-Casters Spell Slots (Eldritch Knight / Arcane Trickster) ──
+function getThirdCasterSpellSlots(level: number): Record<number, number> | null {
+  if (level < 3) return null;
+  if (level <= 3) return { 1: 2 };
+  if (level <= 6) return { 1: 3 };
+  if (level <= 8) return { 1: 4, 2: 2 };
+  if (level <= 9) return { 1: 4, 2: 2 };
+  if (level <= 12) return { 1: 4, 2: 3 };
+  if (level <= 15) return { 1: 4, 2: 3, 3: 2 };
+  if (level <= 18) return { 1: 4, 2: 3, 3: 3 };
+  return { 1: 4, 2: 3, 3: 3, 4: 1 };
+}
+
 // ── Level Up Modal (comprehensive draft sheet) ──
 
 interface LevelUpModalProps {
@@ -197,8 +210,55 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const subclassReqLevel = useMemo(() => getClassSubclassLevel(char.className), [char.className]);
   const isSubclassChoice = !char.subclass && newLevel >= subclassReqLevel;
   const availableSubclasses = useMemo(() => getSubclassesForClass(char.className), [char.className]);
-  const newSpellSlots = useMemo(() => getSpellSlotsForClassLevel(char.className, newLevel), [char.className, newLevel]);
-  const unlockedCircle = useMemo(() => getNewSpellLevelUnlocked(char.className, newLevel), [char.className, newLevel]);
+
+  // Subclass choice
+  const [chosenSubclass, setChosenSubclass] = useState<string>(availableSubclasses[0]?.name || '');
+  const effectiveSubclass = char.subclass || (isSubclassChoice ? chosenSubclass : '');
+
+  // Subclass object
+  const currentSubclassObj = useMemo(() => {
+    if (!effectiveSubclass) return null;
+    return availableSubclasses.find(s =>
+      s.name.toLowerCase() === effectiveSubclass.toLowerCase() ||
+      s.nameEn.toLowerCase() === effectiveSubclass.toLowerCase()
+    ) || null;
+  }, [effectiveSubclass, availableSubclasses]);
+
+  // Subclass features for this level
+  const subclassFeatures = useMemo(() => {
+    if (!currentSubclassObj?.features) return [];
+    if (isSubclassChoice) {
+      // First time selecting subclass: only features at or below current level
+      return currentSubclassObj.features.filter(f => f.level <= newLevel);
+    }
+    // Already has subclass: features strictly unlocked on newLevel
+    return currentSubclassObj.features.filter(f => f.level === newLevel);
+  }, [currentSubclassObj, isSubclassChoice, newLevel]);
+
+  // Third-caster check
+  const isThirdCaster = useMemo(() => {
+    const s = effectiveSubclass.toLowerCase();
+    return s.includes('мистический рыцарь') || s.includes('eldritch knight') || s.includes('мистический ловкач') || s.includes('arcane trickster');
+  }, [effectiveSubclass]);
+
+  const newSpellSlots = useMemo(() => {
+    if (isThirdCaster) {
+      return getThirdCasterSpellSlots(newLevel);
+    }
+    return getSpellSlotsForClassLevel(char.className, newLevel);
+  }, [isThirdCaster, char.className, newLevel]);
+
+  const unlockedCircle = useMemo(() => {
+    if (isThirdCaster) {
+      const cur = getThirdCasterSpellSlots(newLevel);
+      const prev = newLevel > 3 ? getThirdCasterSpellSlots(newLevel - 1) : null;
+      const curMax = cur ? Math.max(...Object.keys(cur).map(Number)) : 0;
+      const prevMax = prev ? Math.max(...Object.keys(prev).map(Number)) : 0;
+      return curMax > prevMax ? curMax : null;
+    }
+    return getNewSpellLevelUnlocked(char.className, newLevel);
+  }, [isThirdCaster, char.className, newLevel]);
+
   const profChanged = calcProficiencyBonus(newLevel) !== calcProficiencyBonus(char.level);
 
   // Racial progression data for this level (scaling breath, innate spells, Aasimar transformation, etc.)
@@ -210,13 +270,31 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   // States
   const [hpMode, setHpMode] = useState<'average' | 'roll'>('average');
   const [hpRoll, setHpRoll] = useState(dieSize);
+
+  const rollHpDie = useCallback(() => {
+    const rolled = Math.floor(Math.random() * dieSize) + 1;
+    setHpRoll(rolled);
+  }, [dieSize]);
   
-  // Selected class features to add (default all checked)
+  // Selected class and subclass features to add (default all checked)
   const [selectedFeatures, setSelectedFeatures] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     for (const f of classFeatures) init[f.name] = true;
+    for (const sf of subclassFeatures) init[sf.name] = true;
     return init;
   });
+
+  useEffect(() => {
+    if (subclassFeatures.length > 0) {
+      setSelectedFeatures(prev => {
+        const next = { ...prev };
+        for (const sf of subclassFeatures) {
+          if (next[sf.name] === undefined) next[sf.name] = true;
+        }
+        return next;
+      });
+    }
+  }, [subclassFeatures]);
 
   // Selected racial features to add (default all checked)
   const [selectedRacialFeatures, setSelectedRacialFeatures] = useState<Record<string, boolean>>(() => {
@@ -225,9 +303,6 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
     return init;
   });
 
-  // Subclass choice
-  const [chosenSubclass, setChosenSubclass] = useState<string>(availableSubclasses[0]?.name || '');
-
   // ASI / Feat choice
   const [asiChoice, setAsiChoice] = useState<'stats' | 'feat'>('stats');
   const [asiAbility1, setAsiAbility1] = useState<AbilityName>('СИЛ');
@@ -235,6 +310,16 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   const allFeats = useMemo(() => DND_COMPENDIUM_FEATS.filter(f => f.category === 'Черта'), []);
   const [selectedFeatId, setSelectedFeatId] = useState<string>(allFeats[0]?.id || 'alert');
   const selectedFeat = allFeats.find(f => f.id === selectedFeatId);
+
+  // ASI Cap calculation (max 20 per 5e rules)
+  const score1 = getTotalScore(char, asiAbility1);
+  const score2 = getTotalScore(char, asiAbility2);
+  const isSameAbility = asiAbility1 === asiAbility2;
+  const nextScore1 = score1 + (isSameAbility ? 2 : 1);
+  const nextScore2 = isSameAbility ? nextScore1 : score2 + 1;
+  const isScore1OverCap = nextScore1 > 20;
+  const isScore2OverCap = nextScore2 > 20;
+  const isASIOverCap = isASI && asiChoice === 'stats' && (isScore1OverCap || isScore2OverCap);
 
   const [notes, setNotes] = useState('');
 
@@ -258,7 +343,11 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
     setSelectedRacialFeatures(prev => ({ ...prev, [name]: !prev[name] }));
   };
 
-  const availableClassSpells = useMemo(() => getAvailableSpellsForCharacter(char), [char]);
+  const charWithEffectiveSubclass = useMemo(() => {
+    return { ...char, subclass: effectiveSubclass };
+  }, [char, effectiveSubclass]);
+
+  const availableClassSpells = useMemo(() => getAvailableSpellsForCharacter(charWithEffectiveSubclass), [charWithEffectiveSubclass]);
   const cantripAutocompleteItems: AutocompleteItem[] = useMemo(() => {
     return availableClassSpells.filter(s => s.level === 0).map(s => ({
       name: s.name,
@@ -268,8 +357,8 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
     }));
   }, [availableClassSpells]);
   const maxSlotLevelAtNewLevel = useMemo(() => {
-    return getMaxAvailableSpellSlotLevel(char, newLevel);
-  }, [char, newLevel]);
+    return getMaxAvailableSpellSlotLevel(charWithEffectiveSubclass, newLevel);
+  }, [charWithEffectiveSubclass, newLevel]);
 
   const leveledSpellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
     return availableClassSpells
@@ -312,11 +401,24 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
     for (const f of classFeatures) {
       if (selectedFeatures[f.name]) {
         addedTraits.push({
-          id: `feat-${newLevel}-${Math.random().toString(36).substr(2, 6)}`,
+          id: `feat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
           name: f.name,
           source: `${char.className || 'Класс'} (${newLevel} ур.)`,
           summary: f.name,
           description: f.description,
+        });
+      }
+    }
+
+    // Collect added subclass features
+    for (const sf of subclassFeatures) {
+      if (selectedFeatures[sf.name]) {
+        addedTraits.push({
+          id: `subfeat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
+          name: sf.name,
+          source: `${effectiveSubclass} (${sf.level || newLevel} ур.)`,
+          summary: sf.name,
+          description: sf.description,
         });
       }
     }
@@ -326,7 +428,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
     for (const rf of racialFeatures) {
       if (selectedRacialFeatures[rf.name]) {
         addedTraits.push({
-          id: `racefeat-${newLevel}-${Math.random().toString(36).substr(2, 6)}`,
+          id: `racefeat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
           name: rf.name,
           source: `${char.subrace || char.race || 'Раса'} (${newLevel} ур.)`,
           summary: rf.name,
@@ -338,28 +440,12 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
       }
     }
 
-    // If subclass chosen, add its initial features
-    if (isSubclassChoice && chosenSubclass) {
-      const sc = availableSubclasses.find(s => s.name === chosenSubclass);
-      if (sc && sc.features) {
-        for (const sf of sc.features) {
-          addedTraits.push({
-            id: `subfeat-${newLevel}-${Math.random().toString(36).substr(2, 6)}`,
-            name: sf.name,
-            source: `${chosenSubclass} (${newLevel} ур.)`,
-            summary: sf.name,
-            description: sf.description,
-          });
-        }
-      }
-    }
-
     // If Feat chosen
     let featName: string | undefined = undefined;
     if (isASI && asiChoice === 'feat' && selectedFeat) {
       featName = selectedFeat.name;
       addedTraits.push({
-        id: `feat-${newLevel}-${Math.random().toString(36).substr(2, 6)}`,
+        id: `feat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
         name: selectedFeat.name,
         source: `Черта (${newLevel} ур.)`,
         summary: selectedFeat.summary,
@@ -370,7 +456,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
     return {
       level: newLevel,
       hpGained: finalHP,
-      asiAbilities: (isASI && asiChoice === 'stats') ? [asiAbility1, asiAbility2] : null,
+      asiAbilities: (isASI && asiChoice === 'stats' && !isASIOverCap) ? [asiAbility1, asiAbility2] : null,
       selectedFeat: featName,
       newSubclass: (isSubclassChoice && chosenSubclass) ? chosenSubclass : undefined,
       addedTraits,
@@ -388,7 +474,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
   };
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6 space-y-4">
           {/* Header */}
@@ -407,10 +493,10 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
           {respecProgress && (
             <div className="p-2.5 rounded text-xs flex items-center justify-between font-bold" style={{ background: 'rgba(201, 168, 76, 0.25)', border: '1px solid #C9A84C', color: '#5C341F' }}>
               <div className="flex items-center gap-2">
-                <span className="text-base">🔄</span>
+                <MysticSpinnerIcon size={16} />
                 <span>Пошаговое переобучение: уровень {respecProgress.current} из {respecProgress.target}</span>
               </div>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded" style={{ background: '#5C341F', color: '#FFF' }}>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded" style={{ background: '#5C341F', color: '#FFE58F' }}>
                 Шаг {respecProgress.current - 1} из {respecProgress.target - 1}
               </span>
             </div>
@@ -418,8 +504,8 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* Proficiency Bonus Notification */}
           {profChanged && (
-            <div className="p-2.5 rounded text-xs flex items-center gap-2" style={{ background: 'rgba(230, 140, 20, 0.15)', border: '1px solid rgba(200, 120, 20, 0.4)', color: '#7C3E08' }}>
-              <span className="text-base">🎯</span>
+            <div className="p-2.5 rounded text-xs flex items-center gap-2.5" style={{ background: 'rgba(230, 140, 20, 0.15)', border: '1px solid rgba(200, 120, 20, 0.4)', color: '#7C3E08' }}>
+              <GoldSealCheckIcon size={20} />
               <div>
                 <strong>Бонус мастерства увеличивается:</strong> {formatModifier(calcProficiencyBonus(char.level))} → <span className="font-bold text-sm">{formatModifier(calcProficiencyBonus(newLevel))}</span>
                 <div className="opacity-80 text-[11px]">Автоматически увеличит все ваши профильные атаки, спасброски и навыки.</div>
@@ -430,10 +516,13 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
           {/* 1. HP Gain Section */}
           <div className="parchment-modal-section">
             <h3 className="text-sm font-bold mb-2 flex items-center justify-between" style={{ color: '#3C2415' }}>
-              <span>❤️ Прирост хитов на {newLevel} уровне:</span>
+              <span className="flex items-center gap-1.5">
+                <SparklesDndIcon size={16} />
+                <span>Прирост хитов на {newLevel} уровне:</span>
+              </span>
               <span className="text-sm font-extrabold" style={{ color: '#8B2500' }}>+{finalHP} HP</span>
             </h3>
-            <div className="flex gap-2 mb-2">
+            <div className="flex flex-wrap gap-2 mb-2">
               <button
                 type="button"
                 onClick={() => setHpMode('average')}
@@ -450,16 +539,26 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
               </button>
             </div>
             {hpMode === 'roll' && (
-              <div className="flex items-center gap-2 p-2 rounded text-xs mb-2" style={{ background: 'rgba(232, 211, 162, 0.3)' }}>
-                <label style={{ color: '#8B6914' }}>Выпало на {diceNotation}{dieSize}:</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={dieSize}
-                  value={hpRoll}
-                  onChange={e => setHpRoll(Number(e.target.value) || 1)}
-                  className="parchment-input-center w-16 text-xs"
-                />
+              <div className="flex flex-wrap items-center gap-2 p-2 rounded text-xs mb-2" style={{ background: 'rgba(232, 211, 162, 0.3)' }}>
+                <button
+                  type="button"
+                  onClick={rollHpDie}
+                  className="parchment-btn text-xs py-1 px-2.5 flex items-center gap-1 shrink-0"
+                >
+                  <D20Icon size={14} />
+                  <span>Бросить 1{diceNotation}{dieSize}</span>
+                </button>
+                <div className="flex items-center gap-1.5">
+                  <label style={{ color: '#8B6914' }}>Выпало:</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={dieSize}
+                    value={hpRoll}
+                    onChange={e => setHpRoll(Math.min(dieSize, Math.max(1, Number(e.target.value) || 1)))}
+                    className="parchment-input-boxed text-center w-16 text-xs"
+                  />
+                </div>
                 <span style={{ color: '#8B6914' }}>
                   + мод. ТЕЛ ({formatModifier(conMod)}) {hasTough ? '+ Живучий (+2)' : ''} {racialHPBonus > 0 ? '+ Дворф (+1)' : ''} = <strong>{hpRoll + conMod + toughBonus + racialHPBonus}</strong>
                 </span>
@@ -475,7 +574,8 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
             <div className="parchment-modal-section space-y-2">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-                  <span>⚔️ Классовые умения {newLevel}-го уровня:</span>
+                  <CrossedSwordsIcon size={16} />
+                  <span>Классовые умения {newLevel}-го уровня:</span>
                 </h3>
                 <span className="text-[10px]" style={{ color: '#8B6914' }}>Отмеченные умения добавятся в особенности листа</span>
               </div>
@@ -489,18 +589,20 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                       border: '1px solid rgba(201, 168, 76, 0.4)'
                     }}
                   >
-                    <label className="flex items-start gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={!!selectedFeatures[f.name]}
-                        onChange={() => toggleFeature(f.name)}
-                        className="accent-[#8B6914] w-4 h-4 mt-0.5 shrink-0 cursor-pointer"
-                      />
+                    <div className="flex items-start gap-2">
+                      <label className="parchment-checkbox parchment-checkbox-sm mt-0.5 shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={!!selectedFeatures[f.name]}
+                          onChange={() => toggleFeature(f.name)}
+                        />
+                        <span className="checkmark"></span>
+                      </label>
                       <div className="flex-1 min-w-0">
                         <span className="font-bold text-xs block" style={{ color: '#3D2012' }}>{f.name}</span>
                         <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{f.description}</p>
                       </div>
-                    </label>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -512,7 +614,8 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
             <div className="parchment-modal-section space-y-2" style={{ background: 'rgba(201, 168, 76, 0.12)', border: '1px solid rgba(201, 168, 76, 0.45)' }}>
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#5C341F' }}>
-                  <span>🧬 Расовое развитие ({char.race || 'Раса'}{char.subrace ? ` — ${char.subrace}` : ''}, {newLevel} ур.):</span>
+                  <SparklesDndIcon size={16} />
+                  <span>Расовое развитие ({char.race || 'Раса'}{char.subrace ? ` — ${char.subrace}` : ''}, {newLevel} ур.):</span>
                 </h3>
                 <span className="text-[10px]" style={{ color: '#8B6914' }}>Врождённая магия и масштабирование</span>
               </div>
@@ -526,13 +629,15 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                       border: '1px solid rgba(201, 168, 76, 0.4)'
                     }}
                   >
-                    <label className="flex items-start gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={!!selectedRacialFeatures[rf.name]}
-                        onChange={() => toggleRacialFeature(rf.name)}
-                        className="accent-[#8B6914] w-4 h-4 mt-0.5 shrink-0 cursor-pointer"
-                      />
+                    <div className="flex items-start gap-2">
+                      <label className="parchment-checkbox parchment-checkbox-sm mt-0.5 shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={!!selectedRacialFeatures[rf.name]}
+                          onChange={() => toggleRacialFeature(rf.name)}
+                        />
+                        <span className="checkmark"></span>
+                      </label>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-xs" style={{ color: '#3D2012' }}>{rf.name}</span>
@@ -544,7 +649,47 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                         </div>
                         <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{rf.description}</p>
                       </div>
-                    </label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 2.2. Subclass Features at this level (for already chosen subclass) */}
+          {!isSubclassChoice && subclassFeatures.length > 0 && (
+            <div className="parchment-modal-section space-y-2" style={{ background: 'rgba(92, 58, 110, 0.08)', borderColor: 'rgba(138, 93, 157, 0.4)' }}>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#5C3A6E' }}>
+                  <ScrollIcon size={16} />
+                  <span>Умения архетипа ({effectiveSubclass}, {newLevel} ур.):</span>
+                </h3>
+                <span className="text-[10px]" style={{ color: '#8B6914' }}>Особенности вашей специализации</span>
+              </div>
+              <div className="space-y-2">
+                {subclassFeatures.map(sf => (
+                  <div
+                    key={sf.name}
+                    className="p-2.5 rounded text-xs transition-colors"
+                    style={{
+                      background: selectedFeatures[sf.name] ? 'rgba(232, 211, 162, 0.45)' : 'rgba(232, 211, 162, 0.15)',
+                      border: '1px solid rgba(201, 168, 76, 0.4)'
+                    }}
+                  >
+                    <div className="flex items-start gap-2">
+                      <label className="parchment-checkbox parchment-checkbox-sm mt-0.5 shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={!!selectedFeatures[sf.name]}
+                          onChange={() => toggleFeature(sf.name)}
+                        />
+                        <span className="checkmark"></span>
+                      </label>
+                      <div className="flex-1 min-w-0">
+                        <span className="font-bold text-xs block" style={{ color: '#3D2012' }}>{sf.name}</span>
+                        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{sf.description}</p>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -555,7 +700,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
           {isSubclassChoice && availableSubclasses.length > 0 && (
             <div className="p-3 rounded-lg border space-y-2" style={{ background: 'rgba(92, 58, 110, 0.08)', borderColor: '#8A5D9D' }}>
               <div className="flex items-center gap-2">
-                <span className="text-base">👑</span>
+                <ScrollIcon size={18} />
                 <h3 className="text-sm font-bold" style={{ color: '#5C3A6E' }}>
                   Выбор воинского пути / Архетипа ({newLevel} уровень):
                 </h3>
@@ -596,7 +741,8 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
             <div className="parchment-modal-section space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-                  <span>📈 Улучшение характеристик (ASI) или Черта:</span>
+                  <SparklesDndIcon size={16} />
+                  <span>Улучшение характеристик (ASI) или Черта:</span>
                 </h3>
                 <span className="text-[10px] font-bold" style={{ color: '#8B6914' }}>Уровень {newLevel}</span>
               </div>
@@ -606,16 +752,18 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                 <button
                   type="button"
                   onClick={() => setAsiChoice('stats')}
-                  className={asiChoice === 'stats' ? 'parchment-btn text-xs py-1 px-3 font-bold' : 'parchment-btn-secondary text-xs py-1 px-3'}
+                  className={asiChoice === 'stats' ? 'parchment-btn text-xs py-1 px-3 font-bold flex items-center gap-1.5' : 'parchment-btn-secondary text-xs py-1 px-3 flex items-center gap-1.5'}
                 >
-                  📊 Характеристики (+2 или +1/+1)
+                  <ScrollIcon size={14} />
+                  <span>Характеристики (+2 или +1/+1)</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setAsiChoice('feat')}
-                  className={asiChoice === 'feat' ? 'parchment-btn text-xs py-1 px-3 font-bold' : 'parchment-btn-secondary text-xs py-1 px-3'}
+                  className={asiChoice === 'feat' ? 'parchment-btn text-xs py-1 px-3 font-bold flex items-center gap-1.5' : 'parchment-btn-secondary text-xs py-1 px-3 flex items-center gap-1.5'}
                 >
-                  ⚔️ Выбрать черту (Feat)
+                  <CrossedSwordsIcon size={14} />
+                  <span>Выбрать черту (Feat)</span>
                 </button>
               </div>
 
@@ -652,6 +800,12 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                   <p className="col-span-full text-[11px]" style={{ color: '#8B6914' }}>
                     * Если выбрать одну и ту же характеристику в обоих полях, она получит +2.
                   </p>
+                  {isASIOverCap && (
+                    <div className="col-span-full p-2.5 rounded text-xs font-bold flex items-center gap-2" style={{ background: 'rgba(139, 37, 0, 0.12)', border: '1px solid rgba(139, 37, 0, 0.35)', color: '#8B2500' }}>
+                      <HourglassIcon size={16} />
+                      <span>Значение характеристики не может превышать 20 при стандартном повышении (PHB 5e). Выберите другую характеристику.</span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-2 pt-1">
@@ -685,11 +839,12 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
           {newSpellSlots && (
             <div className="parchment-modal-section space-y-2">
               <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-                <span>✨ Магия и ячейки заклинаний:</span>
+                <SparklesDndIcon size={16} />
+                <span>Магия и ячейки заклинаний:</span>
               </h3>
               {unlockedCircle && (
                 <div className="p-2 rounded text-xs font-bold flex items-center gap-2" style={{ background: 'rgba(92, 58, 110, 0.12)', border: '1px solid #8A5D9D', color: '#5C3A6E' }}>
-                  <span className="text-base">🌟</span>
+                  <CrystalBallDndIcon size={18} />
                   <span>Поздравляем! Открыт доступ к заклинаниям {unlockedCircle}-го круга!</span>
                 </div>
               )}
@@ -709,7 +864,10 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* ── NEW CANTRIPS ── */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>✨ Новые заговоры (→ вкладка Заклинания):</h3>
+            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+              <SparklesDndIcon size={16} />
+              <span>Новые заговоры (→ вкладка Заклинания):</span>
+            </h3>
             {newCantrips.map((c, i) => (
               <div key={i} className="flex items-center gap-2 mb-1">
                 <div className="flex-1">
@@ -718,7 +876,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                     onChange={v => updateCantripRow(i, v)}
                     items={cantripAutocompleteItems}
                     placeholder="Название заговора вашего класса..."
-                    className={inputClass}
+                    className="w-full parchment-input-boxed"
                   />
                 </div>
                 <button onClick={() => removeCantripRow(i)} className="parchment-remove-btn">✕</button>
@@ -730,7 +888,10 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
           {/* ── NEW SPELLS ── */}
           <div className="parchment-modal-section">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-bold" style={{ color: '#3C2415' }}>📖 Новые заклинания (→ вкладка Заклинания):</h3>
+              <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                <SpellbookIcon size={16} />
+                <span>Новые заклинания (→ вкладка Заклинания):</span>
+              </h3>
               {maxSlotLevelAtNewLevel > 0 && (
                 <span className="text-[11px] font-mono" style={{ color: '#8B6914' }}>
                   Доступны ячейки до {maxSlotLevelAtNewLevel} ур.
@@ -745,7 +906,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
               <>
                 {newSpells.map((s, i) => (
                   <div key={i} className="flex items-center gap-2 mb-1">
-                    <select value={s.level} onChange={e => updateSpellRow(i, 'level', Number(e.target.value))} className="parchment-select h-7 shrink-0" style={{ width: '64px' }}>
+                    <select value={s.level} onChange={e => updateSpellRow(i, 'level', Number(e.target.value))} className="parchment-select text-xs w-20 shrink-0">
                       {[1,2,3,4,5,6,7,8,9]
                         .filter(l => l <= Math.max(1, maxSlotLevelAtNewLevel))
                         .map(l => <option key={l} value={l}>{l} ур.</option>)
@@ -757,7 +918,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                         onChange={v => updateSpellRow(i, 'name', v)}
                         items={leveledSpellAutocompleteItems}
                         placeholder="Название заклинания вашего класса..."
-                        className="w-full parchment-input"
+                        className="w-full parchment-input-boxed"
                       />
                     </div>
                     <label className="parchment-checkbox parchment-checkbox-sm" style={{ color: '#8B6914' }}><input type="checkbox" checked={s.prepared} onChange={e => updateSpellRow(i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label><span className="text-xs" style={{ color: '#8B6914' }}>Подг.</span>
@@ -771,7 +932,10 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* ── NEW SAVING THROW PROFS ── */}
           <div className="parchment-modal-section-accent">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>🛡️ Новые владения спасбросками:</h3>
+            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+              <EngravedShieldIcon size={16} />
+              <span>Новые владения спасбросками:</span>
+            </h3>
             <div className="flex flex-wrap gap-2">
               {ABILITY_NAMES.map(abbr => (
                 <div key={abbr} className={`flex items-center gap-1 px-2 py-1 rounded text-xs cursor-pointer ${newSaveProfs.includes(abbr) ? 'parchment-skill-expert font-bold' : char.savingThrowProficiencies[abbr] ? 'opacity-40' : 'parchment-no-prof'}`}>
@@ -784,8 +948,11 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* ── NEW SKILL PROFS ── */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>🎯 Новые владения навыками:</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-1">
+            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+              <GoldSealCheckIcon size={16} />
+              <span>Новые владения навыками:</span>
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-1">
               {ALL_SKILLS.map(skill => {
                 const alreadyProf = char.skillProficiencies[skill];
                 const isNewProf = newSkillProfs.includes(skill);
@@ -804,13 +971,16 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* ── NEW ATTACKS ── */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>⚔️ Новые атаки:</h3>
+            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+              <CrossedSwordsIcon size={16} />
+              <span>Новые атаки:</span>
+            </h3>
             {newAttacks.map((atk, i) => (
-              <div key={i} className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 items-center mb-1">
-                <input value={atk.name} onChange={e => updateAttackRow(i, 'name', e.target.value)} placeholder="Название" className={inputClass} />
-                <input value={atk.attackBonus} onChange={e => updateAttackRow(i, 'attackBonus', e.target.value)} placeholder="+5" className={inputClassCenter + " w-16"} />
-                <input value={atk.damageAndType} onChange={e => updateAttackRow(i, 'damageAndType', e.target.value)} placeholder="1d8+3 рубящий" className={inputClass} />
-                <button onClick={() => removeAttackRow(i)} className="parchment-remove-btn">✕</button>
+              <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto] gap-2 items-center mb-1.5 p-1.5 rounded border border-amber-900/10">
+                <input value={atk.name} onChange={e => updateAttackRow(i, 'name', e.target.value)} placeholder="Название оружия/атаки" className="parchment-input-boxed text-xs w-full" />
+                <input value={atk.attackBonus} onChange={e => updateAttackRow(i, 'attackBonus', e.target.value)} placeholder="+5" className="parchment-input-boxed text-center text-xs w-full sm:w-16" />
+                <input value={atk.damageAndType} onChange={e => updateAttackRow(i, 'damageAndType', e.target.value)} placeholder="1d8+3 рубящий" className="parchment-input-boxed text-xs w-full" />
+                <button onClick={() => removeAttackRow(i)} className="parchment-remove-btn self-center">✕</button>
               </div>
             ))}
             <button onClick={addAttackRow} className="parchment-btn-sm" style={{ color: '#8B2500' }}>+ Атака</button>
@@ -818,19 +988,28 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* ── NEW PROFICIENCIES TEXT ── */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>📋 Новые владения / языки:</h3>
+            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+              <ScrollIcon size={16} />
+              <span>Новые владения / языки:</span>
+            </h3>
             <textarea value={newProfText} onChange={e => setNewProfText(e.target.value)} rows={2} className={textareaClass} placeholder="Владение тяжёлыми доспехами&#10;Язык: Драконий" />
           </div>
 
           {/* ── NEW EQUIPMENT TEXT ── */}
           <div className="parchment-modal-section-accent">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>🎒 Новое снаряжение:</h3>
+            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+              <BackpackPackIcon size={16} />
+              <span>Новое снаряжение:</span>
+            </h3>
             <textarea value={newEquipText} onChange={e => setNewEquipText(e.target.value)} rows={2} className={textareaClass} placeholder="Кольчуга, Длинный меч" />
           </div>
 
           {/* ── FREEFORM NOTES → FEATURES ── */}
           <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2" style={{ color: '#3C2415' }}>📝 Заметки к уровню:</h3>
+            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+              <QuillIcon size={16} />
+              <span>Заметки к уровню:</span>
+            </h3>
             <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className={textareaClass} placeholder="Дополнительные примечания..." />
           </div>
 
@@ -856,11 +1035,17 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
           {/* Buttons */}
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onCancel} className="flex-1 parchment-btn-secondary">
+            <button type="button" onClick={onCancel} className="flex-1 parchment-btn-secondary py-2">
               Отмена
             </button>
-            <button type="button" onClick={() => onConfirm(buildEntry())} className="flex-1 parchment-btn font-bold text-sm py-2">
-              ⬆️ Повысить до {newLevel}-го уровня
+            <button
+              type="button"
+              disabled={isASIOverCap || (isSubclassChoice && availableSubclasses.length > 0 && !chosenSubclass)}
+              onClick={() => onConfirm(buildEntry())}
+              className="flex-1 parchment-btn font-bold text-sm py-2 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <D20Icon size={18} />
+              <span>Повысить до {newLevel}-го уровня</span>
             </button>
           </div>
         </div>
@@ -883,7 +1068,7 @@ const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onC
   const targetLevel = Math.max(1, char.level - 1);
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <h2 className="text-xl font-bold mb-2 flex items-center gap-2" style={{ color: '#8B2500' }}>
@@ -923,8 +1108,11 @@ const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onC
             </div>
           )}
           <div className="flex gap-3">
-            <button type="button" onClick={onCancel} className="flex-1 parchment-btn-secondary">Отмена</button>
-            <button type="button" onClick={onConfirm} className="flex-1 font-medium" style={{ background: 'linear-gradient(180deg, #A0522D, #8B2500)', color: '#FBF0DC', border: '1px solid #C9A84C', borderRadius: '3px', padding: '8px 16px', cursor: 'pointer', fontSize: '0.875rem', fontFamily: 'Georgia, "Times New Roman", serif', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>⬇️ Откатить</button>
+            <button type="button" onClick={onCancel} className="flex-1 parchment-btn-secondary py-2">Отмена</button>
+            <button type="button" onClick={onConfirm} className="flex-1 parchment-btn font-bold text-sm py-2 flex items-center justify-center gap-2" style={{ background: 'linear-gradient(180deg, #A0522D, #8B2500)' }}>
+              <HourglassIcon size={16} />
+              <span>Откатить</span>
+            </button>
           </div>
         </div>
       </div>
@@ -945,7 +1133,7 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose,
   const history = Array.isArray(char.levelHistory) ? char.levelHistory : [];
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4" onClick={onClose}>
       <div className="parchment-modal max-w-lg w-full max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
@@ -972,7 +1160,7 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose,
 
           {history.length === 0 ? (
             <div className="text-center py-8 space-y-2">
-              <div className="text-3xl opacity-60">📜</div>
+              <ScrollIcon size={36} className="mx-auto opacity-60" />
               <p className="font-bold text-sm" style={{ color: '#5C341F' }}>История прокачки пуста</p>
               <p className="text-xs max-w-xs mx-auto leading-relaxed" style={{ color: '#8B6914' }}>
                 При каждом повышении уровня через кнопку «+» здесь автоматически сохраняются все выборы: здоровье, черты, характеристики, архетипы и умения.
@@ -1006,31 +1194,44 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose,
                   </div>
 
                   {entry.newSubclass && (
-                    <p className="text-xs font-bold" style={{ color: '#5C3A6E' }}>👑 Архетип: {entry.newSubclass}</p>
+                    <p className="text-xs font-bold flex items-center gap-1.5" style={{ color: '#5C3A6E' }}>
+                      <ScrollIcon size={14} />
+                      <span>Архетип: {entry.newSubclass}</span>
+                    </p>
                   )}
 
                   {entry.selectedFeat && (
-                    <p className="text-xs font-bold" style={{ color: '#8B2500' }}>⚔️ Черта: {entry.selectedFeat}</p>
+                    <p className="text-xs font-bold flex items-center gap-1.5" style={{ color: '#8B2500' }}>
+                      <CrossedSwordsIcon size={14} />
+                      <span>Черта: {entry.selectedFeat}</span>
+                    </p>
                   )}
 
                   {entry.asiAbilities && entry.asiAbilities.length > 0 && (
-                    <p className="text-xs font-medium" style={{ color: '#4a7c3f' }}>
-                      📈 {entry.asiAbilities[0] === entry.asiAbilities[1]
+                    <p className="text-xs font-medium flex items-center gap-1.5" style={{ color: '#4a7c3f' }}>
+                      <SparklesDndIcon size={14} />
+                      <span>{entry.asiAbilities[0] === entry.asiAbilities[1]
                         ? `${ABILITY_FULL[entry.asiAbilities[0]] || entry.asiAbilities[0]} +2`
-                        : entry.asiAbilities.map(a => `${ABILITY_FULL[a] || a} +1`).join(', ')}
+                        : entry.asiAbilities.map(a => `${ABILITY_FULL[a] || a} +1`).join(', ')}</span>
                     </p>
                   )}
 
                   {entry.addedTraits && entry.addedTraits.length > 0 && (
-                    <div className="text-xs" style={{ color: '#3D2012' }}>
-                      <span className="font-semibold" style={{ color: '#5C341F' }}>✨ Умения: </span>
-                      {entry.addedTraits.map(t => t.name).join(', ')}
+                    <div className="text-xs flex items-center gap-1.5 flex-wrap" style={{ color: '#3D2012' }}>
+                      <span className="font-semibold flex items-center gap-1" style={{ color: '#5C341F' }}>
+                        <GoldSealCheckIcon size={14} />
+                        <span>Умения:</span>
+                      </span>
+                      <span>{entry.addedTraits.map(t => t.name).join(', ')}</span>
                     </div>
                   )}
 
                   {entry.spellSlotsGained && Object.keys(entry.spellSlotsGained).length > 0 && (
                     <div className="text-xs flex items-center gap-1 flex-wrap" style={{ color: '#5C3A6E' }}>
-                      <span className="font-semibold">✨ Ячейки: </span>
+                      <span className="font-semibold flex items-center gap-1">
+                        <CrystalBallDndIcon size={14} />
+                        <span>Ячейки:</span>
+                      </span>
                       {Object.entries(entry.spellSlotsGained).map(([lvl, cnt]) => (
                         <span key={lvl} className="px-1.5 py-0.2 rounded text-[10px] font-mono" style={{ background: '#E8D3A2', border: '1px solid #C9A84C' }}>
                           {lvl} кр: {cnt}
@@ -1040,31 +1241,45 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose,
                   )}
 
                   {entry.newCantrips?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#5C3A6E' }}>✨ Заговоры: {entry.newCantrips.join(', ')}</p>
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: '#5C3A6E' }}>
+                      <SparklesDndIcon size={14} />
+                      <span>Заговоры: {entry.newCantrips.join(', ')}</span>
+                    </p>
                   )}
 
                   {entry.newSpells?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#6B3A2A' }}>
-                      📖 Заклинания: {entry.newSpells.map(s => `${s.name} (${s.level} ур.)`).join(', ')}
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: '#6B3A2A' }}>
+                      <SpellbookIcon size={14} />
+                      <span>Заклинания: {entry.newSpells.map(s => `${s.name} (${s.level} ур.)`).join(', ')}</span>
                     </p>
                   )}
 
                   {entry.newSavingThrowProfs?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#8B6914' }}>
-                      🛡️ Спасброски: {entry.newSavingThrowProfs.map(a => ABILITY_FULL[a] || a).join(', ')}
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: '#8B6914' }}>
+                      <EngravedShieldIcon size={14} />
+                      <span>Спасброски: {entry.newSavingThrowProfs.map(a => ABILITY_FULL[a] || a).join(', ')}</span>
                     </p>
                   )}
 
                   {entry.newSkillProfs?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#5C3A6E' }}>🎯 Навыки: {entry.newSkillProfs.join(', ')}</p>
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: '#5C3A6E' }}>
+                      <GoldSealCheckIcon size={14} />
+                      <span>Навыки: {entry.newSkillProfs.join(', ')}</span>
+                    </p>
                   )}
 
                   {entry.newSkillExpertise?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#5C3A6E' }}>🏆 Экспертиза: {entry.newSkillExpertise.join(', ')}</p>
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: '#5C3A6E' }}>
+                      <GoldSealCheckIcon size={14} />
+                      <span>Экспертиза: {entry.newSkillExpertise.join(', ')}</span>
+                    </p>
                   )}
 
                   {entry.newAttacks?.length > 0 && (
-                    <p className="text-xs" style={{ color: '#8B2500' }}>⚔️ Атаки: {entry.newAttacks.map(a => a.name).join(', ')}</p>
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: '#8B2500' }}>
+                      <CrossedSwordsIcon size={14} />
+                      <span>Атаки: {entry.newAttacks.map(a => a.name).join(', ')}</span>
+                    </p>
                   )}
 
                   {entry.notes && (
@@ -2423,7 +2638,9 @@ export default function DnDCharacterSheet() {
       }
 
       // Revert spell slots
-      const prevSlots = getSpellSlotsForClassLevel(prev.className, newLevel);
+      const sub = (prev.subclass || '').toLowerCase();
+      const isThirdCaster = sub.includes('мистический рыцарь') || sub.includes('eldritch knight') || sub.includes('мистический ловкач') || sub.includes('arcane trickster');
+      const prevSlots = isThirdCaster ? getThirdCasterSpellSlots(newLevel) : getSpellSlotsForClassLevel(prev.className, newLevel);
       let updatedSpellSlots = { ...prev.spellSlots };
       if (prevSlots) {
         for (let l = 1; l <= 9; l++) {
@@ -2435,6 +2652,10 @@ export default function DnDCharacterSheet() {
           } else {
             delete updatedSpellSlots[l];
           }
+        }
+      } else if (isThirdCaster || last?.newSubclass) {
+        for (let l = 1; l <= 9; l++) {
+          delete updatedSpellSlots[l];
         }
       }
 

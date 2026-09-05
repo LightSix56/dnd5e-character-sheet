@@ -558,6 +558,10 @@ export const DND_CLASS_PROGRESSION: Record<string, ClassLevelProgression> = {
         {
           "name": "Дополнительная атака",
           "description": "При действии Атака вы совершаете две атаки вместо одной."
+        },
+        {
+          "name": "Ячейки заклинаний 2-го круга",
+          "description": "Вы открываете доступ к заклинаниям 2-го круга паладина."
         }
       ],
       "6": [
@@ -817,6 +821,10 @@ export const DND_CLASS_PROGRESSION: Record<string, ClassLevelProgression> = {
         {
           "name": "Божественный домен (Подкласс)",
           "description": "Вы выбираете домен божества (Жизнь, Свет, Война, Буря, Обман, Знание, Смерть, Сумерки и др.), получая доменные заклинания и умения 1-го уровня."
+        },
+        {
+          "name": "Сотворение заклинаний жреца",
+          "description": "Вы черпаете божественную магию своего божества (характеристика — Мудрость). Доступно ритуальное сотворение подготовленных заклинаний."
         }
       ],
       "2": [
@@ -1544,6 +1552,10 @@ export const DND_CLASS_PROGRESSION: Record<string, ClassLevelProgression> = {
         {
           "name": "Дополнительная атака",
           "description": "Две атаки при действии Атака."
+        },
+        {
+          "name": "Ячейки заклинаний 2-го круга",
+          "description": "Доступ к заклинаниям 2-го круга следопыта."
         }
       ],
       "6": [
@@ -1560,7 +1572,7 @@ export const DND_CLASS_PROGRESSION: Record<string, ClassLevelProgression> = {
       ],
       "8": [
         {
-          "name": "Маскировка на виду",
+          "name": "Перемещение по местности (Land's Stride)",
           "description": "Труднопроходимая местность не замедляет перемещение."
         },
         {
@@ -1576,7 +1588,7 @@ export const DND_CLASS_PROGRESSION: Record<string, ClassLevelProgression> = {
       ],
       "10": [
         {
-          "name": "Исчезновение",
+          "name": "Маскировка на виду (Hide in Plain Sight)",
           "description": "Вы можете скрыться за 1 минуту подготовки и получить +10 к проверкам Скрытности."
         }
       ],
@@ -1600,7 +1612,7 @@ export const DND_CLASS_PROGRESSION: Record<string, ClassLevelProgression> = {
       ],
       "14": [
         {
-          "name": "Улучшение скрытности",
+          "name": "Исчезновение (Vanish)",
           "description": "Бонусным действием совершайте Засаду."
         }
       ],

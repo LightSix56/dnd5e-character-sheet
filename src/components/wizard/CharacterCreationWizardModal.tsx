@@ -54,6 +54,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // ── Step 2: Class & Skills ──
   const [selectedClassId, setSelectedClassId] = useState<string>('fighter');
   const [selectedClassSkills, setSelectedClassSkills] = useState<string[]>(['Атлетика', 'Внимательность']);
+  const [selectedSubclassId, setSelectedSubclassId] = useState<string>('');
 
   // ── Step 3: Background ──
   const [selectedBackgroundId, setSelectedBackgroundId] = useState<string>('soldier');
@@ -106,6 +107,13 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const selectedClass = useMemo(() => {
     return DND_COMPENDIUM_CLASSES.find(c => c.id === selectedClassId) || DND_COMPENDIUM_CLASSES[0];
   }, [selectedClassId]);
+
+  const selectedSubclass = useMemo(() => {
+    if (selectedClass.subclassLevel !== 1 || !selectedClass.subclasses || selectedClass.subclasses.length === 0) {
+      return undefined;
+    }
+    return selectedClass.subclasses.find(s => s.id === selectedSubclassId || s.name === selectedSubclassId) || selectedClass.subclasses[0];
+  }, [selectedClass, selectedSubclassId]);
 
   const selectedBackground = useMemo(() => {
     return DND_COMPENDIUM_BACKGROUNDS.find(b => b.id === selectedBackgroundId) || DND_COMPENDIUM_BACKGROUNDS[0];
@@ -263,6 +271,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // On selecting class: initialize default recommended skills and scores
   const handleSelectClass = useCallback((cls: CompendiumClass) => {
     setSelectedClassId(cls.id);
+    if (cls.subclassLevel === 1 && cls.subclasses && cls.subclasses.length > 0) {
+      setSelectedSubclassId(cls.subclasses[0].id);
+    } else {
+      setSelectedSubclassId('');
+    }
     const cfg = getClassSkillConfig(cls.name);
 
     // Filter out skills already given by race
@@ -402,6 +415,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       return { valid: true };
     }
     if (step === 2) {
+      if (selectedClass.subclassLevel === 1 && !selectedSubclass) {
+        return {
+          valid: false,
+          error: `Для класса «${selectedClass.name}» необходимо выбрать архетип (${selectedClass.subclassTitle || 'Подкласс'}) на 1-м уровне.`
+        };
+      }
       if (selectedClassSkills.length < classSkillConfig.skillChoices) {
         return {
           valid: false,
@@ -619,6 +638,21 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       featureTextLines.push(`[${selectedClass.name}] 1 ур.:\n${selectedClass.featuresAt1}`);
     }
 
+    // Subclass 1st level features (for classes choosing subclass at level 1)
+    if (selectedClass.subclassLevel === 1 && selectedSubclass) {
+      const subFeatures = selectedSubclass.features.filter(f => f.level <= 1);
+      for (const f of subFeatures) {
+        traitsList.push({
+          id: `subclass-${f.name}`,
+          name: f.name,
+          source: `Подкласс: ${selectedSubclass.name}`,
+          summary: f.description.slice(0, 90) + '...',
+          description: f.description
+        });
+        featureTextLines.push(`[${selectedSubclass.name}] 1 ур. — ${f.name}: ${f.description}`);
+      }
+    }
+
     // Background feature
     if (selectedBackground.feature) {
       traitsList.push({
@@ -685,7 +719,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       playerName: playerName.trim(),
       race: selectedRace.name,
       subrace: selectedSubrace?.name || '',
-      subclass: '',
+      subclass: (selectedClass.subclassLevel === 1 && selectedSubclass) ? selectedSubclass.name : '',
       alignment,
       experiencePoints: 0,
       inspiration: false,
@@ -1182,6 +1216,67 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   <div><strong>Особенности 1-го уровня: </strong>{selectedClass.featuresAt1}</div>
                 </div>
               </div>
+
+              {/* ── Subclass Selection at 1st Level (Cleric, Sorcerer, Warlock) ── */}
+              {selectedClass.subclassLevel === 1 && selectedClass.subclasses && selectedClass.subclasses.length > 0 && (
+                <div className="p-4 rounded-lg space-y-3" style={{ background: 'rgba(232, 211, 162, 0.45)', border: '2px solid #C9A84C' }}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+                    <div>
+                      <h4 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3D2012' }}>
+                        <span>👑</span>
+                        <span>{selectedClass.subclassTitle || 'Выбор архетипа / подкласса'} (1-й уровень)</span>
+                      </h4>
+                      <p className="text-[11px] text-[#8B6914]">
+                        Класс «{selectedClass.name}» определяет свой архетип уже на 1-м уровне. Выберите специализацию вашего персонажа:
+                      </p>
+                    </div>
+                    {selectedSubclass && (
+                      <span className="text-xs font-bold px-2.5 py-1 rounded shadow-xs self-start sm:self-auto" style={{ background: '#5C341F', color: '#FFE58F' }}>
+                        Выбран: {selectedSubclass.name}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Subclass cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-1">
+                    {selectedClass.subclasses.map(sub => {
+                      const isSel = sub.id === selectedSubclassId || sub.name === selectedSubclassId;
+                      const lvl1Features = sub.features.filter(f => f.level <= 1);
+                      return (
+                        <button
+                          key={sub.id}
+                          type="button"
+                          onClick={() => setSelectedSubclassId(sub.id)}
+                          className={`p-3 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+                            isSel ? 'shadow-md scale-[1.01]' : 'hover:bg-[rgba(201,168,76,0.18)]'
+                          }`}
+                          style={
+                            isSel
+                              ? { background: '#E8D3A2', border: '2px solid #5C341F', color: '#3D2012' }
+                              : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#4A2A18' }
+                          }
+                        >
+                          <div>
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-xs" style={{ color: isSel ? '#3D2012' : '#5C341F' }}>{sub.name}</span>
+                              <span className="text-[10px] opacity-70 italic">{sub.nameEn}</span>
+                            </div>
+                            <p className="text-[11px] mt-1 leading-snug line-clamp-3 opacity-90">{sub.description}</p>
+                          </div>
+                          {lvl1Features.length > 0 && (
+                            <div className="text-[10px] pt-1.5 border-t border-[rgba(201,168,76,0.3)] space-y-0.5">
+                              <span className="font-semibold text-[#6B3A2A]">Умения 1-го уровня:</span>
+                              <div className="text-[#3D2012] line-clamp-2">
+                                {lvl1Features.map(f => f.name).join(', ')}
+                              </div>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* ── Strict Class Skill Picker ── */}
               <div className="p-4 rounded-lg space-y-3" style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
@@ -1975,7 +2070,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       {charName || 'Безымянный герой'}
                     </div>
                     <div className="text-xs text-[#8B6914]">
-                      {selectedRace.name} {selectedSubrace ? `(${selectedSubrace.name})` : ''} · {selectedClass.name} 1 ур. · {selectedBackground.name} · {alignment}
+                      {selectedRace.name} {selectedSubrace ? `(${selectedSubrace.name})` : ''} · {selectedClass.name}{selectedSubclass ? ` (${selectedSubclass.name})` : ''} 1 ур. · {selectedBackground.name} · {alignment}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

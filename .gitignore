@@ -6,7 +6,8 @@ download/
 upload/
 examples/
 mini-services/
-skills/
+/skills/
+!.agents/skills/
 prisma/
 src/components/ui/
 src/hooks/

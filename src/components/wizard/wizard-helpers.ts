@@ -470,11 +470,91 @@ export const POINT_BUY_COST_TABLE: Record<number, number> = {
 export function calcPointBuyTotalSpent(scores: Record<AbilityName, number>): number {
   let total = 0;
   for (const ab of ABILITY_NAMES) {
-    const score = Math.max(8, Math.min(15, scores[ab] || 8));
+    const score = scores[ab] ?? 8;
+    if (score < 8 || score > 15) return NaN;
     total += POINT_BUY_COST_TABLE[score] ?? 0;
   }
   return total;
 }
+
+// ── Standard Array Validator ──
+
+export const STANDARD_ARRAY_VALUES = [15, 14, 13, 12, 10, 8] as const;
+
+export function validateStandardArray(scores: Record<AbilityName, number>): { valid: boolean; error?: string } {
+  const vals = ABILITY_NAMES.map(ab => scores[ab] ?? 0).sort((a, b) => b - a);
+  const expected = [...STANDARD_ARRAY_VALUES].sort((a, b) => b - a);
+  if (vals.length !== expected.length || !vals.every((v, i) => v === expected[i])) {
+    return {
+      valid: false,
+      error: 'В стандартном наборе каждое из значений (15, 14, 13, 12, 10, 8) должно быть назначено ровно один раз без повторений.'
+    };
+  }
+  return { valid: true };
+}
+
+// ── Prepared Spells Limit Calculator ──
+
+export function calcPreparedSpellsLimit(className: string, level: number, abilityMod: number): number {
+  const norm = className.trim().toLowerCase();
+  if (
+    norm.includes('волшебник') || norm.includes('wizard') ||
+    norm.includes('жрец') || norm.includes('cleric') ||
+    norm.includes('друид') || norm.includes('druid')
+  ) {
+    return Math.max(1, abilityMod + level);
+  }
+  if (norm.includes('изобретатель') || norm.includes('artificer')) {
+    return Math.max(1, abilityMod + Math.floor(level / 2));
+  }
+  if (norm.includes('паладин') || norm.includes('paladin')) {
+    return Math.max(1, abilityMod + Math.floor(level / 2));
+  }
+  return 0;
+}
+
+// ── Dynamic AC Calculator ──
+
+export function calculateWizardAC(
+  className: string,
+  equippedArmor: string,
+  equippedShield: boolean,
+  dexMod: number,
+  conMod: number,
+  wisMod: number
+): number {
+  const shieldBonus = equippedShield ? 2 : 0;
+  const normClass = className.trim().toLowerCase();
+
+  // Barbarian Unarmored Defense (10 + DEX + CON + shield)
+  if ((normClass.includes('варвар') || normClass.includes('barbarian')) && !equippedArmor) {
+    return 10 + dexMod + conMod + shieldBonus;
+  }
+  // Monk Unarmored Defense (10 + DEX + WIS, no shield allowed)
+  if ((normClass.includes('монах') || normClass.includes('monk')) && !equippedArmor && !equippedShield) {
+    return 10 + dexMod + wisMod;
+  }
+
+  if (equippedArmor) {
+    const lowerArmor = equippedArmor.toLowerCase();
+    // Heavy: Chain Mail / Кольчуга / Латы
+    if (lowerArmor.includes('кольчуг') || lowerArmor.includes('chain mail') || lowerArmor.includes('латы') || lowerArmor.includes('наборн') || lowerArmor.includes('колечн')) {
+      return 16 + shieldBonus;
+    }
+    // Medium: Scale Mail / Чешуйчатый доспех (14 + min(2, max(0, dexMod)))
+    if (lowerArmor.includes('чешуйчат') || lowerArmor.includes('scale mail') || lowerArmor.includes('рубах') || lowerArmor.includes('кирас') || lowerArmor.includes('полулат') || lowerArmor.includes('шкурн')) {
+      return 14 + Math.min(2, Math.max(0, dexMod)) + shieldBonus;
+    }
+    // Light: Leather / Кожаный доспех (11 + dexMod)
+    if (lowerArmor.includes('кожан') || lowerArmor.includes('leather') || lowerArmor.includes('стеган') || lowerArmor.includes('проклепан')) {
+      return 11 + dexMod + shieldBonus;
+    }
+  }
+
+  // Default Unarmored
+  return 10 + dexMod + shieldBonus;
+}
+
 
 // ── Crypto-random 4d6 Drop Lowest Roller ──
 

@@ -18,7 +18,10 @@ import {
   POINT_BUY_BUDGET,
   POINT_BUY_COST_TABLE,
   calcPointBuyTotalSpent,
-  roll4d6DropLowest
+  roll4d6DropLowest,
+  validateStandardArray,
+  calcPreparedSpellsLimit,
+  calculateWizardAC
 } from './wizard-helpers';
 import {
   D20Icon, ScrollIcon, SpellbookIcon, CrossedSwordsIcon,
@@ -225,20 +228,37 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // On selecting race
   const handleSelectRace = useCallback((race: CompendiumRace) => {
     setSelectedRaceId(race.id);
-    if (race.subraces && race.subraces.length > 0) {
-      setSelectedSubraceId(race.subraces[0].id);
+    const firstSubrace = race.subraces && race.subraces.length > 0 ? race.subraces[0] : undefined;
+    if (firstSubrace) {
+      setSelectedSubraceId(firstSubrace.id);
     } else {
       setSelectedSubraceId('');
     }
     // Reset custom bonus
-    const cfg = getRacialBonusConfig(race, race.subraces?.[0]);
+    const cfg = getRacialBonusConfig(race, firstSubrace);
     if (cfg.hasCustomBonus) {
       setCustomRacialBonuses(cfg.availableAbilities.slice(0, cfg.choiceCount));
     } else {
       setCustomRacialBonuses([]);
     }
+    const sData = getRacialSkillData(race, firstSubrace);
     setCustomRacialSkills([]);
+    // Prune class skills that conflict with new race's fixed skills
+    setSelectedClassSkills(prev => prev.filter(s => !sData.fixedSkills.includes(s)));
   }, []);
+
+  const handleSelectSubrace = useCallback((subrace: CompendiumSubrace) => {
+    setSelectedSubraceId(subrace.id);
+    const cfg = getRacialBonusConfig(selectedRace, subrace);
+    if (cfg.hasCustomBonus) {
+      setCustomRacialBonuses(cfg.availableAbilities.slice(0, cfg.choiceCount));
+    } else {
+      setCustomRacialBonuses([]);
+    }
+    const sData = getRacialSkillData(selectedRace, subrace);
+    setCustomRacialSkills([]);
+    setSelectedClassSkills(prev => prev.filter(s => !sData.fixedSkills.includes(s)));
+  }, [selectedRace]);
 
   // On selecting class: initialize default recommended skills and scores
   const handleSelectClass = useCallback((cls: CompendiumClass) => {
@@ -363,11 +383,21 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       if (!charName.trim()) {
         return { valid: false, error: 'Пожалуйста, введите имя персонажа или воспользуйтесь генератором 🎲.' };
       }
-      if (racialBonusConfig.hasCustomBonus && customRacialBonuses.length < racialBonusConfig.choiceCount) {
-        return { valid: false, error: `Пожалуйста, выберите ${racialBonusConfig.choiceCount} характеристики для расового бонуса.` };
+      if (racialBonusConfig.hasCustomBonus) {
+        if (customRacialBonuses.length < racialBonusConfig.choiceCount) {
+          return { valid: false, error: `Пожалуйста, выберите ${racialBonusConfig.choiceCount} характеристики для расового бонуса.` };
+        }
+        if (new Set(customRacialBonuses).size !== customRacialBonuses.length) {
+          return { valid: false, error: 'Расовые бонусы должны быть назначены к разным характеристикам.' };
+        }
       }
-      if (racialSkillData.choiceCount > 0 && customRacialSkills.length < racialSkillData.choiceCount) {
-        return { valid: false, error: `Пожалуйста, выберите ${racialSkillData.choiceCount} расовых навыка.` };
+      if (racialSkillData.choiceCount > 0) {
+        if (customRacialSkills.length < racialSkillData.choiceCount) {
+          return { valid: false, error: `Пожалуйста, выберите ${racialSkillData.choiceCount} расовых навыка.` };
+        }
+        if (new Set(customRacialSkills).size !== customRacialSkills.length) {
+          return { valid: false, error: 'Расовые навыки не могут повторяться.' };
+        }
       }
       return { valid: true };
     }
@@ -378,14 +408,25 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
           error: `Вам необходимо выбрать ещё ${classSkillConfig.skillChoices - selectedClassSkills.length} навыка от класса.`
         };
       }
+      const overlap = selectedClassSkills.find(s => finalRacialSkills.includes(s));
+      if (overlap) {
+        return {
+          valid: false,
+          error: `Навык «${overlap}» уже получен от расы. Пожалуйста, выберите другой навык класса.`
+        };
+      }
       return { valid: true };
     }
     if (step === 3) {
       // Check if any overlapping skill wasn't replaced
       for (const s of selectedBackground.skillProficiencies) {
         if (finalRacialSkills.includes(s) || selectedClassSkills.includes(s)) {
-          if (!backgroundSkillReplacements[s]) {
+          const rep = backgroundSkillReplacements[s];
+          if (!rep) {
             return { valid: false, error: `Навык «${s}» уже выбран. Пожалуйста, укажите навык на замену.` };
+          }
+          if (finalRacialSkills.includes(rep) || selectedClassSkills.includes(rep)) {
+            return { valid: false, error: `Заменяющий навык «${rep}» уже имеется у персонажа. Выберите другой навык.` };
           }
         }
       }
@@ -394,25 +435,49 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     if (step === 4) {
       if (scoreMethod === 'point-buy') {
         const spent = calcPointBuyTotalSpent(baseScores);
+        if (Number.isNaN(spent)) {
+          return { valid: false, error: 'В методе Point Buy все характеристики должны быть в диапазоне от 8 до 15.' };
+        }
+        if (spent > POINT_BUY_BUDGET) {
+          return { valid: false, error: `Превышен лимит очков Point Buy! Потрачено: ${spent} из ${POINT_BUY_BUDGET}.` };
+        }
         if (spent < POINT_BUY_BUDGET) {
-          // Warning or allow? It's better to notify if unspent points
-          return { valid: true };
+          return { valid: false, error: `У вас осталось ${POINT_BUY_BUDGET - spent} непотраченных очков Point Buy. Распределите их перед переходом.` };
+        }
+      } else if (scoreMethod === 'standard') {
+        const stdRes = validateStandardArray(baseScores);
+        if (!stdRes.valid) return stdRes;
+      } else if (scoreMethod === 'roll') {
+        for (const ab of ABILITY_NAMES) {
+          if (!rollResults[ab]) {
+            return { valid: false, error: `Пожалуйста, бросьте кубики для характеристики «${ABILITY_FULL[ab]}» (${ab}).` };
+          }
         }
       }
       return { valid: true };
     }
     if (step === 5) {
       if (spellLimits.isCaster) {
-        if (selectedCantrips.length < spellLimits.cantripsLimit) {
-          return { valid: false, error: `Пожалуйста, выберите ${spellLimits.cantripsLimit} заговора (выбрано: ${selectedCantrips.length}).` };
+        if (selectedCantrips.length !== spellLimits.cantripsLimit) {
+          return { valid: false, error: `Пожалуйста, выберите ровно ${spellLimits.cantripsLimit} заговора (выбрано: ${selectedCantrips.length}).` };
         }
-        if (selectedSpells.length < spellLimits.spellsLimit) {
-          return { valid: false, error: `Пожалуйста, выберите ${spellLimits.spellsLimit} заклинаний 1-го уровня (выбрано: ${selectedSpells.length}).` };
+        if (selectedSpells.length !== spellLimits.spellsLimit) {
+          return { valid: false, error: `Пожалуйста, выберите ровно ${spellLimits.spellsLimit} заклинаний 1-го уровня (выбрано: ${selectedSpells.length}).` };
         }
       }
       return { valid: true };
     }
     return { valid: true };
+  };
+
+  // Safe navigation checker across step buttons
+  const canNavigateTo = (targetStep: number): boolean => {
+    if (targetStep <= currentStep) return true;
+    for (let s = 1; s < targetStep; s++) {
+      if (s === 5 && !spellLimits.isCaster) continue;
+      if (!validateStep(s).valid) return false;
+    }
+    return true;
   };
 
   const handleNext = () => {
@@ -443,9 +508,22 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // ── Build Final Character Data ──
 
   const handleFinish = () => {
+    // 1. Comprehensive validation of all preceding steps
+    for (let s = 1; s <= 5; s++) {
+      if (s === 5 && !spellLimits.isCaster) continue;
+      const v = validateStep(s);
+      if (!v.valid) {
+        setCurrentStep(s);
+        setStepError(v.error || 'Заполните обязательные поля перед завершением');
+        return;
+      }
+    }
+
     const tmpl = classSkillConfig.template;
-    const conMod = finalAbilityScores.mods['ТЕЛ'];
+    const strMod = finalAbilityScores.mods['СИЛ'];
     const dexMod = finalAbilityScores.mods['ЛОВ'];
+    const conMod = finalAbilityScores.mods['ТЕЛ'];
+    const intMod = finalAbilityScores.mods['ИНТ'];
     const wisMod = finalAbilityScores.mods['МДР'];
 
     // Hill Dwarf gets +1 HP per level
@@ -453,22 +531,18 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     const racialHpBonus = isHillDwarf ? 1 : 0;
     const hpMax = Math.max(1, classSkillConfig.hitDieSize + conMod + racialHpBonus);
 
-    // Calculate AC
-    let ac = 10 + dexMod;
+    // Armor and Shield detection
     let equippedArmor = '';
     let equippedShield = false;
-
-    if (selectedClass.name === 'Варвар') {
-      ac = 10 + dexMod + conMod; // Unarmored Defense
-    } else if (selectedClass.name === 'Монах') {
-      ac = 10 + dexMod + wisMod; // Unarmored Defense
-    } else if (tmpl) {
-      ac = tmpl.typicalAC;
+    if (tmpl) {
       equippedArmor = tmpl.equipment.toLowerCase().includes('кольчуга') ? 'Кольчуга' :
                       tmpl.equipment.toLowerCase().includes('чешуйчат') ? 'Чешуйчатый доспех' :
                       tmpl.equipment.toLowerCase().includes('кожан') ? 'Кожаный доспех' : '';
       equippedShield = tmpl.equipment.toLowerCase().includes('щит');
     }
+
+    // Dynamic AC calculation based on actual ability modifiers
+    const ac = calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod);
 
     // Saving throws map
     const savingThrowProficiencies: Record<AbilityName, boolean> = {
@@ -560,15 +634,47 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     // Equipment text
     const equipmentText = `[Класс]: ${classSkillConfig.template?.equipment || selectedClass.equipmentDefault}\n[Предыстория]: ${selectedBackground.equipment}`;
 
-    // Attacks
-    const attacks: Attack[] = tmpl?.typicalAttacks || [
-      { name: 'Безоружный удар', attackBonus: formatModifier(finalAbilityScores.mods['СИЛ'] + 2), damageAndType: `${1 + finalAbilityScores.mods['СИЛ']} дроб.` }
-    ];
+    // Attacks scaled with actual stat modifiers & proficiency (+2)
+    const attacks: Attack[] = (tmpl?.typicalAttacks || []).map(att => {
+      const isFinesseOrRanged = /рапира|короткий меч|кинжал|лук|арбалет|дротик|rapier|bow|crossbow|dagger/i.test(att.name);
+      const mod = isFinesseOrRanged ? Math.max(dexMod, strMod) : strMod;
+      const atkBonusNum = 2 + mod;
+      const sign = atkBonusNum >= 0 ? '+' : '';
+      
+      const diceMatch = att.damageAndType.match(/(\d+d\d+)/);
+      const dice = diceMatch ? diceMatch[1] : '1d8';
+      const typeMatch = att.damageAndType.match(/(рубящий|колющий|дробящий|slashing|piercing|bludgeoning)/i);
+      const damType = typeMatch ? typeMatch[1] : '';
+      const dmgSign = mod >= 0 ? '+' : '';
+      const dmgStr = `${dice}${dmgSign}${mod} ${damType}`.trim();
 
-    // Spells structure
+      return {
+        name: att.name,
+        attackBonus: `${sign}${atkBonusNum}`,
+        damageAndType: dmgStr
+      };
+    });
+
+    if (attacks.length === 0) {
+      attacks.push({
+        name: 'Безоружный удар',
+        attackBonus: formatModifier(strMod + 2),
+        damageAndType: `${Math.max(1, 1 + strMod)} дроб.`
+      });
+    }
+
+    // Spells structure: for wizard mark only intMod + 1 as prepared; for others all chosen are prepared
     const spellsByLevel: Record<number, SpellEntry[]> = {};
     if (spellLimits.isCaster && selectedSpells.length > 0) {
-      spellsByLevel[1] = selectedSpells.map(name => ({ name, prepared: true }));
+      if (spellLimits.spellbookOnly) {
+        const prepLimit = calcPreparedSpellsLimit('Волшебник', 1, intMod);
+        spellsByLevel[1] = selectedSpells.map((name, idx) => ({
+          name,
+          prepared: idx < prepLimit
+        }));
+      } else {
+        spellsByLevel[1] = selectedSpells.map(name => ({ name, prepared: true }));
+      }
     }
 
     const newChar: CharacterData = {
@@ -717,9 +823,18 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   key={s.num}
                   type="button"
                   onClick={() => {
-                    if (s.num <= currentStep || validateStep(currentStep).valid) {
+                    if (canNavigateTo(s.num)) {
                       setStepError(null);
                       setCurrentStep(s.num);
+                    } else {
+                      for (let stepNum = 1; stepNum < s.num; stepNum++) {
+                        if (stepNum === 5 && !spellLimits.isCaster) continue;
+                        const v = validateStep(stepNum);
+                        if (!v.valid) {
+                          setStepError(v.error || 'Заполните обязательные поля');
+                          break;
+                        }
+                      }
                     }
                   }}
                   className={`text-left px-1.5 py-1 rounded transition-all flex flex-col sm:flex-row items-center sm:items-start gap-1 ${
@@ -849,7 +964,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                             <button
                               key={sr.id}
                               type="button"
-                              onClick={() => setSelectedSubraceId(sr.id)}
+                              onClick={() => handleSelectSubrace(sr)}
                               className={`text-left p-2 rounded text-xs cursor-pointer transition-all ${
                                 isSrSel ? 'font-bold' : 'hover:bg-[rgba(201,168,76,0.15)]'
                               }`}
@@ -1357,34 +1472,63 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
               {/* Point Buy Status Bar */}
               {scoreMethod === 'point-buy' && (
-                <div className="p-3 rounded-lg flex items-center justify-between text-xs" style={{ background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                <div className="p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2" style={{ background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                   <div>
-                    <span className="font-bold text-[#3D2012]">Покупка характеристик: </span>
-                    <span className="text-[#5C341F]">Начальные значения 8 (0 очков), максимум 15 (9 очков).</span>
+                    <span className="font-bold text-[#3D2012]">Покупка характеристик (Point Buy): </span>
+                    <span className="text-[#5C341F]">Базовые значения от 8 (0 очков) до 15 (9 очков).</span>
                   </div>
-                  <div className="font-bold text-sm px-3 py-1 rounded" style={{
-                    background: POINT_BUY_BUDGET - calcPointBuyTotalSpent(baseScores) === 0 ? '#D1E7DD' : '#FFF3CD',
-                    color: POINT_BUY_BUDGET - calcPointBuyTotalSpent(baseScores) === 0 ? '#0F5132' : '#664D03'
-                  }}>
-                    Осталось очков: {POINT_BUY_BUDGET - calcPointBuyTotalSpent(baseScores)} / {POINT_BUY_BUDGET}
-                  </div>
+                  {(() => {
+                    const spent = calcPointBuyTotalSpent(baseScores);
+                    const isNaN = Number.isNaN(spent);
+                    const remaining = isNaN ? 0 : POINT_BUY_BUDGET - spent;
+                    const isPerfect = !isNaN && remaining === 0;
+                    const isOver = !isNaN && remaining < 0;
+                    return (
+                      <div className="font-bold text-xs sm:text-sm px-3 py-1 rounded self-start sm:self-auto" style={{
+                        background: isPerfect ? '#D1E7DD' : isOver ? '#FDE8E8' : '#FFF3CD',
+                        color: isPerfect ? '#0F5132' : isOver ? '#9B1C1C' : '#664D03',
+                        border: `1px solid ${isPerfect ? '#BADBCC' : isOver ? '#F8B4B4' : '#FFECB5'}`
+                      }}>
+                        {isOver ? `Превышение на ${Math.abs(remaining)} очков!` : `Осталось очков: ${remaining} / ${POINT_BUY_BUDGET}`}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
-              {/* Standard Array Preset Button */}
+              {/* Standard Array Preset Button & Status */}
               {scoreMethod === 'standard' && (
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#5C341F]">
-                    Значения стандартного набора: <strong>15, 14, 13, 12, 10, 8</strong>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleApplyStandardPreset}
-                    className="text-xs font-semibold px-3 py-1 rounded cursor-pointer transition-all active:scale-95"
-                    style={{ background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }}
-                  >
-                    ⭐ Оптимально для «{selectedClass.name}»
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs flex-wrap gap-2">
+                    <span className="text-[#5C341F]">
+                      Значения стандартного набора: <strong>15, 14, 13, 12, 10, 8</strong>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleApplyStandardPreset}
+                      className="text-xs font-semibold px-3 py-1 rounded cursor-pointer transition-all active:scale-95"
+                      style={{ background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }}
+                    >
+                      ⭐ Рекомендованный для «{selectedClass.name}»
+                    </button>
+                  </div>
+                  {(() => {
+                    const stdVal = validateStandardArray(baseScores);
+                    if (!stdVal.valid) {
+                      return (
+                        <div className="p-2 rounded text-xs flex items-center gap-2 bg-[rgba(254,243,199,0.7)] border border-[#D97706] text-[#92400E]">
+                          <span>⚠️</span>
+                          <span>{stdVal.error}</span>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="p-2 rounded text-xs flex items-center gap-2 bg-[rgba(209,231,221,0.7)] border border-[#BADBCC] text-[#0F5132]">
+                        <span>✓</span>
+                        <span>Все 6 значений стандартного набора распределены корректно без повторов.</span>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
@@ -1849,13 +1993,27 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   <div className="p-2 rounded" style={{ background: 'rgba(139, 37, 0, 0.08)', border: '1px solid rgba(139, 37, 0, 0.2)' }}>
                     <div className="text-[10px] text-[#8B2500]">Макс. Хиты</div>
                     <div className="text-base font-bold text-[#8B2500]">
-                      {classSkillConfig.hitDieSize + finalAbilityScores.mods['ТЕЛ']}
+                      {Math.max(1, classSkillConfig.hitDieSize + finalAbilityScores.mods['ТЕЛ'] + (selectedSubraceId.includes('hill') || selectedSubrace?.name.toLowerCase().includes('холмов') ? 1 : 0))}
                     </div>
                   </div>
                   <div className="p-2 rounded" style={{ background: 'rgba(139, 105, 20, 0.08)', border: '1px solid rgba(139, 105, 20, 0.2)' }}>
                     <div className="text-[10px] text-[#8B6914]">Класс доспеха (КД)</div>
                     <div className="text-base font-bold text-[#6B3A2A]">
-                      {classSkillConfig.template?.typicalAC || (10 + finalAbilityScores.mods['ЛОВ'])}
+                      {(() => {
+                        const tmpl = classSkillConfig.template;
+                        const dexMod = finalAbilityScores.mods['ЛОВ'];
+                        const conMod = finalAbilityScores.mods['ТЕЛ'];
+                        const wisMod = finalAbilityScores.mods['МДР'];
+                        let equippedArmor = '';
+                        let equippedShield = false;
+                        if (tmpl) {
+                          equippedArmor = tmpl.equipment.toLowerCase().includes('кольчуга') ? 'Кольчуга' :
+                                          tmpl.equipment.toLowerCase().includes('чешуйчат') ? 'Чешуйчатый доспех' :
+                                          tmpl.equipment.toLowerCase().includes('кожан') ? 'Кожаный доспех' : '';
+                          equippedShield = tmpl.equipment.toLowerCase().includes('щит');
+                        }
+                        return calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod);
+                      })()}
                     </div>
                   </div>
                   <div className="p-2 rounded" style={{ background: 'rgba(74, 124, 63, 0.08)', border: '1px solid rgba(74, 124, 63, 0.2)' }}>

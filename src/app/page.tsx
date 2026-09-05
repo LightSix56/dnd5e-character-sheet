@@ -18,6 +18,11 @@ import { DND_WEAPONS, findWeaponByName, type DndWeapon } from '@/data/dnd-weapon
 import { DND_TRAITS, findTraitByName, type DndTrait } from '@/data/dnd-traits';
 import { AutocompleteInput, type AutocompleteItem } from '@/components/compendium/AutocompleteInput';
 import { SpellDetailModal, WeaponDetailModal, TraitDetailModal } from '@/components/compendium/CompendiumModals';
+import { CharacterGridModal } from '@/components/tools/CharacterGridModal';
+import { ShareModal } from '@/components/tools/ShareModal';
+import { NameGeneratorModal } from '@/components/tools/NameGeneratorModal';
+import { StatsCalculatorModal } from '@/components/tools/StatsCalculatorModal';
+import { CharacterCreationWizardModal } from '@/components/wizard/CharacterCreationWizardModal';
 import { ClassSelectorModal } from '@/components/compendium/ClassSelectorModal';
 import { RaceSelectorModal } from '@/components/compendium/RaceSelectorModal';
 import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorModal';
@@ -1612,48 +1617,7 @@ const AuthModal = React.memo(function AuthModal({ onClose, onAuth, onGoogleAuth,
   );
 });
 
-// ── Cloud Saves Modal ──
 
-const CloudSavesModal = React.memo(function CloudSavesModal({ characters, onLoad, onDelete, onClose }: {
-  characters: any[];
-  onLoad: (char: any) => void;
-  onDelete: (id: string) => void;
-  onClose: () => void;
-}) {
-  return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="parchment-modal max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="p-6">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <MysticCloudIcon size={22} />
-            <span>Облачные сохранения</span>
-          </h2>
-          {characters.length === 0 ? (
-            <p className="text-sm mb-4" style={{ color: '#8B6914' }}>Нет сохранённых персонажей</p>
-          ) : (
-            <div className="space-y-2">
-              {characters.map((c: any) => (
-                <div key={c.id} className="parchment-modal-section flex items-center gap-3">
-                  {c.portrait_url && (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={c.portrait_url} alt="" className="w-10 h-10 rounded object-cover" style={{ border: '1px solid rgba(139, 105, 20, 0.3)' }} />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate" style={{ color: '#3C2415' }}>{c.name}{c.data?.level ? ` — ${c.data.level} ур.` : ''}{c.data?.className ? ` ${c.data.className}` : ''}</p>
-                    <p className="text-[10px]" style={{ color: '#8B6914' }}>{new Date(c.updated_at).toLocaleString('ru')}</p>
-                  </div>
-                  <button onClick={() => onLoad(c)} className="parchment-btn-sm" style={{ color: '#4a7c3f' }}>Загрузить</button>
-                  <button onClick={() => onDelete(c.id)} className="parchment-remove-btn" title="Удалить">✕</button>
-                </div>
-              ))}
-            </div>
-          )}
-          <button onClick={onClose} className="mt-4 w-full parchment-btn-secondary">Закрыть</button>
-        </div>
-      </div>
-    </div>
-  );
-});
 
 // ── Sign Out Confirmation Modal ──
 const SignOutModal = React.memo(function SignOutModal({ userEmail, onConfirmSignOut, onSwitchAccount, onCancel }: {
@@ -1823,6 +1787,8 @@ export default function DnDCharacterSheet() {
   const [showClassModal, setShowClassModal] = useState(false);
   const [showRaceModal, setShowRaceModal] = useState(false);
   const [showSubclassModal, setShowSubclassModal] = useState(false);
+  const [showNameGenModal, setShowNameGenModal] = useState(false);
+  const [showStatsCalcModal, setShowStatsCalcModal] = useState(false);
   const [respecTargetLevel, setRespecTargetLevel] = useState<number | null>(null);
   const [pendingClassChange, setPendingClassChange] = useState<{ cls: CompendiumClass; applyScores?: boolean } | null>(null);
   const [pendingRaceChange, setPendingRaceChange] = useState<{ race: CompendiumRace; subrace?: CompendiumSubrace } | null>(null);
@@ -1840,6 +1806,9 @@ export default function DnDCharacterSheet() {
   const [cloudCharacters, setCloudCharacters] = useState<any[]>([]);
   const [portraitUrl, setPortraitUrl] = useState<string | null>(initialPortrait);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showCreationWizard, setShowCreationWizard] = useState(false);
+  const [showCreateChoiceModal, setShowCreateChoiceModal] = useState(false);
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -1969,6 +1938,7 @@ export default function DnDCharacterSheet() {
   const closeAuth = useCallback(() => setShowAuth(false), []);
   const closeCloudSaves = useCallback(() => setShowCloudSaves(false), []);
   const closeSignOut = useCallback(() => setShowSignOutModal(false), []);
+  const closeShareModal = useCallback(() => setShowShareModal(false), []);
 
   const showToast = useCallback((title: string, description: string) => {
     setToast({ title, description });
@@ -2943,16 +2913,20 @@ export default function DnDCharacterSheet() {
   }, [user, saveToCloud, char.name, showToast]);
 
   const handleCloudLoad = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setShowCloudSaves(true);
+      return;
+    }
     try {
       const res = await fetch('/api/characters');
       const data = await res.json();
       if (data.characters) {
         setCloudCharacters(data.characters);
-        setShowCloudSaves(true);
       }
+      setShowCloudSaves(true);
     } catch {
-      showToast('Ошибка', 'Не удалось загрузить список');
+      setShowCloudSaves(true);
+      showToast('Внимание', 'Не удалось связаться с облаком');
     }
   }, [user, showToast]);
 
@@ -2962,17 +2936,29 @@ export default function DnDCharacterSheet() {
       setChar(normalized);
       if (cloudChar.portrait_url) setPortraitUrl(cloudChar.portrait_url);
       else setPortraitUrl(null);
-      // Remember cloud character ID for auto-save
-      cloudCharIdRef.current = cloudChar.id;
-      // Reset dedup tracker with the fresh snapshot
-      lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: cloudChar.portrait_url || null });
-      setCloudSaveStatus('saved');
+      // Remember cloud character ID for auto-save if real cloud ID
+      if (cloudChar.id && !cloudChar.isLocal && cloudChar.id !== 'local-active') {
+        cloudCharIdRef.current = cloudChar.id;
+        // Reset dedup tracker with the fresh snapshot
+        lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: cloudChar.portrait_url || null });
+        setCloudSaveStatus('saved');
+      } else {
+        cloudCharIdRef.current = null;
+        lastCloudSaveRef.current = '';
+        setCloudSaveStatus('idle');
+      }
       setShowCloudSaves(false);
-      showToast('Загружено', `"${cloudChar.name}" загружен из облака`);
+      showToast('Загружено', `"${cloudChar.name || normalized.name}" загружен`);
     }
   }, [showToast]);
 
   const deleteCloudCharacter = useCallback(async (id: string) => {
+    if (id === 'local-active') {
+      handleReset();
+      setShowCloudSaves(false);
+      showToast('Очищено', 'Локальный лист сброшен');
+      return;
+    }
     try {
       await fetch('/api/characters', {
         method: 'DELETE',
@@ -2980,11 +2966,65 @@ export default function DnDCharacterSheet() {
         body: JSON.stringify({ id }),
       });
       setCloudCharacters(prev => prev.filter((c: any) => c.id !== id));
+      if (cloudCharIdRef.current === id) {
+        cloudCharIdRef.current = null;
+        lastCloudSaveRef.current = '';
+      }
       showToast('Удалено', 'Персонаж удалён из облака');
     } catch {
       showToast('Ошибка', 'Не удалось удалить');
     }
+  }, [handleReset, showToast]);
+
+  const handleShareCharacter = useCallback(async (targetChar: any) => {
+    try {
+      const charData = targetChar.data || targetChar;
+      const charName = targetChar.name || charData?.name || 'Безымянный';
+      const charId = targetChar.id && !targetChar.isLocal && targetChar.id !== 'local-active' ? targetChar.id : undefined;
+      const res = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: charId, name: charName, data: charData, expiresInDays: 30 }),
+      });
+      const payload = await res.json();
+      if (!res.ok) {
+        showToast('Ошибка', payload?.error || 'Не удалось создать ссылку');
+        return;
+      }
+      const { code } = payload;
+      try {
+        await navigator.clipboard.writeText(code);
+        showToast('Код скопирован', `${code} — вставьте его в AI Dungeon Master`);
+      } catch {
+        showToast('Код для импорта', code);
+      }
+    } catch (err: any) {
+      showToast('Ошибка', err?.message || 'Сеть недоступна');
+    }
   }, [showToast]);
+
+  const handleCreateNewCharacter = useCallback(() => {
+    handleReset();
+    setShowCloudSaves(false);
+    showToast('Новый герой', 'Создан новый пустой лист персонажа');
+  }, [handleReset, showToast]);
+
+  const handleWizardComplete = useCallback((newChar: CharacterData) => {
+    setChar(newChar);
+    setShowCreationWizard(false);
+    setActiveTab('page1');
+    showToast(
+      'Персонаж успешно создан!',
+      `Добро пожаловать в игру, ${newChar.name || 'Герой'}! Все параметры, расовые и классовые особенности занесены в лист.`
+    );
+  }, [showToast]);
+
+  const handleManualCreate = useCallback(() => {
+    handleReset();
+    setShowCreateChoiceModal(false);
+    setActiveTab('page1');
+    showToast('Чистый лист готов', 'Создан новый пустой лист персонажа 1-го уровня для ручного заполнения.');
+  }, [handleReset, showToast]);
 
   // ── Save / Load JSON ──
   const handleSaveJSON = useCallback(() => {
@@ -3029,30 +3069,10 @@ export default function DnDCharacterSheet() {
     input.click();
   }, [showToast]);
 
-  // ── Публичная ссылка для внешних приложений (AI Dungeon Master) ──
-  const handleShare = useCallback(async () => {
-    try {
-      const res = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: char.name || 'Безымянный', data: char, expiresInDays: 30 }),
-      });
-      const payload = await res.json();
-      if (!res.ok) {
-        showToast('Ошибка', payload?.error || 'Не удалось создать ссылку');
-        return;
-      }
-      const { code } = payload;
-      try {
-        await navigator.clipboard.writeText(code);
-        showToast('Код скопирован', `${code} — вставьте его в AI Dungeon Master`);
-      } catch {
-        showToast('Код для импорта', code);
-      }
-    } catch (err: any) {
-      showToast('Ошибка', err?.message || 'Сеть недоступна');
-    }
-  }, [char, showToast]);
+  // ── Публичная ссылка для внешних приложений и Мастера (DM View) ──
+  const handleShare = useCallback(() => {
+    setShowShareModal(true);
+  }, []);
 
   return (
     <div className="parchment-bg">
@@ -3086,8 +3106,37 @@ export default function DnDCharacterSheet() {
       {showTemplates && <TemplateModal onSelect={handleApplyTemplate} onCancel={closeTemplates} />}
       {rollResult && <RollResultPopup result={rollResult} onClose={closeRollResult} />}
       {showAuth && <AuthModal onClose={closeAuth} onAuth={handleAuth} onGoogleAuth={handleGoogleAuth} email={authEmail} setEmail={setAuthEmail} password={authPassword} setPassword={setAuthPassword} isSignUp={isSignUp} setIsSignUp={setIsSignUp} loading={authLoading} error={authError} />}
-      {showCloudSaves && <CloudSavesModal characters={cloudCharacters} onLoad={loadCloudCharacter} onDelete={deleteCloudCharacter} onClose={closeCloudSaves} />}
+      {showCloudSaves && (
+        <CharacterGridModal
+          cloudCharacters={cloudCharacters}
+          localCharacter={
+            (!user || !cloudCharIdRef.current) && (char.name || char.className || portraitUrl)
+              ? {
+                  id: 'local-active',
+                  name: char.name || 'Текущий герой (на устройстве)',
+                  data: char,
+                  portrait_url: portraitUrl,
+                  updated_at: new Date().toISOString(),
+                  isLocal: true,
+                }
+              : null
+          }
+          onLoad={loadCloudCharacter}
+          onDelete={deleteCloudCharacter}
+          onShare={handleShareCharacter}
+          onCreateNew={handleCreateNewCharacter}
+          onClose={closeCloudSaves}
+        />
+      )}
       {showSignOutModal && <SignOutModal userEmail={user?.email} onConfirmSignOut={handleConfirmSignOut} onSwitchAccount={handleSwitchAccount} onCancel={closeSignOut} />}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={closeShareModal}
+        char={char}
+        portraitUrl={portraitUrl}
+        onOpenAuth={() => setShowAuth(true)}
+        onToast={showToast}
+      />
 
       {/* Compendium Detail Modals */}
       {activeSpellModal && (
@@ -3146,6 +3195,29 @@ export default function DnDCharacterSheet() {
           onClose={() => setShowSubclassModal(false)}
         />
       )}
+      {showNameGenModal && (
+        <NameGeneratorModal
+          currentRace={char.race}
+          onSelectName={name => update('name', name)}
+          onClose={() => setShowNameGenModal(false)}
+        />
+      )}
+      {showStatsCalcModal && (
+        <StatsCalculatorModal
+          initialScores={char.abilityScores}
+          racialBonuses={char.abilityBonuses}
+          currentRace={char.race}
+          onApply={(scores, customBonuses) => {
+            setChar(prev => ({
+              ...prev,
+              abilityScores: scores as Record<AbilityName, number>,
+              ...(customBonuses ? { abilityBonuses: customBonuses as Record<AbilityName, number> } : {}),
+            }));
+            showToast('Характеристики обновлены', 'Новые значения характеристик сохранены в лист персонажа');
+          }}
+          onClose={() => setShowStatsCalcModal(false)}
+        />
+      )}
       {pendingClassChange && (
         <ClassRespecConfirmModal
           char={char}
@@ -3192,6 +3264,93 @@ export default function DnDCharacterSheet() {
         />
       )}
 
+      <CharacterCreationWizardModal
+        isOpen={showCreationWizard}
+        onClose={() => setShowCreationWizard(false)}
+        onComplete={handleWizardComplete}
+      />
+
+      {showCreateChoiceModal && (
+        <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm" onClick={() => setShowCreateChoiceModal(false)}>
+          <div
+            className="parchment-modal max-w-lg w-full p-6 space-y-4 shadow-2xl relative rounded-xl"
+            style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+              <div className="flex items-center gap-2.5">
+                <UserHeroIcon size={26} />
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
+                    Создание нового персонажа
+                  </h3>
+                  <p className="text-xs" style={{ color: '#8B6914' }}>
+                    Выберите удобный для вас способ создания
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCreateChoiceModal(false)}
+                className="w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold cursor-pointer"
+                style={{ background: 'rgba(139, 105, 20, 0.15)', color: '#5C341F' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 pt-1">
+              {/* Option 1: Interactive Wizard */}
+              <div
+                onClick={() => {
+                  setShowCreateChoiceModal(false);
+                  setShowCreationWizard(true);
+                }}
+                className="p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-1.5"
+                style={{ background: '#FFFDF9', border: '2px solid #C9A84C' }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 font-bold text-sm text-[#3D2012]">
+                    <span className="text-xl">🧙‍♂️</span>
+                    <span>Интерактивное пошаговое создание</span>
+                  </div>
+                  <span className="text-[11px] px-2 py-0.5 rounded font-bold" style={{ background: '#E8D3A2', color: '#5C341F' }}>
+                    Рекомендуется
+                  </span>
+                </div>
+                <p className="text-xs text-[#5C341F] leading-relaxed">
+                  Пошаговые вопросы: выбор расы, класса с жестким лимитом навыков (не дает взять лишнее!), предыстории с защитой от совпадений, расчет характеристик (Point Buy, 4d6, массив) и выбор заклинаний с лимитами.
+                </p>
+              </div>
+
+              {/* Option 2: Manual Blank Sheet */}
+              <div
+                onClick={handleManualCreate}
+                className="p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-1.5"
+                style={{ background: 'rgba(255, 255, 255, 0.5)', border: '1px solid rgba(139, 105, 20, 0.3)' }}
+              >
+                <div className="flex items-center gap-2 font-bold text-sm text-[#3D2012]">
+                  <span className="text-xl">✍️</span>
+                  <span>Полностью ручное создание (Чистый бланк)</span>
+                </div>
+                <p className="text-xs text-[#5C341F] leading-relaxed">
+                  Создать пустой лист персонажа 1-го уровня. Вы сможете самостоятельно вручную вписать все названия, значения характеристик, особенности и снаряжение.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t flex justify-end" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+              <button
+                type="button"
+                onClick={() => setShowCreateChoiceModal(false)}
+                className="parchment-btn-secondary text-xs px-4 py-1.5"
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="sticky top-0 z-50 parchment-header">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2.5">
@@ -3203,6 +3362,24 @@ export default function DnDCharacterSheet() {
           </div>
 
           <div className="parchment-toolbar">
+            {/* Create Character group */}
+            <div className="parchment-btn-group">
+              <button
+                type="button"
+                onClick={() => setShowCreateChoiceModal(true)}
+                className="parchment-header-btn flex items-center gap-1.5 font-bold"
+                title="Создать персонажа: Интерактивный мастер или чистый бланк"
+                style={{
+                  background: 'linear-gradient(180deg, rgba(201, 168, 76, 0.4) 0%, rgba(139, 105, 20, 0.3) 100%)',
+                  border: '1px solid #C9A84C',
+                  color: '#FFF8EB'
+                }}
+              >
+                <UserHeroIcon size={16} />
+                <span>Создать персонажа</span>
+              </button>
+            </div>
+
             {/* Template presets group */}
             <div className="parchment-btn-group">
               <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn flex items-center gap-1.5" title="Выбрать готовый шаблон класса">
@@ -3248,11 +3425,11 @@ export default function DnDCharacterSheet() {
                     </>
                   )}
                 </button>
-                <button type="button" onClick={handleCloudLoad} className="parchment-header-btn flex items-center gap-1.5" title="Список персонажей в облаке">
+                <button type="button" onClick={handleCloudLoad} className="parchment-header-btn flex items-center gap-1.5" title="Список сохранённых персонажей">
                   <MysticCloudIcon size={16} />
-                  <span>Облако</span>
+                  <span>Персонажи</span>
                 </button>
-                <button type="button" onClick={handleShare} className="parchment-header-btn flex items-center gap-1.5" title="Код для импорта в AI Dungeon Master">
+                <button type="button" onClick={handleShare} className="parchment-header-btn flex items-center gap-1.5" title="Поделиться ссылкой с Мастером (DM)">
                   <ArcaneLinkIcon size={16} />
                   <span>Поделиться</span>
                 </button>
@@ -3263,6 +3440,14 @@ export default function DnDCharacterSheet() {
               </div>
             ) : (
               <div className="parchment-btn-group">
+                <button type="button" onClick={handleCloudLoad} className="parchment-header-btn flex items-center gap-1.5" title="Список сохранённых персонажей">
+                  <MysticCloudIcon size={16} />
+                  <span>Персонажи</span>
+                </button>
+                <button type="button" onClick={handleShare} className="parchment-header-btn flex items-center gap-1.5" title="Поделиться ссылкой с Мастером (DM)">
+                  <ArcaneLinkIcon size={16} />
+                  <span>Поделиться</span>
+                </button>
                 <button type="button" onClick={() => setShowAuth(true)} className="parchment-header-btn flex items-center gap-1.5" title="Вход в аккаунт для облачного сохранения">
                   <RunedKeyIcon size={16} />
                   <span>Войти</span>
@@ -3304,7 +3489,27 @@ export default function DnDCharacterSheet() {
                 <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><UserHeroIcon size={20} /><span>Основная информация</span></h3></div>
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <StatInput label="Имя персонажа" value={char.name} onChange={v => update('name', v)} type="text" placeholder="Имя" />
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="parchment-label">Имя персонажа</label>
+                        <button
+                          type="button"
+                          onClick={() => setShowNameGenModal(true)}
+                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5"
+                          style={{ color: '#8B6914' }}
+                          title="Открыть генератор фэнтезийных имён с этимологией и корнями"
+                        >
+                          🎲 Имена
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        value={char.name}
+                        onChange={e => update('name', e.target.value)}
+                        placeholder="Имя"
+                        className={inputClass}
+                      />
+                    </div>
                     <StatInput label="Имя игрока" value={char.playerName} onChange={v => update('playerName', v)} type="text" placeholder="Игрок" />
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -3395,6 +3600,20 @@ export default function DnDCharacterSheet() {
                       <span>Характеристики</span>
                     </h3>
                     <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowStatsCalcModal(true)}
+                        className="text-xs px-2 py-0.5 rounded font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-sm"
+                        style={{
+                          background: 'linear-gradient(180deg, #8B4513, #6B3A2A)',
+                          color: '#FBF0DC',
+                          border: '1px solid #C9A84C',
+                        }}
+                        title="Открыть калькулятор характеристик (Point Buy, 4к6, Standard Array)"
+                      >
+                        <D20Icon size={13} />
+                        <span>Калькулятор</span>
+                      </button>
                       <span
                         className="text-xs px-2 py-0.5 rounded font-mono font-semibold"
                         style={

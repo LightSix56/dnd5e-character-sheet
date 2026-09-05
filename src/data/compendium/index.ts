@@ -6,12 +6,15 @@ export * from './feats';
 export * from './class-progression';
 export * from './race-progression';
 export * from './class-spells';
+export * from './backgrounds';
+export * from './names-data';
 
 import { DND_COMPENDIUM_SPELLS } from './spells';
 import { DND_COMPENDIUM_ITEMS } from './items';
 import { DND_COMPENDIUM_FEATS } from './feats';
 import { DND_COMPENDIUM_RACES } from './races';
 import { DND_COMPENDIUM_CLASSES } from './classes';
+import { DND_COMPENDIUM_BACKGROUNDS } from './backgrounds';
 import type { AutocompleteItem } from '@/components/compendium/AutocompleteInput';
 
 /**
@@ -99,6 +102,18 @@ export function getCompendiumAutocompleteItems(query: string = ''): Autocomplete
           data: { type: 'subclass', item: sc, parentClass: c }
         });
       }
+    }
+  }
+
+  // Backgrounds
+  for (const bg of DND_COMPENDIUM_BACKGROUNDS) {
+    if (!q || bg.name.toLowerCase().includes(q) || bg.nameEn.toLowerCase().includes(q)) {
+      results.push({
+        name: bg.name,
+        badge: 'Предыстория',
+        secondary: `${bg.nameEn} • Навыки: ${bg.skillProficiencies.join(', ')}`,
+        data: { type: 'background', item: bg }
+      });
     }
   }
 

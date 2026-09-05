@@ -27,29 +27,32 @@ function createClient(request: NextRequest) {
   );
 }
 
-// Создать публичную ссылку на снимок персонажа. Только для владельца.
+// Создать публичную ссылку на снимок персонажа.
+// Поддерживает как авторизованных пользователей, так и гостей (анонимные ссылки).
 export async function POST(request: NextRequest) {
   const supabase = createClient(request);
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const body = await request.json().catch(() => ({}));
-  const { id, name, data, expiresInDays } = body as {
+  const { id, name, data, portrait_url, portraitUrl, expiresInDays } = body as {
     id?: string;
     name?: string;
-    data?: unknown;
+    data?: Record<string, unknown>;
+    portrait_url?: string;
+    portraitUrl?: string;
     expiresInDays?: number;
   };
 
   // Снимок берём из тела запроса, либо из сохранённого персонажа по id.
-  let snapshot = data;
+  let snapshot: unknown = data;
   let snapshotName = name;
+  const attachedPortrait = portraitUrl || portrait_url;
 
-  if (!snapshot && id) {
+  if (!snapshot && id && user) {
     const { data: character, error } = await supabase
       .from('characters')
-      .select('name, data')
+      .select('name, data, portrait_url')
       .eq('id', id)
       .eq('user_id', user.id)
       .maybeSingle();
@@ -59,10 +62,17 @@ export async function POST(request: NextRequest) {
 
     snapshot = character.data;
     snapshotName = snapshotName || character.name;
+    if (snapshot && typeof snapshot === 'object' && character.portrait_url && !(snapshot as Record<string, unknown>).portraitUrl) {
+      (snapshot as Record<string, unknown>).portraitUrl = character.portrait_url;
+    }
   }
 
   if (!snapshot || typeof snapshot !== 'object') {
     return NextResponse.json({ error: 'Нужны данные персонажа (data) или его id' }, { status: 400 });
+  }
+
+  if (attachedPortrait && typeof snapshot === 'object' && !(snapshot as Record<string, unknown>).portraitUrl) {
+    (snapshot as Record<string, unknown>).portraitUrl = attachedPortrait;
   }
 
   const days = Number.isFinite(expiresInDays) ? Number(expiresInDays) : 30;
@@ -72,16 +82,22 @@ export async function POST(request: NextRequest) {
   // Код генерируется случайно; при коллизии первичного ключа пробуем ещё раз.
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateCode();
+
+    const insertRecord: Record<string, unknown> = {
+      code,
+      character_id: (user && id) ? id : null,
+      name: snapshotName || 'Безымянный',
+      data: snapshot,
+      expires_at: expiresAt,
+    };
+
+    if (user) {
+      insertRecord.user_id = user.id;
+    }
+
     const { data: inserted, error } = await supabase
       .from('character_shares')
-      .insert({
-        code,
-        user_id: user.id,
-        character_id: id ?? null,
-        name: snapshotName || 'Безымянный',
-        data: snapshot,
-        expires_at: expiresAt,
-      })
+      .insert(insertRecord)
       .select('code, name, created_at, expires_at')
       .maybeSingle();
 
@@ -90,9 +106,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         share: inserted,
         code: inserted.code,
-        url: `${origin}/api/share/${inserted.code}`,
+        url: `${origin}/share/${inserted.code}`,
+        apiUrl: `${origin}/api/share/${inserted.code}`,
       });
     }
+
+    // Обработка случаев, когда в базе user_id NOT NULL или нет прав для анонимной записи
+    if (error && (error.code === '23502' || error.code === '42501' || error.message?.includes('user_id')) && !user) {
+      return NextResponse.json({
+        error: 'Для создания ссылки необходимо войти в аккаунт',
+      }, { status: 401 });
+    }
+
     // 23505 — duplicate key: генерируем новый код и пробуем снова.
     if (error && error.code !== '23505') {
       return NextResponse.json({ error: error.message }, { status: 500 });

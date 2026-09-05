@@ -38,7 +38,15 @@ export async function GET(
   }
 
   return NextResponse.json(
-    { character: { name: data.name, data: data.data, created_at: data.created_at } },
+    {
+      character: {
+        code: data.code,
+        name: data.name,
+        data: data.data,
+        created_at: data.created_at,
+        expires_at: data.expires_at,
+      },
+    },
     {
       headers: {
         // Снимок неизменяем, но ссылку можно отозвать — кэшируем ненадолго.

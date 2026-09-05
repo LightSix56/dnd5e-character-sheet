@@ -168,6 +168,9 @@ export interface CharacterData {
 
   // Level-up history
   levelHistory: LevelUpEntry[];
+
+  // Portrait (optional URL or Base64)
+  portraitUrl?: string | null;
 }
 
 // ── Universal Calculation Functions ──

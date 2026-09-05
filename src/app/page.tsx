@@ -1030,7 +1030,7 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose,
 
                   {entry.spellSlotsGained && Object.keys(entry.spellSlotsGained).length > 0 && (
                     <div className="text-xs flex items-center gap-1 flex-wrap" style={{ color: '#5C3A6E' }}>
-                      <span className="font-semibold">🔮 Ячейки: </span>
+                      <span className="font-semibold">✨ Ячейки: </span>
                       {Object.entries(entry.spellSlotsGained).map(([lvl, cnt]) => (
                         <span key={lvl} className="px-1.5 py-0.2 rounded text-[10px] font-mono" style={{ background: '#E8D3A2', border: '1px solid #C9A84C' }}>
                           {lvl} кр: {cnt}
@@ -1218,7 +1218,7 @@ function RaceChangeConfirmModal({ char, newRace, newSubrace, onConfirm, onCancel
           </div>
 
           <div className="p-2.5 rounded text-[11px] space-y-1" style={{ background: 'rgba(201, 168, 76, 0.2)', border: '1px dashed #C9A84C' }}>
-            <p className="font-semibold text-[#5C341F]">🧬 Особенности смены расы:</p>
+            <p className="font-semibold text-[#5C341F]">👤 Особенности смены расы:</p>
             <ul className="list-disc pl-4 space-y-1">
               <li>Уровень персонажа <strong>({char.level} ур.)</strong> сохраняется!</li>
               <li>Старые расовые особенности и бонусы характеристик удаляются.</li>
@@ -1431,7 +1431,7 @@ const TemplateModal = React.memo(function TemplateModal({ onSelect, onCancel }: 
 
           {/* Filter */}
           <div className="flex gap-2 mb-4">
-            {([['all', 'Все'], ['martial', '⚔️ Воины'], ['caster', '🔮 Маги'], ['hybrid', '⚡ Гибриды']] as const).map(([f, label]) => (
+            {([['all', 'Все'], ['martial', '⚔️ Воины'], ['caster', '✨ Маги'], ['hybrid', '⚡ Гибриды']] as const).map(([f, label]) => (
               <button key={f} onClick={() => setFilter(f as any)}
                 className={filter === f ? 'parchment-filter-active' : 'parchment-filter-inactive'}>
                 {label}
@@ -3542,7 +3542,7 @@ export default function DnDCharacterSheet() {
                           style={{ color: '#6B3A2A' }}
                           title="Выбрать архетип / подкласс"
                         >
-                          {char.subclass ? `⚔️ ${char.subclass}` : '+ Подкласс'}
+                          {char.subclass ? `👑 ${char.subclass}` : '+ Подкласс'}
                         </button>
                       </div>
                     </div>

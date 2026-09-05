@@ -658,7 +658,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     { num: 3, title: 'Предыстория', icon: '📜' },
     { num: 4, title: 'Характеристики', icon: '🎲' },
     { num: 5, title: spellLimits.isCaster ? 'Заклинания' : 'Магия (—)', icon: '✨' },
-    { num: 6, title: 'Завершение', icon: '🏆' },
+    { num: 6, title: 'Завершение', icon: '👑' },
   ];
 
   return (
@@ -989,7 +989,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
                     {/* Traits breakdown */}
                     <div className="space-y-1.5 text-xs pt-1">
-                      <span className="font-semibold text-[#5C341F] text-[11px]">🧬 Расовые черты и особенности:</span>
+                      <span className="font-semibold text-[#5C341F] text-[11px]">📜 Расовые особенности и черты:</span>
                       <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
                         {[...(selectedRace.traits || []), ...(selectedSubrace?.traits || [])].map((t, idx) => (
                           <div key={idx} className="p-2 rounded text-[11px]" style={{ background: 'rgba(232, 211, 162, 0.15)', border: '1px solid rgba(201, 168, 76, 0.2)' }}>
@@ -1540,7 +1540,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
               {!spellLimits.isCaster ? (
                 /* Non-caster Card */
                 <div className="p-8 rounded-xl text-center space-y-4 max-w-lg mx-auto" style={{ background: '#FFFDF9', border: '2px solid rgba(201, 168, 76, 0.4)' }}>
-                  <span className="text-5xl block">🛡️</span>
+                  <span className="text-5xl block">⚔️</span>
                   <h3 className="text-lg font-bold text-[#3D2012]">
                     Класс «{selectedClass.name}» не использует заклинания на 1-м уровне
                   </h3>

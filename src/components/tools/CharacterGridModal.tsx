@@ -302,7 +302,7 @@ function getCharSpecialStat(char: SavedCharacter): StatPillInfo {
     cls.includes('artificer')
   ) {
     primaryAbility = 'ИНТ';
-    icon = '🔮';
+    icon = '📖';
   } else if (
     cls.includes('жрец') ||
     cls.includes('cleric') ||
@@ -310,7 +310,7 @@ function getCharSpecialStat(char: SavedCharacter): StatPillInfo {
     cls.includes('druid')
   ) {
     primaryAbility = 'МДР';
-    icon = '🌿';
+    icon = '👁️';
   } else if (
     cls.includes('бард') ||
     cls.includes('bard') ||
@@ -322,7 +322,7 @@ function getCharSpecialStat(char: SavedCharacter): StatPillInfo {
     cls.includes('paladin')
   ) {
     primaryAbility = 'ХАР';
-    icon = '🌟';
+    icon = '✨';
   } else {
     // Pick highest among abilityScores
     const scores = d.abilityScores || {};
@@ -337,6 +337,15 @@ function getCharSpecialStat(char: SavedCharacter): StatPillInfo {
         primaryAbility = ab;
       }
     }
+    const abIconMap: Record<AbilityName, string> = {
+      'СИЛ': '⚔️',
+      'ЛОВ': '🎯',
+      'ТЕЛ': '🛡️',
+      'ИНТ': '📖',
+      'МДР': '👁️',
+      'ХАР': '✨',
+    };
+    icon = abIconMap[primaryAbility] || '⚔️';
   }
 
   const totalScore =
@@ -785,7 +794,7 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                           className="parchment-btn text-xs py-1.5 px-3 flex-1 flex items-center justify-center gap-1 font-bold shadow-sm"
                           title="Загрузить этого персонажа в лист"
                         >
-                          <span>Играть</span>
+                          <span>⚔️ Играть</span>
                         </button>
 
                         {onShare && (
@@ -806,7 +815,7 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                           className="parchment-remove-btn px-2 py-1.5 text-xs text-red-700 hover:text-red-950 hover:bg-red-200/50 rounded flex items-center justify-center"
                           title="Удалить персонажа"
                         >
-                          ✕
+                          🗑️
                         </button>
                       </div>
                     </div>

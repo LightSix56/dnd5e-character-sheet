@@ -799,7 +799,7 @@ export default function SharedCharacterPage({
                 {char.spellSlots && Object.keys(char.spellSlots).length > 0 && (
                   <div className="mb-4 p-3 bg-[#EDE0C8]/50 rounded border border-[#8B6914]/30">
                     <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider block mb-2">
-                      Ячейки заклинаний
+                      ✨ Ячейки заклинаний
                     </span>
                     <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2">
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((lvl) => {
@@ -856,7 +856,7 @@ export default function SharedCharacterPage({
                       return (
                         <div key={lvl} className="mb-3">
                           <h4 className="text-xs font-bold text-[#6B3A2A] mb-1.5 pb-1 border-b border-[#8B6914]/20 flex items-center justify-between">
-                            <span>{lvl}-й уровень</span>
+                            <span>📖 {lvl}-й уровень</span>
                             <span className="text-[10px] font-normal text-[#8B6914]">
                               {spells.length} закл.
                             </span>

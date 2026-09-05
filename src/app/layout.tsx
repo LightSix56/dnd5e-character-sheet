@@ -51,6 +51,9 @@ export const metadata: Metadata = {
     ],
     shortcut: ['/favicon.ico'],
   },
+  verification: {
+    yandex: 'adeb09801b32f22c',
+  },
 };
 
 const jsonLd = {
@@ -129,6 +132,7 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <head>
+        <meta name="yandex-verification" content="adeb09801b32f22c" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />

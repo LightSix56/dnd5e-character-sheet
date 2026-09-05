@@ -897,7 +897,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                               style={
                                 isChecked
                                   ? { background: '#D97706', color: '#FFFBEB', border: '1px solid #B45309' }
-                                  : { background: 'rgba(255,255,255,0.7)', color: '#92400E', border: '1px solid #D97706' }
+                                  : { background: 'rgba(245, 230, 200, 0.75)', color: '#92400E', border: '1px solid #D97706' }
                               }
                             >
                               {isChecked ? '✓ ' : '+1 '}{ABILITY_FULL[ab]} ({ab})
@@ -910,14 +910,14 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
                   {/* Customizable Racial Skills (Kenku, Changeling, Half-Elf, Variant Human) */}
                   {racialSkillData.choiceCount > 0 && (
-                    <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(238, 242, 255, 0.6)', border: '1px dashed #6366F1' }}>
+                    <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(92, 58, 110, 0.08)', border: '1px dashed #5C3A6E' }}>
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-[#4338CA]">🎯 Расовые навыки на выбор:</span>
-                        <span className="text-[11px] font-medium text-[#4F46E5]">
+                        <span className="font-bold text-[#5C3A6E]">🎯 Расовые навыки на выбор:</span>
+                        <span className="text-[11px] font-medium text-[#6B3A2A]">
                           Выбрано {customRacialSkills.length} из {racialSkillData.choiceCount}
                         </span>
                       </div>
-                      <p className="text-[11px] text-[#3730A3]">{racialSkillData.description}</p>
+                      <p className="text-[11px] text-[#3D2012]">{racialSkillData.description}</p>
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {(racialSkillData.choiceOptions || ALL_SKILLS).map(skill => {
                           const isChecked = customRacialSkills.includes(skill);
@@ -931,8 +931,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                               }`}
                               style={
                                 isChecked
-                                  ? { background: '#6366F1', color: '#FFFFFF', border: '1px solid #4338CA' }
-                                  : { background: 'rgba(255,255,255,0.7)', color: '#4338CA', border: '1px solid #A5B4FC' }
+                                  ? { background: '#5C3A6E', color: '#FBF0DC', border: '1px solid #3E244B' }
+                                  : { background: 'rgba(245, 230, 200, 0.75)', color: '#5C3A6E', border: '1px solid rgba(92, 58, 110, 0.4)' }
                               }
                             >
                               {isChecked ? '✓ ' : ''}{skill}
@@ -1115,7 +1115,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                             ? { background: 'rgba(92, 58, 110, 0.12)', border: '1px solid #5C3A6E', color: '#5C3A6E' }
                             : isSelected
                             ? { background: '#4a7c3f', border: '1px solid #365b2e', color: '#FFFFFF' }
-                            : { background: 'rgba(255, 255, 255, 0.7)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#3D2012' }
+                            : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#3D2012' }
                         }
                       >
                         <div className="flex items-center gap-2">
@@ -1212,7 +1212,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       const replacement = backgroundSkillReplacements[bgSkill] || '';
 
                       return (
-                        <div key={bgSkill} className="p-2.5 rounded text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2" style={{ background: 'rgba(255, 255, 255, 0.8)', border: '1px solid rgba(139, 105, 20, 0.2)' }}>
+                        <div key={bgSkill} className="p-2.5 rounded text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2" style={{ background: 'rgba(245, 230, 200, 0.8)', border: '1px solid rgba(139, 105, 20, 0.3)' }}>
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-[#3D2012]">{bgSkill}</span>
                             {isOverlapping && (
@@ -1313,7 +1313,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     style={
                       scoreMethod === 'point-buy'
                         ? { background: '#5C341F', color: '#FBF0DC', border: '1px solid #3D2012' }
-                        : { background: 'rgba(255,255,255,0.6)', color: '#5C341F', border: '1px solid rgba(139,105,20,0.3)' }
+                        : { background: 'rgba(245, 230, 200, 0.7)', color: '#5C341F', border: '1px solid rgba(139,105,20,0.35)' }
                     }
                   >
                     ⚖️ Point Buy (27 очков)
@@ -1330,7 +1330,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     style={
                       scoreMethod === 'standard'
                         ? { background: '#5C341F', color: '#FBF0DC', border: '1px solid #3D2012' }
-                        : { background: 'rgba(255,255,255,0.6)', color: '#5C341F', border: '1px solid rgba(139,105,20,0.3)' }
+                        : { background: 'rgba(245, 230, 200, 0.7)', color: '#5C341F', border: '1px solid rgba(139,105,20,0.35)' }
                     }
                   >
                     📊 Стандартный массив
@@ -1347,7 +1347,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     style={
                       scoreMethod === 'roll'
                         ? { background: '#5C341F', color: '#FBF0DC', border: '1px solid #3D2012' }
-                        : { background: 'rgba(255,255,255,0.6)', color: '#5C341F', border: '1px solid rgba(139,105,20,0.3)' }
+                        : { background: 'rgba(245, 230, 200, 0.7)', color: '#5C341F', border: '1px solid rgba(139,105,20,0.35)' }
                     }
                   >
                     🎲 Бросок 4d6
@@ -1640,9 +1640,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                 setActiveSpellInfo(s);
                               }}
                               title="Подробнее о заклинании"
-                              className="w-5 h-5 flex items-center justify-center rounded text-[11px] opacity-75 hover:opacity-100"
+                              className="w-5 h-5 flex items-center justify-center rounded transition-transform active:scale-95 cursor-pointer opacity-80 hover:opacity-100"
                             >
-                              ℹ️
+                              <InfoSealIcon size={16} />
                             </button>
                           </div>
                         );
@@ -1710,9 +1710,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                 setActiveSpellInfo(s);
                               }}
                               title="Подробнее о заклинании"
-                              className="w-5 h-5 flex items-center justify-center rounded text-[11px] opacity-75 hover:opacity-100"
+                              className="w-5 h-5 flex items-center justify-center rounded transition-transform active:scale-95 cursor-pointer opacity-80 hover:opacity-100"
                             >
-                              ℹ️
+                              <InfoSealIcon size={16} />
                             </button>
                           </div>
                         );

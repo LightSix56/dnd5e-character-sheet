@@ -810,7 +810,7 @@ export default function SharedCharacterPage({
                         return (
                           <div
                             key={lvl}
-                            className="p-1.5 rounded bg-white/70 border border-[#C9A84C]/50 text-center"
+                            className="p-1.5 rounded bg-[#EDE0C8]/70 border border-[#C9A84C]/50 text-center"
                           >
                             <span className="text-[10px] text-[#8B6914] font-bold block">
                               {lvl} ур.
@@ -868,7 +868,7 @@ export default function SharedCharacterPage({
                                 className={`p-1.5 rounded text-xs flex items-center justify-between border ${
                                   sp.prepared
                                     ? 'bg-[#C9A84C]/15 border-[#C9A84C]/60 text-[#3C2415] font-medium'
-                                    : 'bg-white/40 border-[#8B6914]/20 text-[#3C2415]/70'
+                                    : 'bg-[#EDE0C8]/40 border-[#8B6914]/20 text-[#3C2415]/70'
                                 }`}
                               >
                                 <span className="truncate">{sp.name}</span>
@@ -904,7 +904,7 @@ export default function SharedCharacterPage({
                       <div className="flex items-center justify-between gap-2">
                         <strong className="text-[#3C2415] font-bold">{tr.name}</strong>
                         {tr.source && (
-                          <span className="text-[10px] text-[#8B6914] bg-white/60 px-1.5 py-0.5 rounded border border-[#8B6914]/20">
+                          <span className="text-[10px] text-[#8B6914] bg-[#EDE0C8]/80 px-1.5 py-0.5 rounded border border-[#8B6914]/30">
                             {tr.source}
                           </span>
                         )}

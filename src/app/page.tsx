@@ -575,7 +575,7 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
                 ))}
               </select>
               {availableSubclasses.find(s => s.name === chosenSubclass) && (
-                <div className="p-2 rounded text-[11px] leading-relaxed" style={{ background: 'rgba(255, 255, 255, 0.6)', color: '#3D2012' }}>
+                <div className="p-2 rounded text-[11px] leading-relaxed" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)', color: '#3D2012' }}>
                   <p className="font-semibold mb-1">
                     {availableSubclasses.find(s => s.name === chosenSubclass)?.description}
                   </p>

@@ -211,7 +211,7 @@ export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose
                             }`}
                             style={
                               isSubSelected
-                                ? { background: '#C9A84C', color: '#FFF', border: '1px solid #A08230' }
+                                ? { background: '#C9A84C', color: '#3D2012', border: '1px solid #A08230' }
                                 : { background: 'rgba(232, 211, 162, 0.6)', color: '#5C341F', border: '1px solid rgba(201, 168, 76, 0.4)' }
                             }
                           >

@@ -269,7 +269,7 @@ export function ShareModal({
             {/* QR Code and DM View Perks */}
             <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 pt-2">
               {/* QR Code */}
-              <div className="flex flex-col items-center justify-center p-2.5 bg-white/70 border border-[#8B6914]/30 rounded text-center">
+              <div className="flex flex-col items-center justify-center p-2.5 bg-[#FDF7EC] border border-[#C9A84C]/40 rounded text-center">
                 {qrImageUrl && (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img

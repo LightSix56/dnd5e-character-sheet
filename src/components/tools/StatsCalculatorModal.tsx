@@ -761,12 +761,7 @@ export function StatsCalculatorModal({
                             const val = e.target.value === '' ? null : Number(e.target.value);
                             handleStandardArraySelect(ab, val);
                           }}
-                          className="w-full text-xs font-bold py-1 px-2.5 rounded cursor-pointer"
-                          style={{
-                            background: 'rgba(251, 240, 220, 0.95)',
-                            border: '1px solid rgba(139, 105, 20, 0.4)',
-                            color: '#3D2012',
-                          }}
+                          className="parchment-select w-full text-xs font-bold py-1.5 px-2.5"
                         >
                           <option value="">-- Не выбрано --</option>
                           {STANDARD_ARRAY_VALUES.map(val => {
@@ -856,12 +851,7 @@ export function StatsCalculatorModal({
                       const val = Math.max(0, Math.min(4, parseInt(e.target.value) || 0));
                       setBonuses(prev => ({ ...prev, [ab]: val }));
                     }}
-                    className="w-full text-center text-xs font-bold py-1 px-0.5 rounded"
-                    style={{
-                      background: 'rgba(251, 240, 220, 0.85)',
-                      border: '1px solid rgba(139, 105, 20, 0.4)',
-                      color: '#3D2012',
-                    }}
+                    className="parchment-input-boxed w-full text-center text-xs font-bold py-1 px-1"
                   />
                 </div>
               ))}

@@ -772,8 +772,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     value={charName}
                     onChange={e => setCharName(e.target.value)}
                     placeholder="Например, Торин Дубощит, Лираэль Лунная Тень..."
-                    className="parchment-input flex-1 text-sm py-1.5 px-3 rounded"
-                    style={{ background: 'rgba(255, 255, 255, 0.6)', border: '1px solid rgba(139, 105, 20, 0.3)' }}
+                    className="parchment-input-boxed flex-1 text-sm py-1.5 px-3"
                   />
                   <button
                     type="button"
@@ -800,8 +799,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     value={raceSearch}
                     onChange={e => setRaceSearch(e.target.value)}
                     placeholder="Поиск расы..."
-                    className="parchment-input text-xs w-full py-1.5 px-2.5 rounded"
-                    style={{ background: 'rgba(255, 255, 255, 0.5)', border: '1px solid rgba(139, 105, 20, 0.3)' }}
+                    className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
                   />
                   <div className="max-h-[380px] overflow-y-auto space-y-1 pr-1">
                     {DND_COMPENDIUM_RACES.filter(r =>
@@ -1234,8 +1232,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                   const val = e.target.value;
                                   setBackgroundSkillReplacements(prev => ({ ...prev, [bgSkill]: val }));
                                 }}
-                                className="parchment-input text-xs py-1 px-2 rounded"
-                                style={{ background: '#FFF8EB', border: '1px solid #D9822B' }}
+                                className="parchment-select text-xs py-1 px-2"
                               >
                                 <option value="">— Выберите другой навык —</option>
                                 {ALL_SKILLS.filter(s =>
@@ -1477,8 +1474,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                 const val = Number(e.target.value);
                                 setBaseScores(prev => ({ ...prev, [ab]: val }));
                               }}
-                              className="parchment-input text-xs font-bold py-1 px-2 rounded"
-                              style={{ background: '#FFF8EB', border: '1px solid #C9A84C' }}
+                              className="parchment-select text-xs font-bold py-1 px-2"
                             >
                               {[15, 14, 13, 12, 10, 8].map(v => (
                                 <option key={v} value={v}>{v}</option>
@@ -1583,8 +1579,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       value={spellSearch}
                       onChange={e => setSpellSearch(e.target.value)}
                       placeholder="Быстрый поиск по заклинаниям..."
-                      className="parchment-input text-xs w-full py-1 px-2.5 rounded"
-                      style={{ background: 'rgba(255, 255, 255, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }}
+                      className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
                     />
                   </div>
 
@@ -1782,8 +1777,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       value={playerName}
                       onChange={e => setPlayerName(e.target.value)}
                       placeholder="Ваше имя"
-                      className="parchment-input text-xs w-full py-1 px-2 rounded"
-                      style={{ background: 'rgba(255, 255, 255, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }}
+                      className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
                     />
                   </div>
                   <div>
@@ -1793,8 +1787,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       value={age}
                       onChange={e => setAge(e.target.value)}
                       placeholder="25 лет"
-                      className="parchment-input text-xs w-full py-1 px-2 rounded"
-                      style={{ background: 'rgba(255, 255, 255, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }}
+                      className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
                     />
                   </div>
                   <div>
@@ -1804,8 +1797,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       value={height}
                       onChange={e => setHeight(e.target.value)}
                       placeholder="175 см"
-                      className="parchment-input text-xs w-full py-1 px-2 rounded"
-                      style={{ background: 'rgba(255, 255, 255, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }}
+                      className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
                     />
                   </div>
                   <div>
@@ -1815,8 +1807,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       value={weight}
                       onChange={e => setWeight(e.target.value)}
                       placeholder="70 кг"
-                      className="parchment-input text-xs w-full py-1 px-2 rounded"
-                      style={{ background: 'rgba(255, 255, 255, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }}
+                      className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
                     />
                   </div>
                 </div>
@@ -1828,8 +1819,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     onChange={e => setAppearance(e.target.value)}
                     placeholder="Опишите внешность вашего персонажа, особые приметы, шрамы, осанку..."
                     rows={2}
-                    className="parchment-textarea text-xs w-full p-2 rounded"
-                    style={{ background: 'rgba(255, 255, 255, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }}
+                    className="parchment-textarea text-xs w-full p-2.5"
                   />
                 </div>
               </div>

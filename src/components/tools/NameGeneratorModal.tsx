@@ -131,13 +131,7 @@ export function NameGeneratorModal({ currentRace, onSelectName, onClose }: NameG
                   setSelectedRaceKey(e.target.value);
                   setSelectedCultureId('all');
                 }}
-                className="w-full text-xs font-semibold py-1.5 px-2 rounded cursor-pointer"
-                style={{
-                  background: 'rgba(251, 240, 220, 0.85)',
-                  border: '1px solid rgba(139, 105, 20, 0.4)',
-                  color: '#3D2012',
-                  fontFamily: 'Georgia, serif',
-                }}
+                className="parchment-select w-full text-xs font-semibold py-1.5 px-2"
               >
                 {FANTASY_NAMES_DATABASE.map(r => (
                   <option key={r.id} value={r.id}>
@@ -155,13 +149,7 @@ export function NameGeneratorModal({ currentRace, onSelectName, onClose }: NameG
               <select
                 value={selectedCultureId}
                 onChange={e => setSelectedCultureId(e.target.value)}
-                className="w-full text-xs font-semibold py-1.5 px-2 rounded cursor-pointer"
-                style={{
-                  background: 'rgba(251, 240, 220, 0.85)',
-                  border: '1px solid rgba(139, 105, 20, 0.4)',
-                  color: '#3D2012',
-                  fontFamily: 'Georgia, serif',
-                }}
+                className="parchment-select w-full text-xs font-semibold py-1.5 px-2"
               >
                 <option value="all">Случайная культура</option>
                 {availableCultures.map(c => (

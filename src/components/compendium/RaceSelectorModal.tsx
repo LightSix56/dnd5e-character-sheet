@@ -97,7 +97,7 @@ export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Поиск расы или книги..."
-              className="parchment-input text-xs w-full py-1.5 px-2.5"
+              className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
             />
 
             {/* Category tabs */}

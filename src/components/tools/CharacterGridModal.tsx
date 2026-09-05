@@ -538,7 +538,7 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Поиск по имени, классу или расе..."
-              className="w-full pl-9 pr-8 py-2 text-sm font-serif bg-[#FBF0DC]/80 border border-[#C9A84C]/50 rounded text-[#3C2415] placeholder:italic placeholder:text-[#8B6914]/60 focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C] shadow-inner transition-all"
+              className="parchment-input-boxed w-full pl-9 pr-8 py-2 text-sm shadow-inner"
             />
             {searchQuery && (
               <button

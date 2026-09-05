@@ -79,7 +79,7 @@ export function ClassSelectorModal({ currentClass, currentLevel, onSelect, onClo
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Поиск класса..."
-              className="parchment-input text-xs w-full py-1.5 px-2.5"
+              className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
             />
             <div className="space-y-1 overflow-y-auto">
               {filteredClasses.map(cls => {

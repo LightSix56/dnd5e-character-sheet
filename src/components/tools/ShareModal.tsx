@@ -244,7 +244,7 @@ export function ShareModal({
                   readOnly
                   value={shareUrl}
                   onClick={(e) => (e.target as HTMLInputElement).select()}
-                  className="flex-1 px-3 py-1.5 text-xs font-mono bg-white/60 border border-[#8B6914]/40 rounded outline-none text-[#3C2415] selection:bg-[#C9A84C]/30"
+                  className="parchment-input-boxed flex-1 px-3 py-1.5 text-xs font-mono"
                 />
                 <button
                   type="button"

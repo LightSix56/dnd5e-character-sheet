@@ -100,7 +100,7 @@ export function NameGeneratorModal({ currentRace, onSelectName, onClose }: NameG
                 Генератор фэнтезийных имён
               </h3>
               <span className="text-[11px]" style={{ color: '#8B6914' }}>
-                Корни, значения и этимология 8 рас в стиле Long Story Short
+                Имена и традиции именования для всех рас D&D 5e (dnd.su)
               </span>
             </div>
           </div>

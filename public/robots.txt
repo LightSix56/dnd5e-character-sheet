@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://dnd5e-character-sheet.vercel.app/sitemap.xml

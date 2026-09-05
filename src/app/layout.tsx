@@ -39,13 +39,17 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/logo.svg', type: 'image/svg+xml' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180' },
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
+    shortcut: ['/favicon.ico'],
   },
 };
 
@@ -53,11 +57,20 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      "name": "Лист персонажа D&D 5e",
+      "url": `${siteUrl}/`,
+      "image": `${siteUrl}/android-chrome-512x512.png`,
+      "description": "Интерактивный лист персонажа D&D 5e: авторасчёт параметров, броски d20, заклинания и экспорт в DOCX."
+    },
+    {
       "@type": "WebApplication",
       "@id": `${siteUrl}/#app`,
       "name": "Лист персонажа D&D 5e",
-      "url": siteUrl,
+      "url": `${siteUrl}/`,
       "description": "Интерактивный веб-бланк персонажа Dungeons & Dragons 5e: авторасчёт характеристик, броски кубиков, библиотека заклинаний и экспорт в Word.",
+      "image": `${siteUrl}/android-chrome-512x512.png`,
       "applicationCategory": "GameApplication",
       "operatingSystem": "All",
       "inLanguage": "ru",
@@ -116,6 +129,9 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

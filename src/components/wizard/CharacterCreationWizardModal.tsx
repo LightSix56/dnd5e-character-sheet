@@ -26,7 +26,8 @@ import {
 import {
   D20Icon, ScrollIcon, SpellbookIcon, CrossedSwordsIcon,
   EngravedShieldIcon, SparklesDndIcon, CoinsChestIcon,
-  MasksDramaIcon, BackpackPackIcon, InfoSealIcon
+  MasksDramaIcon, BackpackPackIcon, InfoSealIcon,
+  UserHeroIcon, GoldSealCheckIcon
 } from '@/components/dnd-icons';
 
 interface CharacterCreationWizardModalProps {
@@ -790,12 +791,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
   // ── Step Indicators ──
   const steps = [
-    { num: 1, title: 'Раса', icon: '👤' },
-    { num: 2, title: 'Класс & Навыки', icon: '⚔️' },
-    { num: 3, title: 'Предыстория', icon: '📜' },
-    { num: 4, title: 'Характеристики', icon: '🎲' },
-    { num: 5, title: spellLimits.isCaster ? 'Заклинания' : 'Магия (—)', icon: '✨' },
-    { num: 6, title: 'Завершение', icon: '👑' },
+    { num: 1, title: 'Раса', icon: <UserHeroIcon size={14} /> },
+    { num: 2, title: 'Класс & Навыки', icon: <CrossedSwordsIcon size={14} /> },
+    { num: 3, title: 'Предыстория', icon: <ScrollIcon size={14} /> },
+    { num: 4, title: 'Характеристики', icon: <D20Icon size={14} /> },
+    { num: 5, title: spellLimits.isCaster ? 'Заклинания' : 'Магия (—)', icon: <SpellbookIcon size={14} /> },
+    { num: 6, title: 'Завершение', icon: <GoldSealCheckIcon size={14} /> },
   ];
 
   if (!isOpen) return null;
@@ -825,10 +826,10 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             title="Закрыть"
-            className="w-8 h-8 flex items-center justify-center rounded-full text-base font-bold cursor-pointer transition-colors"
-            style={{ background: 'rgba(139, 105, 20, 0.15)', color: '#5C341F' }}
+            className="parchment-remove-btn w-8 h-8 flex items-center justify-center text-sm font-bold"
           >
             ✕
           </button>
@@ -1093,7 +1094,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   )}
 
                   {/* Highlights Summary Card */}
-                  <div className="p-4 rounded-lg space-y-3" style={{ background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                  <div className="p-4 rounded-lg space-y-3" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                     <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
                       <div>
                         <h3 className="text-sm font-bold text-[#3D2012]">
@@ -1179,7 +1180,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         style={
                           isSel
                             ? { background: '#E8D3A2', border: '2px solid #C9A84C', color: '#3D2012' }
-                            : { background: 'rgba(255, 255, 255, 0.4)', border: '1px solid rgba(139, 105, 20, 0.2)' }
+                            : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }
                         }
                       >
                         <span className="text-2xl">{cls.emoji}</span>
@@ -1192,7 +1193,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
               </div>
 
               {/* Class Feature Details & Proficiency summary */}
-              <div className="p-4 rounded-lg space-y-3" style={{ background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+              <div className="p-4 rounded-lg space-y-3" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-2.5 gap-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">{selectedClass.emoji}</span>
@@ -1386,7 +1387,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         style={
                           isSel
                             ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
-                            : { background: 'rgba(255, 255, 255, 0.4)', border: '1px solid rgba(139, 105, 20, 0.2)' }
+                            : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }
                         }
                       >
                         <div className="font-bold">{bg.name}</div>
@@ -1401,7 +1402,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
               </div>
 
               {/* Background Detail & Skill Overlap Resolver */}
-              <div className="p-4 rounded-lg space-y-4" style={{ background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+              <div className="p-4 rounded-lg space-y-4" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                 <div className="border-b pb-2.5" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
                   <h3 className="text-base font-bold text-[#3D2012]">
                     Предыстория: {selectedBackground.name} ({selectedBackground.nameEn})
@@ -1567,7 +1568,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
               {/* Point Buy Status Bar */}
               {scoreMethod === 'point-buy' && (
-                <div className="p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2" style={{ background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                <div className="p-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                   <div>
                     <span className="font-bold text-[#3D2012]">Покупка характеристик (Point Buy): </span>
                     <span className="text-[#5C341F]">Базовые значения от 8 (0 очков) до 15 (9 очков).</span>
@@ -1660,7 +1661,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       key={ab}
                       className="p-3 rounded-lg space-y-2.5 relative"
                       style={{
-                        background: isPrimary ? 'rgba(254, 243, 199, 0.6)' : '#FFFDF9',
+                        background: isPrimary ? 'rgba(232, 211, 162, 0.6)' : 'rgba(245, 230, 200, 0.65)',
                         border: isPrimary ? '2px solid #D97706' : '1px solid rgba(201, 168, 76, 0.4)'
                       }}
                     >
@@ -1773,8 +1774,10 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
             <div className="space-y-6">
               {!spellLimits.isCaster ? (
                 /* Non-caster Card */
-                <div className="p-8 rounded-xl text-center space-y-4 max-w-lg mx-auto" style={{ background: '#FFFDF9', border: '2px solid rgba(201, 168, 76, 0.4)' }}>
-                  <span className="text-5xl block">⚔️</span>
+                <div className="p-8 rounded-xl text-center space-y-4 max-w-lg mx-auto" style={{ background: 'rgba(245, 230, 200, 0.85)', border: '2px solid rgba(201, 168, 76, 0.4)' }}>
+                  <div className="flex justify-center">
+                    <CrossedSwordsIcon size={52} />
+                  </div>
                   <h3 className="text-lg font-bold text-[#3D2012]">
                     Класс «{selectedClass.name}» не использует заклинания на 1-м уровне
                   </h3>
@@ -1860,8 +1863,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                             }`}
                             style={
                               isSelected
-                                ? { background: '#5C3A6E', border: '1px solid #3E244B', color: '#FFFFFF' }
-                                : { background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.3)', color: '#3D2012' }
+                                ? { background: '#5C3A6E', border: '1px solid #3E244B', color: '#FBF0DC' }
+                                : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.3)', color: '#3D2012' }
                             }
                           >
                             <div className="flex-1">
@@ -1930,8 +1933,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                             }`}
                             style={
                               isSelected
-                                ? { background: '#6B3A2A', border: '1px solid #4D2619', color: '#FFFFFF' }
-                                : { background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.3)', color: '#3D2012' }
+                                ? { background: '#6B3A2A', border: '1px solid #4D2619', color: '#FBF0DC' }
+                                : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.3)', color: '#3D2012' }
                             }
                           >
                             <div className="flex-1">
@@ -1992,7 +1995,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         style={
                           isSel
                             ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
-                            : { background: 'rgba(255, 255, 255, 0.5)', border: '1px solid rgba(139, 105, 20, 0.2)' }
+                            : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }
                         }
                       >
                         {al}
@@ -2003,7 +2006,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
               </div>
 
               {/* Bio & Appearance Inputs */}
-              <div className="p-4 rounded-lg space-y-3" style={{ background: '#FFFDF9', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+              <div className="p-4 rounded-lg space-y-3" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                 <h4 className="text-sm font-bold text-[#3D2012]">
                   Внешность и данные персонажа:
                 </h4>
@@ -2063,7 +2066,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
               </div>
 
               {/* ── Ready Character Preview Sheet ── */}
-              <div className="p-5 rounded-xl space-y-4 shadow-sm" style={{ background: '#FFFDF9', border: '2px solid #C9A84C' }}>
+              <div className="p-5 rounded-xl space-y-4 shadow-sm" style={{ background: 'rgba(245, 230, 200, 0.85)', border: '2px solid #C9A84C' }}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-3 gap-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
                   <div>
                     <div className="text-xl font-bold text-[#3D2012]" style={{ fontFamily: 'Georgia, serif' }}>
@@ -2250,7 +2253,14 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                 <h4 className="text-base font-bold text-[#3D2012]">{activeSpellInfo.name}</h4>
                 <div className="text-xs text-[#8B6914]">{activeSpellInfo.nameEn || ''} · {activeSpellInfo.school}</div>
               </div>
-              <button onClick={() => setActiveSpellInfo(null)} className="text-sm font-bold cursor-pointer">✕</button>
+              <button
+                type="button"
+                onClick={() => setActiveSpellInfo(null)}
+                className="parchment-remove-btn w-7 h-7 flex items-center justify-center text-sm font-bold"
+                title="Закрыть"
+              >
+                ✕
+              </button>
             </div>
             <div className="text-xs space-y-1.5 text-[#5C341F]">
               <div><strong>Время сотворения: </strong>{activeSpellInfo.castingTime}</div>

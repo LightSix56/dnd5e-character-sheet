@@ -3074,9 +3074,9 @@ export default function DnDCharacterSheet() {
       />
 
       {showCreateChoiceModal && (
-        <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm" onClick={() => setShowCreateChoiceModal(false)}>
+        <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowCreateChoiceModal(false)}>
           <div
-            className="parchment-modal max-w-lg w-full p-6 space-y-4 shadow-2xl relative rounded-xl"
+            className="parchment-modal max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl relative rounded-xl"
             style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
             onClick={e => e.stopPropagation()}
           >
@@ -3093,9 +3093,10 @@ export default function DnDCharacterSheet() {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setShowCreateChoiceModal(false)}
-                className="w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold cursor-pointer"
-                style={{ background: 'rgba(139, 105, 20, 0.15)', color: '#5C341F' }}
+                className="parchment-remove-btn w-7 h-7 flex items-center justify-center text-sm font-bold"
+                title="Закрыть"
               >
                 ✕
               </button>
@@ -3103,49 +3104,67 @@ export default function DnDCharacterSheet() {
 
             <div className="space-y-3 pt-1">
               {/* Option 1: Interactive Wizard */}
-              <div
+              <button
+                type="button"
                 onClick={() => {
                   setShowCreateChoiceModal(false);
                   setShowCreationWizard(true);
                 }}
-                className="p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-1.5"
-                style={{ background: '#FFFDF9', border: '2px solid #C9A84C' }}
+                className="w-full text-left p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-2 group"
+                style={{
+                  background: 'rgba(232, 211, 162, 0.55)',
+                  border: '2px solid #C9A84C',
+                  boxShadow: '0 2px 8px rgba(60, 36, 21, 0.15)'
+                }}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-sm text-[#3D2012]">
-                    <span className="text-xl">🧙‍♂️</span>
-                    <span>Интерактивное пошаговое создание</span>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5 font-bold text-sm text-[#3D2012]">
+                    <SparklesDndIcon size={22} />
+                    <span style={{ fontFamily: 'Georgia, serif' }}>Интерактивное пошаговое создание</span>
                   </div>
-                  <span className="text-[11px] px-2 py-0.5 rounded font-bold" style={{ background: '#E8D3A2', color: '#5C341F' }}>
+                  <span
+                    className="text-[11px] px-2.5 py-0.5 rounded font-bold shrink-0"
+                    style={{
+                      background: '#5C341F',
+                      color: '#FFE58F',
+                      border: '1px solid #3D2012',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                    }}
+                  >
                     Рекомендуется
                   </span>
                 </div>
-                <p className="text-xs text-[#5C341F] leading-relaxed">
-                  Пошаговые вопросы: выбор расы, класса с жестким лимитом навыков (не дает взять лишнее!), предыстории с защитой от совпадений, расчет характеристик (Point Buy, 4d6, массив) и выбор заклинаний с лимитами.
+                <p className="text-xs text-[#5C341F] leading-relaxed pl-8">
+                  Пошаговый мастер: выбор расы, класса с жестким лимитом навыков, предыстории с защитой от совпадений, расчет характеристик (Point Buy, 4d6, стандартный массив) и выбор заклинаний с лимитами.
                 </p>
-              </div>
+              </button>
 
               {/* Option 2: Manual Blank Sheet */}
-              <div
+              <button
+                type="button"
                 onClick={handleManualCreate}
-                className="p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-1.5"
-                style={{ background: 'rgba(255, 255, 255, 0.5)', border: '1px solid rgba(139, 105, 20, 0.3)' }}
+                className="w-full text-left p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-2 group"
+                style={{
+                  background: 'rgba(245, 230, 200, 0.75)',
+                  border: '1.5px solid rgba(139, 105, 20, 0.4)',
+                  boxShadow: '0 2px 6px rgba(60, 36, 21, 0.1)'
+                }}
               >
-                <div className="flex items-center gap-2 font-bold text-sm text-[#3D2012]">
-                  <span className="text-xl">✍️</span>
-                  <span>Полностью ручное создание (Чистый бланк)</span>
+                <div className="flex items-center gap-2.5 font-bold text-sm text-[#3D2012]">
+                  <QuillIcon size={22} />
+                  <span style={{ fontFamily: 'Georgia, serif' }}>Полностью ручное создание (Чистый бланк)</span>
                 </div>
-                <p className="text-xs text-[#5C341F] leading-relaxed">
+                <p className="text-xs text-[#5C341F] leading-relaxed pl-8">
                   Создать пустой лист персонажа 1-го уровня. Вы сможете самостоятельно вручную вписать все названия, значения характеристик, особенности и снаряжение.
                 </p>
-              </div>
+              </button>
             </div>
 
             <div className="pt-2 border-t flex justify-end" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
               <button
                 type="button"
                 onClick={() => setShowCreateChoiceModal(false)}
-                className="parchment-btn-secondary text-xs px-4 py-1.5"
+                className="parchment-btn-secondary text-xs px-5 py-2 cursor-pointer"
               >
                 Отмена
               </button>

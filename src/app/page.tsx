@@ -1831,6 +1831,7 @@ export default function DnDCharacterSheet() {
   const lastCloudSaveRef = React.useRef<string>('');
   const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
   const cloudCharIdRef = React.useRef<string | null>(null);
+  const [activeCloudCharId, setActiveCloudCharId] = useState<string | null>(null);
   const cloudSaveInProgressRef = React.useRef(false);
   const pendingCloudSaveRef = React.useRef(false);
   const isCloudSyncingRef = React.useRef(false);
@@ -1857,6 +1858,7 @@ export default function DnDCharacterSheet() {
       const result = await res.json();
       if (result.character?.id) {
         cloudCharIdRef.current = result.character.id;
+        setActiveCloudCharId(result.character.id);
       }
       return !!result.character;
     } catch { return false; }
@@ -1910,6 +1912,7 @@ export default function DnDCharacterSheet() {
               else setPortraitUrl(null);
               // Remember the cloud character ID for auto-save updates
               cloudCharIdRef.current = latest.id;
+              setActiveCloudCharId(latest.id);
               lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: latest.portrait_url || null });
               setCloudSaveStatus('saved');
             }
@@ -2548,6 +2551,7 @@ export default function DnDCharacterSheet() {
     setPortraitUrl(null);
     localStorage.removeItem('dnd5e_portrait');
     cloudCharIdRef.current = null;
+    setActiveCloudCharId(null);
     lastCloudSaveRef.current = '';
     showToast('Сброшено', 'Данные очищены');
   }, [showToast]);
@@ -2840,6 +2844,7 @@ export default function DnDCharacterSheet() {
     setPortraitUrl(null);
     setCloudCharacters([]);
     cloudCharIdRef.current = null;
+    setActiveCloudCharId(null);
     lastCloudSaveRef.current = '';
   }, [supabase]);
 
@@ -2939,11 +2944,13 @@ export default function DnDCharacterSheet() {
       // Remember cloud character ID for auto-save if real cloud ID
       if (cloudChar.id && !cloudChar.isLocal && cloudChar.id !== 'local-active') {
         cloudCharIdRef.current = cloudChar.id;
+        setActiveCloudCharId(cloudChar.id);
         // Reset dedup tracker with the fresh snapshot
         lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: cloudChar.portrait_url || null });
         setCloudSaveStatus('saved');
       } else {
         cloudCharIdRef.current = null;
+        setActiveCloudCharId(null);
         lastCloudSaveRef.current = '';
         setCloudSaveStatus('idle');
       }
@@ -2968,6 +2975,7 @@ export default function DnDCharacterSheet() {
       setCloudCharacters(prev => prev.filter((c: any) => c.id !== id));
       if (cloudCharIdRef.current === id) {
         cloudCharIdRef.current = null;
+        setActiveCloudCharId(null);
         lastCloudSaveRef.current = '';
       }
       showToast('Удалено', 'Персонаж удалён из облака');
@@ -3110,7 +3118,7 @@ export default function DnDCharacterSheet() {
         <CharacterGridModal
           cloudCharacters={cloudCharacters}
           localCharacter={
-            (!user || !cloudCharIdRef.current) && (char.name || char.className || portraitUrl)
+            (!user || !activeCloudCharId) && (char.name || char.className || portraitUrl)
               ? {
                   id: 'local-active',
                   name: char.name || 'Текущий герой (на устройстве)',

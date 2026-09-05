@@ -33,11 +33,10 @@ interface CharacterCreationWizardModalProps {
 }
 
 export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: CharacterCreationWizardModalProps) {
-  if (!isOpen) return null;
-
   // ── Step Navigation ──
   // 1: Concept & Race, 2: Class & Skills, 3: Background, 4: Ability Scores, 5: Spells, 6: Finalize & Review
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [stepError, setStepError] = useState<string | null>(null);
 
   // ── Step 1: Character Concept & Race ──
   const [charName, setCharName] = useState<string>('');
@@ -416,8 +415,6 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return { valid: true };
   };
 
-  const [stepError, setStepError] = useState<string | null>(null);
-
   const handleNext = () => {
     const v = validateStep(currentStep);
     if (!v.valid) {
@@ -660,6 +657,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     { num: 5, title: spellLimits.isCaster ? 'Заклинания' : 'Магия (—)', icon: '✨' },
     { num: 6, title: 'Завершение', icon: '👑' },
   ];
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>

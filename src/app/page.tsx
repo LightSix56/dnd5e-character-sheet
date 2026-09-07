@@ -1780,6 +1780,7 @@ export default function DnDCharacterSheet() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCreationWizard, setShowCreationWizard] = useState(false);
   const [showCreateChoiceModal, setShowCreateChoiceModal] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -3183,7 +3184,8 @@ export default function DnDCharacterSheet() {
             </div>
           </div>
 
-          <div className="parchment-toolbar">
+          {/* Desktop Toolbar (visible on md screens and up) */}
+          <div className="hidden md:flex parchment-toolbar">
             {/* Create Character group */}
             <div className="parchment-btn-group">
               <button
@@ -3283,7 +3285,169 @@ export default function DnDCharacterSheet() {
               <span>Экспорт DOCX</span>
             </button>
           </div>
+
+          {/* Mobile Toolbar (visible only on mobile screens < md) */}
+          <div className="parchment-mobile-bar flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowCreateChoiceModal(true)}
+              className="parchment-header-btn flex items-center gap-1.5 text-xs px-2.5 py-1.5 font-bold shadow-sm"
+              style={{
+                background: 'linear-gradient(180deg, rgba(201, 168, 76, 0.45) 0%, rgba(139, 105, 20, 0.35) 100%)',
+                border: '1px solid #C9A84C',
+                color: '#FFF8EB'
+              }}
+              title="Создать персонажа"
+            >
+              <UserHeroIcon size={14} />
+              <span>+ Герой</span>
+            </button>
+
+            {user && (
+              <button
+                type="button"
+                onClick={handleCloudSave}
+                className="parchment-header-btn p-1.5 flex items-center justify-center"
+                title="Синхронизировать с облаком"
+              >
+                {cloudSaveStatus === 'saving' ? (
+                  <MysticSpinnerIcon size={16} />
+                ) : (
+                  <GoldSealCheckIcon size={16} />
+                )}
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="parchment-header-btn flex items-center gap-1 text-xs px-2.5 py-1.5 font-bold"
+              style={{
+                background: showMobileMenu ? 'rgba(201, 168, 76, 0.3)' : 'rgba(30, 16, 10, 0.6)',
+                border: '1px solid rgba(201, 168, 76, 0.4)'
+              }}
+              aria-label="Меню листа персонажа"
+            >
+              <span className="text-sm">☰</span>
+              <span>Меню</span>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Action Drawer Overlay */}
+        {showMobileMenu && (
+          <div
+            className="fixed inset-0 z-[150] parchment-modal-overlay bg-black/60 backdrop-blur-xs flex flex-col justify-start pt-14 px-3 md:hidden"
+            onClick={() => setShowMobileMenu(false)}
+          >
+            <div
+              className="parchment-mobile-drawer w-full max-w-sm mx-auto p-4 rounded-xl shadow-2xl space-y-3"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-[#C9A84C]/40 pb-2">
+                <span className="font-bold text-sm text-[#3D2012] flex items-center gap-1.5">
+                  <D20Icon size={16} />
+                  <span>Меню персонажа</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="parchment-remove-btn w-6 h-6 flex items-center justify-center font-bold text-xs"
+                  title="Закрыть меню"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowMobileMenu(false); setShowTemplates(true); }}
+                  className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
+                >
+                  <ScrollIcon size={15} />
+                  <span>Шаблоны</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setShowMobileMenu(false); handleExport(); }}
+                  className="parchment-btn flex items-center gap-2 p-2.5 text-xs justify-start font-bold"
+                >
+                  <QuillIcon size={15} />
+                  <span>Экспорт DOCX</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setShowMobileMenu(false); handleSaveJSON(); }}
+                  className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
+                >
+                  <SpellbookIcon size={15} />
+                  <span>Скачать JSON</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setShowMobileMenu(false); handleLoadJSON(); }}
+                  className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
+                >
+                  <ChestIcon size={15} />
+                  <span>Импорт JSON</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setShowMobileMenu(false); handleCloudLoad(); }}
+                  className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
+                >
+                  <MysticCloudIcon size={15} />
+                  <span>Персонажи</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setShowMobileMenu(false); handleShare(); }}
+                  className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
+                >
+                  <ArcaneLinkIcon size={15} />
+                  <span>Поделиться</span>
+                </button>
+              </div>
+
+              <div className="border-t border-[#C9A84C]/30 pt-2 flex items-center justify-between gap-2">
+                {user ? (
+                  <button
+                    type="button"
+                    onClick={() => { setShowMobileMenu(false); setShowSignOutModal(true); }}
+                    className="text-xs text-[#8B2500] hover:underline flex items-center gap-1.5 py-1.5"
+                  >
+                    <PortalIcon size={14} />
+                    <span>Выйти ({user.email?.split('@')[0]})</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => { setShowMobileMenu(false); setShowAuth(true); }}
+                    className="text-xs text-[#3D2012] font-semibold hover:underline flex items-center gap-1.5 py-1.5"
+                  >
+                    <RunedKeyIcon size={14} />
+                    <span>Войти в аккаунт</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => { setShowMobileMenu(false); handleReset(); }}
+                  className="text-xs text-[#8B2500]/80 hover:underline flex items-center gap-1 py-1.5"
+                >
+                  <HourglassIcon size={13} />
+                  <span>Сброс</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6 relative z-10">

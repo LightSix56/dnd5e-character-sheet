@@ -62,6 +62,20 @@ async function run() {
     await new Promise(r => setTimeout(r, 600));
     await page.screenshot({ path: path.join(OUT_DIR, '01_home_header.png') });
 
+    // 1b. Open Mobile Action Menu
+    const menuBtn = await page.$('button[aria-label="Меню листа персонажа"]');
+    if (menuBtn) {
+      await menuBtn.click();
+      await new Promise(r => setTimeout(r, 400));
+      await page.screenshot({ path: path.join(OUT_DIR, '01b_mobile_menu_open.png') });
+      // Close menu by clicking overlay
+      await page.evaluate(() => {
+        const overlay = document.querySelector('.parchment-modal-overlay');
+        if (overlay) overlay.click();
+      });
+      await new Promise(r => setTimeout(r, 300));
+    }
+
     // 2. Combat stats block
     await page.evaluate(() => window.scrollBy(0, 480));
     await new Promise(r => setTimeout(r, 400));
@@ -96,7 +110,7 @@ async function run() {
     await new Promise(r => setTimeout(r, 300));
 
     // 6. Create Character Modal
-    const createBtn = await page.$('button[title*="Создать персонажа"]');
+    const createBtn = await page.$('.parchment-mobile-bar button[title*="Создать персонажа"]');
     if (createBtn) {
       await createBtn.click();
       await new Promise(r => setTimeout(r, 500));

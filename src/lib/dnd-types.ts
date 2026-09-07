@@ -326,13 +326,19 @@ export function getAC(char: CharacterData): number {
 
   if (char.equippedArmor && ARMOR_AC_MAP[char.equippedArmor]) {
     const armor = ARMOR_AC_MAP[char.equippedArmor];
+    let ac = armor.baseAC + shieldBonus;
     if (armor.type === 'light') {
-      return armor.baseAC + dexMod + shieldBonus;
+      ac += dexMod;
     } else if (armor.type === 'medium') {
-      return armor.baseAC + Math.min(armor.maxDex ?? 2, Math.max(0, dexMod)) + shieldBonus;
-    } else if (armor.type === 'heavy') {
-      return armor.baseAC + shieldBonus;
+      ac += Math.min(armor.maxDex ?? 2, Math.max(0, dexMod));
     }
+    const hasDefense = (char.traitsList || []).some(t =>
+      t.name.toLowerCase().includes('оборона') || t.name.toLowerCase().includes('defense')
+    );
+    if (hasDefense) {
+      ac += 1;
+    }
+    return ac;
   }
 
   // Unarmored Defense for Barbarian and Monk

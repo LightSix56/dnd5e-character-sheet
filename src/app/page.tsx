@@ -27,23 +27,16 @@ import { ClassSelectorModal } from '@/components/compendium/ClassSelectorModal';
 import { RaceSelectorModal } from '@/components/compendium/RaceSelectorModal';
 import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorModal';
 import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
+import { LevelUpModal } from '@/components/levelup/LevelUpModal';
+import { calculateWizardAC } from '@/components/wizard/wizard-helpers';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
 import type { CompendiumRace, CompendiumSubrace } from '@/data/compendium/races';
 import { DND_COMPENDIUM_CLASSES, getSubclassesForClass, type CompendiumClass, type CompendiumSubclass } from '@/data/compendium/classes';
 import {
-  getCompendiumAutocompleteItems,
-  getClassFeaturesForLevel,
-  isClassASILevel,
   getClassSubclassLevel,
   getSpellSlotsForClassLevel,
-  getNewSpellLevelUnlocked,
-  DND_COMPENDIUM_FEATS,
-  getRacialFeaturesForLevel,
-  getRacialHPBonusPerLevel,
   isSpellAllowedForCharacter,
-  getAvailableSpellsForCharacter,
   getMaxAvailableSpellSlotLevel,
-  isSpellLevelAllowedForCharacter
 } from '@/data/compendium';
 import type { TraitItem } from '@/lib/dnd-types';
 
@@ -177,898 +170,6 @@ function getThirdCasterSpellSlots(level: number): Record<number, number> | null 
   if (level <= 18) return { 1: 4, 2: 3, 3: 3 };
   return { 1: 4, 2: 3, 3: 3, 4: 1 };
 }
-
-// ── Level Up Modal (comprehensive draft sheet) ──
-
-interface LevelUpModalProps {
-  char: CharacterData;
-  onConfirm: (entry: LevelUpEntry) => void;
-  onCancel: () => void;
-}
-
-const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCancel }: LevelUpModalProps) {
-  const newLevel = char.level + 1;
-  const dieSize = char.hitDice ? getHitDieSize(char.hitDice) : 8;
-  const diceNotation = char.hitDice ? getHitDiceNotation(char.hitDice) : 'd';
-  const conMod = getModifier(char, 'ТЕЛ');
-  
-  // Tough feat bonus (+2 HP per level)
-  const hasTough = (char.traitsList || []).some(t => 
-    t.name.toLowerCase().includes('живучий') || t.name.toLowerCase().includes('tough')
-  );
-  const toughBonus = hasTough ? 2 : 0;
-
-  // Racial HP bonus (Hill Dwarf: +1 HP per level)
-  const racialHPBonus = getRacialHPBonusPerLevel(char.race, char.subrace);
-
-  const avgHP = (char.hitDice ? getHitDieAverage(char.hitDice) : 5) + conMod + toughBonus + racialHPBonus;
-  
-  // Class progression data
-  const classFeatures = useMemo(() => getClassFeaturesForLevel(char.className, newLevel), [char.className, newLevel]);
-  const isASI = useMemo(() => isClassASILevel(char.className, newLevel), [char.className, newLevel]);
-  const subclassReqLevel = useMemo(() => getClassSubclassLevel(char.className), [char.className]);
-  const isSubclassChoice = !char.subclass && newLevel >= subclassReqLevel;
-  const availableSubclasses = useMemo(() => getSubclassesForClass(char.className), [char.className]);
-
-  // Subclass choice
-  const [chosenSubclass, setChosenSubclass] = useState<string>(availableSubclasses[0]?.name || '');
-  const effectiveSubclass = char.subclass || (isSubclassChoice ? chosenSubclass : '');
-
-  // Subclass object
-  const currentSubclassObj = useMemo(() => {
-    if (!effectiveSubclass) return null;
-    return availableSubclasses.find(s =>
-      s.name.toLowerCase() === effectiveSubclass.toLowerCase() ||
-      s.nameEn.toLowerCase() === effectiveSubclass.toLowerCase()
-    ) || null;
-  }, [effectiveSubclass, availableSubclasses]);
-
-  // Subclass features for this level
-  const subclassFeatures = useMemo(() => {
-    if (!currentSubclassObj?.features) return [];
-    if (isSubclassChoice) {
-      // First time selecting subclass: only features at or below current level
-      return currentSubclassObj.features.filter(f => f.level <= newLevel);
-    }
-    // Already has subclass: features strictly unlocked on newLevel
-    return currentSubclassObj.features.filter(f => f.level === newLevel);
-  }, [currentSubclassObj, isSubclassChoice, newLevel]);
-
-  // Third-caster check
-  const isThirdCaster = useMemo(() => {
-    const s = effectiveSubclass.toLowerCase();
-    return s.includes('мистический рыцарь') || s.includes('eldritch knight') || s.includes('мистический ловкач') || s.includes('arcane trickster');
-  }, [effectiveSubclass]);
-
-  const newSpellSlots = useMemo(() => {
-    if (isThirdCaster) {
-      return getThirdCasterSpellSlots(newLevel);
-    }
-    return getSpellSlotsForClassLevel(char.className, newLevel);
-  }, [isThirdCaster, char.className, newLevel]);
-
-  const unlockedCircle = useMemo(() => {
-    if (isThirdCaster) {
-      const cur = getThirdCasterSpellSlots(newLevel);
-      const prev = newLevel > 3 ? getThirdCasterSpellSlots(newLevel - 1) : null;
-      const curMax = cur ? Math.max(...Object.keys(cur).map(Number)) : 0;
-      const prevMax = prev ? Math.max(...Object.keys(prev).map(Number)) : 0;
-      return curMax > prevMax ? curMax : null;
-    }
-    return getNewSpellLevelUnlocked(char.className, newLevel);
-  }, [isThirdCaster, char.className, newLevel]);
-
-  const profChanged = calcProficiencyBonus(newLevel) !== calcProficiencyBonus(char.level);
-
-  // Racial progression data for this level (scaling breath, innate spells, Aasimar transformation, etc.)
-  const racialFeatures = useMemo(
-    () => getRacialFeaturesForLevel(char.race, char.subrace, newLevel),
-    [char.race, char.subrace, newLevel]
-  );
-
-  // States
-  const [hpMode, setHpMode] = useState<'average' | 'roll'>('average');
-  const [hpRoll, setHpRoll] = useState(dieSize);
-
-  const rollHpDie = useCallback(() => {
-    const rolled = Math.floor(Math.random() * dieSize) + 1;
-    setHpRoll(rolled);
-  }, [dieSize]);
-  
-  // Selected class and subclass features to add (default all checked)
-  const [selectedFeatures, setSelectedFeatures] = useState<Record<string, boolean>>(() => {
-    const init: Record<string, boolean> = {};
-    for (const f of classFeatures) init[f.name] = true;
-    for (const sf of subclassFeatures) init[sf.name] = true;
-    return init;
-  });
-
-  useEffect(() => {
-    if (subclassFeatures.length > 0) {
-      setSelectedFeatures(prev => {
-        const next = { ...prev };
-        for (const sf of subclassFeatures) {
-          if (next[sf.name] === undefined) next[sf.name] = true;
-        }
-        return next;
-      });
-    }
-  }, [subclassFeatures]);
-
-  // Selected racial features to add (default all checked)
-  const [selectedRacialFeatures, setSelectedRacialFeatures] = useState<Record<string, boolean>>(() => {
-    const init: Record<string, boolean> = {};
-    for (const rf of racialFeatures) init[rf.name] = true;
-    return init;
-  });
-
-  // ASI / Feat choice
-  const [asiChoice, setAsiChoice] = useState<'stats' | 'feat'>('stats');
-  const [asiAbility1, setAsiAbility1] = useState<AbilityName>('СИЛ');
-  const [asiAbility2, setAsiAbility2] = useState<AbilityName>('ЛОВ');
-  const allFeats = useMemo(() => DND_COMPENDIUM_FEATS.filter(f => f.category === 'Черта'), []);
-  const [selectedFeatId, setSelectedFeatId] = useState<string>(allFeats[0]?.id || 'alert');
-  const selectedFeat = allFeats.find(f => f.id === selectedFeatId);
-
-  // ASI Cap calculation (max 20 per 5e rules)
-  const score1 = getTotalScore(char, asiAbility1);
-  const score2 = getTotalScore(char, asiAbility2);
-  const isSameAbility = asiAbility1 === asiAbility2;
-  const nextScore1 = score1 + (isSameAbility ? 2 : 1);
-  const nextScore2 = isSameAbility ? nextScore1 : score2 + 1;
-  const isScore1OverCap = nextScore1 > 20;
-  const isScore2OverCap = nextScore2 > 20;
-  const isASIOverCap = isASI && asiChoice === 'stats' && (isScore1OverCap || isScore2OverCap);
-
-  const [notes, setNotes] = useState('');
-
-  // Structured additions
-  const [newCantrips, setNewCantrips] = useState<string[]>(['']);
-  const [newSpells, setNewSpells] = useState<{ level: number; name: string; prepared: boolean }[]>([]);
-  const [newSaveProfs, setNewSaveProfs] = useState<AbilityName[]>([]);
-  const [newSkillProfs, setNewSkillProfs] = useState<string[]>([]);
-  const [newSkillExpertise, setNewSkillExpertise] = useState<string[]>([]);
-  const [newAttacks, setNewAttacks] = useState<Attack[]>([]);
-  const [newProfText, setNewProfText] = useState('');
-  const [newEquipText, setNewEquipText] = useState('');
-
-  const finalHP = Math.max(1, (hpMode === 'average' ? avgHP : (hpRoll + conMod + toughBonus + racialHPBonus)));
-
-  const toggleFeature = (name: string) => {
-    setSelectedFeatures(prev => ({ ...prev, [name]: !prev[name] }));
-  };
-
-  const toggleRacialFeature = (name: string) => {
-    setSelectedRacialFeatures(prev => ({ ...prev, [name]: !prev[name] }));
-  };
-
-  const charWithEffectiveSubclass = useMemo(() => {
-    return { ...char, subclass: effectiveSubclass };
-  }, [char, effectiveSubclass]);
-
-  const availableClassSpells = useMemo(() => getAvailableSpellsForCharacter(charWithEffectiveSubclass), [charWithEffectiveSubclass]);
-  const cantripAutocompleteItems: AutocompleteItem[] = useMemo(() => {
-    return availableClassSpells.filter(s => s.level === 0).map(s => ({
-      name: s.name,
-      badge: 'Заговор',
-      secondary: s.school,
-      data: s,
-    }));
-  }, [availableClassSpells]);
-  const maxSlotLevelAtNewLevel = useMemo(() => {
-    return getMaxAvailableSpellSlotLevel(charWithEffectiveSubclass, newLevel);
-  }, [charWithEffectiveSubclass, newLevel]);
-
-  const leveledSpellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
-    return availableClassSpells
-      .filter(s => s.level > 0 && s.level <= maxSlotLevelAtNewLevel)
-      .map(s => ({
-        name: s.name,
-        badge: `${s.level} ур.`,
-        secondary: s.school,
-        data: s,
-      }));
-  }, [availableClassSpells, maxSlotLevelAtNewLevel]);
-
-  const addCantripRow = () => setNewCantrips(prev => [...prev, '']);
-  const removeCantripRow = (i: number) => setNewCantrips(prev => prev.filter((_, j) => j !== i));
-  const updateCantripRow = (i: number, v: string) => setNewCantrips(prev => { const a = [...prev]; a[i] = v; return a; });
-
-  const addSpellRow = () => setNewSpells(prev => [...prev, { level: Math.min(unlockedCircle || 1, Math.max(1, maxSlotLevelAtNewLevel)), name: '', prepared: false }]);
-  const removeSpellRow = (i: number) => setNewSpells(prev => prev.filter((_, j) => j !== i));
-  const updateSpellRow = (i: number, field: 'level' | 'name' | 'prepared', value: any) =>
-    setNewSpells(prev => { const a = [...prev]; a[i] = { ...a[i], [field]: value }; return a; });
-
-  const addAttackRow = () => setNewAttacks(prev => [...prev, { name: '', attackBonus: '', damageAndType: '' }]);
-  const removeAttackRow = (i: number) => setNewAttacks(prev => prev.filter((_, j) => j !== i));
-  const updateAttackRow = (i: number, field: keyof Attack, value: string) =>
-    setNewAttacks(prev => { const a = [...prev]; a[i] = { ...a[i], [field]: value }; return a; });
-
-  const toggleSaveProf = (ability: AbilityName) => {
-    setNewSaveProfs(prev => prev.includes(ability) ? prev.filter(a => a !== ability) : [...prev, ability]);
-  };
-  const toggleSkillProf = (skill: string) => {
-    setNewSkillProfs(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]);
-  };
-  const toggleSkillExpertise = (skill: string) => {
-    setNewSkillExpertise(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]);
-  };
-
-  const buildEntry = (): LevelUpEntry => {
-    // Collect added class features as TraitItem
-    const addedTraits: TraitItem[] = [];
-    for (const f of classFeatures) {
-      if (selectedFeatures[f.name]) {
-        addedTraits.push({
-          id: `feat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
-          name: f.name,
-          source: `${char.className || 'Класс'} (${newLevel} ур.)`,
-          summary: f.name,
-          description: f.description,
-        });
-      }
-    }
-
-    // Collect added subclass features
-    for (const sf of subclassFeatures) {
-      if (selectedFeatures[sf.name]) {
-        addedTraits.push({
-          id: `subfeat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
-          name: sf.name,
-          source: `${effectiveSubclass} (${sf.level || newLevel} ур.)`,
-          summary: sf.name,
-          description: sf.description,
-        });
-      }
-    }
-
-    // Collect added racial features (scaling breath, innate spells, etc.)
-    const spellsToAdd = [...newSpells];
-    for (const rf of racialFeatures) {
-      if (selectedRacialFeatures[rf.name]) {
-        addedTraits.push({
-          id: `racefeat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
-          name: rf.name,
-          source: `${char.subrace || char.race || 'Раса'} (${newLevel} ур.)`,
-          summary: rf.name,
-          description: rf.description,
-        });
-        if (rf.spell && !spellsToAdd.some(s => s.name.toLowerCase() === rf.spell!.name.toLowerCase())) {
-          spellsToAdd.push({ ...rf.spell });
-        }
-      }
-    }
-
-    // If Feat chosen
-    let featName: string | undefined = undefined;
-    if (isASI && asiChoice === 'feat' && selectedFeat) {
-      featName = selectedFeat.name;
-      addedTraits.push({
-        id: `feat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
-        name: selectedFeat.name,
-        source: `Черта (${newLevel} ур.)`,
-        summary: selectedFeat.summary,
-        description: selectedFeat.description,
-      });
-    }
-
-    return {
-      level: newLevel,
-      hpGained: finalHP,
-      asiAbilities: (isASI && asiChoice === 'stats' && !isASIOverCap) ? [asiAbility1, asiAbility2] : null,
-      selectedFeat: featName,
-      newSubclass: (isSubclassChoice && chosenSubclass) ? chosenSubclass : undefined,
-      addedTraits,
-      spellSlotsGained: newSpellSlots || undefined,
-      notes,
-      newCantrips: newCantrips.filter(c => c.trim()),
-      newSpells: spellsToAdd.filter(s => s.name.trim() && (maxSlotLevelAtNewLevel > 0 ? s.level <= maxSlotLevelAtNewLevel : false)),
-      newSavingThrowProfs: newSaveProfs,
-      newSkillProfs: newSkillProfs,
-      newSkillExpertise: newSkillExpertise,
-      newAttacks: newAttacks.filter(a => a.name.trim()),
-      newProficienciesText: newProfText.trim(),
-      newEquipmentText: newEquipText.trim(),
-    };
-  };
-
-  return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4" onClick={onCancel}>
-      <div
-        className="parchment-modal max-w-2xl w-full max-h-[92vh] flex flex-col rounded-xl overflow-hidden shadow-2xl"
-        style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Fixed Header */}
-        <div
-          className="p-4 sm:p-5 border-b flex items-center justify-between flex-none"
-          style={{
-            borderColor: 'rgba(201, 168, 76, 0.4)',
-            background: 'linear-gradient(180deg, rgba(232, 211, 162, 0.5) 0%, rgba(245, 230, 200, 0.25) 100%)'
-          }}
-        >
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
-              <D20Icon size={24} />
-              <span>Повышение до {newLevel}-го уровня</span>
-            </h2>
-            <div className="flex items-center gap-3 text-xs mt-1" style={{ color: '#8B6914' }}>
-              <span>{char.name || 'Персонаж'} — <strong>{char.className || 'Без класса'}</strong> {char.subclass ? `(${char.subclass})` : ''}</span>
-              <span className="font-mono">Кость хитов: 1{diceNotation}{dieSize}</span>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onCancel}
-            title="Закрыть"
-            className="parchment-remove-btn w-8 h-8 flex items-center justify-center text-sm font-bold"
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Scrollable Body */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
-
-
-          {/* Proficiency Bonus Notification */}
-          {profChanged && (
-            <div className="p-2.5 rounded text-xs flex items-center gap-2.5" style={{ background: 'rgba(230, 140, 20, 0.15)', border: '1px solid rgba(200, 120, 20, 0.4)', color: '#7C3E08' }}>
-              <GoldSealCheckIcon size={20} />
-              <div>
-                <strong>Бонус мастерства увеличивается:</strong> {formatModifier(calcProficiencyBonus(char.level))} → <span className="font-bold text-sm">{formatModifier(calcProficiencyBonus(newLevel))}</span>
-                <div className="opacity-80 text-[11px]">Автоматически увеличит все ваши профильные атаки, спасброски и навыки.</div>
-              </div>
-            </div>
-          )}
-
-          {/* 1. HP Gain Section */}
-          <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2 flex items-center justify-between" style={{ color: '#3C2415' }}>
-              <span className="flex items-center gap-1.5">
-                <SparklesDndIcon size={16} />
-                <span>Прирост хитов на {newLevel} уровне:</span>
-              </span>
-              <span className="text-sm font-extrabold" style={{ color: '#8B2500' }}>+{finalHP} HP</span>
-            </h3>
-            <div className="flex flex-wrap gap-2 mb-2">
-              <button
-                type="button"
-                onClick={() => setHpMode('average')}
-                className={hpMode === 'average' ? 'parchment-btn text-xs py-1' : 'parchment-btn-secondary text-xs py-1'}
-              >
-                Среднее ({avgHP})
-              </button>
-              <button
-                type="button"
-                onClick={() => setHpMode('roll')}
-                className={hpMode === 'roll' ? 'parchment-btn text-xs py-1' : 'parchment-btn-secondary text-xs py-1'}
-              >
-                Бросок кубика (1{diceNotation}{dieSize})
-              </button>
-            </div>
-            {hpMode === 'roll' && (
-              <div className="flex flex-wrap items-center gap-2 p-2 rounded text-xs mb-2" style={{ background: 'rgba(232, 211, 162, 0.3)' }}>
-                <button
-                  type="button"
-                  onClick={rollHpDie}
-                  className="parchment-btn text-xs py-1 px-2.5 flex items-center gap-1 shrink-0"
-                >
-                  <D20Icon size={14} />
-                  <span>Бросить 1{diceNotation}{dieSize}</span>
-                </button>
-                <div className="flex items-center gap-1.5">
-                  <label style={{ color: '#8B6914' }}>Выпало:</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={dieSize}
-                    value={hpRoll}
-                    onChange={e => setHpRoll(Math.min(dieSize, Math.max(1, Number(e.target.value) || 1)))}
-                    className="parchment-input-boxed text-center w-16 text-xs"
-                  />
-                </div>
-                <span style={{ color: '#8B6914' }}>
-                  + мод. ТЕЛ ({formatModifier(conMod)}) {hasTough ? '+ Живучий (+2)' : ''} {racialHPBonus > 0 ? '+ Дворф (+1)' : ''} = <strong>{hpRoll + conMod + toughBonus + racialHPBonus}</strong>
-                </span>
-              </div>
-            )}
-            <div className="text-[11px]" style={{ color: '#6B3A2A' }}>
-              Новый максимум здоровья: <strong>{(char.hpMax || 0) + finalHP} HP</strong> {hasTough ? '(включая +2 от «Живучий») ' : ''}{racialHPBonus > 0 ? '(включая +1 от «Дворфская стойкость»)' : ''}
-            </div>
-          </div>
-
-          {/* 2. Class Features at this level */}
-          {classFeatures.length > 0 && (
-            <div className="parchment-modal-section space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-                  <CrossedSwordsIcon size={16} />
-                  <span>Классовые умения {newLevel}-го уровня:</span>
-                </h3>
-                <span className="text-[10px]" style={{ color: '#8B6914' }}>Отмеченные умения добавятся в особенности листа</span>
-              </div>
-              <div className="space-y-2">
-                {classFeatures.map(f => (
-                  <div
-                    key={f.name}
-                    className="p-2.5 rounded text-xs transition-colors"
-                    style={{
-                      background: selectedFeatures[f.name] ? 'rgba(232, 211, 162, 0.45)' : 'rgba(232, 211, 162, 0.15)',
-                      border: '1px solid rgba(201, 168, 76, 0.4)'
-                    }}
-                  >
-                    <div className="flex items-start gap-2">
-                      <label className="parchment-checkbox parchment-checkbox-sm mt-0.5 shrink-0">
-                        <input
-                          type="checkbox"
-                          checked={!!selectedFeatures[f.name]}
-                          onChange={() => toggleFeature(f.name)}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-bold text-xs block" style={{ color: '#3D2012' }}>{f.name}</span>
-                        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{f.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 2.1. Racial Progression at this level */}
-          {racialFeatures.length > 0 && (
-            <div className="parchment-modal-section space-y-2" style={{ background: 'rgba(201, 168, 76, 0.12)', border: '1px solid rgba(201, 168, 76, 0.45)' }}>
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#5C341F' }}>
-                  <SparklesDndIcon size={16} />
-                  <span>Расовое развитие ({char.race || 'Раса'}{char.subrace ? ` — ${char.subrace}` : ''}, {newLevel} ур.):</span>
-                </h3>
-                <span className="text-[10px]" style={{ color: '#8B6914' }}>Врождённая магия и масштабирование</span>
-              </div>
-              <div className="space-y-2">
-                {racialFeatures.map(rf => (
-                  <div
-                    key={rf.name}
-                    className="p-2.5 rounded text-xs transition-colors"
-                    style={{
-                      background: selectedRacialFeatures[rf.name] ? 'rgba(232, 211, 162, 0.55)' : 'rgba(232, 211, 162, 0.2)',
-                      border: '1px solid rgba(201, 168, 76, 0.4)'
-                    }}
-                  >
-                    <div className="flex items-start gap-2">
-                      <label className="parchment-checkbox parchment-checkbox-sm mt-0.5 shrink-0">
-                        <input
-                          type="checkbox"
-                          checked={!!selectedRacialFeatures[rf.name]}
-                          onChange={() => toggleRacialFeature(rf.name)}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-xs" style={{ color: '#3D2012' }}>{rf.name}</span>
-                          {rf.spell && (
-                            <span className="px-1.5 py-0.2 rounded text-[10px] font-bold font-mono" style={{ background: '#E8D3A2', color: '#5C341F', border: '1px solid #C9A84C' }}>
-                              Заклинание {rf.spell.level} круга
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{rf.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 2.2. Subclass Features at this level (for already chosen subclass) */}
-          {!isSubclassChoice && subclassFeatures.length > 0 && (
-            <div className="parchment-modal-section space-y-2" style={{ background: 'rgba(92, 58, 110, 0.08)', borderColor: 'rgba(138, 93, 157, 0.4)' }}>
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#5C3A6E' }}>
-                  <ScrollIcon size={16} />
-                  <span>Умения архетипа ({effectiveSubclass}, {newLevel} ур.):</span>
-                </h3>
-                <span className="text-[10px]" style={{ color: '#8B6914' }}>Особенности вашей специализации</span>
-              </div>
-              <div className="space-y-2">
-                {subclassFeatures.map(sf => (
-                  <div
-                    key={sf.name}
-                    className="p-2.5 rounded text-xs transition-colors"
-                    style={{
-                      background: selectedFeatures[sf.name] ? 'rgba(232, 211, 162, 0.45)' : 'rgba(232, 211, 162, 0.15)',
-                      border: '1px solid rgba(201, 168, 76, 0.4)'
-                    }}
-                  >
-                    <div className="flex items-start gap-2">
-                      <label className="parchment-checkbox parchment-checkbox-sm mt-0.5 shrink-0">
-                        <input
-                          type="checkbox"
-                          checked={!!selectedFeatures[sf.name]}
-                          onChange={() => toggleFeature(sf.name)}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-bold text-xs block" style={{ color: '#3D2012' }}>{sf.name}</span>
-                        <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: '#6B3A2A' }}>{sf.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 3. Subclass Choice (if reached archetype level and not yet chosen) */}
-          {isSubclassChoice && availableSubclasses.length > 0 && (
-            <div className="p-3 rounded-lg border space-y-2" style={{ background: 'rgba(92, 58, 110, 0.08)', borderColor: '#8A5D9D' }}>
-              <div className="flex items-center gap-2">
-                <ScrollIcon size={18} />
-                <h3 className="text-sm font-bold" style={{ color: '#5C3A6E' }}>
-                  Выбор воинского пути / Архетипа ({newLevel} уровень):
-                </h3>
-              </div>
-              <p className="text-xs" style={{ color: '#5C3A6E' }}>
-                Ваш класс <strong>{char.className}</strong> открывает выбор специализации на {newLevel} уровне. Выберите архетип:
-              </p>
-              <select
-                value={chosenSubclass}
-                onChange={e => setChosenSubclass(e.target.value)}
-                className="parchment-select w-full font-bold text-xs"
-              >
-                {availableSubclasses.map(sc => (
-                  <option key={sc.id} value={sc.name}>
-                    {sc.name} ({sc.nameEn}) — {sc.source || 'PHB'}
-                  </option>
-                ))}
-              </select>
-              {availableSubclasses.find(s => s.name === chosenSubclass) && (
-                <div className="p-2 rounded text-[11px] leading-relaxed" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)', color: '#3D2012' }}>
-                  <p className="font-semibold mb-1">
-                    {availableSubclasses.find(s => s.name === chosenSubclass)?.description}
-                  </p>
-                  {availableSubclasses.find(s => s.name === chosenSubclass)?.features?.[0] && (
-                    <div className="text-[10px] mt-1 border-t pt-1" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
-                      <strong>Стартовое умение архетипа: </strong>
-                      {availableSubclasses.find(s => s.name === chosenSubclass)?.features[0].name} —{' '}
-                      {availableSubclasses.find(s => s.name === chosenSubclass)?.features[0].description}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 4. ASI or Feat Choice */}
-          {isASI && (
-            <div className="parchment-modal-section space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-                  <SparklesDndIcon size={16} />
-                  <span>Улучшение характеристик (ASI) или Черта:</span>
-                </h3>
-                <span className="text-[10px] font-bold" style={{ color: '#8B6914' }}>Уровень {newLevel}</span>
-              </div>
-
-              {/* Tabs: Stats vs Feat */}
-              <div className="flex gap-2 border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
-                <button
-                  type="button"
-                  onClick={() => setAsiChoice('stats')}
-                  className={asiChoice === 'stats' ? 'parchment-btn text-xs py-1 px-3 font-bold flex items-center gap-1.5' : 'parchment-btn-secondary text-xs py-1 px-3 flex items-center gap-1.5'}
-                >
-                  <ScrollIcon size={14} />
-                  <span>Характеристики (+2 или +1/+1)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAsiChoice('feat')}
-                  className={asiChoice === 'feat' ? 'parchment-btn text-xs py-1 px-3 font-bold flex items-center gap-1.5' : 'parchment-btn-secondary text-xs py-1 px-3 flex items-center gap-1.5'}
-                >
-                  <CrossedSwordsIcon size={14} />
-                  <span>Выбрать черту (Feat)</span>
-                </button>
-              </div>
-
-              {asiChoice === 'stats' ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="parchment-label text-xs">Первая характеристика +1:</label>
-                    <select
-                      value={asiAbility1}
-                      onChange={e => setAsiAbility1(e.target.value as AbilityName)}
-                      className="parchment-select text-xs w-full"
-                    >
-                      {ABILITY_NAMES.map(a => (
-                        <option key={a} value={a}>
-                          {ABILITY_FULL[a]} ({getTotalScore(char, a)} → {getTotalScore(char, a) + 1})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="parchment-label text-xs">Вторая характеристика +1:</label>
-                    <select
-                      value={asiAbility2}
-                      onChange={e => setAsiAbility2(e.target.value as AbilityName)}
-                      className="parchment-select text-xs w-full"
-                    >
-                      {ABILITY_NAMES.map(a => (
-                        <option key={a} value={a}>
-                          {ABILITY_FULL[a]} ({getTotalScore(char, a)} → {getTotalScore(char, a) + 1})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <p className="col-span-full text-[11px]" style={{ color: '#8B6914' }}>
-                    * Если выбрать одну и ту же характеристику в обоих полях, она получит +2.
-                  </p>
-                  {isASIOverCap && (
-                    <div className="col-span-full p-2.5 rounded text-xs font-bold flex items-center gap-2" style={{ background: 'rgba(139, 37, 0, 0.12)', border: '1px solid rgba(139, 37, 0, 0.35)', color: '#8B2500' }}>
-                      <HourglassIcon size={16} />
-                      <span>Значение характеристики не может превышать 20 при стандартном повышении (PHB 5e). Выберите другую характеристику.</span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-2 pt-1">
-                  <label className="parchment-label text-xs">Выберите официальную черту D&D 5e:</label>
-                  <select
-                    value={selectedFeatId}
-                    onChange={e => setSelectedFeatId(e.target.value)}
-                    className="parchment-select text-xs w-full font-bold"
-                  >
-                    {allFeats.map(f => (
-                      <option key={f.id} value={f.id}>
-                        {f.name} ({f.nameEn}) {f.abilityBonus ? `[+1 к ${f.abilityBonus}]` : ''}
-                      </option>
-                    ))}
-                  </select>
-                  {selectedFeat && (
-                    <div className="p-2.5 rounded text-xs space-y-1" style={{ background: 'rgba(232, 211, 162, 0.4)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
-                      <div className="font-bold text-sm" style={{ color: '#3D2012' }}>{selectedFeat.name}</div>
-                      <div className="text-[11px] font-medium" style={{ color: '#8B6914' }}>{selectedFeat.summary}</div>
-                      <div className="text-[11px] leading-relaxed whitespace-pre-line pt-1 border-t border-amber-900/10" style={{ color: '#5C341F' }}>
-                        {selectedFeat.description}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 5. Spellcasting Progression */}
-          {newSpellSlots && (
-            <div className="parchment-modal-section space-y-2">
-              <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-                <SparklesDndIcon size={16} />
-                <span>Магия и ячейки заклинаний:</span>
-              </h3>
-              {unlockedCircle && (
-                <div className="p-2 rounded text-xs font-bold flex items-center gap-2" style={{ background: 'rgba(92, 58, 110, 0.12)', border: '1px solid #8A5D9D', color: '#5C3A6E' }}>
-                  <CrystalBallDndIcon size={18} />
-                  <span>Поздравляем! Открыт доступ к заклинаниям {unlockedCircle}-го круга!</span>
-                </div>
-              )}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {Object.entries(newSpellSlots).map(([circle, count]) => (
-                  <span
-                    key={circle}
-                    className="px-2 py-0.5 rounded text-xs font-mono font-semibold"
-                    style={{ background: '#E8D3A2', border: '1px solid #C9A84C', color: '#5C341F' }}
-                  >
-                    {circle} круг: {count} {count === 1 ? 'ячейка' : count < 5 ? 'ячейки' : 'ячеек'}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── NEW CANTRIPS ── */}
-          <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-              <SparklesDndIcon size={16} />
-              <span>Новые заговоры (→ вкладка Заклинания):</span>
-            </h3>
-            {newCantrips.map((c, i) => (
-              <div key={i} className="flex items-center gap-2 mb-1">
-                <div className="flex-1">
-                  <AutocompleteInput
-                    value={c}
-                    onChange={v => updateCantripRow(i, v)}
-                    items={cantripAutocompleteItems}
-                    placeholder="Название заговора вашего класса..."
-                    className="w-full parchment-input-boxed"
-                  />
-                </div>
-                <button onClick={() => removeCantripRow(i)} className="parchment-remove-btn">✕</button>
-              </div>
-            ))}
-            <button onClick={addCantripRow} className="parchment-btn-sm" style={{ color: '#4a7c3f' }}>+ Заговор</button>
-          </div>
-
-          {/* ── NEW SPELLS ── */}
-          <div className="parchment-modal-section">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-                <SpellbookIcon size={16} />
-                <span>Новые заклинания (→ вкладка Заклинания):</span>
-              </h3>
-              {maxSlotLevelAtNewLevel > 0 && (
-                <span className="text-[11px] font-mono" style={{ color: '#8B6914' }}>
-                  Доступны ячейки до {maxSlotLevelAtNewLevel} ур.
-                </span>
-              )}
-            </div>
-            {maxSlotLevelAtNewLevel === 0 ? (
-              <p className="text-xs italic p-2 rounded" style={{ background: 'rgba(201, 168, 76, 0.15)', color: '#8B6914' }}>
-                Класс «{char.className || 'Без класса'}» не обладает ячейками магии на {newLevel}-м уровне.
-              </p>
-            ) : (
-              <>
-                {newSpells.map((s, i) => (
-                  <div key={i} className="flex items-center gap-2 mb-1">
-                    <select value={s.level} onChange={e => updateSpellRow(i, 'level', Number(e.target.value))} className="parchment-select text-xs w-20 shrink-0">
-                      {[1,2,3,4,5,6,7,8,9]
-                        .filter(l => l <= Math.max(1, maxSlotLevelAtNewLevel))
-                        .map(l => <option key={l} value={l}>{l} ур.</option>)
-                      }
-                    </select>
-                    <div className="flex-1 min-w-0">
-                      <AutocompleteInput
-                        value={s.name}
-                        onChange={v => updateSpellRow(i, 'name', v)}
-                        items={leveledSpellAutocompleteItems}
-                        placeholder="Название заклинания вашего класса..."
-                        className="w-full parchment-input-boxed"
-                      />
-                    </div>
-                    <label className="parchment-checkbox parchment-checkbox-sm" style={{ color: '#8B6914' }}><input type="checkbox" checked={s.prepared} onChange={e => updateSpellRow(i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label><span className="text-xs" style={{ color: '#8B6914' }}>Подг.</span>
-                    <button onClick={() => removeSpellRow(i)} className="parchment-remove-btn">✕</button>
-                  </div>
-                ))}
-                <button onClick={addSpellRow} className="parchment-btn-sm" style={{ color: '#6B3A2A' }}>+ Заклинание</button>
-              </>
-            )}
-          </div>
-
-          {/* ── NEW SAVING THROW PROFS ── */}
-          <div className="parchment-modal-section-accent">
-            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-              <EngravedShieldIcon size={16} />
-              <span>Новые владения спасбросками:</span>
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {ABILITY_NAMES.map(abbr => (
-                <div key={abbr} className={`flex items-center gap-1 px-2 py-1 rounded text-xs cursor-pointer ${newSaveProfs.includes(abbr) ? 'parchment-skill-expert font-bold' : char.savingThrowProficiencies[abbr] ? 'opacity-40' : 'parchment-no-prof'}`}>
-                  <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={newSaveProfs.includes(abbr)} onChange={() => toggleSaveProf(abbr)} disabled={char.savingThrowProficiencies[abbr]} /><span className="checkmark"></span></label>
-                  {ABILITY_FULL[abbr]}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ── NEW SKILL PROFS ── */}
-          <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-              <GoldSealCheckIcon size={16} />
-              <span>Новые владения навыками:</span>
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-1">
-              {ALL_SKILLS.map(skill => {
-                const alreadyProf = char.skillProficiencies[skill];
-                const isNewProf = newSkillProfs.includes(skill);
-                const isNewExpert = newSkillExpertise.includes(skill);
-                return (
-                  <div key={skill} className={`flex items-center gap-1.5 py-0.5 px-1.5 rounded text-xs ${isNewExpert ? 'parchment-skill-expert font-bold' : isNewProf ? 'parchment-skill-prof' : alreadyProf ? 'opacity-40' : ''}`}>
-                    <label className="parchment-checkbox parchment-checkbox-sm" title="Владение"><input type="checkbox" checked={isNewProf} onChange={() => toggleSkillProf(skill)} disabled={alreadyProf} /><span className="checkmark"></span></label>
-                    <label className="parchment-checkbox parchment-checkbox-sm parchment-checkbox-expert" title="Экспертиза"><input type="checkbox" checked={isNewExpert} onChange={() => toggleSkillExpertise(skill)} disabled={alreadyProf || !isNewProf} /><span className="checkmark"></span></label>
-                    <span>{skill}</span>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="text-[10px] mt-1" style={{ color: '#8B6914' }}>1-я галочка = владение, 2-я = экспертиза. Серые = уже есть.</p>
-          </div>
-
-          {/* ── NEW ATTACKS ── */}
-          <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-              <CrossedSwordsIcon size={16} />
-              <span>Новые атаки:</span>
-            </h3>
-            {newAttacks.map((atk, i) => (
-              <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto] gap-2 items-center mb-1.5 p-1.5 rounded border border-amber-900/10">
-                <input value={atk.name} onChange={e => updateAttackRow(i, 'name', e.target.value)} placeholder="Название оружия/атаки" className="parchment-input-boxed text-xs w-full" />
-                <input value={atk.attackBonus} onChange={e => updateAttackRow(i, 'attackBonus', e.target.value)} placeholder="+5" className="parchment-input-boxed text-center text-xs w-full sm:w-16" />
-                <input value={atk.damageAndType} onChange={e => updateAttackRow(i, 'damageAndType', e.target.value)} placeholder="1d8+3 рубящий" className="parchment-input-boxed text-xs w-full" />
-                <button onClick={() => removeAttackRow(i)} className="parchment-remove-btn self-center">✕</button>
-              </div>
-            ))}
-            <button onClick={addAttackRow} className="parchment-btn-sm" style={{ color: '#8B2500' }}>+ Атака</button>
-          </div>
-
-          {/* ── NEW PROFICIENCIES TEXT ── */}
-          <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-              <ScrollIcon size={16} />
-              <span>Новые владения / языки:</span>
-            </h3>
-            <textarea value={newProfText} onChange={e => setNewProfText(e.target.value)} rows={2} className={textareaClass} placeholder="Владение тяжёлыми доспехами&#10;Язык: Драконий" />
-          </div>
-
-          {/* ── NEW EQUIPMENT TEXT ── */}
-          <div className="parchment-modal-section-accent">
-            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-              <BackpackPackIcon size={16} />
-              <span>Новое снаряжение:</span>
-            </h3>
-            <textarea value={newEquipText} onChange={e => setNewEquipText(e.target.value)} rows={2} className={textareaClass} placeholder="Кольчуга, Длинный меч" />
-          </div>
-
-          {/* ── FREEFORM NOTES → FEATURES ── */}
-          <div className="parchment-modal-section">
-            <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-              <QuillIcon size={16} />
-              <span>Заметки к уровню:</span>
-            </h3>
-            <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className={textareaClass} placeholder="Дополнительные примечания..." />
-          </div>
-
-          {/* Summary */}
-          <div className="parchment-modal-section-accent text-xs space-y-1" style={{ color: '#3C2415' }}>
-            <p className="font-bold text-sm mb-1" style={{ color: '#5C3A6E' }}>Итоговые изменения {newLevel}-го уровня:</p>
-            <p>• Уровень: {char.level} → <strong>{newLevel}</strong></p>
-            <p>• Хиты: +{finalHP} (новый максимум: {(char.hpMax || 0) + finalHP})</p>
-            {profChanged && <p>• Бонус мастерства: {formatModifier(calcProficiencyBonus(char.level))} → {formatModifier(calcProficiencyBonus(newLevel))}</p>}
-            {isSubclassChoice && chosenSubclass && <p>• Выбран архетип: <strong>{chosenSubclass}</strong></p>}
-            {isASI && asiChoice === 'stats' && <p>• Улучшение характеристик: {ABILITY_FULL[asiAbility1]} +1, {ABILITY_FULL[asiAbility2]} +1</p>}
-            {isASI && asiChoice === 'feat' && selectedFeat && <p>• Получена черта: <strong>{selectedFeat.name}</strong></p>}
-            {Object.keys(selectedFeatures).filter(k => selectedFeatures[k]).length > 0 && (
-              <p>• Классовые умения: {Object.keys(selectedFeatures).filter(k => selectedFeatures[k]).join(', ')}</p>
-            )}
-            {Object.keys(selectedRacialFeatures).filter(k => selectedRacialFeatures[k]).length > 0 && (
-              <p>• Расовые особенности: {Object.keys(selectedRacialFeatures).filter(k => selectedRacialFeatures[k]).join(', ')}</p>
-            )}
-            {unlockedCircle && <p>• Доступ к магии: <strong>{unlockedCircle}-й круг заклинаний!</strong></p>}
-            {newCantrips.filter(c => c.trim()).length > 0 && <p>• Заговоры: {newCantrips.filter(c => c.trim()).join(', ')}</p>}
-            {newSpells.filter(s => s.name.trim()).length > 0 && <p>• Заклинания: {newSpells.filter(s => s.name.trim()).map(s => `${s.name} (${s.level} ур.)`).join(', ')}</p>}
-          </div>
-
-        </div>
-
-        {/* Sticky Footer */}
-        <div
-          className="p-3.5 sm:p-4 border-t flex items-center justify-between gap-3 flex-none"
-          style={{
-            borderColor: 'rgba(201, 168, 76, 0.4)',
-            background: 'linear-gradient(180deg, rgba(245, 230, 200, 0.95) 0%, #F5E6C8 100%)'
-          }}
-        >
-          <button type="button" onClick={onCancel} className="parchment-btn-secondary px-5 py-2 text-xs sm:text-sm">
-            Отмена
-          </button>
-          <button
-            type="button"
-            disabled={isASIOverCap || (isSubclassChoice && availableSubclasses.length > 0 && !chosenSubclass)}
-            onClick={() => onConfirm(buildEntry())}
-            className="parchment-btn font-bold text-xs sm:text-sm px-5 py-2 flex items-center justify-center gap-2 shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <D20Icon size={18} />
-            <span>Повысить до {newLevel}-го уровня</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-});
 
 // ── Level Down Confirm ──
 
@@ -2306,31 +1407,34 @@ export default function DnDCharacterSheet() {
       }
 
       // Add cantrips
-      const addCantrips = entry.newCantrips.filter(c => c.trim());
+      const addCantrips = (entry.newCantrips || []).filter(c => c.trim());
       const updatedCantrips = [...prev.cantrips, ...addCantrips];
       // Add spells
       const updatedSpells = { ...prev.spellsByLevel };
-      for (const spell of entry.newSpells) {
+      for (const spell of (entry.newSpells || [])) {
         if (!spell.name.trim()) continue;
         const lvl = spell.level;
-        updatedSpells[lvl] = [...(updatedSpells[lvl] || []), { name: spell.name, prepared: spell.prepared }];
+        const existing = updatedSpells[lvl] || [];
+        if (!existing.some(s => s.name.toLowerCase() === spell.name.toLowerCase())) {
+          updatedSpells[lvl] = [...existing, { name: spell.name, prepared: spell.prepared }];
+        }
       }
       // Add saving throw proficiencies
       const updatedSaveProfs = { ...prev.savingThrowProficiencies };
-      for (const ability of entry.newSavingThrowProfs) {
+      for (const ability of (entry.newSavingThrowProfs || [])) {
         updatedSaveProfs[ability] = true;
       }
       // Add skill proficiencies
       const updatedSkillProfs = { ...prev.skillProficiencies };
-      for (const skill of entry.newSkillProfs) {
+      for (const skill of (entry.newSkillProfs || [])) {
         updatedSkillProfs[skill] = true;
       }
       const updatedSkillExpertise = { ...prev.skillExpertise };
-      for (const skill of entry.newSkillExpertise) {
+      for (const skill of (entry.newSkillExpertise || [])) {
         updatedSkillExpertise[skill] = true;
       }
       // Add attacks
-      const addAttacks = entry.newAttacks.filter(a => a.name.trim());
+      const addAttacks = (entry.newAttacks || []).filter(a => a.name.trim());
       const updatedAttacks = [...prev.attacks, ...addAttacks];
       // Add proficiencies text
       let updatedProfText = prev.otherProficienciesLanguages;
@@ -2342,9 +1446,42 @@ export default function DnDCharacterSheet() {
       if (entry.newEquipmentText) {
         updatedEquipText = updatedEquipText ? updatedEquipText + '\n' + entry.newEquipmentText : entry.newEquipmentText;
       }
+
+      // Update armor class if Defense fighting style is selected and armor is equipped
+      let updatedArmorClass = prev.armorClass;
+      const isDefenseStyle =
+        entry.selectedFightingStyle === 'defense' ||
+        (entry.addedTraits || []).some(t => t.name.toLowerCase().includes('оборона'));
+
+      if (isDefenseStyle && prev.equippedArmor) {
+        const dexScore = (prev.abilityScores['ЛОВ'] || 10) + (newAsi['ЛОВ'] || 0) + (prev.abilityBonuses?.['ЛОВ'] || 0);
+        const conScore = (prev.abilityScores['ТЕЛ'] || 10) + (newAsi['ТЕЛ'] || 0) + (prev.abilityBonuses?.['ТЕЛ'] || 0);
+        const wisScore = (prev.abilityScores['МДР'] || 10) + (newAsi['МДР'] || 0) + (prev.abilityBonuses?.['МДР'] || 0);
+        const dexMod = calcModifier(dexScore);
+        const conMod = calcModifier(conScore);
+        const wisMod = calcModifier(wisScore);
+        const isDraconic = updatedTraits.some(t =>
+          t.name.toLowerCase().includes('драконья устойчивость') ||
+          t.name.toLowerCase().includes('draconic resilience')
+        );
+        updatedArmorClass = calculateWizardAC(
+          prev.className,
+          prev.equippedArmor,
+          !!prev.equippedShield,
+          dexMod,
+          conMod,
+          wisMod,
+          {
+            hasDefenseFightingStyle: true,
+            isDraconicSorcerer: isDraconic,
+          }
+        );
+      }
+
       return {
         ...prev,
         level: entry.level,
+        armorClass: updatedArmorClass,
         hpMax: newHP,
         hpCurrent: newHP,
         hitDice: newHitDice,
@@ -2494,9 +1631,41 @@ export default function DnDCharacterSheet() {
       if (last?.newEquipmentText) {
         updatedEquipText = updatedEquipText.replace(last.newEquipmentText, '').replace(/\n{2,}/g, '\n').trim();
       }
+
+      // Revert AC if Defense fighting style was chosen at this level
+      let updatedArmorClass = prev.armorClass;
+      const lastHadDefense =
+        last?.selectedFightingStyle === 'defense' ||
+        (last?.addedTraits || []).some(t => t.name.toLowerCase().includes('оборона'));
+      if (lastHadDefense && prev.equippedArmor && typeof prev.armorClass === 'number') {
+        const dexScore = (prev.abilityScores['ЛОВ'] || 10) + (newAsi['ЛОВ'] || 0) + (prev.abilityBonuses?.['ЛОВ'] || 0);
+        const conScore = (prev.abilityScores['ТЕЛ'] || 10) + (newAsi['ТЕЛ'] || 0) + (prev.abilityBonuses?.['ТЕЛ'] || 0);
+        const wisScore = (prev.abilityScores['МДР'] || 10) + (newAsi['МДР'] || 0) + (prev.abilityBonuses?.['МДР'] || 0);
+        const dexMod = calcModifier(dexScore);
+        const conMod = calcModifier(conScore);
+        const wisMod = calcModifier(wisScore);
+        const isDraconic = updatedTraits.some(t =>
+          t.name.toLowerCase().includes('драконья устойчивость') ||
+          t.name.toLowerCase().includes('draconic resilience')
+        );
+        updatedArmorClass = calculateWizardAC(
+          prev.className,
+          prev.equippedArmor,
+          !!prev.equippedShield,
+          dexMod,
+          conMod,
+          wisMod,
+          {
+            hasDefenseFightingStyle: false,
+            isDraconicSorcerer: isDraconic,
+          }
+        );
+      }
+
       return {
         ...prev,
         level: newLevel,
+        armorClass: updatedArmorClass,
         hpMax: newHP,
         hpCurrent: Math.min(prev.hpCurrent, newHP),
         hitDice: newHitDice,

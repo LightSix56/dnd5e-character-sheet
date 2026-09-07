@@ -582,3 +582,274 @@ export function roll4d6DropLowest(): { dice: number[]; droppedIndex: number; tot
   const sum = dice.reduce((acc, d, i) => i === minIdx ? acc : acc + d, 0);
   return { dice, droppedIndex: minIdx, total: sum };
 }
+
+// ── Level 1 Dictionaries & Choice Configurations ──
+
+export interface FightingStyleOption {
+  id: string;
+  name: string;
+  nameEn: string;
+  description: string;
+}
+
+export const FIGHTING_STYLES: FightingStyleOption[] = [
+  {
+    id: 'archery',
+    name: 'Стрельба',
+    nameEn: 'Archery',
+    description: 'Вы получаете бонус +2 к броскам атаки дальнобойным оружием.'
+  },
+  {
+    id: 'defense',
+    name: 'Оборона',
+    nameEn: 'Defense',
+    description: 'Пока вы носите доспехи, вы получаете бонус +1 к КД.'
+  },
+  {
+    id: 'dueling',
+    name: 'Дуэлянт',
+    nameEn: 'Dueling',
+    description: 'Когда вы держите рукопашное оружие в одной руке и не держите другого оружия, вы получаете бонус +2 к броскам урона этим оружием.'
+  },
+  {
+    id: 'great-weapon',
+    name: 'Бой большим оружием',
+    nameEn: 'Great Weapon Fighting',
+    description: 'Если у вас выпало 1 или 2 на кости урона двуручного или универсального оружия, вы можете перебросить кость.'
+  },
+  {
+    id: 'protection',
+    name: 'Защита',
+    nameEn: 'Protection',
+    description: 'Когда существо, которое вы видите, атакует цель, отличную от вас и находящуюся в пределах 5 футов, вы можете использовать реакцию со щитом, чтобы создать помеху атакующему.'
+  },
+  {
+    id: 'two-weapon',
+    name: 'Оружие в обеих руках',
+    nameEn: 'Two-Weapon Fighting',
+    description: 'Если вы сражаетесь двумя оружиями, вы можете добавить модификатор характеристики к урону второй атаки.'
+  }
+];
+
+export interface DragonAncestryOption {
+  color: string;
+  damageType: string;
+  breathShape: string;
+  saveAbility: AbilityName;
+  description: string;
+}
+
+export const DRAGON_ANCESTRIES: DragonAncestryOption[] = [
+  {
+    color: 'Черный',
+    damageType: 'Кислота',
+    breathShape: 'Линия 5x30 фт.',
+    saveAbility: 'ЛОВ',
+    description: 'Кислота, Линия 5x30 фт., спасбросок ЛОВ'
+  },
+  {
+    color: 'Синий',
+    damageType: 'Электричество',
+    breathShape: 'Линия 5x30 фт.',
+    saveAbility: 'ЛОВ',
+    description: 'Электричество, Линия 5x30 фт., спасбросок ЛОВ'
+  },
+  {
+    color: 'Латунный',
+    damageType: 'Огонь',
+    breathShape: 'Линия 5x30 фт.',
+    saveAbility: 'ЛОВ',
+    description: 'Огонь, Линия 5x30 фт., спасбросок ЛОВ'
+  },
+  {
+    color: 'Бронзовый',
+    damageType: 'Электричество',
+    breathShape: 'Линия 5x30 фт.',
+    saveAbility: 'ЛОВ',
+    description: 'Электричество, Линия 5x30 фт., спасбросок ЛОВ'
+  },
+  {
+    color: 'Медный',
+    damageType: 'Кислота',
+    breathShape: 'Линия 5x30 фт.',
+    saveAbility: 'ЛОВ',
+    description: 'Кислота, Линия 5x30 фт., спасбросок ЛОВ'
+  },
+  {
+    color: 'Золотой',
+    damageType: 'Огонь',
+    breathShape: 'Конус 15 фт.',
+    saveAbility: 'ЛОВ',
+    description: 'Огонь, Конус 15 фт., спасбросок ЛОВ'
+  },
+  {
+    color: 'Зеленый',
+    damageType: 'Яд',
+    breathShape: 'Конус 15 фт.',
+    saveAbility: 'ТЕЛ',
+    description: 'Яд, Конус 15 фт., спасбросок ТЕЛ'
+  },
+  {
+    color: 'Красный',
+    damageType: 'Огонь',
+    breathShape: 'Конус 15 фт.',
+    saveAbility: 'ЛОВ',
+    description: 'Огонь, Конус 15 фт., спасбросок ЛОВ'
+  },
+  {
+    color: 'Серебряный',
+    damageType: 'Холод',
+    breathShape: 'Конус 15 фт.',
+    saveAbility: 'ТЕЛ',
+    description: 'Холод, Конус 15 фт., спасбросок ТЕЛ'
+  },
+  {
+    color: 'Белый',
+    damageType: 'Холод',
+    breathShape: 'Конус 15 фт.',
+    saveAbility: 'ТЕЛ',
+    description: 'Холод, Конус 15 фт., спасбросок ТЕЛ'
+  }
+];
+
+export const DWARF_TOOL_OPTIONS = [
+  'Инструменты кузнеца',
+  'Инструменты каменщика',
+  'Инструменты пивовара'
+];
+
+export const STANDARD_LANGUAGES = [
+  'Общий',
+  'Дворфийский',
+  'Эльфийский',
+  'Великаний',
+  'Гномий',
+  'Гоблинский',
+  'Полуросликов',
+  'Орочий'
+];
+
+export const EXOTIC_LANGUAGES = [
+  'Бездны',
+  'Небесный',
+  'Драконий',
+  'Глубинная речь',
+  'Инфернальный',
+  'Первичный',
+  'Сильван',
+  'Подземный'
+];
+
+export const ALL_DND_LANGUAGES = [...STANDARD_LANGUAGES, ...EXOTIC_LANGUAGES];
+
+export const RANGER_FAVORED_ENEMIES = [
+  'Аберрации',
+  'Звери',
+  'Великаны',
+  'Гуманоиды',
+  'Драконы',
+  'Исчадия',
+  'Конструкты',
+  'Монстры',
+  'Небожители',
+  'Нежить',
+  'Растения',
+  'Слизи',
+  'Феи',
+  'Элементали'
+];
+
+export const RANGER_FAVORED_TERRAINS = [
+  'Арктика',
+  'Болото',
+  'Горы',
+  'Лес',
+  'Луг',
+  'Побережье',
+  'Подземье',
+  'Пустыня'
+];
+
+export interface RacialChoicesConfig {
+  needsFeat: boolean;
+  needsCantrip: boolean;
+  cantripClass?: string;
+  needsTool: boolean;
+  toolOptions: string[];
+  needsDragonColor: boolean;
+  extraLanguageCount: number;
+}
+
+export function getRacialChoicesConfig(
+  race: CompendiumRace,
+  subrace?: CompendiumSubrace
+): RacialChoicesConfig {
+  const raceId = (race?.id || '').toLowerCase();
+  const subraceId = (subrace?.id || '').toLowerCase();
+  const raceName = (race?.name || '').toLowerCase();
+  const subraceName = (subrace?.name || '').toLowerCase();
+
+  const isVariantHuman = subraceId === 'human-variant' || subraceName.includes('вариантн');
+  const isCustomLineage = raceId === 'custom-lineage' || raceName.includes('персонализированн');
+  const isHighElf = subraceId === 'elf-high' || raceId === 'elf-high' || subraceName.includes('высший эльф');
+  const isDwarf = raceId === 'dwarf' || raceId.includes('dwarf') || raceName.includes('дворф');
+  const isDragonborn = raceId === 'dragonborn' || raceId.includes('dragonborn') || raceName.includes('драконорожд');
+
+  const needsFeat = isVariantHuman || isCustomLineage;
+  const needsCantrip = isHighElf;
+  const cantripClass = isHighElf ? 'wizard' : undefined;
+  const needsTool = isDwarf;
+  const needsDragonColor = isDragonborn;
+
+  let extraLanguageCount = 0;
+  if (isVariantHuman || isCustomLineage || isHighElf || raceId === 'half-elf' || raceName.includes('полуэльф')) {
+    extraLanguageCount = 1;
+  } else if (subrace?.traits?.some(t => t.name.toLowerCase().includes('язык') && t.description.toLowerCase().includes('выбор'))) {
+    extraLanguageCount = 1;
+  } else if (race?.languages?.some(l => l.toLowerCase().includes('выбор'))) {
+    const choiceStr = race.languages.find(l => l.toLowerCase().includes('выбор'))!.toLowerCase();
+    extraLanguageCount = (choiceStr.includes('два') || choiceStr.includes('2')) ? 2 : 1;
+  }
+
+  return {
+    needsFeat,
+    needsCantrip,
+    cantripClass,
+    needsTool,
+    toolOptions: [...DWARF_TOOL_OPTIONS],
+    needsDragonColor,
+    extraLanguageCount
+  };
+}
+
+export interface ClassLevel1ChoicesConfig {
+  needsFightingStyle: boolean;
+  needsExpertise: boolean;
+  expertiseCount: number;
+  needsFavoredEnemy: boolean;
+  needsFavoredTerrain: boolean;
+  needsDraconicAncestor: boolean;
+}
+
+export function getClassLevel1ChoicesConfig(
+  className: string,
+  subclassId?: string
+): ClassLevel1ChoicesConfig {
+  const normClass = (className || '').trim().toLowerCase();
+  const normSubclass = (subclassId || '').trim().toLowerCase();
+
+  const isFighter = normClass.includes('воин') || normClass.includes('fighter');
+  const isRogue = normClass.includes('плут') || normClass.includes('rogue');
+  const isRanger = normClass.includes('следопыт') || normClass.includes('ranger');
+  const isSorcerer = normClass.includes('чародей') || normClass.includes('sorcerer');
+  const isDraconicSorcerer = isSorcerer && (normSubclass.includes('draconic') || normSubclass.includes('дракон'));
+
+  return {
+    needsFightingStyle: isFighter,
+    needsExpertise: isRogue,
+    expertiseCount: isRogue ? 2 : 0,
+    needsFavoredEnemy: isRanger,
+    needsFavoredTerrain: isRanger,
+    needsDraconicAncestor: isDraconicSorcerer
+  };
+}

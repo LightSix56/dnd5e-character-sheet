@@ -44,11 +44,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
   // ── Step 1: Character Concept & Race ──
   const [charName, setCharName] = useState<string>('');
-  const [selectedRaceId, setSelectedRaceId] = useState<string>('human');
-  const [selectedSubraceId, setSelectedSubraceId] = useState<string>('human-standard');
+  const [selectedRaceId, setSelectedRaceId] = useState<string>('');
+  const [selectedSubraceId, setSelectedSubraceId] = useState<string>('');
   const [raceSearch, setRaceSearch] = useState<string>('');
   // For races with customizable ability bonuses (Half-Elf, Variant Human)
-  const [customRacialBonuses, setCustomRacialBonuses] = useState<AbilityName[]>(['ИНТ', 'ТЕЛ']);
+  const [customRacialBonuses, setCustomRacialBonuses] = useState<AbilityName[]>([]);
   // For races with skill choice (Variant Human, Half-Elf, Kenku, etc.)
   const [customRacialSkills, setCustomRacialSkills] = useState<string[]>([]);
 
@@ -97,11 +97,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // ── Computed Entities ──
 
   const selectedRace = useMemo(() => {
-    return DND_COMPENDIUM_RACES.find(r => r.id === selectedRaceId) || DND_COMPENDIUM_RACES[0];
+    if (!selectedRaceId) return null;
+    return DND_COMPENDIUM_RACES.find(r => r.id === selectedRaceId) || null;
   }, [selectedRaceId]);
 
   const selectedSubrace = useMemo(() => {
-    if (!selectedRace.subraces || selectedRace.subraces.length === 0) return undefined;
+    if (!selectedRace || !selectedRace.subraces || selectedRace.subraces.length === 0) return undefined;
     return selectedRace.subraces.find(sr => sr.id === selectedSubraceId) || selectedRace.subraces[0];
   }, [selectedRace, selectedSubraceId]);
 
@@ -122,6 +123,16 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
   // Racial bonuses configuration
   const racialBonusConfig = useMemo(() => {
+    if (!selectedRace) {
+      return {
+        hasCustomBonus: false,
+        fixedBonuses: {},
+        choiceCount: 0,
+        bonusAmount: 0,
+        availableAbilities: [],
+        description: ''
+      };
+    }
     return getRacialBonusConfig(selectedRace, selectedSubrace);
   }, [selectedRace, selectedSubrace]);
 
@@ -145,6 +156,14 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
   // Racial skills
   const racialSkillData = useMemo(() => {
+    if (!selectedRace) {
+      return {
+        fixedSkills: [],
+        choiceCount: 0,
+        choiceOptions: [],
+        description: ''
+      };
+    }
     return getRacialSkillData(selectedRace, selectedSubrace);
   }, [selectedRace, selectedSubrace]);
 
@@ -225,10 +244,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
   // Random name generator button
   const handleGenerateName = useCallback(() => {
-    const name = generateFantasyName(selectedRace.id);
+    if (!selectedRaceId) return;
+    const name = generateFantasyName(selectedRaceId);
     setCharName(name);
     setStepError(null);
-  }, [selectedRace]);
+  }, [selectedRaceId]);
 
   // On selecting race
   const handleSelectRace = useCallback((race: CompendiumRace) => {
@@ -254,6 +274,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
   const handleSelectSubrace = useCallback((subrace: CompendiumSubrace) => {
     setSelectedSubraceId(subrace.id);
+    if (!selectedRace) return;
     const cfg = getRacialBonusConfig(selectedRace, subrace);
     if (cfg.hasCustomBonus) {
       setCustomRacialBonuses(cfg.availableAbilities.slice(0, cfg.choiceCount));
@@ -390,6 +411,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // Validation before advancing to next step
   const validateStep = (step: number): { valid: boolean; error?: string } => {
     if (step === 1) {
+      if (!selectedRaceId) {
+        return { valid: false, error: 'Пожалуйста, сначала выберите расу персонажа.' };
+      }
       if (!charName.trim()) {
         return { valid: false, error: 'Пожалуйста, введите имя персонажа или воспользуйтесь генератором 🎲.' };
       }
@@ -590,7 +614,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
     // Languages: Race languages + Background languages
     const languagesList = [
-      ...(selectedRace.languages || []),
+      ...(selectedRace?.languages || []),
       ...(selectedBackground.languages || [])
     ];
     const languagesText = `Языки: ${languagesList.join(', ')}\nВладение доспехами и оружием: ${classSkillConfig.template?.armorWeaponProfs || selectedClass.armorWeaponProfs}\nВладение инструментами: ${selectedBackground.toolProficiencies.join(', ') || 'Нет'}`;
@@ -600,15 +624,15 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     const featureTextLines: string[] = [];
 
     // Racial traits
-    for (const t of (selectedRace.traits || [])) {
+    for (const t of (selectedRace?.traits || [])) {
       traitsList.push({
         id: `race-${t.name}`,
         name: t.name,
-        source: selectedRace.name,
+        source: selectedRace?.name || '',
         summary: t.description.slice(0, 90) + '...',
         description: t.description
       });
-      featureTextLines.push(`[${selectedRace.name}] ${t.name}: ${t.description}`);
+      featureTextLines.push(`[${selectedRace?.name || ''}] ${t.name}: ${t.description}`);
     }
     if (selectedSubrace?.traits) {
       for (const t of selectedSubrace.traits) {
@@ -714,7 +738,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       level: 1,
       background: selectedBackground.name,
       playerName: playerName.trim(),
-      race: selectedRace.name,
+      race: selectedRace?.name || '',
       subrace: selectedSubrace?.name || '',
       subclass: (selectedClass.subclassLevel === 1 && selectedSubclass) ? selectedSubclass.name : '',
       alignment,
@@ -733,7 +757,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       equippedArmor,
       equippedShield,
       initiativeOverride: null,
-      speed: selectedSubrace?.speed || selectedRace.speed || 30,
+      speed: selectedSubrace?.speed || selectedRace?.speed || 30,
       hpMax,
       hpCurrent: hpMax,
       hpTemp: 0,
@@ -954,14 +978,24 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       setCharName(e.target.value);
                       if (stepError) setStepError(null);
                     }}
-                    placeholder="Например, Торин Дубощит, Лираэль Лунная Тень..."
-                    className="parchment-input-boxed flex-1 text-sm py-1.5 px-3"
+                    disabled={!selectedRaceId}
+                    placeholder={
+                      !selectedRaceId
+                        ? "Сначала выберите расу персонажа из списка ниже..."
+                        : "Например, Торин Дубощит, Лираэль Лунная Тень..."
+                    }
+                    className={`parchment-input-boxed flex-1 text-sm py-1.5 px-3 ${
+                      !selectedRaceId ? 'opacity-60 cursor-not-allowed' : ''
+                    }`}
                   />
                   <button
                     type="button"
                     onClick={handleGenerateName}
+                    disabled={!selectedRaceId}
                     title="Сгенерировать атмосферное фэнтезийное имя"
-                    className="parchment-btn text-xs px-3.5 py-1.5 flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform"
+                    className={`parchment-btn text-xs px-3.5 py-1.5 flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform ${
+                      !selectedRaceId ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   >
                     <span>🎲</span>
                     <span className="hidden sm:inline">Случайное имя</span>
@@ -1020,167 +1054,179 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
                 {/* Subrace & Racial Details (Right 2 Columns) */}
                 <div className="md:col-span-2 space-y-4">
-                  {/* Subrace Selector (if available) */}
-                  {selectedRace.subraces && selectedRace.subraces.length > 0 && (
-                    <div className="p-3.5 rounded-lg space-y-2" style={{ background: 'rgba(232, 211, 162, 0.3)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
-                      <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
-                        Подраса / Разновидность:
-                      </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {selectedRace.subraces.map(sr => {
-                          const isSrSel = sr.id === selectedSubraceId;
-                          return (
-                            <button
-                              key={sr.id}
-                              type="button"
-                              onClick={() => handleSelectSubrace(sr)}
-                              className={`text-left p-2 rounded text-xs cursor-pointer transition-all ${
-                                isSrSel ? 'font-bold' : 'hover:bg-[rgba(201,168,76,0.15)]'
-                              }`}
-                              style={
-                                isSrSel
-                                  ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
-                                  : { border: '1px solid rgba(139, 105, 20, 0.2)', color: '#5C341F' }
-                              }
-                            >
-                              <div className="font-semibold">{sr.name}</div>
-                              <div className="text-[10px] opacity-75 mt-0.5">{sr.description}</div>
-                              {sr.abilityBonuses && Object.keys(sr.abilityBonuses).length > 0 && (
-                                <div className="text-[10px] font-mono mt-1 text-[#4a7c3f]">
-                                  Бонус: {Object.entries(sr.abilityBonuses).map(([k, v]) => `${k} +${v}`).join(', ')}
-                                </div>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Customizable Racial Ability Bonuses (Half-Elf, Variant Human) */}
-                  {racialBonusConfig.hasCustomBonus && (
-                    <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(254, 243, 199, 0.6)', border: '1px dashed #D97706' }}>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-[#92400E]">✨ Настройка расовых бонусов:</span>
-                        <span className="text-[11px] font-medium text-[#B45309]">
-                          Выбрано {customRacialBonuses.length} из {racialBonusConfig.choiceCount} (+{racialBonusConfig.bonusAmount} к каждой)
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-[#78350F]">{racialBonusConfig.description}</p>
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        {racialBonusConfig.availableAbilities.map(ab => {
-                          const isChecked = customRacialBonuses.includes(ab);
-                          return (
-                            <button
-                              key={ab}
-                              type="button"
-                              onClick={() => handleToggleCustomBonus(ab)}
-                              className={`px-3 py-1 rounded text-xs font-semibold cursor-pointer transition-all ${
-                                isChecked ? 'shadow-sm' : 'opacity-70 hover:opacity-100'
-                              }`}
-                              style={
-                                isChecked
-                                  ? { background: '#D97706', color: '#FFFBEB', border: '1px solid #B45309' }
-                                  : { background: 'rgba(245, 230, 200, 0.75)', color: '#92400E', border: '1px solid #D97706' }
-                              }
-                            >
-                              {isChecked ? '✓ ' : '+1 '}{ABILITY_FULL[ab]} ({ab})
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Customizable Racial Skills (Kenku, Changeling, Half-Elf, Variant Human) */}
-                  {racialSkillData.choiceCount > 0 && (
-                    <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(92, 58, 110, 0.08)', border: '1px dashed #5C3A6E' }}>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-[#5C3A6E]">🎯 Расовые навыки на выбор:</span>
-                        <span className="text-[11px] font-medium text-[#6B3A2A]">
-                          Выбрано {customRacialSkills.length} из {racialSkillData.choiceCount}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-[#3D2012]">{racialSkillData.description}</p>
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {(racialSkillData.choiceOptions || ALL_SKILLS).map(skill => {
-                          const isChecked = customRacialSkills.includes(skill);
-                          return (
-                            <button
-                              key={skill}
-                              type="button"
-                              onClick={() => handleToggleCustomRacialSkill(skill)}
-                              className={`px-2.5 py-1 rounded text-xs cursor-pointer transition-all ${
-                                isChecked ? 'font-bold shadow-xs' : 'opacity-75 hover:opacity-100'
-                              }`}
-                              style={
-                                isChecked
-                                  ? { background: '#5C3A6E', color: '#FBF0DC', border: '1px solid #3E244B' }
-                                  : { background: 'rgba(245, 230, 200, 0.75)', color: '#5C3A6E', border: '1px solid rgba(92, 58, 110, 0.4)' }
-                              }
-                            >
-                              {isChecked ? '✓ ' : ''}{skill}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Highlights Summary Card */}
-                  <div className="p-4 rounded-lg space-y-3" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
-                    <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
-                      <div>
-                        <h3 className="text-sm font-bold text-[#3D2012]">
-                          {selectedRace.name} {selectedSubrace ? `(${selectedSubrace.name})` : ''}
-                        </h3>
-                        <p className="text-[11px] text-[#8B6914]">{selectedRace.description}</p>
-                      </div>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" style={{ background: '#E8D3A2', color: '#5C341F' }}>
-                        {selectedRace.category}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                      <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
-                        <div className="text-[10px] text-[#8B6914]">Бонусы:</div>
-                        <div className="font-bold text-[#4a7c3f]">
-                          {Object.entries(racialBonuses).filter(([_, v]) => v > 0).map(([k, v]) => `${k} +${v}`).join(', ') || 'Нет'}
-                        </div>
-                      </div>
-                      <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
-                        <div className="text-[10px] text-[#8B6914]">Скорость:</div>
-                        <div className="font-bold text-[#3D2012]">
-                          {selectedSubrace?.speed || selectedRace.speed} футов
-                        </div>
-                      </div>
-                      <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
-                        <div className="text-[10px] text-[#8B6914]">Тёмное зрение:</div>
-                        <div className="font-bold text-[#3D2012]">
-                          {selectedRace.darkvision ? `${selectedRace.darkvision} фт` : 'Нет'}
-                        </div>
-                      </div>
-                      <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
-                        <div className="text-[10px] text-[#8B6914]">Расовые навыки:</div>
-                        <div className="font-bold text-[#5C3A6E]">
-                          {finalRacialSkills.length > 0 ? finalRacialSkills.join(', ') : 'Нет'}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Traits breakdown */}
-                    <div className="space-y-1.5 text-xs pt-1">
-                      <span className="font-semibold text-[#5C341F] text-[11px]">📜 Расовые особенности и черты:</span>
-                      <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
-                        {[...(selectedRace.traits || []), ...(selectedSubrace?.traits || [])].map((t, idx) => (
-                          <div key={idx} className="p-2 rounded text-[11px]" style={{ background: 'rgba(232, 211, 162, 0.15)', border: '1px solid rgba(201, 168, 76, 0.2)' }}>
-                            <strong className="text-[#3D2012]">{t.name}: </strong>
-                            <span className="text-[#5C341F]">{t.description}</span>
+                  {selectedRace ? (
+                    <>
+                      {/* Subrace Selector (if available) */}
+                      {selectedRace.subraces && selectedRace.subraces.length > 0 && (
+                        <div className="p-3.5 rounded-lg space-y-2" style={{ background: 'rgba(232, 211, 162, 0.3)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
+                          <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                            Подраса / Разновидность:
+                          </label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {selectedRace.subraces.map(sr => {
+                              const isSrSel = sr.id === selectedSubraceId;
+                              return (
+                                <button
+                                  key={sr.id}
+                                  type="button"
+                                  onClick={() => handleSelectSubrace(sr)}
+                                  className={`text-left p-2 rounded text-xs cursor-pointer transition-all ${
+                                    isSrSel ? 'font-bold' : 'hover:bg-[rgba(201,168,76,0.15)]'
+                                  }`}
+                                  style={
+                                    isSrSel
+                                      ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                      : { border: '1px solid rgba(139, 105, 20, 0.2)', color: '#5C341F' }
+                                  }
+                                >
+                                  <div className="font-semibold">{sr.name}</div>
+                                  <div className="text-[10px] opacity-75 mt-0.5">{sr.description}</div>
+                                  {sr.abilityBonuses && Object.keys(sr.abilityBonuses).length > 0 && (
+                                    <div className="text-[10px] font-mono mt-1 text-[#4a7c3f]">
+                                      Бонус: {Object.entries(sr.abilityBonuses).map(([k, v]) => `${k} +${v}`).join(', ')}
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
                           </div>
-                        ))}
+                        </div>
+                      )}
+
+                      {/* Customizable Racial Ability Bonuses (Half-Elf, Variant Human) */}
+                      {racialBonusConfig.hasCustomBonus && (
+                        <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(254, 243, 199, 0.6)', border: '1px dashed #D97706' }}>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold text-[#92400E]">✨ Настройка расовых бонусов:</span>
+                            <span className="text-[11px] font-medium text-[#B45309]">
+                              Выбрано {customRacialBonuses.length} из {racialBonusConfig.choiceCount} (+{racialBonusConfig.bonusAmount} к каждой)
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-[#78350F]">{racialBonusConfig.description}</p>
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {racialBonusConfig.availableAbilities.map(ab => {
+                              const isChecked = customRacialBonuses.includes(ab);
+                              return (
+                                <button
+                                  key={ab}
+                                  type="button"
+                                  onClick={() => handleToggleCustomBonus(ab)}
+                                  className={`px-3 py-1 rounded text-xs font-semibold cursor-pointer transition-all ${
+                                    isChecked ? 'shadow-sm' : 'opacity-70 hover:opacity-100'
+                                  }`}
+                                  style={
+                                    isChecked
+                                      ? { background: '#D97706', color: '#FFFBEB', border: '1px solid #B45309' }
+                                      : { background: 'rgba(245, 230, 200, 0.75)', color: '#92400E', border: '1px solid #D97706' }
+                                  }
+                                >
+                                  {isChecked ? '✓ ' : '+1 '}{ABILITY_FULL[ab]} ({ab})
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Customizable Racial Skills (Kenku, Changeling, Half-Elf, Variant Human) */}
+                      {racialSkillData.choiceCount > 0 && (
+                        <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(92, 58, 110, 0.08)', border: '1px dashed #5C3A6E' }}>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold text-[#5C3A6E]">🎯 Расовые навыки на выбор:</span>
+                            <span className="text-[11px] font-medium text-[#6B3A2A]">
+                              Выбрано {customRacialSkills.length} из {racialSkillData.choiceCount}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-[#3D2012]">{racialSkillData.description}</p>
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {(racialSkillData.choiceOptions || ALL_SKILLS).map(skill => {
+                              const isChecked = customRacialSkills.includes(skill);
+                              return (
+                                <button
+                                  key={skill}
+                                  type="button"
+                                  onClick={() => handleToggleCustomRacialSkill(skill)}
+                                  className={`px-2.5 py-1 rounded text-xs cursor-pointer transition-all ${
+                                    isChecked ? 'font-bold shadow-xs' : 'opacity-75 hover:opacity-100'
+                                  }`}
+                                  style={
+                                    isChecked
+                                      ? { background: '#5C3A6E', color: '#FBF0DC', border: '1px solid #3E244B' }
+                                      : { background: 'rgba(245, 230, 200, 0.75)', color: '#5C3A6E', border: '1px solid rgba(92, 58, 110, 0.4)' }
+                                  }
+                                >
+                                  {isChecked ? '✓ ' : ''}{skill}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Highlights Summary Card */}
+                      <div className="p-4 rounded-lg space-y-3" style={{ background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                        <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                          <div>
+                            <h3 className="text-sm font-bold text-[#3D2012]">
+                              {selectedRace.name} {selectedSubrace ? `(${selectedSubrace.name})` : ''}
+                            </h3>
+                            <p className="text-[11px] text-[#8B6914]">{selectedRace.description}</p>
+                          </div>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" style={{ background: '#E8D3A2', color: '#5C341F' }}>
+                            {selectedRace.category}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                          <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
+                            <div className="text-[10px] text-[#8B6914]">Бонусы:</div>
+                            <div className="font-bold text-[#4a7c3f]">
+                              {Object.entries(racialBonuses).filter(([_, v]) => v > 0).map(([k, v]) => `${k} +${v}`).join(', ') || 'Нет'}
+                            </div>
+                          </div>
+                          <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
+                            <div className="text-[10px] text-[#8B6914]">Скорость:</div>
+                            <div className="font-bold text-[#3D2012]">
+                              {selectedSubrace?.speed || selectedRace.speed} футов
+                            </div>
+                          </div>
+                          <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
+                            <div className="text-[10px] text-[#8B6914]">Тёмное зрение:</div>
+                            <div className="font-bold text-[#3D2012]">
+                              {selectedRace.darkvision ? `${selectedRace.darkvision} фт` : 'Нет'}
+                            </div>
+                          </div>
+                          <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
+                            <div className="text-[10px] text-[#8B6914]">Расовые навыки:</div>
+                            <div className="font-bold text-[#5C3A6E]">
+                              {finalRacialSkills.length > 0 ? finalRacialSkills.join(', ') : 'Нет'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Traits breakdown */}
+                        <div className="space-y-1.5 text-xs pt-1">
+                          <span className="font-semibold text-[#5C341F] text-[11px]">📜 Расовые особенности и черты:</span>
+                          <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+                            {[...(selectedRace.traits || []), ...(selectedSubrace?.traits || [])].map((t, idx) => (
+                              <div key={idx} className="p-2 rounded text-[11px]" style={{ background: 'rgba(232, 211, 162, 0.15)', border: '1px solid rgba(201, 168, 76, 0.2)' }}>
+                                <strong className="text-[#3D2012]">{t.name}: </strong>
+                                <span className="text-[#5C341F]">{t.description}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
+                    </>
+                  ) : (
+                    <div className="p-8 rounded-lg text-center flex flex-col items-center justify-center space-y-2" style={{ background: 'rgba(232, 211, 162, 0.2)', border: '1px dashed rgba(201, 168, 76, 0.4)' }}>
+                      <span className="text-3xl">👤</span>
+                      <span className="font-bold text-sm text-[#3D2012]">Раса ещё не выбрана</span>
+                      <p className="text-xs text-[#5C341F] max-w-sm">
+                        Выберите расу персонажа из списка слева, чтобы настроить её разновидность, увидеть характеристики и разблокировать генератор имени.
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1456,14 +1502,31 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       const isOverlapping = isFromRace || isFromClass;
                       const replacement = backgroundSkillReplacements[bgSkill] || '';
 
+                      const otherReplacements = Object.entries(backgroundSkillReplacements)
+                        .filter(([k]) => k !== bgSkill)
+                        .map(([, v]) => v);
+
+                      const availableReplacements = ALL_SKILLS.filter(s =>
+                        !finalRacialSkills.includes(s) &&
+                        !selectedClassSkills.includes(s) &&
+                        s !== bgSkill &&
+                        !otherReplacements.includes(s)
+                      );
+
                       return (
                         <div key={bgSkill} className="p-2.5 rounded text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2" style={{ background: 'rgba(245, 230, 200, 0.8)', border: '1px solid rgba(139, 105, 20, 0.3)' }}>
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-[#3D2012]">{bgSkill}</span>
                             {isOverlapping && (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#8B2500]" style={{ background: 'rgba(217, 56, 30, 0.1)', border: '1px solid rgba(217, 56, 30, 0.3)' }}>
-                                ⚠️ Уже получен от {isFromRace ? 'расы' : 'класса'}!
-                              </span>
+                              replacement ? (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#2b6cb0] bg-[rgba(43,108,176,0.1)] border border-[rgba(43,108,176,0.3)]">
+                                  ✓ Заменён на «{replacement}»
+                                </span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#8B2500] bg-[rgba(217,56,30,0.1)] border border-[rgba(217,56,30,0.3)]">
+                                  ⚠️ Уже получен от {isFromRace ? 'расы' : 'класса'}!
+                                </span>
+                              )
                             )}
                           </div>
 
@@ -1479,12 +1542,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                 className="parchment-select text-xs py-1 px-2"
                               >
                                 <option value="">— Выберите другой навык —</option>
-                                {ALL_SKILLS.filter(s =>
-                                  !finalRacialSkills.includes(s) &&
-                                  !selectedClassSkills.includes(s) &&
-                                  s !== bgSkill &&
-                                  !Object.values(backgroundSkillReplacements).includes(s)
-                                ).map(s => (
+                                {availableReplacements.map(s => (
                                   <option key={s} value={s}>{s} ({SKILL_MAP[s]})</option>
                                 ))}
                               </select>
@@ -2107,7 +2165,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       {charName || 'Безымянный герой'}
                     </div>
                     <div className="text-xs text-[#8B6914]">
-                      {selectedRace.name} {selectedSubrace ? `(${selectedSubrace.name})` : ''} · {selectedClass.name}{selectedSubclass ? ` (${selectedSubclass.name})` : ''} 1 ур. · {selectedBackground.name} · {alignment}
+                      {selectedRace ? selectedRace.name : ''} {selectedSubrace ? `(${selectedSubrace.name})` : ''} · {selectedClass.name}{selectedSubclass ? ` (${selectedSubclass.name})` : ''} 1 ур. · {selectedBackground.name} · {alignment}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -2157,7 +2215,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   <div className="p-2 rounded" style={{ background: 'rgba(92, 58, 110, 0.08)', border: '1px solid rgba(92, 58, 110, 0.2)' }}>
                     <div className="text-[10px] text-[#5C3A6E]">Скорость</div>
                     <div className="text-base font-bold text-[#5C3A6E]">
-                      {selectedSubrace?.speed || selectedRace.speed} фт
+                      {selectedSubrace?.speed || selectedRace?.speed || 30} фт
                     </div>
                   </div>
                   <div className="p-2 rounded col-span-2 sm:col-span-1" style={{ background: 'rgba(201, 168, 76, 0.15)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>

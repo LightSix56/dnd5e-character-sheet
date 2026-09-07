@@ -69,6 +69,7 @@ export interface LevelUpEntry {
   // Structured additions (tracked for level-down rollback)
   selectedFeat?: string;                              // Feat chosen instead of ASI
   newSubclass?: string;                               // Subclass chosen at this level
+  selectedFightingStyle?: string;                     // Fighting style chosen at this level
   addedTraits?: TraitItem[];                          // Traits added to traitsList
   spellSlotsGained?: Record<number, number>;          // Updated spell slots at this level
   newCantrips: string[];                              // cantrip names added

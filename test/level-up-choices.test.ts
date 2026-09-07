@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createDefaultCharacter, CharacterData } from '../src/lib/dnd-types';
 import {
   getLevelUpChoicesConfig,
+  getThirdCasterSpellSlots,
   METAMAGIC_OPTIONS,
   ELDRITCH_INVOCATIONS,
   HUNTER_PREY_OPTIONS,
@@ -204,5 +205,15 @@ describe('Level-Up Interactive Choices Engine', () => {
     const config = getLevelUpChoicesConfig(char, 3, 'Battle Master');
     assert.strictEqual(config.needsManeuvers, true);
     assert.strictEqual(config.maneuverCount, 3);
+  });
+
+  it('getThirdCasterSpellSlots correctly returns slots for 1/3 casters', () => {
+    assert.strictEqual(getThirdCasterSpellSlots(1), null);
+    assert.strictEqual(getThirdCasterSpellSlots(2), null);
+    assert.deepStrictEqual(getThirdCasterSpellSlots(3), { 1: 2 });
+    assert.deepStrictEqual(getThirdCasterSpellSlots(4), { 1: 3 });
+    assert.deepStrictEqual(getThirdCasterSpellSlots(7), { 1: 4, 2: 2 });
+    assert.deepStrictEqual(getThirdCasterSpellSlots(13), { 1: 4, 2: 3, 3: 2 });
+    assert.deepStrictEqual(getThirdCasterSpellSlots(19), { 1: 4, 2: 3, 3: 3, 4: 1 });
   });
 });

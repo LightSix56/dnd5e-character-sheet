@@ -27,12 +27,19 @@ function createClient(request: NextRequest) {
   );
 }
 
+import { getLocalShareStore } from '@/lib/share-store';
+
 // Создать публичную ссылку на снимок персонажа.
 // Поддерживает как авторизованных пользователей, так и гостей (анонимные ссылки).
 export async function POST(request: NextRequest) {
   const supabase = createClient(request);
-
-  const { data: { user } } = await supabase.auth.getUser();
+  let user: any = null;
+  try {
+    const authRes = await supabase.auth.getUser();
+    user = authRes.data?.user || null;
+  } catch {
+    // Supabase unreachable or offline
+  }
 
   const body = await request.json().catch(() => ({}));
   const { id, name, data, portrait_url, portraitUrl, expiresInDays } = body as {
@@ -50,20 +57,23 @@ export async function POST(request: NextRequest) {
   const attachedPortrait = portraitUrl || portrait_url;
 
   if (!snapshot && id && user) {
-    const { data: character, error } = await supabase
-      .from('characters')
-      .select('name, data, portrait_url')
-      .eq('id', id)
-      .eq('user_id', user.id)
-      .maybeSingle();
+    try {
+      const { data: character, error } = await supabase
+        .from('characters')
+        .select('name, data, portrait_url')
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    if (!character) return NextResponse.json({ error: 'Character not found' }, { status: 404 });
-
-    snapshot = character.data;
-    snapshotName = snapshotName || character.name;
-    if (snapshot && typeof snapshot === 'object' && character.portrait_url && !(snapshot as Record<string, unknown>).portraitUrl) {
-      (snapshot as Record<string, unknown>).portraitUrl = character.portrait_url;
+      if (!error && character) {
+        snapshot = character.data;
+        snapshotName = snapshotName || character.name;
+        if (snapshot && typeof snapshot === 'object' && character.portrait_url && !(snapshot as Record<string, unknown>).portraitUrl) {
+          (snapshot as Record<string, unknown>).portraitUrl = character.portrait_url;
+        }
+      }
+    } catch {
+      // Supabase query error fallback
     }
   }
 
@@ -79,52 +89,72 @@ export async function POST(request: NextRequest) {
   const expiresAt =
     days > 0 ? new Date(Date.now() + days * 86_400_000).toISOString() : null;
 
-  // Код генерируется случайно; при коллизии первичного ключа пробуем ещё раз.
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const code = generateCode();
+  // Попытка записать в Supabase (если подключена база)
+  try {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const code = generateCode();
 
-    const insertRecord: Record<string, unknown> = {
-      code,
-      character_id: (user && id) ? id : null,
-      name: snapshotName || 'Безымянный',
-      data: snapshot,
-      expires_at: expiresAt,
-    };
+      const insertRecord: Record<string, unknown> = {
+        code,
+        character_id: (user && id) ? id : null,
+        name: snapshotName || 'Безымянный',
+        data: snapshot,
+        expires_at: expiresAt,
+      };
 
-    if (user) {
-      insertRecord.user_id = user.id;
+      if (user) {
+        insertRecord.user_id = user.id;
+      }
+
+      const { data: inserted, error } = await supabase
+        .from('character_shares')
+        .insert(insertRecord)
+        .select('code, name, created_at, expires_at')
+        .maybeSingle();
+
+      if (!error && inserted) {
+        const origin = request.nextUrl.origin;
+        return NextResponse.json({
+          share: inserted,
+          code: inserted.code,
+          url: `${origin}/share/${inserted.code}`,
+          apiUrl: `${origin}/api/share/${inserted.code}`,
+        });
+      }
+
+      if (error && (error.code === '23502' || error.code === '42501' || error.message?.includes('user_id')) && !user) {
+        break;
+      }
+
+      if (error && error.code !== '23505') {
+        break;
+      }
     }
-
-    const { data: inserted, error } = await supabase
-      .from('character_shares')
-      .insert(insertRecord)
-      .select('code, name, created_at, expires_at')
-      .maybeSingle();
-
-    if (!error && inserted) {
-      const origin = request.nextUrl.origin;
-      return NextResponse.json({
-        share: inserted,
-        code: inserted.code,
-        url: `${origin}/share/${inserted.code}`,
-        apiUrl: `${origin}/api/share/${inserted.code}`,
-      });
-    }
-
-    // Обработка случаев, когда в базе user_id NOT NULL или нет прав для анонимной записи
-    if (error && (error.code === '23502' || error.code === '42501' || error.message?.includes('user_id')) && !user) {
-      return NextResponse.json({
-        error: 'Для создания ссылки необходимо войти в аккаунт',
-      }, { status: 401 });
-    }
-
-    // 23505 — duplicate key: генерируем новый код и пробуем снова.
-    if (error && error.code !== '23505') {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+  } catch {
+    // Supabase network / connection issue — fallback to local in-memory store
   }
 
-  return NextResponse.json({ error: 'Не удалось сгенерировать код, попробуйте ещё раз' }, { status: 500 });
+  // Локальное резервное хранилище (для работы офлайн, в разработке и без настроенного Supabase)
+  const fallbackCode = generateCode();
+  const origin = request.nextUrl.origin;
+  const store = getLocalShareStore();
+  const fallbackRecord = {
+    code: fallbackCode,
+    name: snapshotName || 'Безымянный',
+    character_id: (user && id) ? id : null,
+    data: snapshot,
+    created_at: new Date().toISOString(),
+    expires_at: expiresAt,
+  };
+  store.set(fallbackCode, fallbackRecord);
+
+  return NextResponse.json({
+    share: fallbackRecord,
+    code: fallbackCode,
+    url: `${origin}/share/${fallbackCode}`,
+    apiUrl: `${origin}/api/share/${fallbackCode}`,
+    isLocalFallback: true,
+  });
 }
 
 // Список своих ссылок.

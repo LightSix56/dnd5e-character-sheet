@@ -10,24 +10,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "namegeneratormodalprops",
       "source_file": "src/components/tools/NameGeneratorModal.tsx",
       "source_location": "L13"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_calculatortab",
-      "label": "CalculatorTab",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "calculatortab",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L21"
     },
     {
       "id": "src_data_compendium_names_data_fantasynameresult",
@@ -36,7 +23,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "fantasynameresult",
       "source_file": "src/data/compendium/names-data.ts",
@@ -49,7 +36,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "racenamingculture",
       "source_file": "src/data/compendium/names-data.ts",
@@ -62,7 +49,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "racenamingentry",
       "source_file": "src/data/compendium/names-data.ts",
@@ -105,7 +92,7 @@
       "file_type": "code",
       "norm_label": "nonclassspellconfirmmodalprops",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1294"
+      "source_location": "L1323"
     },
     {
       "id": "src_components_compendium_compendiummodals_spellmodalprops",
@@ -218,10 +205,23 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 15,
-      "community_name": "ClassSelectorModal.tsx",
+      "community_name": "classes.ts",
       "file_type": "code",
       "norm_label": "classselectormodalprops",
       "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_components_compendium_subclassselectormodal_subclassselectormodalprops",
+      "label": "SubclassSelectorModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "subclassselectormodalprops",
+      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
       "source_location": "L7"
     },
     {
@@ -231,24 +231,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 15,
-      "community_name": "ClassSelectorModal.tsx",
+      "community_name": "classes.ts",
       "file_type": "code",
       "norm_label": "compendiumclass",
       "source_file": "src/data/compendium/classes.ts",
       "source_location": "L12"
     },
     {
-      "id": "src_components_compendium_subclassselectormodal_subclassselectormodalprops",
-      "label": "SubclassSelectorModalProps",
+      "id": "src_data_compendium_classes_compendiumsubclass",
+      "label": "CompendiumSubclass",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
+      "community": 15,
+      "community_name": "classes.ts",
       "file_type": "code",
-      "norm_label": "subclassselectormodalprops",
-      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
-      "source_location": "L7"
+      "norm_label": "compendiumsubclass",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L3"
     },
     {
       "id": "src_data_compendium_class_progression_classfeatureentry",
@@ -290,19 +290,6 @@
       "source_location": "L185"
     },
     {
-      "id": "src_data_compendium_classes_compendiumsubclass",
-      "label": "CompendiumSubclass",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
-      "file_type": "code",
-      "norm_label": "compendiumsubclass",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L3"
-    },
-    {
       "id": "src_data_compendium_race_progression_raceprogressionfeature",
       "label": "RaceProgressionFeature",
       "_callable": true,
@@ -327,6 +314,19 @@
       "norm_label": "levelupentry",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L63"
+    },
+    {
+      "id": "src_lib_dnd_types_traititem",
+      "label": "TraitItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "level-up-arcane.test.ts",
+      "file_type": "code",
+      "norm_label": "traititem",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L55"
     },
     {
       "id": "test_level_up_divine_test_classprogressionscenario",
@@ -433,19 +433,6 @@
       "source_location": "L3"
     },
     {
-      "id": "src_data_compendium_feats_compendiumfeat",
-      "label": "CompendiumFeat",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "compendiumfeat",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L3"
-    },
-    {
       "id": "src_data_compendium_races_compendiumrace",
       "label": "CompendiumRace",
       "_callable": true,
@@ -511,6 +498,19 @@
       "source_location": "L532"
     },
     {
+      "id": "src_components_tools_statscalculatormodal_calculatortab",
+      "label": "CalculatorTab",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "calculatortab",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L21"
+    },
+    {
       "id": "src_lib_dnd_types_spellslotinfo",
       "label": "SpellSlotInfo",
       "_callable": true,
@@ -522,6 +522,32 @@
       "norm_label": "spellslotinfo",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L44"
+    },
+    {
+      "id": "src_data_compendium_feats_compendiumfeat",
+      "label": "CompendiumFeat",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "compendiumfeat",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_lib_share_store_charactersharerecord",
+      "label": "CharacterShareRecord",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "@supabase/ssr",
+      "file_type": "code",
+      "norm_label": "charactersharerecord",
+      "source_file": "src/lib/share-store.ts",
+      "source_location": "L1"
     },
     {
       "id": "src_app_page_rollresult",
@@ -547,7 +573,7 @@
       "file_type": "code",
       "norm_label": "templatemodalprops",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1377"
+      "source_location": "L1406"
     },
     {
       "id": "src_lib_dnd_types_attack",
@@ -576,19 +602,6 @@
       "source_location": "L49"
     },
     {
-      "id": "src_lib_dnd_types_traititem",
-      "label": "TraitItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "traititem",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L55"
-    },
-    {
       "id": "src_app_page_leveldownmodalprops",
       "label": "LevelDownModalProps",
       "_callable": true,
@@ -599,7 +612,7 @@
       "file_type": "code",
       "norm_label": "leveldownmodalprops",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1046"
+      "source_location": "L1075"
     },
     {
       "id": "src_app_page_levelhistorymodalprops",
@@ -612,7 +625,7 @@
       "file_type": "code",
       "norm_label": "levelhistorymodalprops",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1112"
+      "source_location": "L1141"
     },
     {
       "id": "src_app_page_levelupmodalprops",
@@ -719,40 +732,16 @@
       "source_location": "L3"
     },
     {
-      "id": "src_components_dnd_icons_d20icon",
-      "label": "D20Icon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "d20icon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L9"
-    },
-    {
       "id": "src_components_dnd_icons_quillicon",
       "label": "QuillIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "quillicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L117"
-    },
-    {
-      "id": "src_components_dnd_icons_sparklesdndicon",
-      "label": "SparklesDndIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "sparklesdndicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L184"
     },
     {
       "id": "src_components_tools_namegeneratormodal_namegeneratormodal",
@@ -760,35 +749,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "namegeneratormodal()",
       "source_file": "src/components/tools/NameGeneratorModal.tsx",
       "source_location": "L19"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_died6",
-      "label": "DieD6()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "died6()",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L38"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_statscalculatormodal",
-      "label": "StatsCalculatorModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "statscalculatormodal()",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L97"
     },
     {
       "id": "src_data_compendium_names_data_generatefantasyname",
@@ -796,7 +761,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "generatefantasyname()",
       "source_file": "src/data/compendium/names-data.ts",
@@ -808,7 +773,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "generatemultiplefantasynames()",
       "source_file": "src/data/compendium/names-data.ts",
@@ -820,7 +785,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "getavailablecultures()",
       "source_file": "src/data/compendium/names-data.ts",
@@ -832,7 +797,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "normalizeracekey()",
       "source_file": "src/data/compendium/names-data.ts",
@@ -844,7 +809,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "pickrandom()",
       "source_file": "src/data/compendium/names-data.ts",
@@ -1000,10 +965,22 @@
       "_callable": true,
       "_origin": "ast",
       "community": 15,
-      "community_name": "ClassSelectorModal.tsx",
+      "community_name": "classes.ts",
       "file_type": "code",
       "norm_label": "classselectormodal()",
       "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_components_compendium_subclassselectormodal_subclassselectormodal",
+      "label": "SubclassSelectorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "subclassselectormodal()",
+      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
       "source_location": "L14"
     },
     {
@@ -1012,7 +989,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 15,
-      "community_name": "ClassSelectorModal.tsx",
+      "community_name": "classes.ts",
       "file_type": "code",
       "norm_label": "crossedswordsicon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1024,7 +1001,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 15,
-      "community_name": "ClassSelectorModal.tsx",
+      "community_name": "classes.ts",
       "file_type": "code",
       "norm_label": "engravedshieldicon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1036,11 +1013,59 @@
       "_callable": true,
       "_origin": "ast",
       "community": 15,
-      "community_name": "ClassSelectorModal.tsx",
+      "community_name": "classes.ts",
       "file_type": "code",
       "norm_label": "scrollicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L25"
+    },
+    {
+      "id": "src_components_dnd_icons_sparklesdndicon",
+      "label": "SparklesDndIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "sparklesdndicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L184"
+    },
+    {
+      "id": "src_data_compendium_classes_findclassbyid",
+      "label": "findClassById()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "findclassbyid()",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L1959"
+    },
+    {
+      "id": "src_data_compendium_classes_findclassbyname",
+      "label": "findClassByName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "findclassbyname()",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L1963"
+    },
+    {
+      "id": "src_data_compendium_classes_getsubclassesforclass",
+      "label": "getSubclassesForClass()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "getsubclassesforclass()",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L1972"
     },
     {
       "id": "src_app_layout_rootlayout",
@@ -1067,12 +1092,48 @@
       "source_location": "L3"
     },
     {
+      "id": "scratch_desktop_laptop_audit_clickbuttonwithtext",
+      "label": "clickButtonWithText()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "desktop-laptop-audit.mjs",
+      "file_type": "code",
+      "norm_label": "clickbuttonwithtext()",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L31"
+    },
+    {
+      "id": "scratch_desktop_laptop_audit_run",
+      "label": "run()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "desktop-laptop-audit.mjs",
+      "file_type": "code",
+      "norm_label": "run()",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L49"
+    },
+    {
+      "id": "scratch_desktop_laptop_audit_waitforserver",
+      "label": "waitForServer()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "desktop-laptop-audit.mjs",
+      "file_type": "code",
+      "norm_label": "waitforserver()",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L15"
+    },
+    {
       "id": "scripts_mobile_visual_audit_run",
       "label": "run()",
       "_callable": true,
       "_origin": "ast",
       "community": 19,
-      "community_name": "mobile-visual-audit.mjs",
+      "community_name": "desktop-laptop-audit.mjs",
       "file_type": "code",
       "norm_label": "run()",
       "source_file": "scripts/mobile-visual-audit.mjs",
@@ -1084,23 +1145,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 19,
-      "community_name": "mobile-visual-audit.mjs",
+      "community_name": "desktop-laptop-audit.mjs",
       "file_type": "code",
       "norm_label": "waitforserver()",
       "source_file": "scripts/mobile-visual-audit.mjs",
       "source_location": "L15"
     },
     {
-      "id": "src_components_compendium_subclassselectormodal_subclassselectormodal",
-      "label": "SubclassSelectorModal()",
+      "id": "src_app_page_getthirdcasterspellslots",
+      "label": "getThirdCasterSpellSlots()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "level-up-arcane.test.ts",
       "file_type": "code",
-      "norm_label": "subclassselectormodal()",
-      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
-      "source_location": "L14"
+      "norm_label": "getthirdcasterspellslots()",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L169"
     },
     {
       "id": "src_data_compendium_class_progression_getclassfeaturesforlevel",
@@ -1233,42 +1294,6 @@
       "norm_label": "isspelllevelallowedforcharacter()",
       "source_file": "src/data/compendium/class-spells.ts",
       "source_location": "L364"
-    },
-    {
-      "id": "src_data_compendium_classes_findclassbyid",
-      "label": "findClassById()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
-      "file_type": "code",
-      "norm_label": "findclassbyid()",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L1959"
-    },
-    {
-      "id": "src_data_compendium_classes_findclassbyname",
-      "label": "findClassByName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
-      "file_type": "code",
-      "norm_label": "findclassbyname()",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L1963"
-    },
-    {
-      "id": "src_data_compendium_classes_getsubclassesforclass",
-      "label": "getSubclassesForClass()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
-      "file_type": "code",
-      "norm_label": "getsubclassesforclass()",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L1972"
     },
     {
       "id": "src_data_compendium_race_progression_getracialfeaturesforlevel",
@@ -1667,54 +1692,6 @@
       "source_location": "L488"
     },
     {
-      "id": "src_data_compendium_feats_findfeatbyname",
-      "label": "findFeatByName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "findfeatbyname()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L244"
-    },
-    {
-      "id": "src_data_compendium_feats_getfeats",
-      "label": "getFeats()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "getfeats()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L253"
-    },
-    {
-      "id": "src_data_compendium_feats_gettraits",
-      "label": "getTraits()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "gettraits()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L257"
-    },
-    {
-      "id": "src_data_compendium_index_getcompendiumautocompleteitems",
-      "label": "getCompendiumAutocompleteItems()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "getcompendiumautocompleteitems()",
-      "source_file": "src/data/compendium/index.ts",
-      "source_location": "L24"
-    },
-    {
       "id": "src_data_compendium_races_findracebyname",
       "label": "findRaceByName()",
       "_callable": true,
@@ -1724,19 +1701,7 @@
       "file_type": "code",
       "norm_label": "findracebyname()",
       "source_file": "src/data/compendium/races.ts",
-      "source_location": "L2458"
-    },
-    {
-      "id": "src_lib_dnd_types_calcmodifier",
-      "label": "calcModifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "calcmodifier()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L178"
+      "source_location": "L2451"
     },
     {
       "id": "src_app_api_export_docx_route_borders",
@@ -1835,30 +1800,6 @@
       "source_location": "L90"
     },
     {
-      "id": "src_app_api_share_code_route_get",
-      "label": "GET()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "get()",
-      "source_file": "src/app/api/share/[code]/route.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "src_app_api_share_code_route_options",
-      "label": "OPTIONS()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "options()",
-      "source_file": "src/app/api/share/[code]/route.ts",
-      "source_location": "L82"
-    },
-    {
       "id": "src_app_page_dndcharactersheet",
       "label": "DnDCharacterSheet()",
       "_callable": true,
@@ -1868,7 +1809,7 @@
       "file_type": "code",
       "norm_label": "dndcharactersheet()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1677"
+      "source_location": "L1706"
     },
     {
       "id": "src_app_page_normalizecharacterdata",
@@ -1880,7 +1821,7 @@
       "file_type": "code",
       "norm_label": "normalizecharacterdata()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1655"
+      "source_location": "L1684"
     },
     {
       "id": "src_app_share_code_page_normalizecharacterdata",
@@ -1919,6 +1860,42 @@
       "source_location": "L102"
     },
     {
+      "id": "src_components_dnd_icons_d20icon",
+      "label": "D20Icon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "d20icon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal_died6",
+      "label": "DieD6()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "died6()",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L38"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal_statscalculatormodal",
+      "label": "StatsCalculatorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "statscalculatormodal()",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L97"
+    },
+    {
       "id": "src_lib_dnd_types_applyclasstemplate",
       "label": "applyClassTemplate()",
       "_callable": true,
@@ -1941,6 +1918,18 @@
       "norm_label": "applyracetemplate()",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L348"
+    },
+    {
+      "id": "src_lib_dnd_types_calcmodifier",
+      "label": "calcModifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "calcmodifier()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L178"
     },
     {
       "id": "src_lib_dnd_types_calcproficiencybonus",
@@ -2147,6 +2136,42 @@
       "source_location": "L3"
     },
     {
+      "id": "src_data_compendium_feats_findfeatbyname",
+      "label": "findFeatByName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "findfeatbyname()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L244"
+    },
+    {
+      "id": "src_data_compendium_feats_getfeats",
+      "label": "getFeats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "getfeats()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L253"
+    },
+    {
+      "id": "src_data_compendium_feats_gettraits",
+      "label": "getTraits()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "gettraits()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L257"
+    },
+    {
       "id": "src_app_api_auth_callback_route_get",
       "label": "GET()",
       "_callable": true,
@@ -2243,6 +2268,30 @@
       "source_location": "L110"
     },
     {
+      "id": "src_app_api_share_code_route_get",
+      "label": "GET()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "@supabase/ssr",
+      "file_type": "code",
+      "norm_label": "get()",
+      "source_file": "src/app/api/share/[code]/route.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_app_api_share_code_route_options",
+      "label": "OPTIONS()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "@supabase/ssr",
+      "file_type": "code",
+      "norm_label": "options()",
+      "source_file": "src/app/api/share/[code]/route.ts",
+      "source_location": "L102"
+    },
+    {
       "id": "src_app_api_share_route_createclient",
       "label": "createClient()",
       "_callable": true,
@@ -2264,7 +2313,7 @@
       "file_type": "code",
       "norm_label": "delete()",
       "source_file": "src/app/api/share/route.ts",
-      "source_location": "L148"
+      "source_location": "L178"
     },
     {
       "id": "src_app_api_share_route_generatecode",
@@ -2288,7 +2337,7 @@
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "src/app/api/share/route.ts",
-      "source_location": "L131"
+      "source_location": "L161"
     },
     {
       "id": "src_app_api_share_route_post",
@@ -2300,7 +2349,7 @@
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/app/api/share/route.ts",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "src_app_api_upload_portrait_route_post",
@@ -2313,6 +2362,18 @@
       "norm_label": "post()",
       "source_file": "src/app/api/upload-portrait/route.ts",
       "source_location": "L4"
+    },
+    {
+      "id": "src_lib_share_store_getlocalsharestore",
+      "label": "getLocalShareStore()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "@supabase/ssr",
+      "file_type": "code",
+      "norm_label": "getlocalsharestore()",
+      "source_file": "src/lib/share-store.ts",
+      "source_location": "L14"
     },
     {
       "id": "src_lib_supabase_middleware_updatesession",
@@ -2363,18 +2424,6 @@
       "source_location": "L60"
     },
     {
-      "id": "src_app_page_getthirdcasterspellslots",
-      "label": "getThirdCasterSpellSlots()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "getthirdcasterspellslots()",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L169"
-    },
-    {
       "id": "src_app_page_nonclassspellconfirmmodal",
       "label": "NonClassSpellConfirmModal()",
       "_callable": true,
@@ -2384,7 +2433,7 @@
       "file_type": "code",
       "norm_label": "nonclassspellconfirmmodal()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1301"
+      "source_location": "L1330"
     },
     {
       "id": "src_app_page_rolld20",
@@ -2409,6 +2458,18 @@
       "norm_label": "statinput()",
       "source_file": "src/app/page.tsx",
       "source_location": "L149"
+    },
+    {
+      "id": "src_data_compendium_index_getcompendiumautocompleteitems",
+      "label": "getCompendiumAutocompleteItems()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "getcompendiumautocompleteitems()",
+      "source_file": "src/data/compendium/index.ts",
+      "source_location": "L24"
     },
     {
       "id": "src_data_dnd_traits_findtraitbyname",
@@ -4318,7 +4379,7 @@
       "label": "tools/index.ts",
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "tools/index.ts",
       "source_file": "src/components/tools/index.ts",
@@ -4329,51 +4390,18 @@
       "label": "NameGeneratorModal.tsx",
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "namegeneratormodal.tsx",
       "source_file": "src/components/tools/NameGeneratorModal.tsx",
       "source_location": "L1"
     },
     {
-      "id": "src_components_tools_statscalculatormodal",
-      "label": "StatsCalculatorModal.tsx",
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "statscalculatormodal.tsx",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_point_buy_cost",
-      "label": "POINT_BUY_COST",
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "point_buy_cost",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_standard_array_values",
-      "label": "STANDARD_ARRAY_VALUES",
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "standard_array_values",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L35"
-    },
-    {
       "id": "src_data_compendium_names_data",
       "label": "names-data.ts",
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "names-data.ts",
       "source_file": "src/data/compendium/names-data.ts",
@@ -4384,7 +4412,7 @@
       "label": "DND_COMPENDIUM_NAMES_DB",
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "dnd_compendium_names_db",
       "source_file": "src/data/compendium/names-data.ts",
@@ -4395,7 +4423,7 @@
       "label": "FANTASY_NAMES_DATABASE",
       "_origin": "ast",
       "community": 10,
-      "community_name": "StatsCalculatorModal.tsx",
+      "community_name": "NameGeneratorModal.tsx",
       "file_type": "code",
       "norm_label": "fantasy_names_database",
       "source_file": "src/data/compendium/names-data.ts",
@@ -4670,10 +4698,54 @@
       "label": "ClassSelectorModal.tsx",
       "_origin": "ast",
       "community": 15,
-      "community_name": "ClassSelectorModal.tsx",
+      "community_name": "classes.ts",
       "file_type": "code",
       "norm_label": "classselectormodal.tsx",
       "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_compendium_subclassselectormodal",
+      "label": "SubclassSelectorModal.tsx",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "subclassselectormodal.tsx",
+      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_classes",
+      "label": "classes.ts",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "classes.ts",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_classes_dnd_compendium_classes",
+      "label": "DND_COMPENDIUM_CLASSES",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "dnd_compendium_classes",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L39"
+    },
+    {
+      "id": "test_subclass_selection_rules_test",
+      "label": "subclass-selection-rules.test.ts",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "subclass-selection-rules.test.ts",
+      "source_file": "test/subclass-selection-rules.test.ts",
       "source_location": "L1"
     },
     {
@@ -5150,11 +5222,44 @@
       "source_location": "L1"
     },
     {
+      "id": "scratch_desktop_laptop_audit",
+      "label": "desktop-laptop-audit.mjs",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "desktop-laptop-audit.mjs",
+      "file_type": "code",
+      "norm_label": "desktop-laptop-audit.mjs",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L1"
+    },
+    {
+      "id": "scratch_desktop_laptop_audit_out_dir",
+      "label": "OUT_DIR",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "desktop-laptop-audit.mjs",
+      "file_type": "code",
+      "norm_label": "out_dir",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L9"
+    },
+    {
+      "id": "scratch_desktop_laptop_audit_viewports",
+      "label": "VIEWPORTS",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "desktop-laptop-audit.mjs",
+      "file_type": "code",
+      "norm_label": "viewports",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L43"
+    },
+    {
       "id": "scripts_mobile_visual_audit",
       "label": "mobile-visual-audit.mjs",
       "_origin": "ast",
       "community": 19,
-      "community_name": "mobile-visual-audit.mjs",
+      "community_name": "desktop-laptop-audit.mjs",
       "file_type": "code",
       "norm_label": "mobile-visual-audit.mjs",
       "source_file": "scripts/mobile-visual-audit.mjs",
@@ -5165,7 +5270,7 @@
       "label": "OUT_DIR",
       "_origin": "ast",
       "community": 19,
-      "community_name": "mobile-visual-audit.mjs",
+      "community_name": "desktop-laptop-audit.mjs",
       "file_type": "code",
       "norm_label": "out_dir",
       "source_file": "scripts/mobile-visual-audit.mjs",
@@ -5176,7 +5281,7 @@
       "label": "puppeteer-core",
       "_origin": "ast",
       "community": 19,
-      "community_name": "mobile-visual-audit.mjs",
+      "community_name": "desktop-laptop-audit.mjs",
       "file_type": "concept",
       "norm_label": "puppeteer-core",
       "source_file": "package.json",
@@ -5192,17 +5297,6 @@
       "norm_label": "levelupmodal",
       "source_file": "src/app/page.tsx",
       "source_location": "L189"
-    },
-    {
-      "id": "src_components_compendium_subclassselectormodal",
-      "label": "SubclassSelectorModal.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
-      "file_type": "code",
-      "norm_label": "subclassselectormodal.tsx",
-      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
-      "source_location": "L1"
     },
     {
       "id": "src_data_compendium_class_progression",
@@ -5315,28 +5409,6 @@
       "source_location": "L179"
     },
     {
-      "id": "src_data_compendium_classes",
-      "label": "classes.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
-      "file_type": "code",
-      "norm_label": "classes.ts",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_classes_dnd_compendium_classes",
-      "label": "DND_COMPENDIUM_CLASSES",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
-      "file_type": "code",
-      "norm_label": "dnd_compendium_classes",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L39"
-    },
-    {
       "id": "src_data_compendium_race_progression",
       "label": "race-progression.ts",
       "_origin": "ast",
@@ -5422,17 +5494,6 @@
       "file_type": "code",
       "norm_label": "level-up-martial.test.ts",
       "source_file": "test/level-up-martial.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_subclass_selection_rules_test",
-      "label": "subclass-selection-rules.test.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "level-up-arcane.test.ts",
-      "file_type": "code",
-      "norm_label": "subclass-selection-rules.test.ts",
-      "source_file": "test/subclass-selection-rules.test.ts",
       "source_location": "L1"
     },
     {
@@ -5797,28 +5858,6 @@
       "norm_label": "dnd_compendium_backgrounds",
       "source_file": "src/data/compendium/backgrounds.ts",
       "source_location": "L25"
-    },
-    {
-      "id": "src_data_compendium_feats",
-      "label": "feats.ts",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "feats.ts",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_feats_dnd_compendium_feats",
-      "label": "DND_COMPENDIUM_FEATS",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "dnd_compendium_feats",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L15"
     },
     {
       "id": "src_data_compendium_index",
@@ -6619,15 +6658,15 @@
       "source_location": "L1"
     },
     {
-      "id": "src_app_api_share_code_route",
-      "label": "[code]/route.ts",
+      "id": "src_app_page_templatemodal",
+      "label": "TemplateModal",
       "_origin": "ast",
       "community": 4,
       "community_name": "dnd-types.ts",
       "file_type": "code",
-      "norm_label": "[code]/route.ts",
-      "source_file": "src/app/api/share/[code]/route.ts",
-      "source_location": "L1"
+      "norm_label": "templatemodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1411"
     },
     {
       "id": "src_app_share_code_page",
@@ -6639,6 +6678,39 @@
       "norm_label": "[code]/page.tsx",
       "source_file": "src/app/share/[code]/page.tsx",
       "source_location": "L1"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal",
+      "label": "StatsCalculatorModal.tsx",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "statscalculatormodal.tsx",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal_point_buy_cost",
+      "label": "POINT_BUY_COST",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "point_buy_cost",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L24"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal_standard_array_values",
+      "label": "STANDARD_ARRAY_VALUES",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "standard_array_values",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L35"
     },
     {
       "id": "src_lib_dnd_types",
@@ -6825,6 +6897,101 @@
       "source_location": "L92"
     },
     {
+      "id": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes",
+      "label": "2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_desktop_and_laptop_ui_ux_audit_fixes_implementation_plan",
+      "label": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "desktop and laptop ui/ux audit & fixes implementation plan",
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_global_constraints",
+      "label": "Global Constraints",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "global constraints",
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_task_1_desktop_laptop_multi_viewport_audit_suite",
+      "label": "Task 1: Desktop & Laptop Multi-Viewport Audit Suite",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 1: desktop & laptop multi-viewport audit suite",
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_task_2_visual_ergonomic_analysis_across_viewports",
+      "label": "Task 2: Visual & Ergonomic Analysis Across Viewports",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 2: visual & ergonomic analysis across viewports",
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L46"
+    },
+    {
+      "id": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_task_3_implement_layout_and_styling_fixes",
+      "label": "Task 3: Implement Layout and Styling Fixes",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 3: implement layout and styling fixes",
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_task_4_re_audit_verification_commit",
+      "label": "Task 4: Re-Audit, Verification & Commit",
+      "_origin": "ast",
+      "community": 44,
+      "community_name": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "task 4: re-audit, verification & commit",
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L89"
+    },
+    {
+      "id": "src_data_compendium_feats",
+      "label": "feats.ts",
+      "_origin": "ast",
+      "community": 45,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "feats.ts",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_app_api_auth_callback_route",
       "label": "callback/route.ts",
       "_origin": "ast",
@@ -6858,6 +7025,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_app_api_share_code_route",
+      "label": "[code]/route.ts",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "@supabase/ssr",
+      "file_type": "code",
+      "norm_label": "[code]/route.ts",
+      "source_file": "src/app/api/share/[code]/route.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_app_api_share_route",
       "label": "share/route.ts",
       "_origin": "ast",
@@ -6877,6 +7055,17 @@
       "file_type": "code",
       "norm_label": "upload-portrait/route.ts",
       "source_file": "src/app/api/upload-portrait/route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_share_store",
+      "label": "share-store.ts",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "@supabase/ssr",
+      "file_type": "code",
+      "norm_label": "share-store.ts",
+      "source_file": "src/lib/share-store.ts",
       "source_location": "L1"
     },
     {
@@ -6954,7 +7143,7 @@
       "file_type": "code",
       "norm_label": "authmodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1537"
+      "source_location": "L1566"
     },
     {
       "id": "src_app_page_leveldownmodal",
@@ -6965,7 +7154,7 @@
       "file_type": "code",
       "norm_label": "leveldownmodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1052"
+      "source_location": "L1081"
     },
     {
       "id": "src_app_page_levelhistorymodal",
@@ -6976,7 +7165,7 @@
       "file_type": "code",
       "norm_label": "levelhistorymodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1119"
+      "source_location": "L1148"
     },
     {
       "id": "src_app_page_rollbadge",
@@ -7009,18 +7198,18 @@
       "file_type": "code",
       "norm_label": "signoutmodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1597"
+      "source_location": "L1626"
     },
     {
-      "id": "src_app_page_templatemodal",
-      "label": "TemplateModal",
+      "id": "src_data_compendium_feats_dnd_compendium_feats",
+      "label": "DND_COMPENDIUM_FEATS",
       "_origin": "ast",
       "community": 6,
       "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "templatemodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1382"
+      "norm_label": "dnd_compendium_feats",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L15"
     },
     {
       "id": "src_data_dnd_traits",
@@ -7321,6 +7510,30 @@
     }
   ],
   "links": [
+    {
+      "source": "scratch_desktop_laptop_audit_run",
+      "target": "scratch_desktop_laptop_audit_waitforserver",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "scratch_desktop_laptop_audit_run",
+      "target": "scratch_desktop_laptop_audit_clickbuttonwithtext",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L86",
+      "weight": 1.0
+    },
     {
       "source": "scripts_mobile_visual_audit_run",
       "target": "scripts_mobile_visual_audit_waitforserver",
@@ -7678,7 +7891,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/api/share/[code]/route.ts",
-      "source_location": "L19",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_share_code_route_get",
+      "target": "src_lib_share_store_getlocalsharestore",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/api/share/[code]/route.ts",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -7690,7 +7915,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/api/share/route.ts",
-      "source_location": "L149",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -7702,7 +7927,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/api/share/route.ts",
-      "source_location": "L132",
+      "source_location": "L162",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_share_route_post",
+      "target": "src_lib_share_store_getlocalsharestore",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/api/share/route.ts",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -7714,7 +7951,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/api/share/route.ts",
-      "source_location": "L33",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -7726,7 +7963,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/api/share/route.ts",
-      "source_location": "L84",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -7738,7 +7975,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1680",
+      "source_location": "L1709",
       "weight": 1.0
     },
     {
@@ -7750,7 +7987,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1684",
+      "source_location": "L1713",
       "weight": 1.0
     },
     {
@@ -7762,7 +7999,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1718",
+      "source_location": "L1747",
       "weight": 1.0
     },
     {
@@ -7774,7 +8011,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1722",
+      "source_location": "L1751",
       "weight": 1.0
     },
     {
@@ -7786,7 +8023,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1785",
+      "source_location": "L1814",
       "weight": 1.0
     },
     {
@@ -7798,7 +8035,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1965",
+      "source_location": "L1994",
       "weight": 1.0
     },
     {
@@ -7810,7 +8047,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1974",
+      "source_location": "L2003",
       "weight": 1.0
     },
     {
@@ -7822,7 +8059,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1976",
+      "source_location": "L2005",
       "weight": 1.0
     },
     {
@@ -7834,7 +8071,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1998",
+      "source_location": "L2027",
       "weight": 1.0
     },
     {
@@ -7846,7 +8083,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2016",
+      "source_location": "L2045",
       "weight": 1.0
     },
     {
@@ -7858,7 +8095,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2208",
+      "source_location": "L2237",
       "weight": 1.0
     },
     {
@@ -7870,7 +8107,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2240",
+      "source_location": "L2269",
       "weight": 1.0
     },
     {
@@ -7882,7 +8119,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2241",
+      "source_location": "L2270",
       "weight": 1.0
     },
     {
@@ -7894,7 +8131,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2353",
+      "source_location": "L2382",
       "weight": 1.0
     },
     {
@@ -7906,7 +8143,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2353",
+      "source_location": "L2382",
       "weight": 1.0
     },
     {
@@ -7918,7 +8155,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2387",
+      "source_location": "L2416",
       "weight": 1.0
     },
     {
@@ -7930,7 +8167,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2387",
+      "source_location": "L2416",
       "weight": 1.0
     },
     {
@@ -7942,7 +8179,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2510",
+      "source_location": "L2539",
       "weight": 1.0
     },
     {
@@ -7954,7 +8191,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2510",
+      "source_location": "L2539",
       "weight": 1.0
     },
     {
@@ -7966,7 +8203,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2526",
+      "source_location": "L2555",
       "weight": 1.0
     },
     {
@@ -7978,7 +8215,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2561",
+      "source_location": "L2590",
       "weight": 1.0
     },
     {
@@ -7990,7 +8227,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2572",
+      "source_location": "L2601",
       "weight": 1.0
     },
     {
@@ -8002,7 +8239,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3633",
+      "source_location": "L3662",
       "weight": 1.0
     },
     {
@@ -8014,7 +8251,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3727",
+      "source_location": "L3756",
       "weight": 1.0
     },
     {
@@ -8026,7 +8263,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3728",
+      "source_location": "L3757",
       "weight": 1.0
     },
     {
@@ -8038,7 +8275,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3739",
+      "source_location": "L3768",
       "weight": 1.0
     },
     {
@@ -8050,7 +8287,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3794",
+      "source_location": "L3823",
       "weight": 1.0
     },
     {
@@ -8062,7 +8299,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3831",
+      "source_location": "L3860",
       "weight": 1.0
     },
     {
@@ -8074,7 +8311,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3859",
+      "source_location": "L3888",
       "weight": 1.0
     },
     {
@@ -8086,7 +8323,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L4143",
+      "source_location": "L4172",
       "weight": 1.0
     },
     {
@@ -8098,7 +8335,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L4144",
+      "source_location": "L4173",
       "weight": 1.0
     },
     {
@@ -8110,7 +8347,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L4145",
+      "source_location": "L4174",
       "weight": 1.0
     },
     {
@@ -8326,7 +8563,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L497",
+      "source_location": "L519",
       "weight": 1.0
     },
     {
@@ -8338,7 +8575,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1656",
+      "source_location": "L1685",
       "weight": 1.0
     },
     {
@@ -8362,7 +8599,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1476",
+      "source_location": "L1505",
       "weight": 1.0
     },
     {
@@ -8374,7 +8611,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1476",
+      "source_location": "L1505",
       "weight": 1.0
     },
     {
@@ -8686,7 +8923,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L153",
+      "source_location": "L148",
       "weight": 1.0
     },
     {
@@ -8698,7 +8935,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L166",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -8710,7 +8947,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L171",
+      "source_location": "L166",
       "weight": 1.0
     },
     {
@@ -8722,7 +8959,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L196",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -8734,7 +8971,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L233",
+      "source_location": "L228",
       "weight": 1.0
     },
     {
@@ -8746,7 +8983,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L341",
+      "source_location": "L337",
       "weight": 1.0
     },
     {
@@ -8758,7 +8995,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L363",
+      "source_location": "L359",
       "weight": 1.0
     },
     {
@@ -8770,7 +9007,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L468",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -8782,7 +9019,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L565",
+      "source_location": "L561",
       "weight": 1.0
     },
     {
@@ -8794,7 +9031,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L696",
+      "source_location": "L692",
       "weight": 1.0
     },
     {
@@ -8806,7 +9043,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L705",
+      "source_location": "L701",
       "weight": 1.0
     },
     {
@@ -9718,7 +9955,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1047",
+      "source_location": "L1076",
       "weight": 1.0
     },
     {
@@ -9730,7 +9967,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1113",
+      "source_location": "L1142",
       "weight": 1.0
     },
     {
@@ -9766,7 +10003,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1295",
+      "source_location": "L1324",
       "weight": 1.0
     },
     {
@@ -9778,7 +10015,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1296",
+      "source_location": "L1325",
       "weight": 1.0
     },
     {
@@ -11219,6 +11456,30 @@
       "context": "import",
       "source_file": "src/app/api/share/[code]/route.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_share_code_route",
+      "target": "src_lib_share_store_getlocalsharestore",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/app/api/share/[code]/route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_share_route",
+      "target": "src_lib_share_store_getlocalsharestore",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/app/api/share/route.ts",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -15555,6 +15816,18 @@
       "weight": 1.0
     },
     {
+      "source": "scratch_desktop_laptop_audit",
+      "target": "ref_puppeteer_core",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
       "source": "scripts_mobile_visual_audit",
       "target": "ref_puppeteer_core",
       "relation": "imports_from",
@@ -15651,6 +15924,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_app_api_share_code_route",
+      "target": "src_lib_share_store",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/app/api/share/[code]/route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "src_app_api_share_route",
       "target": "ref_supabase_ssr",
       "relation": "imports_from",
@@ -15660,6 +15945,18 @@
       "context": "import",
       "source_file": "src/app/api/share/route.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_share_route",
+      "target": "src_lib_share_store",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/app/api/share/route.ts",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -17407,6 +17704,72 @@
       "weight": 1.0
     },
     {
+      "source": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes",
+      "target": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_desktop_and_laptop_ui_ux_audit_fixes_implementation_plan",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_desktop_and_laptop_ui_ux_audit_fixes_implementation_plan",
+      "target": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_global_constraints",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_desktop_and_laptop_ui_ux_audit_fixes_implementation_plan",
+      "target": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_task_1_desktop_laptop_multi_viewport_audit_suite",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_desktop_and_laptop_ui_ux_audit_fixes_implementation_plan",
+      "target": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_task_2_visual_ergonomic_analysis_across_viewports",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_desktop_and_laptop_ui_ux_audit_fixes_implementation_plan",
+      "target": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_task_3_implement_layout_and_styling_fixes",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_desktop_and_laptop_ui_ux_audit_fixes_implementation_plan",
+      "target": "docs_superpowers_plans_2026_09_07_desktop_laptop_audit_and_fixes_task_4_re_audit_verification_commit",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-09-07-desktop-laptop-audit-and-fixes.md",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
       "source": "docs_superpowers_plans_2026_09_07_mobile_responsive_overhaul",
       "target": "docs_superpowers_plans_2026_09_07_mobile_responsive_overhaul_mobile_responsive_ergonomics_overhaul_implementation_plan",
       "relation": "contains",
@@ -18815,6 +19178,61 @@
       "weight": 1.0
     },
     {
+      "source": "scratch_desktop_laptop_audit",
+      "target": "scratch_desktop_laptop_audit_waitforserver",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "scratch_desktop_laptop_audit",
+      "target": "scratch_desktop_laptop_audit_clickbuttonwithtext",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "scratch_desktop_laptop_audit",
+      "target": "scratch_desktop_laptop_audit_viewports",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "scratch_desktop_laptop_audit",
+      "target": "scratch_desktop_laptop_audit_run",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "scratch_desktop_laptop_audit",
+      "target": "scratch_desktop_laptop_audit_out_dir",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scratch/desktop-laptop-audit.mjs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
       "source": "scripts_build_compendium",
       "target": "scripts_build_compendium_strip_tags",
       "relation": "contains",
@@ -19069,46 +19487,24 @@
     },
     {
       "source": "src_app_api_share_code_route",
-      "target": "src_app_api_share_code_route_get",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/app/api/share/[code]/route.ts",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_api_share_code_route",
       "target": "src_app_api_share_code_route_options",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/api/share/[code]/route.ts",
-      "source_location": "L82",
+      "source_location": "L102",
       "weight": 1.0
     },
     {
-      "source": "src_app_api_share_route",
-      "target": "src_app_api_share_route_get",
+      "source": "src_app_api_share_code_route",
+      "target": "src_app_api_share_code_route_get",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "src/app/api/share/route.ts",
-      "source_location": "L131",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_api_share_route",
-      "target": "src_app_api_share_route_delete",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/app/api/share/route.ts",
-      "source_location": "L148",
+      "source_file": "src/app/api/share/[code]/route.ts",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -19124,13 +19520,35 @@
     },
     {
       "source": "src_app_api_share_route",
+      "target": "src_app_api_share_route_get",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/api/share/route.ts",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_share_route",
+      "target": "src_app_api_share_route_delete",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/api/share/route.ts",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_share_route",
       "target": "src_app_api_share_route_post",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/api/share/route.ts",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -19196,7 +19614,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1046",
+      "source_location": "L1075",
       "weight": 1.0
     },
     {
@@ -19207,7 +19625,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1052",
+      "source_location": "L1081",
       "weight": 1.0
     },
     {
@@ -19218,7 +19636,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1112",
+      "source_location": "L1141",
       "weight": 1.0
     },
     {
@@ -19229,7 +19647,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1119",
+      "source_location": "L1148",
       "weight": 1.0
     },
     {
@@ -19251,7 +19669,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1294",
+      "source_location": "L1323",
       "weight": 1.0
     },
     {
@@ -19262,7 +19680,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1301",
+      "source_location": "L1330",
       "weight": 1.0
     },
     {
@@ -19273,7 +19691,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1377",
+      "source_location": "L1406",
       "weight": 1.0
     },
     {
@@ -19284,7 +19702,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1382",
+      "source_location": "L1411",
       "weight": 1.0
     },
     {
@@ -19306,7 +19724,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1537",
+      "source_location": "L1566",
       "weight": 1.0
     },
     {
@@ -19317,7 +19735,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1597",
+      "source_location": "L1626",
       "weight": 1.0
     },
     {
@@ -19328,18 +19746,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1655",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page",
-      "target": "src_app_page_dndcharactersheet",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1677",
+      "source_location": "L1684",
       "weight": 1.0
     },
     {
@@ -19351,6 +19758,17 @@
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
       "source_location": "L169",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page",
+      "target": "src_app_page_dndcharactersheet",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1706",
       "weight": 1.0
     },
     {
@@ -20978,7 +21396,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/compendium/races.ts",
-      "source_location": "L2458",
+      "source_location": "L2451",
       "weight": 1.0
     },
     {
@@ -21587,6 +22005,28 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_share_store",
+      "target": "src_lib_share_store_charactersharerecord",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/share-store.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_share_store",
+      "target": "src_lib_share_store_getlocalsharestore",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/share-store.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_supabase_client",
       "target": "src_lib_supabase_client_createclient",
       "relation": "contains",
@@ -22051,5 +22491,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "bf5ef2c858c0604f7a9af26477b620b384387cad"
+  "built_at_commit": "bd1a3b9b3ef20157135b472cac5a3e6514ccc331"
 }

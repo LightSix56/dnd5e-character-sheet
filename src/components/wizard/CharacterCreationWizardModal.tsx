@@ -128,25 +128,20 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // Final effective racial bonuses map
   const racialBonuses = useMemo<Record<AbilityName, number>>(() => {
     const map: Record<AbilityName, number> = { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 };
-    // Add fixed bonuses from race/subrace
-    if (selectedRace.abilityBonuses) {
-      for (const [k, v] of Object.entries(selectedRace.abilityBonuses)) {
-        if (v) map[k as AbilityName] = (map[k as AbilityName] || 0) + v;
+    // Add fixed bonuses from racialBonusConfig (properly accounts for subrace overrides & base)
+    if (racialBonusConfig.fixedBonuses) {
+      for (const [k, v] of Object.entries(racialBonusConfig.fixedBonuses)) {
+        if (typeof v === 'number') map[k as AbilityName] = v;
       }
     }
-    if (selectedSubrace?.abilityBonuses) {
-      for (const [k, v] of Object.entries(selectedSubrace.abilityBonuses)) {
-        if (v) map[k as AbilityName] = (map[k as AbilityName] || 0) + v;
-      }
-    }
-    // Add custom picked bonuses
+    // Add custom picked bonuses (e.g. Variant Human, Half-Elf)
     if (racialBonusConfig.hasCustomBonus) {
       for (const ab of customRacialBonuses) {
         map[ab] = (map[ab] || 0) + racialBonusConfig.bonusAmount;
       }
     }
     return map;
-  }, [selectedRace, selectedSubrace, racialBonusConfig, customRacialBonuses]);
+  }, [racialBonusConfig, customRacialBonuses]);
 
   // Racial skills
   const racialSkillData = useMemo(() => {
@@ -232,6 +227,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const handleGenerateName = useCallback(() => {
     const name = generateFantasyName(selectedRace.id);
     setCharName(name);
+    setStepError(null);
   }, [selectedRace]);
 
   // On selecting race
@@ -939,22 +935,25 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         )}
 
         {/* Main Step Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 space-y-4 sm:space-y-6">
           {/* ══════════════════════════════════════════════
               ШАГ 1: КОНЦЕПЦИЯ И РАСА
           ══════════════════════════════════════════════ */}
           {currentStep === 1 && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Name Generator Block */}
-              <div className="p-4 rounded-lg space-y-2.5" style={{ background: 'rgba(232, 211, 162, 0.4)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
-                <label className="parchment-label text-sm font-bold block" style={{ color: '#3D2012' }}>
+              <div className="p-3.5 sm:p-4 rounded-lg space-y-2" style={{ background: 'rgba(232, 211, 162, 0.4)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                <label className="parchment-label text-xs sm:text-sm font-bold block" style={{ color: '#3D2012' }}>
                   Имя персонажа
                 </label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={charName}
-                    onChange={e => setCharName(e.target.value)}
+                    onChange={e => {
+                      setCharName(e.target.value);
+                      if (stepError) setStepError(null);
+                    }}
                     placeholder="Например, Торин Дубощит, Лираэль Лунная Тень..."
                     className="parchment-input-boxed flex-1 text-sm py-1.5 px-3"
                   />

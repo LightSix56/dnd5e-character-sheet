@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { createExampleWarrior } from '@/lib/dnd-types';
+import { getLocalShareStore } from '@/lib/share-store';
 
 // Публичное чтение снимка персонажа по коду — авторизация не требуется,
 // код и есть секрет. Используется внешними приложениями (AI Dungeon Master).
@@ -25,6 +26,25 @@ export async function GET(
           data: demoChar,
           created_at: new Date().toISOString(),
         },
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=60',
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    );
+  }
+
+  // Check in-memory store for local / demo shares
+  const localRecord = getLocalShareStore().get(code);
+  if (localRecord) {
+    if (localRecord.expires_at && new Date(localRecord.expires_at) < new Date()) {
+      return NextResponse.json({ error: 'Ссылка не найдена или истекла' }, { status: 404 });
+    }
+    return NextResponse.json(
+      {
+        character: localRecord,
       },
       {
         headers: {

@@ -38,14 +38,7 @@ export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
     "source": "PHB",
     "category": "core",
     "description": "Самые адаптивные, многочисленные и амбициозные среди всех народов мультивселенной. Разнообразны по обычаям, культуре и стремлениям.",
-    "abilityBonuses": {
-      "СИЛ": 1,
-      "ЛОВ": 1,
-      "ТЕЛ": 1,
-      "ИНТ": 1,
-      "МДР": 1,
-      "ХАР": 1
-    },
+    "abilityBonuses": {},
     "speed": 30,
     "size": "Средний",
     "darkvision": 0,

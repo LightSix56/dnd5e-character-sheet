@@ -380,10 +380,10 @@ export function StatsCalculatorModal({
         </div>
 
         {/* Main Tab Content */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-4 max-h-[52vh]">
+        <div className="flex-1 min-h-0 p-3 sm:p-4 overflow-y-auto space-y-3 sm:space-y-4">
           {/* ════ TAB 1: POINT BUY ════ */}
           {activeTab === 'point_buy' && (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {/* Point Pool Banner */}
               <div
                 className="p-3 rounded-lg flex items-center justify-between flex-wrap gap-2"
@@ -483,7 +483,7 @@ export function StatsCalculatorModal({
                   return (
                     <div
                       key={ab}
-                      className="p-2.5 rounded-lg grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
+                      className="p-2 sm:py-1.5 sm:px-2.5 rounded-lg grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
                       style={{
                         background: 'rgba(251, 240, 220, 0.65)',
                         border: '1px solid rgba(201, 168, 76, 0.4)',
@@ -594,7 +594,7 @@ export function StatsCalculatorModal({
                   return (
                     <div
                       key={ab}
-                      className="p-3 rounded-lg grid grid-cols-1 sm:grid-cols-12 gap-3 items-center"
+                      className="p-2 sm:py-1.5 sm:px-2.5 rounded-lg grid grid-cols-1 sm:grid-cols-12 gap-3 items-center"
                       style={{
                         background: 'rgba(251, 240, 220, 0.65)',
                         border: '1px solid rgba(201, 168, 76, 0.4)',
@@ -737,7 +737,7 @@ export function StatsCalculatorModal({
                   return (
                     <div
                       key={ab}
-                      className="p-2.5 rounded-lg grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
+                      className="p-2 sm:py-1.5 sm:px-2.5 rounded-lg grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"
                       style={{
                         background: 'rgba(251, 240, 220, 0.65)',
                         border: '1px solid rgba(201, 168, 76, 0.4)',

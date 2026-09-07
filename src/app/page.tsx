@@ -474,19 +474,41 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
 
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4" onClick={onCancel}>
-      <div className="parchment-modal max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="p-6 space-y-4">
-          {/* Header */}
-          <div className="border-b pb-3" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
-            <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: '#3D2012' }}>
+      <div
+        className="parchment-modal max-w-2xl w-full max-h-[92vh] flex flex-col rounded-xl overflow-hidden shadow-2xl"
+        style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Fixed Header */}
+        <div
+          className="p-4 sm:p-5 border-b flex items-center justify-between flex-none"
+          style={{
+            borderColor: 'rgba(201, 168, 76, 0.4)',
+            background: 'linear-gradient(180deg, rgba(232, 211, 162, 0.5) 0%, rgba(245, 230, 200, 0.25) 100%)'
+          }}
+        >
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
               <D20Icon size={24} />
               <span>Повышение до {newLevel}-го уровня</span>
             </h2>
-            <div className="flex items-center justify-between text-xs mt-1" style={{ color: '#8B6914' }}>
+            <div className="flex items-center gap-3 text-xs mt-1" style={{ color: '#8B6914' }}>
               <span>{char.name || 'Персонаж'} — <strong>{char.className || 'Без класса'}</strong> {char.subclass ? `(${char.subclass})` : ''}</span>
               <span className="font-mono">Кость хитов: 1{diceNotation}{dieSize}</span>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={onCancel}
+            title="Закрыть"
+            className="parchment-remove-btn w-8 h-8 flex items-center justify-center text-sm font-bold"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Scrollable Body */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
 
 
           {/* Proficiency Bonus Notification */}
@@ -1020,21 +1042,28 @@ const LevelUpModal = React.memo(function LevelUpModal({ char, onConfirm, onCance
             {newSpells.filter(s => s.name.trim()).length > 0 && <p>• Заклинания: {newSpells.filter(s => s.name.trim()).map(s => `${s.name} (${s.level} ур.)`).join(', ')}</p>}
           </div>
 
-          {/* Buttons */}
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onCancel} className="flex-1 parchment-btn-secondary py-2">
-              Отмена
-            </button>
-            <button
-              type="button"
-              disabled={isASIOverCap || (isSubclassChoice && availableSubclasses.length > 0 && !chosenSubclass)}
-              onClick={() => onConfirm(buildEntry())}
-              className="flex-1 parchment-btn font-bold text-sm py-2 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <D20Icon size={18} />
-              <span>Повысить до {newLevel}-го уровня</span>
-            </button>
-          </div>
+        </div>
+
+        {/* Sticky Footer */}
+        <div
+          className="p-3.5 sm:p-4 border-t flex items-center justify-between gap-3 flex-none"
+          style={{
+            borderColor: 'rgba(201, 168, 76, 0.4)',
+            background: 'linear-gradient(180deg, rgba(245, 230, 200, 0.95) 0%, #F5E6C8 100%)'
+          }}
+        >
+          <button type="button" onClick={onCancel} className="parchment-btn-secondary px-5 py-2 text-xs sm:text-sm">
+            Отмена
+          </button>
+          <button
+            type="button"
+            disabled={isASIOverCap || (isSubclassChoice && availableSubclasses.length > 0 && !chosenSubclass)}
+            onClick={() => onConfirm(buildEntry())}
+            className="parchment-btn font-bold text-xs sm:text-sm px-5 py-2 flex items-center justify-center gap-2 shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <D20Icon size={18} />
+            <span>Повысить до {newLevel}-го уровня</span>
+          </button>
         </div>
       </div>
     </div>
@@ -3220,7 +3249,7 @@ export default function DnDCharacterSheet() {
               </button>
               <button type="button" onClick={handleLoadJSON} className="parchment-header-btn flex items-center gap-1.5" title="Загрузить из JSON">
                 <ChestIcon size={16} />
-                <span>Загрузить JSON</span>
+                <span>Загрузить<span className="hidden xl:inline"> JSON</span></span>
               </button>
               <button type="button" onClick={handleReset} className="parchment-header-btn flex items-center gap-1.5" title="Очистить лист">
                 <HourglassIcon size={16} />
@@ -3234,7 +3263,7 @@ export default function DnDCharacterSheet() {
                 <button
                   type="button"
                   onClick={handleCloudSave}
-                  className="parchment-header-btn min-w-[128px] inline-flex items-center justify-center gap-1.5 text-center"
+                  className="parchment-header-btn min-w-[110px] xl:min-w-[128px] inline-flex items-center justify-center gap-1.5 text-center"
                   title="Синхронизировать с облаком"
                 >
                   {cloudSaveStatus === 'saving' ? (
@@ -3259,7 +3288,7 @@ export default function DnDCharacterSheet() {
                 </button>
                 <button type="button" onClick={() => setShowSignOutModal(true)} className="parchment-header-btn flex items-center gap-1.5" title="Выйти из аккаунта или сменить пользователя">
                   <PortalIcon size={16} />
-                  <span>Выйти из аккаунта</span>
+                  <span>Выйти<span className="hidden xl:inline"> из аккаунта</span></span>
                 </button>
               </div>
             ) : (

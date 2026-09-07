@@ -9,16 +9,16 @@
   "7": "compilerOptions",
   "8": "CharacterGridModal.tsx",
   "9": "dnd-icons.tsx",
-  "10": "StatsCalculatorModal.tsx",
+  "10": "NameGeneratorModal.tsx",
   "11": "react",
   "12": "CompendiumModals.tsx",
   "13": "ItemDetailModal.tsx",
   "14": "devDependencies",
-  "15": "ClassSelectorModal.tsx",
+  "15": "classes.ts",
   "16": "scripts",
   "17": "next",
   "18": "Proposed Changes",
-  "19": "mobile-visual-audit.mjs",
+  "19": "desktop-laptop-audit.mjs",
   "20": "utils.ts",
   "21": "tailwind.config.ts",
   "22": "build_full_compendium.py",
@@ -42,5 +42,7 @@
   "40": "adversarial-fixer/agent.md",
   "41": "rules/graphify.md",
   "42": "workflows/graphify.md",
-  "43": "@playwright/test"
+  "43": "@playwright/test",
+  "44": "Desktop and Laptop UI/UX Audit & Fixes Implementation Plan",
+  "45": "feats.ts"
 }

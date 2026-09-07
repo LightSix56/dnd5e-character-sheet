@@ -12,10 +12,10 @@
     "semantic_hash": "61b75764992ae129d835c9d3c019d66e"
   },
   "package.json": {
-    "mtime": 1788768784.1525319,
-    "seen": 1788768857.5434382,
-    "ast_hash": "7a87bfdbfeb54b09766608a80216aaac",
-    "semantic_hash": ""
+    "mtime": 1788763662.2671213,
+    "seen": 1788767676.2555776,
+    "ast_hash": "bff5477dd6b4179b1d24393603e98d54",
+    "semantic_hash": "bff5477dd6b4179b1d24393603e98d54"
   },
   "postcss.config.mjs": {
     "mtime": 1788423223.599409,
@@ -388,137 +388,5 @@
     "seen": 1788767676.2557068,
     "ast_hash": "f22272b2d73081c86e26ecb388faff25",
     "semantic_hash": "f22272b2d73081c86e26ecb388faff25"
-  },
-  "playwright.config.ts": {
-    "mtime": 1788768801.7677858,
-    "seen": 1788768857.5434442,
-    "ast_hash": "e58748281fbbf9bd96c72a690c1f036d",
-    "semantic_hash": ""
-  },
-  ".agents/agents/adversarial-breaker/agent.md": {
-    "mtime": 1788617068.6569102,
-    "seen": 1788768857.562638,
-    "ast_hash": "620f022a934467fa7f895f77e1204257",
-    "semantic_hash": ""
-  },
-  ".agents/agents/adversarial-fixer/agent.md": {
-    "mtime": 1788617081.2618735,
-    "seen": 1788768857.5626419,
-    "ast_hash": "cfe82561668915b315d1a27447fa057a",
-    "semantic_hash": ""
-  },
-  ".agents/rules/graphify.md": {
-    "mtime": 1788767649.896441,
-    "seen": 1788768857.562645,
-    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
-    "semantic_hash": ""
-  },
-  ".agents/skills/adversarial-breaker/SKILL.md": {
-    "mtime": 1788617213.9029381,
-    "seen": 1788768857.5626478,
-    "ast_hash": "043cb6b332fcc18dcc52f928c20bf7bb",
-    "semantic_hash": ""
-  },
-  ".agents/skills/adversarial-fixer/SKILL.md": {
-    "mtime": 1788617213.9039378,
-    "seen": 1788768857.5626507,
-    "ast_hash": "ea08e678cab2d65c8a03256d8dccda0a",
-    "semantic_hash": ""
-  },
-  ".agents/skills/adversarial-loop/SKILL.md": {
-    "mtime": 1788617213.9049366,
-    "seen": 1788768857.5626533,
-    "ast_hash": "a875e9f513befbbdb6471bb560928833",
-    "semantic_hash": ""
-  },
-  ".agents/workflows/graphify.md": {
-    "mtime": 1788767649.898455,
-    "seen": 1788768857.5626554,
-    "ast_hash": "a831cf3669f1e6ab85d8a80ebe655f99",
-    "semantic_hash": ""
-  },
-  "AGENTS.md": {
-    "mtime": 1788768812.1095278,
-    "seen": 1788768857.562658,
-    "ast_hash": "f14c7f189f7e3d20bc7bf7af990258e1",
-    "semantic_hash": ""
-  },
-  "docs/TECH_SPEC.md": {
-    "mtime": 1788762897.600754,
-    "seen": 1788768857.5626605,
-    "ast_hash": "0c55279966f5e3efe7a47862f06f4e86",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/plans/2026-09-05-comprehensive-style-and-input-audit.md": {
-    "mtime": 1788612344.3206742,
-    "seen": 1788768857.5626628,
-    "ast_hash": "bfaa5c4f16dcacf2d1f5f0c39a0beeb6",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/plans/2026-09-07-mobile-responsive-overhaul.md": {
-    "mtime": 1788763921.801687,
-    "seen": 1788768857.5626652,
-    "ast_hash": "8c5cae658d93781ff3afa7a6471e0bd1",
-    "semantic_hash": ""
-  },
-  "e2e/README.md": {
-    "mtime": 1788768804.2524183,
-    "seen": 1788768857.5626678,
-    "ast_hash": "51244adf61647d097c7b719ce96681d5",
-    "semantic_hash": ""
-  },
-  "public/robots.txt": {
-    "mtime": 1788597773.0189805,
-    "seen": 1788768857.56267,
-    "ast_hash": "89ddc04c2731d59fab150dff92b05477",
-    "semantic_hash": ""
-  },
-  "public/yandex_3080a71c935865ef.html": {
-    "mtime": 1788602424.9241343,
-    "seen": 1788768857.5626726,
-    "ast_hash": "09822dd4156667818a4bbd713b015483",
-    "semantic_hash": ""
-  },
-  "public/android-chrome-192x192.png": {
-    "mtime": 1788423223.599409,
-    "seen": 1788768857.562675,
-    "ast_hash": "6606ee116cd8399c059f2c30a2def832",
-    "semantic_hash": ""
-  },
-  "public/android-chrome-512x512.png": {
-    "mtime": 1788423223.6022584,
-    "seen": 1788768857.5626779,
-    "ast_hash": "8288f68175ce1ee8549c9b3016cff7bb",
-    "semantic_hash": ""
-  },
-  "public/apple-touch-icon.png": {
-    "mtime": 1788423223.6022584,
-    "seen": 1788768857.5626802,
-    "ast_hash": "84403ae5c300f97eccbe94755a1b2df6",
-    "semantic_hash": ""
-  },
-  "public/book-bg.webp": {
-    "mtime": 1788423223.606097,
-    "seen": 1788768857.5626829,
-    "ast_hash": "01d2a386968e853b4b0c0a7b813f5885",
-    "semantic_hash": ""
-  },
-  "public/favicon-16x16.png": {
-    "mtime": 1788423223.6077197,
-    "seen": 1788768857.5626855,
-    "ast_hash": "9c1edb9d9ebe4f512a209793ef45afae",
-    "semantic_hash": ""
-  },
-  "public/favicon-32x32.png": {
-    "mtime": 1788423223.6077197,
-    "seen": 1788768857.562688,
-    "ast_hash": "856fe28bbdbc14a855822ce672b1ada2",
-    "semantic_hash": ""
-  },
-  "public/logo.svg": {
-    "mtime": 1788423223.6117418,
-    "seen": 1788768857.562695,
-    "ast_hash": "42f46ee1967225126315578016f0f9b6",
-    "semantic_hash": ""
   }
 }

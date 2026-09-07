@@ -216,16 +216,16 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1788769762.963394,
-    "seen": 1788770630.6903574,
-    "ast_hash": "3e667c45c61cc33b9075477eb41ccaba",
+    "mtime": 1788783994.7425275,
+    "seen": 1788785411.6149845,
+    "ast_hash": "50f02baa43a5829a8ce454803b38946e",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
-    "mtime": 1788762897.626428,
-    "seen": 1788767676.2556512,
-    "ast_hash": "e17975bd2047d1a1c5ed559659fca6d0",
-    "semantic_hash": "e17975bd2047d1a1c5ed559659fca6d0"
+    "mtime": 1788783835.1633832,
+    "seen": 1788785411.61499,
+    "ast_hash": "fdcc4cc6926b1c84848073d529188c1e",
+    "semantic_hash": ""
   },
   "src/data/compendium/backgrounds.ts": {
     "mtime": 1788609182.6033762,
@@ -288,10 +288,10 @@
     "semantic_hash": ""
   },
   "src/data/compendium/spells.ts": {
-    "mtime": 1788762897.6407948,
-    "seen": 1788767676.2556746,
-    "ast_hash": "a0e51b31ec1354e414dbb9984760dc21",
-    "semantic_hash": "a0e51b31ec1354e414dbb9984760dc21"
+    "mtime": 1788801438.589028,
+    "seen": 1788801808.045775,
+    "ast_hash": "3563cf8e3758bc7f1ebe86fb889e58ad",
+    "semantic_hash": ""
   },
   "src/data/dnd-spells.ts": {
     "mtime": 1788424186.7583575,
@@ -312,10 +312,10 @@
     "semantic_hash": "9eafb37eb44d5898e34ced88980be7a0"
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1788762897.6418889,
-    "seen": 1788767676.2556827,
-    "ast_hash": "63a54f6f30a59978532e5f4eeaec7c67",
-    "semantic_hash": "63a54f6f30a59978532e5f4eeaec7c67"
+    "mtime": 1788802059.7499073,
+    "seen": 1788802318.0309212,
+    "ast_hash": "e2062fff741129ed1489acd74e60cb1f",
+    "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
     "mtime": 1788423223.6425788,
@@ -521,12 +521,6 @@
     "ast_hash": "42f46ee1967225126315578016f0f9b6",
     "semantic_hash": ""
   },
-  "scratch/desktop-laptop-audit.mjs": {
-    "mtime": 1788769360.5387237,
-    "seen": 1788770630.681495,
-    "ast_hash": "40383e0cb6288b2222ec2544acec5e82",
-    "semantic_hash": ""
-  },
   "src/lib/share-store.ts": {
     "mtime": 1788769972.6849413,
     "seen": 1788770630.6952467,
@@ -539,286 +533,64 @@
     "ast_hash": "c8a7f1d34be629fb64a6549a2edbd071",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_01_sheet_page1.png": {
-    "mtime": 1788770242.1954813,
-    "seen": 1788770630.7043035,
-    "ast_hash": "32de80722a5b6faeb3050fe6ef715822",
+  "test/wizard-level1-choices.test.ts": {
+    "mtime": 1788783851.6198187,
+    "seen": 1788785411.6230326,
+    "ast_hash": "fd83d6662adcbbb0fe94d7ebcbf6e8f4",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_02_sheet_page2.png": {
-    "mtime": 1788770243.3327692,
-    "seen": 1788770630.7043078,
-    "ast_hash": "32de80722a5b6faeb3050fe6ef715822",
+  "docs/superpowers/plans/2026-09-07-character-creation-wizard-full-options-plan.md": {
+    "mtime": 1788782235.746535,
+    "seen": 1788785411.6270595,
+    "ast_hash": "826280d8d8f2e0fd1fdc43b5e28c2336",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_03_sheet_page3.png": {
-    "mtime": 1788770244.472335,
-    "seen": 1788770630.7043118,
-    "ast_hash": "32de80722a5b6faeb3050fe6ef715822",
+  "docs/superpowers/specs/2026-09-07-character-creation-wizard-full-options-design.md": {
+    "mtime": 1788782219.6836195,
+    "seen": 1788785411.6277149,
+    "ast_hash": "147adf747461f439b3a6115878812725",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_04_create_choice_modal.png": {
-    "mtime": 1788770245.896851,
-    "seen": 1788770630.7043152,
-    "ast_hash": "f201b429cf11f7a2047c5cfa375f056b",
+  "src/components/levelup/level-up-choices.ts": {
+    "mtime": 1788802075.5786974,
+    "seen": 1788802318.02199,
+    "ast_hash": "48f8d0ef9301d42f3655a77fab88d618",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_05_wizard_step1_race.png": {
-    "mtime": 1788770247.0746794,
-    "seen": 1788770630.7043185,
-    "ast_hash": "a403f6da954073b2aca56787f7945349",
+  "src/data/compendium/auto-spells-engine.ts": {
+    "mtime": 1788801480.0125718,
+    "seen": 1788801808.04282,
+    "ast_hash": "53572b5b865d0a26f555c91bb9a54e93",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_06_wizard_step2_class.png": {
-    "mtime": 1788770248.4857514,
-    "seen": 1788770630.7043214,
-    "ast_hash": "32e9bfefacf4926cb95abd2656d3486e",
+  "test/auto-spells-engine.test.ts": {
+    "mtime": 1788801499.151978,
+    "seen": 1788801808.0494316,
+    "ast_hash": "1ddbd7665f33611efb895050c3df21e8",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_07_wizard_step3_background.png": {
-    "mtime": 1788770249.5480661,
-    "seen": 1788770630.704324,
-    "ast_hash": "32e9bfefacf4926cb95abd2656d3486e",
+  "test/level-up-choices.test.ts": {
+    "mtime": 1788802258.4331021,
+    "seen": 1788802318.033869,
+    "ast_hash": "8bcb7289ab3ab6ae6e04b28e3bde89f3",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_08_wizard_step4_stats.png": {
-    "mtime": 1788770250.621245,
-    "seen": 1788770630.7043266,
-    "ast_hash": "32e9bfefacf4926cb95abd2656d3486e",
+  "docs/superpowers/plans/2026-09-07-level-up-mechanics-and-spells-plan.md": {
+    "mtime": 1788801194.3458083,
+    "seen": 1788801808.0563712,
+    "ast_hash": "6dbac697e9040a2c76b6a3ea72e20c96",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_08b_wizard_step5_or_6.png": {
-    "mtime": 1788770251.6719918,
-    "seen": 1788770630.7043293,
-    "ast_hash": "32e9bfefacf4926cb95abd2656d3486e",
+  "docs/superpowers/specs/2026-09-07-level-up-mechanics-and-spells-design.md": {
+    "mtime": 1788801174.9654846,
+    "seen": 1788801808.0569928,
+    "ast_hash": "82513a2e3d33354559e0c697854a3c09",
     "semantic_hash": ""
   },
-  "artifacts/desktop_audit/desktop_1920_09_stats_calc_pointbuy.png": {
-    "mtime": 1788770256.5063012,
-    "seen": 1788770630.7043319,
-    "ast_hash": "bdc203659f02cc4eb1bd2784e75362e4",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/desktop_1920_10_stats_calc_roll4d6.png": {
-    "mtime": 1788770257.472781,
-    "seen": 1788770630.7043355,
-    "ast_hash": "4ea8b51a265f1c8505825d4a1ee4d730",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/desktop_1920_11_stats_calc_standard_array.png": {
-    "mtime": 1788770258.4347715,
-    "seen": 1788770630.7043378,
-    "ast_hash": "3cac672bf48eb74ed2e37ab07a09e7b9",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/desktop_1920_12_name_generator.png": {
-    "mtime": 1788770259.954175,
-    "seen": 1788770630.704341,
-    "ast_hash": "f10f664798c31f6127303a75255277c7",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/desktop_1920_13_characters_grid.png": {
-    "mtime": 1788770261.4499462,
-    "seen": 1788770630.7043436,
-    "ast_hash": "b1ffb0d4259ab856e4701000c8236253",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/desktop_1920_14_share_modal.png": {
-    "mtime": 1788770262.963293,
-    "seen": 1788770630.7043462,
-    "ast_hash": "6e90c338d51a3c379399ba3ef2b26e8a",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/desktop_1920_15_public_share_view.png": {
-    "mtime": 1788770433.682032,
-    "seen": 1788770630.7043495,
-    "ast_hash": "052170840b7c847ad3950fde4f257f04",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_01_sheet_page1.png": {
-    "mtime": 1788770208.0892,
-    "seen": 1788770630.704352,
-    "ast_hash": "2f7a8d69cb25747541dbbe506ba760ee",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_02_sheet_page2.png": {
-    "mtime": 1788770208.8408701,
-    "seen": 1788770630.704355,
-    "ast_hash": "2f7a8d69cb25747541dbbe506ba760ee",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_03_sheet_page3.png": {
-    "mtime": 1788770209.6626673,
-    "seen": 1788770630.7043579,
-    "ast_hash": "2f7a8d69cb25747541dbbe506ba760ee",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_04_create_choice_modal.png": {
-    "mtime": 1788770210.8041966,
-    "seen": 1788770630.7043607,
-    "ast_hash": "47e03f252335ecce22c2a0fabb5bb73c",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_05_wizard_step1_race.png": {
-    "mtime": 1788770211.6859818,
-    "seen": 1788770630.7043638,
-    "ast_hash": "b809886e60e295f77020962b3e1c5aac",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_06_wizard_step2_class.png": {
-    "mtime": 1788770212.7520225,
-    "seen": 1788770630.7043667,
-    "ast_hash": "a562dc814ade6df1af18d0bc719ba397",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_07_wizard_step3_background.png": {
-    "mtime": 1788770213.522822,
-    "seen": 1788770630.7043693,
-    "ast_hash": "a562dc814ade6df1af18d0bc719ba397",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_08_wizard_step4_stats.png": {
-    "mtime": 1788770214.3036664,
-    "seen": 1788770630.7043724,
-    "ast_hash": "a562dc814ade6df1af18d0bc719ba397",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_08b_wizard_step5_or_6.png": {
-    "mtime": 1788770215.0675669,
-    "seen": 1788770630.7043753,
-    "ast_hash": "a562dc814ade6df1af18d0bc719ba397",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_09_stats_calc_pointbuy.png": {
-    "mtime": 1788770217.3678837,
-    "seen": 1788770630.704378,
-    "ast_hash": "b83b229b5ac551895f7cb0392511b3d6",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_10_stats_calc_roll4d6.png": {
-    "mtime": 1788770218.055145,
-    "seen": 1788770630.7043805,
-    "ast_hash": "729e4db49fbc5cc878b107150861e2ae",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_11_stats_calc_standard_array.png": {
-    "mtime": 1788770218.757585,
-    "seen": 1788770630.7043827,
-    "ast_hash": "40a7bf3c4dc2566318d21babe28a4204",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_12_name_generator.png": {
-    "mtime": 1788770220.0148447,
-    "seen": 1788770630.7043855,
-    "ast_hash": "44bb558a370ef05ba21da80558c95979",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_13_characters_grid.png": {
-    "mtime": 1788770221.218058,
-    "seen": 1788770630.7043881,
-    "ast_hash": "cb557b335428be22f35b7cecae36173f",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_14_share_modal.png": {
-    "mtime": 1788770222.4880211,
-    "seen": 1788770630.7043908,
-    "ast_hash": "02e59abdd59859482d94cfef716ec7ce",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1366_15_public_share_view.png": {
-    "mtime": 1788770431.7157538,
-    "seen": 1788770630.7043931,
-    "ast_hash": "439b769d1644baf8b56238d715e7afaa",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_01_sheet_page1.png": {
-    "mtime": 1788770224.7089407,
-    "seen": 1788770630.7043962,
-    "ast_hash": "681343f325b027a2d5fab5fb005724d8",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_02_sheet_page2.png": {
-    "mtime": 1788770225.5488424,
-    "seen": 1788770630.7043989,
-    "ast_hash": "681343f325b027a2d5fab5fb005724d8",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_03_sheet_page3.png": {
-    "mtime": 1788770226.4013977,
-    "seen": 1788770630.7044017,
-    "ast_hash": "681343f325b027a2d5fab5fb005724d8",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_04_create_choice_modal.png": {
-    "mtime": 1788770227.614218,
-    "seen": 1788770630.704404,
-    "ast_hash": "30ffcfbf9673f2e4d7b11b482e8e8b0a",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_05_wizard_step1_race.png": {
-    "mtime": 1788770228.5521998,
-    "seen": 1788770630.7044067,
-    "ast_hash": "d41e286daff7f8a76b6a4388539cd9a9",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_06_wizard_step2_class.png": {
-    "mtime": 1788770229.6860726,
-    "seen": 1788770630.70441,
-    "ast_hash": "cd544464dae3dc1eaaf3889cef3b1eb4",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_07_wizard_step3_background.png": {
-    "mtime": 1788770230.5179036,
-    "seen": 1788770630.7044127,
-    "ast_hash": "cd544464dae3dc1eaaf3889cef3b1eb4",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_08_wizard_step4_stats.png": {
-    "mtime": 1788770231.3484793,
-    "seen": 1788770630.7044158,
-    "ast_hash": "cd544464dae3dc1eaaf3889cef3b1eb4",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_08b_wizard_step5_or_6.png": {
-    "mtime": 1788770232.196515,
-    "seen": 1788770630.704419,
-    "ast_hash": "cd544464dae3dc1eaaf3889cef3b1eb4",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_09_stats_calc_pointbuy.png": {
-    "mtime": 1788770234.3567731,
-    "seen": 1788770630.7044213,
-    "ast_hash": "b2f6642ef7deaa4a8bca02566a0be79d",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_10_stats_calc_roll4d6.png": {
-    "mtime": 1788770235.0984566,
-    "seen": 1788770630.7044237,
-    "ast_hash": "ca0e8fd9417fc6d04e5b45374a65d287",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_11_stats_calc_standard_array.png": {
-    "mtime": 1788770235.8311903,
-    "seen": 1788770630.7044265,
-    "ast_hash": "99fb158dc14218053df6e7383ea86a16",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_12_name_generator.png": {
-    "mtime": 1788770237.1200526,
-    "seen": 1788770630.7044284,
-    "ast_hash": "0d67c4a9199ca54a50ac54f4ff3f79ea",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_13_characters_grid.png": {
-    "mtime": 1788770238.3941793,
-    "seen": 1788770630.704431,
-    "ast_hash": "d9dee217f15f57ba34d61342f9a2c8b6",
-    "semantic_hash": ""
-  },
-  "artifacts/desktop_audit/laptop_1440_14_share_modal.png": {
-    "mtime": 1788770239.6937692,
-    "seen": 1788770630.704434,
-    "ast_hash": "9df954fca1f93c9663a37ebe996551d2",
+  "src/components/levelup/LevelUpModal.tsx": {
+    "mtime": 1788802209.9066062,
+    "seen": 1788802318.0219824,
+    "ast_hash": "113cc7c7492f24c9e2b8c935faffdee9",
     "semantic_hash": ""
   }
 }

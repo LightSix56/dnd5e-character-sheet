@@ -126,9 +126,9 @@
     "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
   },
   "src/app/page.tsx": {
-    "mtime": 1788770119.3308191,
-    "seen": 1788770630.6864157,
-    "ast_hash": "850369d910ebb4527d921f6ed448f958",
+    "mtime": 1788802775.416793,
+    "seen": 1788802849.681195,
+    "ast_hash": "4d9decc763255774270f5b676287e9a5",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -288,10 +288,10 @@
     "semantic_hash": ""
   },
   "src/data/compendium/spells.ts": {
-    "mtime": 1788762897.6407948,
-    "seen": 1788767676.2556746,
-    "ast_hash": "a0e51b31ec1354e414dbb9984760dc21",
-    "semantic_hash": "a0e51b31ec1354e414dbb9984760dc21"
+    "mtime": 1788801438.589028,
+    "seen": 1788801808.045775,
+    "ast_hash": "3563cf8e3758bc7f1ebe86fb889e58ad",
+    "semantic_hash": ""
   },
   "src/data/dnd-spells.ts": {
     "mtime": 1788424186.7583575,
@@ -312,10 +312,10 @@
     "semantic_hash": "9eafb37eb44d5898e34ced88980be7a0"
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1788762897.6418889,
-    "seen": 1788767676.2556827,
-    "ast_hash": "63a54f6f30a59978532e5f4eeaec7c67",
-    "semantic_hash": "63a54f6f30a59978532e5f4eeaec7c67"
+    "mtime": 1788802686.3697696,
+    "seen": 1788802849.6928146,
+    "ast_hash": "80d4e8570903e111981b2911077d23ad",
+    "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
     "mtime": 1788423223.6425788,
@@ -549,6 +549,48 @@
     "mtime": 1788782219.6836195,
     "seen": 1788785411.6277149,
     "ast_hash": "147adf747461f439b3a6115878812725",
+    "semantic_hash": ""
+  },
+  "src/components/levelup/level-up-choices.ts": {
+    "mtime": 1788802075.5786974,
+    "seen": 1788802318.02199,
+    "ast_hash": "48f8d0ef9301d42f3655a77fab88d618",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/auto-spells-engine.ts": {
+    "mtime": 1788801480.0125718,
+    "seen": 1788801808.04282,
+    "ast_hash": "53572b5b865d0a26f555c91bb9a54e93",
+    "semantic_hash": ""
+  },
+  "test/auto-spells-engine.test.ts": {
+    "mtime": 1788801499.151978,
+    "seen": 1788801808.0494316,
+    "ast_hash": "1ddbd7665f33611efb895050c3df21e8",
+    "semantic_hash": ""
+  },
+  "test/level-up-choices.test.ts": {
+    "mtime": 1788802258.4331021,
+    "seen": 1788802318.033869,
+    "ast_hash": "8bcb7289ab3ab6ae6e04b28e3bde89f3",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-07-level-up-mechanics-and-spells-plan.md": {
+    "mtime": 1788801194.3458083,
+    "seen": 1788801808.0563712,
+    "ast_hash": "6dbac697e9040a2c76b6a3ea72e20c96",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-07-level-up-mechanics-and-spells-design.md": {
+    "mtime": 1788801174.9654846,
+    "seen": 1788801808.0569928,
+    "ast_hash": "82513a2e3d33354559e0c697854a3c09",
+    "semantic_hash": ""
+  },
+  "src/components/levelup/LevelUpModal.tsx": {
+    "mtime": 1788802209.9066062,
+    "seen": 1788802318.0219824,
+    "ast_hash": "113cc7c7492f24c9e2b8c935faffdee9",
     "semantic_hash": ""
   }
 }

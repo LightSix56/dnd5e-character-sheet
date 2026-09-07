@@ -9,6 +9,7 @@ import { DND_COMPENDIUM_RACES, type CompendiumRace, type CompendiumSubrace } fro
 import { DND_COMPENDIUM_CLASSES, type CompendiumClass } from '@/data/compendium/classes';
 import { DND_COMPENDIUM_BACKGROUNDS, type CompendiumBackground } from '@/data/compendium/backgrounds';
 import { DND_COMPENDIUM_SPELLS, type DndSpell } from '@/data/compendium/spells';
+import { DND_COMPENDIUM_FEATS } from '@/data/compendium/feats';
 import {
   generateFantasyName,
   getRacialSkillData,
@@ -21,7 +22,13 @@ import {
   roll4d6DropLowest,
   validateStandardArray,
   calcPreparedSpellsLimit,
-  calculateWizardAC
+  calculateWizardAC,
+  getRacialChoicesConfig,
+  DWARF_TOOL_OPTIONS,
+  DRAGON_ANCESTRIES,
+  ALL_DND_LANGUAGES,
+  STANDARD_LANGUAGES,
+  EXOTIC_LANGUAGES
 } from './wizard-helpers';
 import {
   D20Icon, ScrollIcon, SpellbookIcon, CrossedSwordsIcon,
@@ -51,6 +58,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [customRacialBonuses, setCustomRacialBonuses] = useState<AbilityName[]>([]);
   // For races with skill choice (Variant Human, Half-Elf, Kenku, etc.)
   const [customRacialSkills, setCustomRacialSkills] = useState<string[]>([]);
+  // Additional racial choices (Variant Human Feat, High Elf Cantrip, Dwarf Tool, Dragon Ancestry, Languages)
+  const [selectedRacialFeatId, setSelectedRacialFeatId] = useState<string>('');
+  const [selectedRacialCantrip, setSelectedRacialCantrip] = useState<string>('');
+  const [selectedRacialTool, setSelectedRacialTool] = useState<string>('Инструменты кузнеца');
+  const [selectedDragonColor, setSelectedDragonColor] = useState<string>('Красный');
+  const [selectedExtraLanguages, setSelectedExtraLanguages] = useState<string[]>([]);
 
   // ── Step 2: Class & Skills ──
   const [selectedClassId, setSelectedClassId] = useState<string>('fighter');
@@ -175,6 +188,41 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return list;
   }, [racialSkillData, customRacialSkills]);
 
+  // Racial choices configuration (Feat, Cantrip, Tool, Dragon Ancestry, Languages)
+  const racialChoicesConfig = useMemo(() => {
+    if (!selectedRace) return null;
+    return getRacialChoicesConfig(selectedRace, selectedSubrace);
+  }, [selectedRace, selectedSubrace]);
+
+  // Base languages granted by race (excluding placeholder text like "на выбор")
+  const baseRaceLanguages = useMemo(() => {
+    if (!selectedRace?.languages) return [];
+    return selectedRace.languages.filter(l => !l.toLowerCase().includes('выбор'));
+  }, [selectedRace]);
+
+  // Sorted feats from compendium
+  const sortedFeats = useMemo(() => {
+    return [...DND_COMPENDIUM_FEATS].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+  }, []);
+
+  // Wizard cantrips for High Elf
+  const availableWizardCantrips = useMemo(() => {
+    return DND_COMPENDIUM_SPELLS.filter(
+      s => s.level === 0 && (s.classes || []).some(cls => cls.toLowerCase() === 'волшебник' || cls.toLowerCase() === 'wizard')
+    ).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+  }, []);
+
+  // Selected racial feat details
+  const selectedRacialFeat = useMemo(() => {
+    if (!selectedRacialFeatId) return null;
+    return DND_COMPENDIUM_FEATS.find(f => f.id === selectedRacialFeatId) || null;
+  }, [selectedRacialFeatId]);
+
+  // Selected dragon ancestry details
+  const selectedDragonAncestry = useMemo(() => {
+    return DRAGON_ANCESTRIES.find(d => d.color === selectedDragonColor) || DRAGON_ANCESTRIES[0];
+  }, [selectedDragonColor]);
+
   // Class skill config
   const classSkillConfig = useMemo(() => {
     return getClassSkillConfig(selectedClass.name);
@@ -270,6 +318,13 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     setCustomRacialSkills([]);
     // Prune class skills that conflict with new race's fixed skills
     setSelectedClassSkills(prev => prev.filter(s => !sData.fixedSkills.includes(s)));
+
+    // Reset racial choices
+    setSelectedRacialFeatId('');
+    setSelectedRacialCantrip('');
+    setSelectedRacialTool('Инструменты кузнеца');
+    setSelectedDragonColor('Красный');
+    setSelectedExtraLanguages([]);
   }, []);
 
   const handleSelectSubrace = useCallback((subrace: CompendiumSubrace) => {
@@ -284,7 +339,29 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     const sData = getRacialSkillData(selectedRace, subrace);
     setCustomRacialSkills([]);
     setSelectedClassSkills(prev => prev.filter(s => !sData.fixedSkills.includes(s)));
+
+    // Reset racial choices on subrace switch
+    setSelectedRacialFeatId('');
+    setSelectedRacialCantrip('');
+    setSelectedRacialTool('Инструменты кузнеца');
+    setSelectedDragonColor('Красный');
+    setSelectedExtraLanguages([]);
   }, [selectedRace]);
+
+  // Toggle extra racial language (with strict limit enforcement)
+  const handleToggleExtraLanguage = useCallback((lang: string) => {
+    if (baseRaceLanguages.includes(lang)) return;
+    setSelectedExtraLanguages(prev => {
+      if (prev.includes(lang)) {
+        return prev.filter(l => l !== lang);
+      }
+      const maxCount = racialChoicesConfig?.extraLanguageCount || 0;
+      if (prev.length >= maxCount) {
+        return prev;
+      }
+      return [...prev, lang];
+    });
+  }, [baseRaceLanguages, racialChoicesConfig]);
 
   // On selecting class: initialize default recommended skills and scores
   const handleSelectClass = useCallback((cls: CompendiumClass) => {
@@ -432,6 +509,21 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         if (new Set(customRacialSkills).size !== customRacialSkills.length) {
           return { valid: false, error: 'Расовые навыки не могут повторяться.' };
         }
+      }
+      if (racialChoicesConfig?.needsFeat && !selectedRacialFeatId) {
+        return { valid: false, error: 'Пожалуйста, выберите стартовую черту (Feat).' };
+      }
+      if (racialChoicesConfig?.needsCantrip && !selectedRacialCantrip) {
+        return { valid: false, error: 'Пожалуйста, выберите дополнительный заговор волшебника.' };
+      }
+      if (racialChoicesConfig?.needsTool && !selectedRacialTool) {
+        return { valid: false, error: 'Пожалуйста, выберите ремесленный инструмент.' };
+      }
+      if (racialChoicesConfig?.needsDragonColor && !selectedDragonColor) {
+        return { valid: false, error: 'Пожалуйста, выберите драконье наследие.' };
+      }
+      if (racialChoicesConfig && selectedExtraLanguages.length < racialChoicesConfig.extraLanguageCount) {
+        return { valid: false, error: `Пожалуйста, выберите ещё ${racialChoicesConfig.extraLanguageCount - selectedExtraLanguages.length} доп. язык(а).` };
       }
       return { valid: true };
     }
@@ -612,12 +704,18 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     // Starting gold
     const startingGold = (selectedBackground.startingGold || 10);
 
-    // Languages: Race languages + Background languages
-    const languagesList = [
-      ...(selectedRace?.languages || []),
+    // Languages: Base Race languages + Selected Extra languages + Background languages
+    const baseLangs = (selectedRace?.languages || []).filter(l => !l.toLowerCase().includes('выбор'));
+    const languagesList = Array.from(new Set([
+      ...baseLangs,
+      ...selectedExtraLanguages,
       ...(selectedBackground.languages || [])
-    ];
-    const languagesText = `Языки: ${languagesList.join(', ')}\nВладение доспехами и оружием: ${classSkillConfig.template?.armorWeaponProfs || selectedClass.armorWeaponProfs}\nВладение инструментами: ${selectedBackground.toolProficiencies.join(', ') || 'Нет'}`;
+    ]));
+    const toolsList: string[] = [...(selectedBackground.toolProficiencies || [])];
+    if (racialChoicesConfig?.needsTool && selectedRacialTool && !toolsList.includes(selectedRacialTool)) {
+      toolsList.push(selectedRacialTool);
+    }
+    const languagesText = `Языки: ${languagesList.join(', ')}\nВладение доспехами и оружием: ${classSkillConfig.template?.armorWeaponProfs || selectedClass.armorWeaponProfs}\nВладение инструментами: ${toolsList.join(', ') || 'Нет'}`;
 
     // Features & Traits list
     const traitsList: any[] = [];
@@ -645,6 +743,54 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         });
         featureTextLines.push(`[${selectedSubrace.name}] ${t.name}: ${t.description}`);
       }
+    }
+
+    // Draconic Ancestry trait
+    if (racialChoicesConfig?.needsDragonColor && selectedDragonAncestry) {
+      traitsList.push({
+        id: 'race-dragon-ancestry',
+        name: `Драконье наследие: ${selectedDragonAncestry.color}`,
+        source: selectedRace?.name || 'Драконорождённый',
+        summary: selectedDragonAncestry.description,
+        description: `Вид дракона: ${selectedDragonAncestry.color}. Тип урона: ${selectedDragonAncestry.damageType}. Оружие дыхания: ${selectedDragonAncestry.breathShape} (спасбросок ${selectedDragonAncestry.saveAbility}). Сопротивление урону: ${selectedDragonAncestry.damageType}.`
+      });
+      featureTextLines.push(`[Драконье наследие] ${selectedDragonAncestry.color}: урон ${selectedDragonAncestry.damageType}, дыхание ${selectedDragonAncestry.breathShape} (спасбросок ${selectedDragonAncestry.saveAbility}).`);
+    }
+
+    // Racial Feat trait (Variant Human, Custom Lineage)
+    if (racialChoicesConfig?.needsFeat && selectedRacialFeat) {
+      traitsList.push({
+        id: `feat-${selectedRacialFeat.id}`,
+        name: `Черта: ${selectedRacialFeat.name}`,
+        source: selectedRace?.name || 'Раса',
+        summary: selectedRacialFeat.summary,
+        description: selectedRacialFeat.description
+      });
+      featureTextLines.push(`[Черта] ${selectedRacialFeat.name}: ${selectedRacialFeat.description}`);
+    }
+
+    // Racial Cantrip trait (High Elf)
+    if (racialChoicesConfig?.needsCantrip && selectedRacialCantrip) {
+      traitsList.push({
+        id: 'race-cantrip',
+        name: `Заговор высшего эльфа: ${selectedRacialCantrip}`,
+        source: selectedSubrace?.name || 'Высший эльф',
+        summary: `Дополнительный заговор волшебника: ${selectedRacialCantrip} (базовая характеристика — Интеллект).`,
+        description: `Вы знаете один заговор из списка заклинаний волшебника на ваш выбор: ${selectedRacialCantrip}. Базовой характеристикой для его использования является Интеллект.`
+      });
+      featureTextLines.push(`[Заговор высшего эльфа] ${selectedRacialCantrip} (ИНТ)`);
+    }
+
+    // Racial Dwarf Tool trait
+    if (racialChoicesConfig?.needsTool && selectedRacialTool) {
+      traitsList.push({
+        id: 'race-dwarf-tool',
+        name: `Владение инструментом: ${selectedRacialTool}`,
+        source: selectedRace?.name || 'Дворф',
+        summary: `Владение ремесленными инструментами (${selectedRacialTool}).`,
+        description: `Вы получаете владение ремесленными инструментами на ваш выбор: ${selectedRacialTool}.`
+      });
+      featureTextLines.push(`[Ремесленные инструменты дворфа] ${selectedRacialTool}`);
     }
 
     // Class 1st level features
@@ -797,11 +943,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       treasure: '',
 
       spellcastingClass: spellLimits.isCaster ? selectedClass.name : '',
-      spellcastingAbility: spellLimits.spellcastingAbility,
+      spellcastingAbility: (spellLimits.spellcastingAbility || (racialChoicesConfig?.needsCantrip && selectedRacialCantrip ? 'ИНТ' : '')) as AbilityName | '',
       spellSlots: spellLimits.isCaster && spellLimits.spellSlotsAt1[1]
         ? { 1: { totalSlots: spellLimits.spellSlotsAt1[1], expendedSlots: 0 } }
         : {},
-      cantrips: spellLimits.isCaster ? selectedCantrips : [],
+      cantrips: Array.from(new Set([...(spellLimits.isCaster ? selectedCantrips : []), ...(racialChoicesConfig?.needsCantrip && selectedRacialCantrip ? [selectedRacialCantrip] : [])])),
       spellsByLevel,
       levelHistory: []
     };
@@ -1159,6 +1305,340 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                 </button>
                               );
                             })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Feat Selector (Variant Human & Custom Lineage) */}
+                      {racialChoicesConfig?.needsFeat && (
+                        <div
+                          className="p-3.5 rounded-lg space-y-2.5"
+                          style={{
+                            background: 'rgba(232, 211, 162, 0.3)',
+                            border: '1px solid rgba(201, 168, 76, 0.4)'
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                              📜 Стартовая черта (Feat):
+                            </label>
+                            {selectedRacialFeatId ? (
+                              <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано</span>
+                            ) : (
+                              <span className="text-[11px] font-semibold text-[#B45309]">Обязательный выбор</span>
+                            )}
+                          </div>
+                          <select
+                            value={selectedRacialFeatId}
+                            onChange={e => setSelectedRacialFeatId(e.target.value)}
+                            className="parchment-select w-full text-xs py-1.5 px-2.5"
+                          >
+                            <option value="">-- Выберите стартовую черту (Feat) --</option>
+                            {sortedFeats.map(feat => (
+                              <option key={feat.id} value={feat.id}>
+                                {feat.name} ({feat.nameEn}){feat.prerequisite ? ` [Треб.: ${feat.prerequisite}]` : ''}
+                              </option>
+                            ))}
+                          </select>
+                          {selectedRacialFeat && (
+                            <div
+                              className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm"
+                              style={{
+                                background: 'rgba(251, 240, 220, 0.9)',
+                                border: '1px solid rgba(201, 168, 76, 0.5)'
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-xs text-[#3D2012]">
+                                  {selectedRacialFeat.name} <span className="text-[11px] font-normal text-[#8B6914]">({selectedRacialFeat.nameEn})</span>
+                                </span>
+                                {selectedRacialFeat.prerequisite && (
+                                  <span className="text-[10px] text-[#B45309] font-medium">
+                                    Требование: {selectedRacialFeat.prerequisite}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[11px] font-medium text-[#8B4513]">
+                                {selectedRacialFeat.summary}
+                              </div>
+                              <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)]">
+                                {selectedRacialFeat.description}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Cantrip Selector (High Elf) */}
+                      {racialChoicesConfig?.needsCantrip && (
+                        <div
+                          className="p-3.5 rounded-lg space-y-2.5"
+                          style={{
+                            background: 'rgba(232, 211, 162, 0.3)',
+                            border: '1px solid rgba(201, 168, 76, 0.4)'
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                              ✨ Заговор волшебника (Высший эльф):
+                            </label>
+                            {selectedRacialCantrip ? (
+                              <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано</span>
+                            ) : (
+                              <span className="text-[11px] font-semibold text-[#B45309]">Обязательный выбор</span>
+                            )}
+                          </div>
+                          <select
+                            value={selectedRacialCantrip}
+                            onChange={e => setSelectedRacialCantrip(e.target.value)}
+                            className="parchment-select w-full text-xs py-1.5 px-2.5"
+                          >
+                            <option value="">-- Выберите дополнительный заговор волшебника --</option>
+                            {availableWizardCantrips.map(spell => (
+                              <option key={spell.name} value={spell.name}>
+                                {spell.name} {spell.nameEn ? `(${spell.nameEn})` : ''} · {spell.school}
+                              </option>
+                            ))}
+                          </select>
+                          {selectedRacialCantrip && (() => {
+                            const spellObj = availableWizardCantrips.find(s => s.name === selectedRacialCantrip);
+                            if (!spellObj) return null;
+                            return (
+                              <div
+                                className="p-2.5 rounded text-xs space-y-1 shadow-sm"
+                                style={{ background: 'rgba(251, 240, 220, 0.85)', border: '1px solid rgba(201, 168, 76, 0.4)' }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="font-bold text-[#3D2012]">{spellObj.name} {spellObj.nameEn ? `(${spellObj.nameEn})` : ''}</span>
+                                  <span className="text-[10px] text-[#8B6914]">{spellObj.school} · Дистанция: {spellObj.range}</span>
+                                </div>
+                                <div className="text-[11px] text-[#5C341F] line-clamp-2">{spellObj.description}</div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
+
+                      {/* Dwarf Artisan Tools */}
+                      {racialChoicesConfig?.needsTool && (
+                        <div
+                          className="p-3.5 rounded-lg space-y-2.5"
+                          style={{
+                            background: 'rgba(232, 211, 162, 0.3)',
+                            border: '1px solid rgba(201, 168, 76, 0.4)'
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                              ⚒️ Ремесленные инструменты дворфа (выберите 1):
+                            </label>
+                            <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано: {selectedRacialTool}</span>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            {DWARF_TOOL_OPTIONS.map(tool => {
+                              const isSel = selectedRacialTool === tool;
+                              return (
+                                <button
+                                  key={tool}
+                                  type="button"
+                                  onClick={() => setSelectedRacialTool(tool)}
+                                  className={`p-2 rounded text-xs text-center cursor-pointer transition-all ${
+                                    isSel ? 'font-bold shadow-xs' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
+                                  }`}
+                                  style={
+                                    isSel
+                                      ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                      : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.2)', color: '#5C341F' }
+                                  }
+                                >
+                                  {isSel ? '✓ ' : ''}{tool}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Draconic Ancestry */}
+                      {racialChoicesConfig?.needsDragonColor && (
+                        <div
+                          className="p-3.5 rounded-lg space-y-2.5"
+                          style={{
+                            background: 'rgba(232, 211, 162, 0.3)',
+                            border: '1px solid rgba(201, 168, 76, 0.4)'
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                              🐉 Драконье наследие (выберите предка):
+                            </label>
+                            <span className="text-[11px] font-semibold text-[#4a7c3f]">
+                              {selectedDragonAncestry.color} дракон ({selectedDragonAncestry.damageType})
+                            </span>
+                          </div>
+                          <select
+                            value={selectedDragonColor}
+                            onChange={e => setSelectedDragonColor(e.target.value)}
+                            className="parchment-select w-full text-xs py-1.5 px-2.5"
+                          >
+                            {DRAGON_ANCESTRIES.map(da => (
+                              <option key={da.color} value={da.color}>
+                                {da.color} дракон — {da.damageType} ({da.breathShape}, спасбросок {da.saveAbility})
+                              </option>
+                            ))}
+                          </select>
+                          {selectedDragonAncestry && (
+                            <div
+                              className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm"
+                              style={{
+                                background: 'rgba(251, 240, 220, 0.85)',
+                                border: '1px solid rgba(201, 168, 76, 0.4)'
+                              }}
+                            >
+                              <div className="font-bold text-[#3D2012] flex items-center justify-between">
+                                <span>Предок: {selectedDragonAncestry.color} дракон</span>
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold" style={{ background: '#E8D3A2', color: '#5C341F' }}>
+                                  Урон: {selectedDragonAncestry.damageType}
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1 border-t border-[rgba(201,168,76,0.3)]">
+                                <div><strong className="text-[#3D2012]">Дыхание: </strong><span className="text-[#5C341F]">{selectedDragonAncestry.breathShape}</span></div>
+                                <div><strong className="text-[#3D2012]">Спасбросок: </strong><span className="text-[#5C341F]">{selectedDragonAncestry.saveAbility} (половина урона при успехе)</span></div>
+                                <div className="sm:col-span-2"><strong className="text-[#3D2012]">Сопротивление: </strong><span className="text-[#5C341F]">к урону типа «{selectedDragonAncestry.damageType}»</span></div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Interactive Language Checkboxes */}
+                      {racialChoicesConfig && racialChoicesConfig.extraLanguageCount > 0 && (
+                        <div
+                          className="p-3.5 rounded-lg space-y-3"
+                          style={{
+                            background: 'rgba(232, 211, 162, 0.3)',
+                            border: '1px solid rgba(201, 168, 76, 0.4)'
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                              🗣️ Дополнительные языки (выберите {racialChoicesConfig.extraLanguageCount}):
+                            </label>
+                            <span
+                              className={`text-[11px] font-medium px-2 py-0.5 rounded ${
+                                selectedExtraLanguages.length === racialChoicesConfig.extraLanguageCount
+                                  ? 'bg-[rgba(74,124,63,0.15)] text-[#4a7c3f] font-bold'
+                                  : 'bg-[rgba(180,83,9,0.1)] text-[#B45309]'
+                              }`}
+                            >
+                              Выбрано {selectedExtraLanguages.length} из {racialChoicesConfig.extraLanguageCount}
+                            </span>
+                          </div>
+
+                          {/* Standard Languages */}
+                          <div className="space-y-1.5">
+                            <span className="text-[11px] font-semibold text-[#8B6914] block">
+                              Обычные языки:
+                            </span>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                              {STANDARD_LANGUAGES.map(lang => {
+                                const isBase = baseRaceLanguages.includes(lang);
+                                const isSelected = selectedExtraLanguages.includes(lang);
+                                const isMaxReached = selectedExtraLanguages.length >= racialChoicesConfig.extraLanguageCount;
+                                const isDisabled = isBase || (!isSelected && isMaxReached);
+
+                                return (
+                                  <label
+                                    key={lang}
+                                    onClick={e => {
+                                      e.preventDefault();
+                                      if (!isBase) handleToggleExtraLanguage(lang);
+                                    }}
+                                    className={`flex items-center gap-1.5 p-1.5 rounded text-xs select-none transition-all ${
+                                      isBase
+                                        ? 'cursor-default opacity-85'
+                                        : isDisabled
+                                        ? 'cursor-not-allowed opacity-50'
+                                        : 'cursor-pointer hover:bg-[rgba(201,168,76,0.2)]'
+                                    } ${isSelected ? 'font-bold' : ''}`}
+                                    style={
+                                      isSelected
+                                        ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                        : isBase
+                                        ? { background: 'rgba(232, 211, 162, 0.25)', border: '1px dashed rgba(139, 105, 20, 0.3)', color: '#5C341F' }
+                                        : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.2)', color: '#3D2012' }
+                                    }
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={isBase || isSelected}
+                                      disabled={isDisabled}
+                                      readOnly
+                                      className="accent-[#8B4513] rounded cursor-pointer"
+                                    />
+                                    <span className="truncate flex-1">{lang}</span>
+                                    {isBase && (
+                                      <span className="text-[9px] px-1 py-0.5 rounded font-semibold text-[#8B6914] bg-[rgba(201,168,76,0.25)]">
+                                        ✓ От расы
+                                      </span>
+                                    )}
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Exotic Languages */}
+                          <div className="space-y-1.5 pt-1">
+                            <span className="text-[11px] font-semibold text-[#8B6914] block">
+                              Экзотические языки:
+                            </span>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                              {EXOTIC_LANGUAGES.map(lang => {
+                                const isBase = baseRaceLanguages.includes(lang);
+                                const isSelected = selectedExtraLanguages.includes(lang);
+                                const isMaxReached = selectedExtraLanguages.length >= racialChoicesConfig.extraLanguageCount;
+                                const isDisabled = isBase || (!isSelected && isMaxReached);
+
+                                return (
+                                  <label
+                                    key={lang}
+                                    onClick={e => {
+                                      e.preventDefault();
+                                      if (!isBase) handleToggleExtraLanguage(lang);
+                                    }}
+                                    className={`flex items-center gap-1.5 p-1.5 rounded text-xs select-none transition-all ${
+                                      isBase
+                                        ? 'cursor-default opacity-85'
+                                        : isDisabled
+                                        ? 'cursor-not-allowed opacity-50'
+                                        : 'cursor-pointer hover:bg-[rgba(201,168,76,0.2)]'
+                                    } ${isSelected ? 'font-bold' : ''}`}
+                                    style={
+                                      isSelected
+                                        ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                        : isBase
+                                        ? { background: 'rgba(232, 211, 162, 0.25)', border: '1px dashed rgba(139, 105, 20, 0.3)', color: '#5C341F' }
+                                        : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.2)', color: '#3D2012' }
+                                    }
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={isBase || isSelected}
+                                      disabled={isDisabled}
+                                      readOnly
+                                      className="accent-[#8B4513] rounded cursor-pointer"
+                                    />
+                                    <span className="truncate flex-1">{lang}</span>
+                                    {isBase && (
+                                      <span className="text-[9px] px-1 py-0.5 rounded font-semibold text-[#8B6914] bg-[rgba(201,168,76,0.25)]">
+                                        ✓ От расы
+                                      </span>
+                                    )}
+                                  </label>
+                                );
+                              })}
+                            </div>
                           </div>
                         </div>
                       )}

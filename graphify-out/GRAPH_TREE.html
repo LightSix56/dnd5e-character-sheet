@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>/ — graphify tree viewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      margin: 20px 0 0 24px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #1e3a56;
+    }
+    .controls {
+      margin: 20px 0 15px 24px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 18px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:active {
+      background: #004085;
+    }
+    #tree-container {
+      width: calc(100vw - 48px); /* Adjust for body margin/padding */
+      height: 85vh;
+      overflow: auto;
+      border-radius: 8px;
+      background: #fff;
+      margin-left: 24px;
+      margin-right: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #ddd;
+    }
+    svg {
+      background: #fff;
+      border-radius: 8px;
+      display: block; /* Important for D3 */
+    }
+    .node circle {
+      stroke-width: 2.5px;
+    }
+    .node text { /* Base style for the <text> container */
+      font: 13px 'Segoe UI', sans-serif;
+      paint-order: stroke fill; /* Ensures text is readable over lines */
+      stroke: #fff; /* White halo */
+      stroke-width: 3px; /* Halo thickness */
+      stroke-linejoin: round;
+      stroke-opacity: 0.85; /* Halo opacity */
+    }
+    .link {
+      fill: none;
+      stroke-opacity: 0.7;
+      stroke-width: 2px;
+    }
+  </style>
+</head>
+<body>
+  <h1>/ — Knowledge Graph</h1>
+  <div class="controls">
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
+    <button onclick="resetView()">Reset View</button>
+  </div>
+  <div id="tree-container">
+    <svg id="tree-svg" width="6000" height="8000"></svg>
+  </div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const initialJsonData = {"name":"/","total_count":480,"children":[{"name":"eslint.config.mjs","total_count":1,"children":[{"name":"eslintConfig","total_count":1,"children":[]}]},{"name":"next.config.ts","total_count":1,"children":[{"name":"nextConfig","total_count":1,"children":[]}]},{"name":"package.json","total_count":179,"children":[{"name":"@dnd-kit/core","total_count":1,"children":[]},{"name":"@dnd-kit/core","total_count":1,"children":[]},{"name":"@dnd-kit/sortable","total_count":1,"children":[]},{"name":"@dnd-kit/sortable","total_count":1,"children":[]},{"name":"@dnd-kit/utilities","total_count":1,"children":[]},{"name":"@dnd-kit/utilities","total_count":1,"children":[]},{"name":"@hookform/resolvers","total_count":1,"children":[]},{"name":"@hookform/resolvers","total_count":1,"children":[]},{"name":"@mdxeditor/editor","total_count":1,"children":[]},{"name":"@mdxeditor/editor","total_count":1,"children":[]},{"name":"@prisma/client","total_count":1,"children":[]},{"name":"@prisma/client","total_count":1,"children":[]},{"name":"@radix-ui/react-accordion","total_count":1,"children":[]},{"name":"@radix-ui/react-accordion","total_count":1,"children":[]},{"name":"@radix-ui/react-alert-dialog","total_count":1,"children":[]},{"name":"@radix-ui/react-alert-dialog","total_count":1,"children":[]},{"name":"@radix-ui/react-aspect-ratio","total_count":1,"children":[]},{"name":"@radix-ui/react-aspect-ratio","total_count":1,"children":[]},{"name":"@radix-ui/react-avatar","total_count":1,"children":[]},{"name":"@radix-ui/react-avatar","total_count":1,"children":[]},{"name":"@radix-ui/react-checkbox","total_count":1,"children":[]},{"name":"@radix-ui/react-checkbox","total_count":1,"children":[]},{"name":"@radix-ui/react-collapsible","total_count":1,"children":[]},{"name":"@radix-ui/react-collapsible","total_count":1,"children":[]},{"name":"@radix-ui/react-context-menu","total_count":1,"children":[]},{"name":"@radix-ui/react-context-menu","total_count":1,"children":[]},{"name":"@radix-ui/react-dialog","total_count":1,"children":[]},{"name":"@radix-ui/react-dialog","total_count":1,"children":[]},{"name":"@radix-ui/react-dropdown-menu","total_count":1,"children":[]},{"name":"@radix-ui/react-dropdown-menu","total_count":1,"children":[]},{"name":"@radix-ui/react-hover-card","total_count":1,"children":[]},{"name":"@radix-ui/react-hover-card","total_count":1,"children":[]},{"name":"@radix-ui/react-label","total_count":1,"children":[]},{"name":"@radix-ui/react-label","total_count":1,"children":[]},{"name":"@radix-ui/react-menubar","total_count":1,"children":[]},{"name":"@radix-ui/react-menubar","total_count":1,"children":[]},{"name":"@radix-ui/react-navigation-menu","total_count":1,"children":[]},{"name":"@radix-ui/react-navigation-menu","total_count":1,"children":[]},{"name":"@radix-ui/react-popover","total_count":1,"children":[]},{"name":"@radix-ui/react-popover","total_count":1,"children":[]},{"name":"@radix-ui/react-progress","total_count":1,"children":[]},{"name":"@radix-ui/react-progress","total_count":1,"children":[]},{"name":"@radix-ui/react-radio-group","total_count":1,"children":[]},{"name":"@radix-ui/react-radio-group","total_count":1,"children":[]},{"name":"@radix-ui/react-scroll-area","total_count":1,"children":[]},{"name":"@radix-ui/react-scroll-area","total_count":1,"children":[]},{"name":"@radix-ui/react-select","total_count":1,"children":[]},{"name":"@radix-ui/react-select","total_count":1,"children":[]},{"name":"@radix-ui/react-separator","total_count":1,"children":[]},{"name":"@radix-ui/react-separator","total_count":1,"children":[]},{"name":"@radix-ui/react-slider","total_count":1,"children":[]},{"name":"@radix-ui/react-slider","total_count":1,"children":[]},{"name":"@radix-ui/react-slot","total_count":1,"children":[]},{"name":"@radix-ui/react-slot","total_count":1,"children":[]},{"name":"@radix-ui/react-switch","total_count":1,"children":[]},{"name":"@radix-ui/react-switch","total_count":1,"children":[]},{"name":"@radix-ui/react-tabs","total_count":1,"children":[]},{"name":"@radix-ui/react-tabs","total_count":1,"children":[]},{"name":"@radix-ui/react-toast","total_count":1,"children":[]},{"name":"@radix-ui/react-toast","total_count":1,"children":[]},{"name":"@radix-ui/react-toggle","total_count":1,"children":[]},{"name":"@radix-ui/react-toggle","total_count":1,"children":[]},{"name":"@radix-ui/react-toggle-group","total_count":1,"children":[]},{"name":"@radix-ui/react-toggle-group","total_count":1,"children":[]},{"name":"@radix-ui/react-tooltip","total_count":1,"children":[]},{"name":"@radix-ui/react-tooltip","total_count":1,"children":[]},{"name":"@reactuses/core","total_count":1,"children":[]},{"name":"@reactuses/core","total_count":1,"children":[]},{"name":"@supabase/ssr","total_count":1,"children":[]},{"name":"@supabase/ssr","total_count":1,"children":[]},{"name":"@supabase/supabase-js","total_count":1,"children":[]},{"name":"@supabase/supabase-js","total_count":1,"children":[]},{"name":"@tailwindcss/postcss","total_count":1,"children":[]},{"name":"@tailwindcss/postcss","total_count":1,"children":[]},{"name":"@tanstack/react-query","total_count":1,"children":[]},{"name":"@tanstack/react-query","total_count":1,"children":[]},{"name":"@tanstack/react-table","total_count":1,"children":[]},{"name":"@tanstack/react-table","total_count":1,"children":[]},{"name":"@types/file-saver","total_count":1,"children":[]},{"name":"@types/file-saver","total_count":1,"children":[]},{"name":"@types/react","total_count":1,"children":[]},{"name":"@types/react","total_count":1,"children":[]},{"name":"@types/react-dom","total_count":1,"children":[]},{"name":"@types/react-dom","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"bun-types","total_count":1,"children":[]},{"name":"bun-types","total_count":1,"children":[]},{"name":"class-variance-authority","total_count":1,"children":[]},{"name":"class-variance-authority","total_count":1,"children":[]},{"name":"clsx","total_count":1,"children":[]},{"name":"clsx","total_count":1,"children":[]},{"name":"cmdk","total_count":1,"children":[]},{"name":"cmdk","total_count":1,"children":[]},{"name":"date-fns","total_count":1,"children":[]},{"name":"date-fns","total_count":1,"children":[]},{"name":"db:generate","total_count":1,"children":[]},{"name":"db:migrate","total_count":1,"children":[]},{"name":"db:push","total_count":1,"children":[]},{"name":"db:reset","total_count":1,"children":[]},{"name":"dependencies","total_count":1,"children":[]},{"name":"dev","total_count":1,"children":[]},{"name":"devDependencies","total_count":1,"children":[]},{"name":"docx","total_count":1,"children":[]},{"name":"docx","total_count":1,"children":[]},{"name":"embla-carousel-react","total_count":1,"children":[]},{"name":"embla-carousel-react","total_count":1,"children":[]},{"name":"eslint","total_count":1,"children":[]},{"name":"eslint","total_count":1,"children":[]},{"name":"eslint-config-next","total_count":1,"children":[]},{"name":"eslint-config-next","total_count":1,"children":[]},{"name":"file-saver","total_count":1,"children":[]},{"name":"file-saver","total_count":1,"children":[]},{"name":"framer-motion","total_count":1,"children":[]},{"name":"framer-motion","total_count":1,"children":[]},{"name":"input-otp","total_count":1,"children":[]},{"name":"input-otp","total_count":1,"children":[]},{"name":"lint","total_count":1,"children":[]},{"name":"lucide-react","total_count":1,"children":[]},{"name":"lucide-react","total_count":1,"children":[]},{"name":"name","total_count":1,"children":[]},{"name":"next","total_count":1,"children":[]},{"name":"next","total_count":1,"children":[]},{"name":"next-auth","total_count":1,"children":[]},{"name":"next-auth","total_count":1,"children":[]},{"name":"next-intl","total_count":1,"children":[]},{"name":"next-intl","total_count":1,"children":[]},{"name":"next-themes","total_count":1,"children":[]},{"name":"next-themes","total_count":1,"children":[]},{"name":"prisma","total_count":1,"children":[]},{"name":"prisma","total_count":1,"children":[]},{"name":"private","total_count":1,"children":[]},{"name":"puppeteer-core","total_count":1,"children":[]},{"name":"puppeteer-core","total_count":1,"children":[]},{"name":"react","total_count":1,"children":[]},{"name":"react","total_count":1,"children":[]},{"name":"react-day-picker","total_count":1,"children":[]},{"name":"react-day-picker","total_count":1,"children":[]},{"name":"react-dom","total_count":1,"children":[]},{"name":"react-dom","total_count":1,"children":[]},{"name":"react-hook-form","total_count":1,"children":[]},{"name":"react-hook-form","total_count":1,"children":[]},{"name":"react-markdown","total_count":1,"children":[]},{"name":"react-markdown","total_count":1,"children":[]},{"name":"react-resizable-panels","total_count":1,"children":[]},{"name":"react-resizable-panels","total_count":1,"children":[]},{"name":"react-syntax-highlighter","total_count":1,"children":[]},{"name":"react-syntax-highlighter","total_count":1,"children":[]},{"name":"recharts","total_count":1,"children":[]},{"name":"recharts","total_count":1,"children":[]},{"name":"scripts","total_count":1,"children":[]},{"name":"sharp","total_count":1,"children":[]},{"name":"sharp","total_count":1,"children":[]},{"name":"sonner","total_count":1,"children":[]},{"name":"sonner","total_count":1,"children":[]},{"name":"start","total_count":1,"children":[]},{"name":"tailwind-merge","total_count":1,"children":[]},{"name":"tailwind-merge","total_count":1,"children":[]},{"name":"tailwindcss","total_count":1,"children":[]},{"name":"tailwindcss","total_count":1,"children":[]},{"name":"tailwindcss-animate","total_count":1,"children":[]},{"name":"tailwindcss-animate","total_count":1,"children":[]},{"name":"test:adversarial","total_count":1,"children":[]},{"name":"tsx","total_count":1,"children":[]},{"name":"tsx","total_count":1,"children":[]},{"name":"tw-animate-css","total_count":1,"children":[]},{"name":"tw-animate-css","total_count":1,"children":[]},{"name":"typescript","total_count":1,"children":[]},{"name":"typescript","total_count":1,"children":[]},{"name":"uuid","total_count":1,"children":[]},{"name":"uuid","total_count":1,"children":[]},{"name":"vaul","total_count":1,"children":[]},{"name":"vaul","total_count":1,"children":[]},{"name":"version","total_count":1,"children":[]},{"name":"z-ai-web-dev-sdk","total_count":1,"children":[]},{"name":"z-ai-web-dev-sdk","total_count":1,"children":[]},{"name":"zod","total_count":1,"children":[]},{"name":"zod","total_count":1,"children":[]},{"name":"zustand","total_count":1,"children":[]},{"name":"zustand","total_count":1,"children":[]}]},{"name":"postcss.config.mjs","total_count":1,"children":[{"name":"config","total_count":1,"children":[]}]},{"name":"scripts","total_count":14,"children":[{"name":"build_classes.py","total_count":1,"children":[{"name":"Builds src/data/compendium/classes.ts with all 13 classes and 110 official\u2026","total_count":1,"children":[]}]},{"name":"build_compendium.py","total_count":2,"children":[{"name":"fetch_json()","total_count":1,"children":[]},{"name":"strip_tags()","total_count":1,"children":[]}]},{"name":"build_feats.py","total_count":1,"children":[{"name":"Builds src/data/compendium/feats.ts with all official Feats and Core Traits.","total_count":1,"children":[]}]},{"name":"build_full_compendium.py","total_count":3,"children":[{"name":"D&D 5e Full Compendium Builder Builds TypeScript compendium modules with full\u2026","total_count":1,"children":[]},{"name":"fetch_json()","total_count":1,"children":[]},{"name":"strip_tags()","total_count":1,"children":[]}]},{"name":"build_full_races.py","total_count":1,"children":[{"name":"Script to build comprehensive official D&D 5e races and subraces compendium.\u2026","total_count":1,"children":[]}]},{"name":"build_progression.py","total_count":1,"children":[{"name":"Builds src/data/compendium/class-progression.ts with authoritative 1-20 level-\u2026","total_count":1,"children":[]}]},{"name":"build_race_progression.py","total_count":1,"children":[{"name":"Builds src/data/compendium/race-progression.ts with official D&D 5e level-\u2026","total_count":1,"children":[]}]},{"name":"build_races.py","total_count":1,"children":[{"name":"Builds src/data/compendium/races.ts with all official D&D 5e races and subraces","total_count":1,"children":[]}]},{"name":"mobile-visual-audit.mjs","total_count":3,"children":[{"name":"OUT_DIR","total_count":1,"children":[]},{"name":"run()","total_count":1,"children":[]},{"name":"waitForServer()","total_count":1,"children":[]}]}]},{"name":"src","total_count":254,"children":[{"name":"app","total_count":52,"children":[{"name":"api","total_count":24,"children":[{"name":"auth","total_count":2,"children":[{"name":"callback","total_count":1,"children":[{"name":"route.ts","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]}]},{"name":"signout","total_count":1,"children":[{"name":"route.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]}]},{"name":"characters","total_count":6,"children":[{"name":"route.ts","total_count":6,"children":[{"name":"createClient()","total_count":1,"children":[]},{"name":"DELETE()","total_count":1,"children":[]},{"name":"GET()","total_count":1,"children":[]},{"name":"isValidUUID()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]},{"name":"PUT()","total_count":1,"children":[]}]}]},{"name":"export-docx","total_count":8,"children":[{"name":"route.ts","total_count":8,"children":[{"name":"borders()","total_count":1,"children":[]},{"name":"dCell()","total_count":1,"children":[]},{"name":"hCell()","total_count":1,"children":[]},{"name":"isSafeImageUrl()","total_count":1,"children":[]},{"name":"normalizeCharacter()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]},{"name":"sectionHeader()","total_count":1,"children":[]},{"name":"textPara()","total_count":1,"children":[]}]}]},{"name":"share","total_count":7,"children":[{"name":"[code]","total_count":2,"children":[{"name":"route.ts","total_count":2,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"OPTIONS()","total_count":1,"children":[]}]}]},{"name":"route.ts","total_count":5,"children":[{"name":"createClient()","total_count":1,"children":[]},{"name":"DELETE()","total_count":1,"children":[]},{"name":"generateCode()","total_count":1,"children":[]},{"name":"GET()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"upload-portrait","total_count":1,"children":[{"name":"route.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]}]},{"name":"layout.tsx","total_count":3,"children":[{"name":"jsonLd","total_count":1,"children":[]},{"name":"metadata","total_count":1,"children":[]},{"name":"RootLayout()","total_count":1,"children":[]}]},{"name":"page.tsx","total_count":21,"children":[{"name":"AuthModal","total_count":1,"children":[]},{"name":"CalcBadge()","total_count":1,"children":[]},{"name":"DnDCharacterSheet()","total_count":1,"children":[]},{"name":"getThirdCasterSpellSlots()","total_count":1,"children":[]},{"name":"LevelDownModal","total_count":1,"children":[]},{"name":"LevelDownModalProps","total_count":1,"children":[]},{"name":"LevelHistoryModal","total_count":1,"children":[]},{"name":"LevelHistoryModalProps","total_count":1,"children":[]},{"name":"LevelUpModal","total_count":1,"children":[]},{"name":"LevelUpModalProps","total_count":1,"children":[]},{"name":"NonClassSpellConfirmModal()","total_count":1,"children":[]},{"name":"NonClassSpellConfirmModalProps","total_count":1,"children":[]},{"name":"normalizeCharacterData()","total_count":1,"children":[]},{"name":"RollBadge","total_count":1,"children":[]},{"name":"rollD20()","total_count":1,"children":[]},{"name":"RollResult","total_count":1,"children":[]},{"name":"RollResultPopup","total_count":1,"children":[]},{"name":"SignOutModal","total_count":1,"children":[]},{"name":"StatInput()","total_count":1,"children":[]},{"name":"TemplateModal","total_count":1,"children":[]},{"name":"TemplateModalProps","total_count":1,"children":[]}]},{"name":"share","total_count":3,"children":[{"name":"[code]","total_count":3,"children":[{"name":"page.tsx","total_count":3,"children":[{"name":"fetchShare()","total_count":1,"children":[]},{"name":"normalizeCharacterData()","total_count":1,"children":[]},{"name":"SharedCharacterPage()","total_count":1,"children":[]}]}]}]},{"name":"sitemap.ts","total_count":1,"children":[{"name":"sitemap()","total_count":1,"children":[]}]}]},{"name":"components","total_count":82,"children":[{"name":"compendium","total_count":19,"children":[{"name":"AutocompleteInput.tsx","total_count":4,"children":[{"name":"AutocompleteInput()","total_count":1,"children":[]},{"name":"AutocompleteInputProps","total_count":1,"children":[]},{"name":"AutocompleteItem","total_count":1,"children":[]},{"name":"handleClickOutside()","total_count":1,"children":[]}]},{"name":"ClassSelectorModal.tsx","total_count":2,"children":[{"name":"ClassSelectorModal()","total_count":1,"children":[]},{"name":"ClassSelectorModalProps","total_count":1,"children":[]}]},{"name":"CompendiumModals.tsx","total_count":6,"children":[{"name":"SpellDetailModal()","total_count":1,"children":[]},{"name":"SpellModalProps","total_count":1,"children":[]},{"name":"TraitDetailModal()","total_count":1,"children":[]},{"name":"TraitModalProps","total_count":1,"children":[]},{"name":"WeaponDetailModal()","total_count":1,"children":[]},{"name":"WeaponModalProps","total_count":1,"children":[]}]},{"name":"ItemDetailModal.tsx","total_count":2,"children":[{"name":"ItemDetailModal()","total_count":1,"children":[]},{"name":"ItemDetailModalProps","total_count":1,"children":[]}]},{"name":"RaceSelectorModal.tsx","total_count":3,"children":[{"name":"CATEGORIES","total_count":1,"children":[]},{"name":"RaceSelectorModal()","total_count":1,"children":[]},{"name":"RaceSelectorModalProps","total_count":1,"children":[]}]},{"name":"SubclassSelectorModal.tsx","total_count":2,"children":[{"name":"SubclassSelectorModal()","total_count":1,"children":[]},{"name":"SubclassSelectorModalProps","total_count":1,"children":[]}]}]},{"name":"dnd-icons.tsx","total_count":23,"children":[{"name":"ArcaneLinkIcon()","total_count":1,"children":[]},{"name":"BackpackPackIcon()","total_count":1,"children":[]},{"name":"CameraPortraitIcon()","total_count":1,"children":[]},{"name":"ChestIcon()","total_count":1,"children":[]},{"name":"CoinsChestIcon()","total_count":1,"children":[]},{"name":"CrossedSwordsIcon()","total_count":1,"children":[]},{"name":"CrystalBallDndIcon()","total_count":1,"children":[]},{"name":"D20Icon()","total_count":1,"children":[]},{"name":"EngravedShieldIcon()","total_count":1,"children":[]},{"name":"GoldSealCheckIcon()","total_count":1,"children":[]},{"name":"HourglassIcon()","total_count":1,"children":[]},{"name":"IconProps","total_count":1,"children":[]},{"name":"InfoSealIcon()","total_count":1,"children":[]},{"name":"MasksDramaIcon()","total_count":1,"children":[]},{"name":"MysticCloudIcon()","total_count":1,"children":[]},{"name":"MysticSpinnerIcon()","total_count":1,"children":[]},{"name":"PortalIcon()","total_count":1,"children":[]},{"name":"QuillIcon()","total_count":1,"children":[]},{"name":"RunedKeyIcon()","total_count":1,"children":[]},{"name":"ScrollIcon()","total_count":1,"children":[]},{"name":"SparklesDndIcon()","total_count":1,"children":[]},{"name":"SpellbookIcon()","total_count":1,"children":[]},{"name":"UserHeroIcon()","total_count":1,"children":[]}]},{"name":"tools","total_count":20,"children":[{"name":"CharacterGridModal.tsx","total_count":9,"children":[{"name":"CharacterGridModal","total_count":1,"children":[]},{"name":"CharacterGridModalProps","total_count":1,"children":[]},{"name":"ClassEmblem()","total_count":1,"children":[]},{"name":"formatRussianDate()","total_count":1,"children":[]},{"name":"getCharAC()","total_count":1,"children":[]},{"name":"getCharHP()","total_count":1,"children":[]},{"name":"getCharSpecialStat()","total_count":1,"children":[]},{"name":"SavedCharacter","total_count":1,"children":[]},{"name":"StatPillInfo","total_count":1,"children":[]}]},{"name":"NameGeneratorModal.tsx","total_count":2,"children":[{"name":"NameGeneratorModal()","total_count":1,"children":[]},{"name":"NameGeneratorModalProps","total_count":1,"children":[]}]},{"name":"ShareModal.tsx","total_count":2,"children":[{"name":"ShareModal()","total_count":1,"children":[]},{"name":"ShareModalProps","total_count":1,"children":[]}]},{"name":"StatsCalculatorModal.tsx","total_count":6,"children":[{"name":"CalculatorTab","total_count":1,"children":[]},{"name":"DieD6()","total_count":1,"children":[]},{"name":"POINT_BUY_COST","total_count":1,"children":[]},{"name":"STANDARD_ARRAY_VALUES","total_count":1,"children":[]},{"name":"StatsCalculatorModal()","total_count":1,"children":[]},{"name":"StatsCalculatorModalProps","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[]}]},{"name":"wizard","total_count":20,"children":[{"name":"CharacterCreationWizardModal.tsx","total_count":2,"children":[{"name":"CharacterCreationWizardModal()","total_count":1,"children":[]},{"name":"CharacterCreationWizardModalProps","total_count":1,"children":[]}]},{"name":"wizard-helpers.ts","total_count":18,"children":[{"name":"calcPointBuyTotalSpent()","total_count":1,"children":[]},{"name":"calcPreparedSpellsLimit()","total_count":1,"children":[]},{"name":"calculateWizardAC()","total_count":1,"children":[]},{"name":"ClassSkillConfig","total_count":1,"children":[]},{"name":"ClassSpellcastingLimits","total_count":1,"children":[]},{"name":"FANTASY_NAMES","total_count":1,"children":[]},{"name":"generateFantasyName()","total_count":1,"children":[]},{"name":"getClassSkillConfig()","total_count":1,"children":[]},{"name":"getClassSpellcastingLimits()","total_count":1,"children":[]},{"name":"getRacialBonusConfig()","total_count":1,"children":[]},{"name":"getRacialSkillData()","total_count":1,"children":[]},{"name":"POINT_BUY_BUDGET","total_count":1,"children":[]},{"name":"POINT_BUY_COST_TABLE","total_count":1,"children":[]},{"name":"RacialBonusConfig","total_count":1,"children":[]},{"name":"RacialSkillData","total_count":1,"children":[]},{"name":"roll4d6DropLowest()","total_count":1,"children":[]},{"name":"STANDARD_ARRAY_VALUES","total_count":1,"children":[]},{"name":"validateStandardArray()","total_count":1,"children":[]}]}]}]},{"name":"data","total_count":73,"children":[{"name":"compendium","total_count":65,"children":[{"name":"backgrounds.ts","total_count":4,"children":[{"name":"CompendiumBackground","total_count":1,"children":[]},{"name":"DND_COMPENDIUM_BACKGROUNDS","total_count":1,"children":[]},{"name":"findBackgroundById()","total_count":1,"children":[]},{"name":"findBackgroundByName()","total_count":1,"children":[]}]},{"name":"class-progression.ts","total_count":15,"children":[{"name":"ARTIFICER_SPELL_SLOTS","total_count":1,"children":[]},{"name":"CLASS_NAME_MAP","total_count":1,"children":[]},{"name":"ClassFeatureEntry","total_count":1,"children":[]},{"name":"ClassLevelProgression","total_count":1,"children":[]},{"name":"DND_CLASS_PROGRESSION","total_count":1,"children":[]},{"name":"FULL_CASTER_SPELL_SLOTS","total_count":1,"children":[]},{"name":"getClassFeaturesForLevel()","total_count":1,"children":[]},{"name":"getClassSubclassLevel()","total_count":1,"children":[]},{"name":"getNewSpellLevelUnlocked()","total_count":1,"children":[]},{"name":"getSpellSlotsForClassLevel()","total_count":1,"children":[]},{"name":"HALF_CASTER_SPELL_SLOTS","total_count":1,"children":[]},{"name":"isClassASILevel()","total_count":1,"children":[]},{"name":"isClassSubclassMilestone()","total_count":1,"children":[]},{"name":"normalizeClassName()","total_count":1,"children":[]},{"name":"WARLOCK_PACT_SPELL_SLOTS","total_count":1,"children":[]}]},{"name":"class-spells.ts","total_count":7,"children":[{"name":"getAvailableSpellsForCharacter()","total_count":1,"children":[]},{"name":"getMaxAvailableSpellSlotLevel()","total_count":1,"children":[]},{"name":"isSpellAllowedForCharacter()","total_count":1,"children":[]},{"name":"isSpellLevelAllowedForCharacter()","total_count":1,"children":[]},{"name":"SpellCheckResult","total_count":1,"children":[]},{"name":"SUBCLASS_EXPANDED_SPELLS","total_count":1,"children":[]},{"name":"SUBCLASS_FULL_CLASS_SPELLS","total_count":1,"children":[]}]},{"name":"classes.ts","total_count":6,"children":[{"name":"CompendiumClass","total_count":1,"children":[]},{"name":"CompendiumSubclass","total_count":1,"children":[]},{"name":"DND_COMPENDIUM_CLASSES","total_count":1,"children":[]},{"name":"findClassById()","total_count":1,"children":[]},{"name":"findClassByName()","total_count":1,"children":[]},{"name":"getSubclassesForClass()","total_count":1,"children":[]}]},{"name":"feats.ts","total_count":5,"children":[{"name":"CompendiumFeat","total_count":1,"children":[]},{"name":"DND_COMPENDIUM_FEATS","total_count":1,"children":[]},{"name":"findFeatByName()","total_count":1,"children":[]},{"name":"getFeats()","total_count":1,"children":[]},{"name":"getTraits()","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"getCompendiumAutocompleteItems()","total_count":1,"children":[]}]},{"name":"items.ts","total_count":5,"children":[{"name":"CompendiumItem","total_count":1,"children":[]},{"name":"DND_COMPENDIUM_ITEMS","total_count":1,"children":[]},{"name":"findItemByName()","total_count":1,"children":[]},{"name":"getArmorItems()","total_count":1,"children":[]},{"name":"getWeaponItems()","total_count":1,"children":[]}]},{"name":"names-data.ts","total_count":10,"children":[{"name":"DND_COMPENDIUM_NAMES_DB","total_count":1,"children":[]},{"name":"FANTASY_NAMES_DATABASE","total_count":1,"children":[]},{"name":"FantasyNameResult","total_count":1,"children":[]},{"name":"generateFantasyName()","total_count":1,"children":[]},{"name":"generateMultipleFantasyNames()","total_count":1,"children":[]},{"name":"getAvailableCultures()","total_count":1,"children":[]},{"name":"normalizeRaceKey()","total_count":1,"children":[]},{"name":"pickRandom()","total_count":1,"children":[]},{"name":"RaceNamingCulture","total_count":1,"children":[]},{"name":"RaceNamingEntry","total_count":1,"children":[]}]},{"name":"race-progression.ts","total_count":4,"children":[{"name":"DND_RACE_PROGRESSION","total_count":1,"children":[]},{"name":"getRacialFeaturesForLevel()","total_count":1,"children":[]},{"name":"getRacialHPBonusPerLevel()","total_count":1,"children":[]},{"name":"RaceProgressionFeature","total_count":1,"children":[]}]},{"name":"races.ts","total_count":5,"children":[{"name":"CompendiumRace","total_count":1,"children":[]},{"name":"CompendiumSubrace","total_count":1,"children":[]},{"name":"DND_COMPENDIUM_RACES","total_count":1,"children":[]},{"name":"findRaceByName()","total_count":1,"children":[]},{"name":"RaceCategory","total_count":1,"children":[]}]},{"name":"spells.ts","total_count":3,"children":[{"name":"DND_COMPENDIUM_SPELLS","total_count":1,"children":[]},{"name":"DndSpell","total_count":1,"children":[]},{"name":"findSpellByName()","total_count":1,"children":[]}]}]},{"name":"dnd-spells.ts","total_count":2,"children":[{"name":"DND_SPELLS","total_count":1,"children":[]},{"name":"findSpellByName","total_count":1,"children":[]}]},{"name":"dnd-traits.ts","total_count":3,"children":[{"name":"DND_TRAITS","total_count":1,"children":[]},{"name":"DndTrait","total_count":1,"children":[]},{"name":"findTraitByName()","total_count":1,"children":[]}]},{"name":"dnd-weapons.ts","total_count":3,"children":[{"name":"DND_WEAPONS","total_count":1,"children":[]},{"name":"DndWeapon","total_count":1,"children":[]},{"name":"findWeaponByName()","total_count":1,"children":[]}]}]},{"name":"lib","total_count":45,"children":[{"name":"dnd-types.ts","total_count":41,"children":[{"name":"ABILITY_FULL","total_count":1,"children":[]},{"name":"ABILITY_NAMES","total_count":1,"children":[]},{"name":"AbilityName","total_count":1,"children":[]},{"name":"ALL_SKILLS","total_count":1,"children":[]},{"name":"applyClassTemplate()","total_count":1,"children":[]},{"name":"applyRaceTemplate()","total_count":1,"children":[]},{"name":"ARMOR_AC_MAP","total_count":1,"children":[]},{"name":"Attack","total_count":1,"children":[]},{"name":"calcModifier()","total_count":1,"children":[]},{"name":"calcProficiencyBonus()","total_count":1,"children":[]},{"name":"CharacterData","total_count":1,"children":[]},{"name":"CLASS_TEMPLATES","total_count":1,"children":[]},{"name":"ClassTemplate","total_count":1,"children":[]},{"name":"createDefaultCharacter()","total_count":1,"children":[]},{"name":"createEmptyLevelUpEntry()","total_count":1,"children":[]},{"name":"createExampleWarrior()","total_count":1,"children":[]},{"name":"createExampleWizard()","total_count":1,"children":[]},{"name":"formatModifier()","total_count":1,"children":[]},{"name":"getAC()","total_count":1,"children":[]},{"name":"getHitDiceNotation()","total_count":1,"children":[]},{"name":"getHitDieAverage()","total_count":1,"children":[]},{"name":"getHitDieSize()","total_count":1,"children":[]},{"name":"getHPMax()","total_count":1,"children":[]},{"name":"getInitiative()","total_count":1,"children":[]},{"name":"getMilestonesAtLevel()","total_count":1,"children":[]},{"name":"getModifier()","total_count":1,"children":[]},{"name":"getPassivePerception()","total_count":1,"children":[]},{"name":"getSavingThrow()","total_count":1,"children":[]},{"name":"getSkillBonus()","total_count":1,"children":[]},{"name":"getSpellAbilityMod()","total_count":1,"children":[]},{"name":"getSpellAttackBonus()","total_count":1,"children":[]},{"name":"getSpellSaveDC()","total_count":1,"children":[]},{"name":"getTotalScore()","total_count":1,"children":[]},{"name":"isStandardASILevel()","total_count":1,"children":[]},{"name":"LevelUpEntry","total_count":1,"children":[]},{"name":"SKILL_MAP","total_count":1,"children":[]},{"name":"SpellEntry","total_count":1,"children":[]},{"name":"SpellSlotInfo","total_count":1,"children":[]},{"name":"STANDARD_ASI_LEVELS","total_count":1,"children":[]},{"name":"TraitItem","total_count":1,"children":[]},{"name":"UNIVERSAL_MILESTONES","total_count":1,"children":[]}]},{"name":"supabase","total_count":3,"children":[{"name":"client.ts","total_count":1,"children":[{"name":"createClient()","total_count":1,"children":[]}]},{"name":"middleware.ts","total_count":1,"children":[{"name":"updateSession()","total_count":1,"children":[]}]},{"name":"server.ts","total_count":1,"children":[{"name":"createServerSupabaseClient()","total_count":1,"children":[]}]}]},{"name":"utils.ts","total_count":1,"children":[{"name":"cn()","total_count":1,"children":[]}]}]},{"name":"middleware.ts","total_count":2,"children":[{"name":"config","total_count":1,"children":[]},{"name":"middleware()","total_count":1,"children":[]}]}]},{"name":"tailwind.config.ts","total_count":1,"children":[{"name":"config","total_count":1,"children":[]}]},{"name":"test","total_count":10,"children":[{"name":"level-up-arcane.test.ts","total_count":2,"children":[{"name":"applyLevelDown()","total_count":1,"children":[]},{"name":"applyLevelUp()","total_count":1,"children":[]}]},{"name":"level-up-divine.test.ts","total_count":4,"children":[{"name":"applyLevelDown()","total_count":1,"children":[]},{"name":"applyLevelUp()","total_count":1,"children":[]},{"name":"ClassProgressionScenario","total_count":1,"children":[]},{"name":"SCENARIOS","total_count":1,"children":[]}]},{"name":"level-up-martial.test.ts","total_count":2,"children":[{"name":"simulateLevelDown()","total_count":1,"children":[]},{"name":"simulateLevelUp()","total_count":1,"children":[]}]},{"name":"subclass-selection-rules.test.ts","total_count":1,"children":[]},{"name":"wizard-engine-adversarial.test.ts","total_count":1,"children":[]}]},{"name":"tsconfig.json","total_count":19,"children":[{"name":"allowJs","total_count":1,"children":[]},{"name":"compilerOptions","total_count":1,"children":[]},{"name":"esModuleInterop","total_count":1,"children":[]},{"name":"exclude","total_count":1,"children":[]},{"name":"include","total_count":1,"children":[]},{"name":"incremental","total_count":1,"children":[]},{"name":"isolatedModules","total_count":1,"children":[]},{"name":"jsx","total_count":1,"children":[]},{"name":"lib","total_count":1,"children":[]},{"name":"module","total_count":1,"children":[]},{"name":"moduleResolution","total_count":1,"children":[]},{"name":"noEmit","total_count":1,"children":[]},{"name":"noImplicitAny","total_count":1,"children":[]},{"name":"paths","total_count":1,"children":[]},{"name":"plugins","total_count":1,"children":[]},{"name":"resolveJsonModule","total_count":1,"children":[]},{"name":"skipLibCheck","total_count":1,"children":[]},{"name":"strict","total_count":1,"children":[]},{"name":"target","total_count":1,"children":[]}]}]};
+
+    function transformData(jsonData) {
+        // Helper function to recursively build the children structure
+        function processNode(node, parentL1StageName) {
+            let displayName = node.name;
+            // Append total_count if it exists and is not already in the name
+            if (node.total_count !== undefined) {
+                if (!/\(Total Count: \d+\)$/.test(displayName)) {
+                    displayName += ` (Total Count: ${node.total_count})`;
+                }
+            }
+
+            const newNode = { name: displayName };
+
+            if (parentL1StageName === "Root") {
+                 newNode.originalStageName = node.name;
+            } else {
+                newNode.originalStageName = parentL1StageName;
+            }
+
+            if (node.children && node.children.length > 0) {
+                const stageNameToPass = (parentL1StageName === "Root") ? node.name : parentL1StageName;
+                newNode.children = node.children.map(child => processNode(child, stageNameToPass));
+            }
+
+            return newNode;
+        }
+
+        let rootDisplayName = jsonData.name;
+        if (jsonData.total_count !== undefined && !/\(Total Count: \d+\)$/.test(rootDisplayName)) {
+            rootDisplayName += ` (Total Count: ${jsonData.total_count})`;
+        }
+
+        return {
+            name: rootDisplayName,
+            originalStageName: "Root",
+            children: (jsonData.children || []).map(child => processNode(child, "Root"))
+        };
+    }
+
+    const treeData = transformData(initialJsonData);
+
+    // Auto-populated phaseColors: every depth-1 child of the root gets
+    // a stable colour from a bigger palette so all top-level dirs are
+    // distinguishable.
+    const PALETTE = [
+      ["#3498DB","#2980B9","#AED6F1"], ["#2ECC71","#27AE60","#A9DFBF"],
+      ["#E74C3C","#C0392B","#F5B7B1"], ["#9B59B6","#8E44AD","#D7BDE2"],
+      ["#F39C12","#D68910","#FAD7A0"], ["#1ABC9C","#117864","#A2D9CE"],
+      ["#34495E","#1B2631","#ABB2B9"], ["#E67E22","#BA4A00","#F5CBA7"],
+      ["#16A085","#0E6655","#A2D9CE"], ["#D35400","#A04000","#EDBB99"],
+      ["#7F8C8D","#566573","#D5DBDB"], ["#C0392B","#7B241C","#F5B7B1"],
+      ["#2E86C1","#1B4F72","#A9CCE3"], ["#28B463","#196F3D","#A9DFBF"],
+      ["#AF7AC5","#6C3483","#D2B4DE"],
+    ];
+    const phaseColors = { "Root": { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+                          "Default": { fill: "#BDC3C7", stroke: "#95A5A6", collapsedFill: "#ECF0F1" } };
+    (initialJsonData.children || []).forEach((c, i) => {
+      const pal = PALETTE[i % PALETTE.length];
+      phaseColors[c.name] = { fill: pal[0], stroke: pal[1], collapsedFill: pal[2] };
+    });
+
+    const levelSpecificPalettes = {
+      0: { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+      2: { fill: "#6ab04c", stroke: "#508a38", collapsedFill: "#a3d391" },
+      3: { fill: "#f0932b", stroke: "#d0730f", collapsedFill: "#f6c07e" },
+      4: { fill: "#be2edd", stroke: "#a01cb3", collapsedFill: "#e08bf2" },
+      5: { fill: "#00a8ff", stroke: "#007ac1", collapsedFill: "#74d2ff" },
+      6: { fill: "#e55039", stroke: "#c23620", collapsedFill: "#f09a8d" },
+      default: { fill: "#747d8c", stroke: "#57606f", collapsedFill: "#a4b0be" }
+    };
+
+    const svgElement = d3.select("#tree-svg");
+    const initialSvgWidth = +svgElement.attr("width");
+    const initialSvgHeight = +svgElement.attr("height");
+    const margin = { top: 40, right: 120, bottom: 80, left: 450 };
+    let width = initialSvgWidth - margin.left - margin.right;
+    let height = initialSvgHeight - margin.top - margin.bottom;
+    const duration = 500;
+    let nodeCounter = 0;
+    const g = svgElement.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const treemap = d3.tree().nodeSize([40, 0]);
+    let rootNode = d3.hierarchy(treeData, d => d.children);
+    rootNode.x0 = 0;
+    rootNode.y0 = 0;
+
+    if (rootNode.children) {
+      rootNode.children.forEach(d_child => {
+        if (d_child.children) { collapseBranch(d_child); }
+      });
+    }
+    updateTree(rootNode);
+
+    function collapseBranch(d) { if (d.children) { d._children = d.children; d._children.forEach(collapseBranch); d.children = null; } }
+    function expandBranch(d) { if (d._children) { d.children = d._children; d._children = null; } if (d.children) { d.children.forEach(expandBranch); } }
+    window.expandAll = () => { expandBranch(rootNode); updateTree(rootNode); };
+    window.collapseAll = () => { if (rootNode.children) { rootNode.children.forEach(collapseBranch); } updateTree(rootNode); };
+    window.resetView = () => { if (rootNode.children) { rootNode.children.forEach(d_child => { if (d_child.children || d_child._children) { collapseBranch(d_child); } }); } if (rootNode._children && !rootNode.children) { rootNode.children = rootNode._children; rootNode._children = null; } updateTree(rootNode); };
+
+    function updateTree(source) {
+      const treeLayoutData = treemap(rootNode);
+      let nodes = treeLayoutData.descendants();
+      let links = treeLayoutData.descendants().slice(1);
+
+      let minX = 0;
+      let maxX = 0;
+      if (nodes.length > 0) {
+        minX = d3.min(nodes, d => d.x);
+        maxX = d3.max(nodes, d => d.x);
+      }
+
+      let neededHeight = Math.max(initialSvgHeight, maxX - minX + margin.top + margin.bottom + 100);
+      svgElement.transition().duration(duration / 2).attr("height", neededHeight);
+      g.transition().duration(duration / 2).attr("transform", `translate(${margin.left},${margin.top - minX + 40})`);
+
+      nodes.forEach(d => { d.y = d.depth * 400; }); // Adjust horizontal separation if needed
+
+      const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = ++nodeCounter));
+      const nodeEnter = node.enter().append('g')
+        .attr('class', d => "node" + (d.children || d._children ? " node--internal" : " node--leaf") + (d._children ? " _children" : ""))
+        .attr('transform', d => `translate(${source.y0},${source.x0})`)
+        .on('click', (event, d) => { if (d.children) { d._children = d.children; d.children = null; } else if (d._children) { d.children = d._children; d._children = null; } updateTree(d); })
+        .style('cursor', d => (d.children || d._children) ? 'pointer' : 'default');
+
+      nodeEnter.append('circle').attr('r', 1e-6);
+
+      nodeEnter.append('text')
+        .attr('dy', '.35em')
+        .attr('x', d => d.children || d._children ? -14 : 14)
+        .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+        .style("fill-opacity", 1e-6)
+        .call(wrapText, 380);
+
+      const nodeUpdate = nodeEnter.merge(node);
+      nodeUpdate.transition().duration(duration)
+        .attr('transform', d => `translate(${d.y},${d.x})`)
+        .attr('class', d => "node" + (d.children ? " node--internal" : " node--leaf") + (d._children ? " node--internal _children" : ""));
+
+      nodeUpdate.select('circle').attr('r', 8.5)
+        .style('fill', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            if (d._children) return palette.collapsedFill;
+            if (d.children) return palette.fill;
+            return "#fff";
+        })
+        .style('stroke', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            return palette.stroke;
+        });
+      nodeUpdate.select('text').style("fill-opacity", 1).call(wrapText, 380);
+
+      const nodeExit = node.exit().transition().duration(duration).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+      nodeExit.select('circle').attr('r', 1e-6);
+      nodeExit.select('text').style('fill-opacity', 1e-6);
+
+      const link = g.selectAll('path.link').data(links, d => d.id);
+      const linkEnter = link.enter().insert('path', "g").attr('class', 'link').attr('d', d => { const o = { x: source.x0, y: source.y0 }; return diagonal(o, o); });
+
+      linkEnter.merge(link).transition().duration(duration).attr('d', d => diagonal(d, d.parent))
+        .style('stroke', d => {
+            const sourceNode = d.parent;
+            if (!sourceNode) return phaseColors.Default.stroke;
+            const l1AncestorName = sourceNode.data.originalStageName;
+            const colorPalette = phaseColors[l1AncestorName] || phaseColors.Default;
+            return colorPalette.stroke;
+        });
+      link.exit().transition().duration(duration).attr('d', d => { const o = { x: source.x, y: source.y }; return diagonal(o, o); }).remove();
+      nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+
+    function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+    function wrapText(textElements, maxWidth) {
+        const textPartColors = {
+            name: '#343a40',
+            count: '#0056b3'
+        };
+        const countRegex = /(\s\(Total Count: \d+\))$/;
+
+        textElements.each(function () {
+            const textD3 = d3.select(this);
+            const originalNodeText = textD3.datum().data.name;
+            const x = parseFloat(textD3.attr("x") || 0);
+            const initialDy = textD3.attr("dy");
+            const textAnchor = textD3.attr("text-anchor");
+            const lineHeight = 1.1;
+
+            textD3.text(null);
+
+            let namePart = originalNodeText;
+            let countPartText = "";
+
+            const countMatch = originalNodeText.match(countRegex);
+            if (countMatch && originalNodeText.endsWith(countMatch[0])) {
+                namePart = originalNodeText.substring(0, originalNodeText.length - countMatch[0].length).trim();
+                countPartText = countMatch[0].trim();
+            }
+
+            const tokens = [];
+            namePart.split(/\s+/).filter(Boolean).forEach(word => {
+                tokens.push({ text: word, type: 'name' });
+            });
+            if (countPartText) {
+                tokens.push({ text: countPartText, type: 'count' });
+            }
+
+            if (tokens.length === 0 && originalNodeText) {
+                tokens.push({ text: originalNodeText, type: 'name' });
+            }
+
+            let currentTspan = textD3.append("tspan").attr("x", x).attr("dy", initialDy);
+            if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+
+            let lineTokens = [];
+
+            for (let i = 0; i < tokens.length; i++) {
+                const tokenObj = tokens[i];
+
+                lineTokens.push(tokenObj);
+                currentTspan.text(lineTokens.map(t => t.text).join(" "));
+
+                if (currentTspan.node().getComputedTextLength() > maxWidth && lineTokens.length > 1) {
+                    lineTokens.pop();
+
+                    currentTspan.text(null);
+                    lineTokens.forEach((prevToken, idx) => {
+                        currentTspan.append("tspan")
+                            .text((idx > 0 ? " " : "") + prevToken.text)
+                            .style("fill", textPartColors[prevToken.type] || textPartColors.name)
+                            .style("font-weight", prevToken.type === 'count' ? "bold" : "normal");
+                    });
+
+                    lineTokens = [tokenObj];
+                    currentTspan = textD3.append("tspan").attr("x", x).attr("dy", lineHeight + "em");
+                    if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+                }
+            }
+
+            currentTspan.text(null);
+            lineTokens.forEach((token, idx) => {
+                currentTspan.append("tspan")
+                    .text((idx > 0 ? " " : "") + token.text)
+                    .style("fill", textPartColors[token.type] || textPartColors.name)
+                    .style("font-weight", token.type === 'count' ? "bold" : "normal");
+            });
+
+            if (textD3.selectAll("tspan > tspan").empty() && textD3.select("tspan").text().length === 0 && originalNodeText) {
+                let t = textD3.select("tspan");
+                let displayText = originalNodeText;
+                t.text(displayText).style("fill", textPartColors.name);
+                if (t.node() && t.node().getComputedTextLength() > maxWidth && displayText.length > 20) {
+                    let estimatedChars = Math.floor(maxWidth / (t.node().getComputedTextLength()/displayText.length) );
+                    displayText = displayText.substring(0, Math.max(0, estimatedChars - 3)) + "...";
+                    t.text(displayText);
+                }
+            }
+        });
+    }
+  </script>
+</body>
+</html>

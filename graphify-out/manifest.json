@@ -1,0 +1,392 @@
+{
+  "eslint.config.mjs": {
+    "mtime": 1788423223.5908167,
+    "seen": 1788767676.255562,
+    "ast_hash": "c011988f3f49e03f84c466119ba73683",
+    "semantic_hash": "c011988f3f49e03f84c466119ba73683"
+  },
+  "next.config.ts": {
+    "mtime": 1788434815.515462,
+    "seen": 1788767676.255573,
+    "ast_hash": "61b75764992ae129d835c9d3c019d66e",
+    "semantic_hash": "61b75764992ae129d835c9d3c019d66e"
+  },
+  "package.json": {
+    "mtime": 1788763662.2671213,
+    "seen": 1788767676.2555776,
+    "ast_hash": "bff5477dd6b4179b1d24393603e98d54",
+    "semantic_hash": "bff5477dd6b4179b1d24393603e98d54"
+  },
+  "postcss.config.mjs": {
+    "mtime": 1788423223.599409,
+    "seen": 1788767676.2555804,
+    "ast_hash": "675899342e765a4d16acd75a53389101",
+    "semantic_hash": "675899342e765a4d16acd75a53389101"
+  },
+  "scripts/build_classes.py": {
+    "mtime": 1788424104.3832905,
+    "seen": 1788767676.255583,
+    "ast_hash": "1f4cb6419ebcc4cbe424d378af929717",
+    "semantic_hash": "1f4cb6419ebcc4cbe424d378af929717"
+  },
+  "scripts/build_compendium.py": {
+    "mtime": 1788423943.5563393,
+    "seen": 1788767676.255585,
+    "ast_hash": "29cd416492fa44645ed3219e964aea45",
+    "semantic_hash": "29cd416492fa44645ed3219e964aea45"
+  },
+  "scripts/build_feats.py": {
+    "mtime": 1788424157.1320944,
+    "seen": 1788767676.2555873,
+    "ast_hash": "d4121ba31060cfec55a390503f30f1a4",
+    "semantic_hash": "d4121ba31060cfec55a390503f30f1a4"
+  },
+  "scripts/build_full_compendium.py": {
+    "mtime": 1788424009.8114254,
+    "seen": 1788767676.2555895,
+    "ast_hash": "7bdeac38d65ab2b766e40bc421a44cf7",
+    "semantic_hash": "7bdeac38d65ab2b766e40bc421a44cf7"
+  },
+  "scripts/build_full_races.py": {
+    "mtime": 1788430995.4909134,
+    "seen": 1788767676.2555914,
+    "ast_hash": "829a46c8e853db8471f3f3649aedfbd8",
+    "semantic_hash": "829a46c8e853db8471f3f3649aedfbd8"
+  },
+  "scripts/build_progression.py": {
+    "mtime": 1788429250.9661102,
+    "seen": 1788767676.2555935,
+    "ast_hash": "320eec893e00774b89b613e4cbc5d60c",
+    "semantic_hash": "320eec893e00774b89b613e4cbc5d60c"
+  },
+  "scripts/build_race_progression.py": {
+    "mtime": 1788430114.9289882,
+    "seen": 1788767676.2555954,
+    "ast_hash": "f924b9dcd79ea7c5466c3f82b9a99ac2",
+    "semantic_hash": "f924b9dcd79ea7c5466c3f82b9a99ac2"
+  },
+  "scripts/build_races.py": {
+    "mtime": 1788424040.5404074,
+    "seen": 1788767676.255598,
+    "ast_hash": "87b54743225cf476f9c33f6f658cda90",
+    "semantic_hash": "87b54743225cf476f9c33f6f658cda90"
+  },
+  "scripts/mobile-visual-audit.mjs": {
+    "mtime": 1788765824.969111,
+    "seen": 1788767676.2556002,
+    "ast_hash": "e54bd8b9942e1854e08e99a7e117fad5",
+    "semantic_hash": "e54bd8b9942e1854e08e99a7e117fad5"
+  },
+  "src/app/api/auth/callback/route.ts": {
+    "mtime": 1788434885.2889237,
+    "seen": 1788767676.255602,
+    "ast_hash": "bc008e25cc4d6cb7438a4ebdf021d4db",
+    "semantic_hash": "bc008e25cc4d6cb7438a4ebdf021d4db"
+  },
+  "src/app/api/auth/signout/route.ts": {
+    "mtime": 1788434780.811867,
+    "seen": 1788767676.2556043,
+    "ast_hash": "79bbf07205f286e7eb796cfa27029dd5",
+    "semantic_hash": "79bbf07205f286e7eb796cfa27029dd5"
+  },
+  "src/app/api/characters/route.ts": {
+    "mtime": 1788434805.521067,
+    "seen": 1788767676.255606,
+    "ast_hash": "52af770faeca068e0f997bfe7b30a647",
+    "semantic_hash": "52af770faeca068e0f997bfe7b30a647"
+  },
+  "src/app/api/export-docx/route.ts": {
+    "mtime": 1788434859.4907255,
+    "seen": 1788767676.2556083,
+    "ast_hash": "1888e85511cc6caa6323503dc4c92b57",
+    "semantic_hash": "1888e85511cc6caa6323503dc4c92b57"
+  },
+  "src/app/api/share/[code]/route.ts": {
+    "mtime": 1788765600.8123827,
+    "seen": 1788767676.2556105,
+    "ast_hash": "73a22ed75f5155f8eeef5abbcf77f0f5",
+    "semantic_hash": "73a22ed75f5155f8eeef5abbcf77f0f5"
+  },
+  "src/app/api/share/route.ts": {
+    "mtime": 1788609190.2796433,
+    "seen": 1788767676.2556121,
+    "ast_hash": "68c803cb4f730fd0ff8d91a8854a3edc",
+    "semantic_hash": "68c803cb4f730fd0ff8d91a8854a3edc"
+  },
+  "src/app/api/upload-portrait/route.ts": {
+    "mtime": 1788434753.5940695,
+    "seen": 1788767676.2556143,
+    "ast_hash": "2f09efc88cb5080202e0a1c386303482",
+    "semantic_hash": "2f09efc88cb5080202e0a1c386303482"
+  },
+  "src/app/layout.tsx": {
+    "mtime": 1788602418.5094862,
+    "seen": 1788767676.255616,
+    "ast_hash": "2f133c43bb78f5c929c46433621b1222",
+    "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
+  },
+  "src/app/page.tsx": {
+    "mtime": 1788765684.3138185,
+    "seen": 1788767676.255618,
+    "ast_hash": "ad70aaabbdd50d5f2ce8b650c1cb20f5",
+    "semantic_hash": "ad70aaabbdd50d5f2ce8b650c1cb20f5"
+  },
+  "src/app/share/[code]/page.tsx": {
+    "mtime": 1788765640.0331707,
+    "seen": 1788767676.2556212,
+    "ast_hash": "e8d0bb3e23fe2f399a0a77a56b08c9a6",
+    "semantic_hash": "e8d0bb3e23fe2f399a0a77a56b08c9a6"
+  },
+  "src/app/sitemap.ts": {
+    "mtime": 1788597770.0171907,
+    "seen": 1788767676.255623,
+    "ast_hash": "dad1b5a313dc1e03bce7050bec38aa97",
+    "semantic_hash": "dad1b5a313dc1e03bce7050bec38aa97"
+  },
+  "src/components/compendium/AutocompleteInput.tsx": {
+    "mtime": 1788423223.6336124,
+    "seen": 1788767676.2556252,
+    "ast_hash": "e1064e18e8045289ef8fd50fa366c70d",
+    "semantic_hash": "e1064e18e8045289ef8fd50fa366c70d"
+  },
+  "src/components/compendium/ClassSelectorModal.tsx": {
+    "mtime": 1788616462.640144,
+    "seen": 1788767676.2556272,
+    "ast_hash": "d9c859659ca5ddcacb5e30cb796edd46",
+    "semantic_hash": "d9c859659ca5ddcacb5e30cb796edd46"
+  },
+  "src/components/compendium/CompendiumModals.tsx": {
+    "mtime": 1788423223.6336124,
+    "seen": 1788767676.2556295,
+    "ast_hash": "b6b688f59a3f27baacce6a0726af91f4",
+    "semantic_hash": "b6b688f59a3f27baacce6a0726af91f4"
+  },
+  "src/components/compendium/ItemDetailModal.tsx": {
+    "mtime": 1788424363.2991915,
+    "seen": 1788767676.2556314,
+    "ast_hash": "851d19098c7ff8d5a367a915ae19c456",
+    "semantic_hash": "851d19098c7ff8d5a367a915ae19c456"
+  },
+  "src/components/compendium/RaceSelectorModal.tsx": {
+    "mtime": 1788762897.619243,
+    "seen": 1788767676.2556334,
+    "ast_hash": "fd667a5454eccb9417b5bece966be4de",
+    "semantic_hash": "fd667a5454eccb9417b5bece966be4de"
+  },
+  "src/components/compendium/SubclassSelectorModal.tsx": {
+    "mtime": 1788424353.4385648,
+    "seen": 1788767676.2556355,
+    "ast_hash": "18f073189eaa55aebe72da3ac6028cb7",
+    "semantic_hash": "18f073189eaa55aebe72da3ac6028cb7"
+  },
+  "src/components/dnd-icons.tsx": {
+    "mtime": 1788423223.6356237,
+    "seen": 1788767676.2556374,
+    "ast_hash": "17fbb173b48f73144aa2db68059e273f",
+    "semantic_hash": "17fbb173b48f73144aa2db68059e273f"
+  },
+  "src/components/tools/CharacterGridModal.tsx": {
+    "mtime": 1788765544.4815214,
+    "seen": 1788767676.2556393,
+    "ast_hash": "c06f17305d86aabd001c69b9f6ffc050",
+    "semantic_hash": "c06f17305d86aabd001c69b9f6ffc050"
+  },
+  "src/components/tools/NameGeneratorModal.tsx": {
+    "mtime": 1788616426.423148,
+    "seen": 1788767676.255641,
+    "ast_hash": "1fedfb35bf157883a6f9dba39e37d40f",
+    "semantic_hash": "1fedfb35bf157883a6f9dba39e37d40f"
+  },
+  "src/components/tools/ShareModal.tsx": {
+    "mtime": 1788762897.621428,
+    "seen": 1788767676.2556434,
+    "ast_hash": "409047b66e113cb487dff92fec506ff8",
+    "semantic_hash": "409047b66e113cb487dff92fec506ff8"
+  },
+  "src/components/tools/StatsCalculatorModal.tsx": {
+    "mtime": 1788616416.9001694,
+    "seen": 1788767676.2556453,
+    "ast_hash": "6068c95ae87c7cf4940254779fba0d41",
+    "semantic_hash": "6068c95ae87c7cf4940254779fba0d41"
+  },
+  "src/components/tools/index.ts": {
+    "mtime": 1788609309.2898576,
+    "seen": 1788767676.2556472,
+    "ast_hash": "11810eb189ef1a9f8a04c1521c9c8bba",
+    "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
+  },
+  "src/components/wizard/CharacterCreationWizardModal.tsx": {
+    "mtime": 1788764748.5660417,
+    "seen": 1788767676.2556493,
+    "ast_hash": "fc68b3b3b08ab168182c08eb93aa2652",
+    "semantic_hash": "fc68b3b3b08ab168182c08eb93aa2652"
+  },
+  "src/components/wizard/wizard-helpers.ts": {
+    "mtime": 1788762897.626428,
+    "seen": 1788767676.2556512,
+    "ast_hash": "e17975bd2047d1a1c5ed559659fca6d0",
+    "semantic_hash": "e17975bd2047d1a1c5ed559659fca6d0"
+  },
+  "src/data/compendium/backgrounds.ts": {
+    "mtime": 1788609182.6033762,
+    "seen": 1788767676.2556531,
+    "ast_hash": "ea4881d6f6d3a5fd3c7cf9610afa3481",
+    "semantic_hash": "ea4881d6f6d3a5fd3c7cf9610afa3481"
+  },
+  "src/data/compendium/class-progression.ts": {
+    "mtime": 1788762897.6305077,
+    "seen": 1788767676.255655,
+    "ast_hash": "3e3a2f1e7d22e6f0a2e7ea6f3bfa4730",
+    "semantic_hash": "3e3a2f1e7d22e6f0a2e7ea6f3bfa4730"
+  },
+  "src/data/compendium/class-spells.ts": {
+    "mtime": 1788762897.632627,
+    "seen": 1788767676.2556572,
+    "ast_hash": "9e43525f8103ccf127bdf9057bdae121",
+    "semantic_hash": "9e43525f8103ccf127bdf9057bdae121"
+  },
+  "src/data/compendium/classes.ts": {
+    "mtime": 1788424136.7996948,
+    "seen": 1788767676.2556596,
+    "ast_hash": "433ad0ce560a6997fd2e3a1b1280e72f",
+    "semantic_hash": "433ad0ce560a6997fd2e3a1b1280e72f"
+  },
+  "src/data/compendium/feats.ts": {
+    "mtime": 1788424163.0035713,
+    "seen": 1788767676.2556615,
+    "ast_hash": "250f266dddae938cd06c6394e5bf4a65",
+    "semantic_hash": "250f266dddae938cd06c6394e5bf4a65"
+  },
+  "src/data/compendium/index.ts": {
+    "mtime": 1788609201.1747694,
+    "seen": 1788767676.2556643,
+    "ast_hash": "2e01cb546c62aad52895a6545d786b3c",
+    "semantic_hash": "2e01cb546c62aad52895a6545d786b3c"
+  },
+  "src/data/compendium/items.ts": {
+    "mtime": 1788424016.9791262,
+    "seen": 1788767676.2556667,
+    "ast_hash": "3464daac9c53aa397dc54ee3746f072d",
+    "semantic_hash": "3464daac9c53aa397dc54ee3746f072d"
+  },
+  "src/data/compendium/names-data.ts": {
+    "mtime": 1788610525.0037372,
+    "seen": 1788767676.2556686,
+    "ast_hash": "1d8301506ccaa5d72277f054ca0b9dc0",
+    "semantic_hash": "1d8301506ccaa5d72277f054ca0b9dc0"
+  },
+  "src/data/compendium/race-progression.ts": {
+    "mtime": 1788430123.5209017,
+    "seen": 1788767676.2556708,
+    "ast_hash": "7053fca1ba992917922ee14cbe255d8e",
+    "semantic_hash": "7053fca1ba992917922ee14cbe255d8e"
+  },
+  "src/data/compendium/races.ts": {
+    "mtime": 1788431004.1189525,
+    "seen": 1788767676.255673,
+    "ast_hash": "098185cb372713bf413275c0e899d9d5",
+    "semantic_hash": "098185cb372713bf413275c0e899d9d5"
+  },
+  "src/data/compendium/spells.ts": {
+    "mtime": 1788762897.6407948,
+    "seen": 1788767676.2556746,
+    "ast_hash": "a0e51b31ec1354e414dbb9984760dc21",
+    "semantic_hash": "a0e51b31ec1354e414dbb9984760dc21"
+  },
+  "src/data/dnd-spells.ts": {
+    "mtime": 1788424186.7583575,
+    "seen": 1788767676.2556767,
+    "ast_hash": "35d56e460ec49b28d70c23f64127d65b",
+    "semantic_hash": "35d56e460ec49b28d70c23f64127d65b"
+  },
+  "src/data/dnd-traits.ts": {
+    "mtime": 1788424195.727004,
+    "seen": 1788767676.2556787,
+    "ast_hash": "9deefcbb51ad5ccfc627a17655b4425c",
+    "semantic_hash": "9deefcbb51ad5ccfc627a17655b4425c"
+  },
+  "src/data/dnd-weapons.ts": {
+    "mtime": 1788424199.8655918,
+    "seen": 1788767676.2556808,
+    "ast_hash": "9eafb37eb44d5898e34ced88980be7a0",
+    "semantic_hash": "9eafb37eb44d5898e34ced88980be7a0"
+  },
+  "src/lib/dnd-types.ts": {
+    "mtime": 1788762897.6418889,
+    "seen": 1788767676.2556827,
+    "ast_hash": "63a54f6f30a59978532e5f4eeaec7c67",
+    "semantic_hash": "63a54f6f30a59978532e5f4eeaec7c67"
+  },
+  "src/lib/supabase/client.ts": {
+    "mtime": 1788423223.6425788,
+    "seen": 1788767676.2556846,
+    "ast_hash": "c44c40c019538c76d22c3d6efea8fa40",
+    "semantic_hash": "c44c40c019538c76d22c3d6efea8fa40"
+  },
+  "src/lib/supabase/middleware.ts": {
+    "mtime": 1788423223.6425788,
+    "seen": 1788767676.2556868,
+    "ast_hash": "9070d8500cc6e03a94ca0c79fb6a7b20",
+    "semantic_hash": "9070d8500cc6e03a94ca0c79fb6a7b20"
+  },
+  "src/lib/supabase/server.ts": {
+    "mtime": 1788423223.6425788,
+    "seen": 1788767676.2556887,
+    "ast_hash": "0e1083eb94e413d612df91a52f276fed",
+    "semantic_hash": "0e1083eb94e413d612df91a52f276fed"
+  },
+  "src/lib/utils.ts": {
+    "mtime": 1788423223.6425788,
+    "seen": 1788767676.2556908,
+    "ast_hash": "5a6fd53fdcf2be529e9cc0b718fde352",
+    "semantic_hash": "5a6fd53fdcf2be529e9cc0b718fde352"
+  },
+  "src/middleware.ts": {
+    "mtime": 1788602222.203025,
+    "seen": 1788767676.2556925,
+    "ast_hash": "602dfc934e5aa7692b6271e4b9212f2d",
+    "semantic_hash": "602dfc934e5aa7692b6271e4b9212f2d"
+  },
+  "tailwind.config.ts": {
+    "mtime": 1788423223.6516292,
+    "seen": 1788767676.2556949,
+    "ast_hash": "d8540179b01d61e5116ad3e288a21207",
+    "semantic_hash": "d8540179b01d61e5116ad3e288a21207"
+  },
+  "test/level-up-arcane.test.ts": {
+    "mtime": 1788762897.6418889,
+    "seen": 1788767676.255697,
+    "ast_hash": "f91e0158b596016e5fcb67625885c9b8",
+    "semantic_hash": "f91e0158b596016e5fcb67625885c9b8"
+  },
+  "test/level-up-divine.test.ts": {
+    "mtime": 1788762897.6463702,
+    "seen": 1788767676.255699,
+    "ast_hash": "5947cc18bbdb0df44dd247ee31c6f541",
+    "semantic_hash": "5947cc18bbdb0df44dd247ee31c6f541"
+  },
+  "test/level-up-martial.test.ts": {
+    "mtime": 1788762897.6476743,
+    "seen": 1788767676.255701,
+    "ast_hash": "5755a00603a35e70eb5014dd671e651f",
+    "semantic_hash": "5755a00603a35e70eb5014dd671e651f"
+  },
+  "test/subclass-selection-rules.test.ts": {
+    "mtime": 1788762897.6487255,
+    "seen": 1788767676.2557027,
+    "ast_hash": "ea55cfad76f5c516667ffda7ccbae01a",
+    "semantic_hash": "ea55cfad76f5c516667ffda7ccbae01a"
+  },
+  "test/wizard-engine-adversarial.test.ts": {
+    "mtime": 1788762897.6503458,
+    "seen": 1788767676.2557049,
+    "ast_hash": "9f29b6ad9baf92c219311075debf4ec3",
+    "semantic_hash": "9f29b6ad9baf92c219311075debf4ec3"
+  },
+  "tsconfig.json": {
+    "mtime": 1788423223.6516292,
+    "seen": 1788767676.2557068,
+    "ast_hash": "f22272b2d73081c86e26ecb388faff25",
+    "semantic_hash": "f22272b2d73081c86e26ecb388faff25"
+  }
+}

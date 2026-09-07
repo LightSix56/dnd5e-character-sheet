@@ -485,42 +485,42 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
         onClick={e => e.stopPropagation()}
       >
         {/* ── Modal Header ── */}
-        <div className="p-4 sm:p-6 pb-3 border-b-2 border-[#C9A84C]/40 bg-[#2C1810]/5 shrink-0">
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded bg-[#5C341F]/30 border border-[#C9A84C]/50 shadow-inner">
-                <MysticCloudIcon size={24} className="text-[#C9A84C]" />
+        <div className="p-3 sm:p-6 pb-3 border-b-2 border-[#C9A84C]/40 bg-[#2C1810]/5 shrink-0">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <div className="p-1.5 sm:p-2 rounded bg-[#5C341F]/30 border border-[#C9A84C]/50 shadow-inner shrink-0">
+                <MysticCloudIcon size={20} className="text-[#C9A84C]" />
               </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold font-serif leading-none text-[#3C2415] flex items-center gap-2">
-                  <span>Мои персонажи</span>
-                  <span className="text-xs font-sans px-2 py-0.5 rounded-full bg-[#8B4513]/15 text-[#6B3A2A] border border-[#C9A84C]/40 font-normal">
+              <div className="min-w-0">
+                <h2 className="text-lg sm:text-2xl font-bold font-serif leading-none text-[#3C2415] flex items-center gap-1.5 sm:gap-2">
+                  <span className="truncate">Мои персонажи</span>
+                  <span className="text-[11px] sm:text-xs font-sans px-1.5 sm:px-2 py-0.2 rounded-full bg-[#8B4513]/15 text-[#6B3A2A] border border-[#C9A84C]/40 font-normal shrink-0">
                     {allCharacters.length}
                   </span>
                 </h2>
-                <p className="text-xs text-[#8B6914] mt-1 font-serif italic">
-                  Выберите героя для загрузки или создайте нового
+                <p className="text-[10px] sm:text-xs text-[#8B6914] mt-0.5 font-serif italic truncate">
+                  Выберите героя для загрузки
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 shrink-0">
               {onCreateNew && (
                 <button
                   type="button"
                   onClick={onCreateNew}
-                  className="parchment-btn text-xs sm:text-sm px-3 sm:px-4 py-2 flex items-center gap-1.5 font-bold shadow"
+                  className="parchment-btn text-xs sm:text-sm px-2.5 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1 font-bold shadow min-h-[34px]"
                   title="Создать нового героя с нуля"
                 >
-                  <span className="text-base leading-none font-bold">+</span>
+                  <span className="text-sm leading-none font-bold">+</span>
                   <span className="hidden sm:inline">Создать персонажа</span>
-                  <span className="sm:hidden">Создать</span>
+                  <span className="sm:hidden text-xs">Герой</span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={onClose}
-                className="parchment-remove-btn w-8 h-8 flex items-center justify-center text-base rounded hover:bg-black/10 transition-colors"
+                className="parchment-remove-btn w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-sm font-bold rounded"
                 title="Закрыть окно (Esc)"
               >
                 ✕

@@ -76,15 +76,25 @@ async function run() {
       await new Promise(r => setTimeout(r, 300));
     }
 
-    // 2. Combat stats block
-    await page.evaluate(() => window.scrollBy(0, 480));
+    // 3. Combat stats
+    await page.evaluate(() => window.scrollBy(0, 500));
     await new Promise(r => setTimeout(r, 400));
     await page.screenshot({ path: path.join(OUT_DIR, '02_home_combat_stats.png') });
 
-    // 3. Attacks & actions
+    // 3b. Skills
     await page.evaluate(() => window.scrollBy(0, 600));
     await new Promise(r => setTimeout(r, 400));
-    await page.screenshot({ path: path.join(OUT_DIR, '03_home_attacks.png') });
+    await page.screenshot({ path: path.join(OUT_DIR, '03_home_skills.png') });
+
+    // 3c. Attacks & Personality
+    await page.evaluate(() => window.scrollBy(0, 700));
+    await new Promise(r => setTimeout(r, 400));
+    await page.screenshot({ path: path.join(OUT_DIR, '03b_home_attacks.png') });
+
+    // 3d. Equipment & Traits
+    await page.evaluate(() => window.scrollBy(0, 700));
+    await new Promise(r => setTimeout(r, 400));
+    await page.screenshot({ path: path.join(OUT_DIR, '03c_home_equipment_traits.png') });
 
     // 4. Tab 2: Details / Backstory
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -153,24 +163,38 @@ async function run() {
       }
     }
 
-    // 8. Saved Characters Grid
-    const charsBtn = await page.$('button[title*="сохранённых персонажей"]');
-    if (charsBtn) {
-      await charsBtn.click();
-      await new Promise(r => setTimeout(r, 500));
+    // 8. Saved Characters Grid (open via mobile menu)
+    console.log('Capturing Characters modal...');
+    if (menuBtn) {
+      await menuBtn.click();
+      await new Promise(r => setTimeout(r, 400));
+      await page.evaluate(() => {
+        const btns = Array.from(document.querySelectorAll('.parchment-mobile-drawer button'));
+        const charBtn = btns.find(b => b.textContent?.includes('Персонажи'));
+        if (charBtn) charBtn.click();
+      });
+      await new Promise(r => setTimeout(r, 600));
       await page.screenshot({ path: path.join(OUT_DIR, '09_modal_character_grid.png') });
-      const closeGrid = await page.$('button[title="Закрыть"]');
+      const closeGrid = await page.$('button[title="Закрыть"], .parchment-remove-btn');
       if (closeGrid) {
         await closeGrid.click();
         await new Promise(r => setTimeout(r, 300));
       }
     }
 
-    // 9. Share / DM View page (mock share code DEMO1234 or error page)
+    // 9. Share / DM View page (mock share code DEMO1234)
     console.log('Capturing Share View page...');
     await page.goto(`http://localhost:${PORT}/share/DEMO1234`, { waitUntil: 'networkidle2', timeout: 15000 });
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 700));
     await page.screenshot({ path: path.join(OUT_DIR, '10_share_view.png') });
+
+    await page.evaluate(() => window.scrollBy(0, 600));
+    await new Promise(r => setTimeout(r, 400));
+    await page.screenshot({ path: path.join(OUT_DIR, '10b_share_view_scrolled.png') });
+
+    await page.evaluate(() => window.scrollBy(0, 600));
+    await new Promise(r => setTimeout(r, 400));
+    await page.screenshot({ path: path.join(OUT_DIR, '10c_share_view_bottom.png') });
 
     console.log('All screenshots captured successfully in mobile_audit/');
   } catch (err) {

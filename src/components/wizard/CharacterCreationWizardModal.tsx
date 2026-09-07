@@ -848,8 +848,43 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
             />
           </div>
 
-          {/* Steps buttons */}
-          <div className="grid grid-cols-6 gap-1 sm:gap-2">
+          {/* Mobile Step Indicator (sm:hidden) */}
+          <div className="flex sm:hidden items-center justify-between py-1">
+            <div className="flex items-center gap-2">
+              <span className="p-1 rounded bg-[#E8D3A2] border border-[#C9A84C]/60 text-xs">
+                {steps[currentStep - 1].icon}
+              </span>
+              <span className="text-xs font-bold" style={{ color: '#3D2012' }}>
+                Шаг {currentStep} из 6: {steps[currentStep - 1].title}
+              </span>
+            </div>
+            {/* Step dot indicators */}
+            <div className="flex items-center gap-1.5">
+              {steps.map(s => (
+                <button
+                  key={s.num}
+                  type="button"
+                  onClick={() => {
+                    if (canNavigateTo(s.num)) {
+                      setStepError(null);
+                      setCurrentStep(s.num);
+                    }
+                  }}
+                  className={`h-2 rounded-full transition-all cursor-pointer ${
+                    s.num === currentStep
+                      ? 'w-5 bg-[#C9A84C]'
+                      : s.num < currentStep
+                      ? 'w-2 bg-[#8B6914]'
+                      : 'w-2 bg-[#C9A84C]/30'
+                  }`}
+                  title={`Шаг ${s.num}: ${s.title}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Steps buttons (hidden on mobile) */}
+          <div className="hidden sm:grid grid-cols-6 gap-2">
             {steps.map(s => {
               const isActive = currentStep === s.num;
               const isPassed = currentStep > s.num;
@@ -872,7 +907,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       }
                     }
                   }}
-                  className={`text-left px-1.5 py-1 rounded transition-all flex flex-col sm:flex-row items-center sm:items-start gap-1 ${
+                  className={`text-left px-2 py-1.5 rounded transition-all flex items-center gap-1.5 ${
                     isActive
                       ? 'font-bold shadow-xs'
                       : isPassed
@@ -886,7 +921,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   }
                 >
                   <span className="text-xs">{s.icon}</span>
-                  <span className="text-[10px] sm:text-xs truncate hidden sm:inline" style={{ color: isActive ? '#3D2012' : '#5C341F' }}>
+                  <span className="text-xs truncate" style={{ color: isActive ? '#3D2012' : '#5C341F' }}>
                     {s.title}
                   </span>
                 </button>
@@ -2190,33 +2225,44 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         </div>
 
         {/* Bottom Navigation Toolbar */}
-        <div className="p-4 border-t flex items-center justify-between gap-3" style={{ borderColor: 'rgba(201, 168, 76, 0.4)', background: 'linear-gradient(180deg, rgba(245, 230, 200, 0.3) 0%, rgba(232, 211, 162, 0.6) 100%)' }}>
+        <div className="p-3 sm:p-4 border-t flex items-center justify-between gap-2 sm:gap-3 shrink-0" style={{ borderColor: 'rgba(201, 168, 76, 0.4)', background: 'linear-gradient(180deg, rgba(245, 230, 200, 0.95) 0%, rgba(232, 211, 162, 0.95) 100%)' }}>
           <div>
-            {currentStep > 1 && (
+            {currentStep > 1 ? (
               <button
                 type="button"
                 onClick={handlePrev}
-                className="parchment-btn-secondary text-xs sm:text-sm px-4 py-2 cursor-pointer font-semibold"
+                className="parchment-btn-secondary text-xs sm:text-sm px-3.5 sm:px-4 py-2 cursor-pointer font-semibold min-h-[40px] flex items-center gap-1"
               >
-                ← Назад
+                <span>←</span>
+                <span>Назад</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onClose}
+                className="parchment-btn-secondary text-xs sm:text-sm px-3.5 py-2 cursor-pointer min-h-[40px]"
+              >
+                Отмена
               </button>
             )}
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-3.5 py-2 rounded text-xs text-[#5C341F] hover:underline cursor-pointer"
-            >
-              Отмена
-            </button>
+            {currentStep > 1 && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-2.5 sm:px-3.5 py-2 text-xs text-[#5C341F] hover:underline cursor-pointer hidden sm:inline"
+              >
+                Отмена
+              </button>
+            )}
 
             {currentStep < 6 ? (
               <button
                 type="button"
                 onClick={handleNext}
-                className="parchment-btn text-xs sm:text-sm px-6 py-2 shadow-md cursor-pointer font-bold flex items-center gap-1.5 transition-transform active:scale-95"
+                className="parchment-btn text-xs sm:text-sm px-5 sm:px-6 py-2 shadow-md cursor-pointer font-bold flex items-center gap-1.5 transition-transform active:scale-95 min-h-[40px]"
               >
                 <span>Далее</span>
                 <span>→</span>
@@ -2225,7 +2271,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
               <button
                 type="button"
                 onClick={handleFinish}
-                className="px-6 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg cursor-pointer flex items-center gap-2 transition-transform active:scale-95"
+                className="px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-lg cursor-pointer flex items-center gap-2 transition-transform active:scale-95 min-h-[40px]"
                 style={{
                   background: 'linear-gradient(180deg, #5C341F 0%, #3D2012 100%)',
                   color: '#FBF0DC',
@@ -2233,7 +2279,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                 }}
               >
                 <span>🎉</span>
-                <span>Завершить и начать играть</span>
+                <span>Завершить</span>
               </button>
             )}
           </div>

@@ -325,16 +325,16 @@ export default function SharedCharacterPage({
 
       {/* ── TOP ACTION BAR ── */}
       <header className="sticky top-0 z-40 parchment-header shadow-md">
-        <div className="max-w-6xl mx-auto px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3 flex-wrap">
+        <div className="max-w-6xl mx-auto px-3 sm:px-5 py-2 sm:py-2.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3">
           {/* Logo & DM Badge */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
             <Link
               href="/"
               className="flex items-center gap-2 hover:opacity-90 transition-opacity"
               title="На главную страницу листа персонажа"
             >
-              <D20Icon size={26} />
-              <span className="hidden sm:inline font-bold text-sm text-[#D4A957]">
+              <D20Icon size={24} />
+              <span className="font-bold text-sm text-[#D4A957]">
                 D&D 5e Sheet
               </span>
             </Link>
@@ -342,28 +342,30 @@ export default function SharedCharacterPage({
             {/* Read-only DM badge */}
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#C9A84C]/25 border border-[#C9A84C]/60 text-[#FFE58F] text-xs font-semibold tracking-wide">
               <span>👁️</span>
-              <span>Режим просмотра D&D 5e</span>
+              <span className="hidden sm:inline">Режим просмотра D&D 5e</span>
+              <span className="sm:hidden">Просмотр</span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2">
             {/* Copy Link Button */}
             <button
               type="button"
               onClick={handleCopyLink}
-              className="parchment-header-btn flex items-center gap-1.5 text-xs py-1.5 px-3"
+              className="parchment-header-btn flex items-center justify-center gap-1 sm:gap-1.5 text-xs py-1.5 px-2 sm:px-3 min-h-[36px]"
               title="Скопировать ссылку на этот лист"
             >
               {copiedUrl ? (
                 <>
                   <GoldSealCheckIcon size={14} />
-                  <span>Скопировано!</span>
+                  <span className="truncate">Скопировано!</span>
                 </>
               ) : (
                 <>
                   <ArcaneLinkIcon size={14} />
-                  <span>Скопировать ссылку</span>
+                  <span className="hidden sm:inline">Скопировать ссылку</span>
+                  <span className="sm:hidden text-[11px]">Ссылка</span>
                 </>
               )}
             </button>
@@ -373,23 +375,24 @@ export default function SharedCharacterPage({
               type="button"
               onClick={handleSaveToCollection}
               disabled={savingStatus === 'saving'}
-              className="parchment-header-btn flex items-center gap-1.5 text-xs py-1.5 px-3 font-semibold"
+              className="parchment-header-btn flex items-center justify-center gap-1 sm:gap-1.5 text-xs py-1.5 px-2 sm:px-3 font-semibold min-h-[36px]"
               title="Сохранить персонажа в свою коллекцию или браузер"
             >
               {savingStatus === 'saving' ? (
                 <>
                   <MysticSpinnerIcon size={14} />
-                  <span>Сохранение...</span>
+                  <span className="truncate text-[11px]">Запись...</span>
                 </>
               ) : savingStatus === 'saved' ? (
                 <>
                   <GoldSealCheckIcon size={14} />
-                  <span>Сохранено!</span>
+                  <span className="truncate text-[11px]">В коллекции</span>
                 </>
               ) : (
                 <>
                   <span>📥</span>
-                  <span>Сохранить к себе</span>
+                  <span className="hidden sm:inline">Сохранить к себе</span>
+                  <span className="sm:hidden text-[11px]">Сохранить</span>
                 </>
               )}
             </button>
@@ -398,25 +401,26 @@ export default function SharedCharacterPage({
             <button
               type="button"
               onClick={handleOpenInEditor}
-              className="parchment-header-btn-primary flex items-center gap-1.5 text-xs py-1.5 px-3.5 font-bold"
+              className="parchment-header-btn-primary flex items-center justify-center gap-1 sm:gap-1.5 text-xs py-1.5 px-2 sm:px-3.5 font-bold min-h-[36px]"
               title="Открыть персонажа в интерактивном бланке для игры"
             >
               <span>✏️</span>
-              <span>Открыть в редакторе</span>
+              <span className="hidden sm:inline">Открыть в редакторе</span>
+              <span className="sm:hidden text-[11px]">В редактор</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* ── MAIN CONTENT ── */}
-      <main className="max-w-6xl mx-auto px-3 sm:px-5 pt-4 sm:pt-6 space-y-4 sm:space-y-6">
+      <main className="max-w-6xl mx-auto px-3 sm:px-5 pt-3 sm:pt-6 space-y-3 sm:space-y-6">
         {/* ── 1. CHARACTER HEADER CARD ── */}
-        <section className="parchment-card p-4 sm:p-6">
-          <div className="flex flex-col md:flex-row gap-5 items-start">
+        <section className="parchment-card p-3 sm:p-6">
+          <div className="flex flex-col md:flex-row gap-4 sm:gap-5 items-start">
             {/* Portrait */}
             <div className="shrink-0 mx-auto md:mx-0">
               {portraitUrl ? (
-                <div className="relative w-32 h-40 sm:w-36 sm:h-44 rounded-md overflow-hidden border-2 border-[#C9A84C] shadow-lg bg-[#2C1810]">
+                <div className="relative w-28 h-36 sm:w-36 sm:h-44 rounded-md overflow-hidden border-2 border-[#C9A84C] shadow-lg bg-[#2C1810]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={portraitUrl}
@@ -425,8 +429,8 @@ export default function SharedCharacterPage({
                   />
                 </div>
               ) : (
-                <div className="w-32 h-40 sm:w-36 sm:h-44 rounded-md border-2 border-[#C9A84C]/60 bg-[#EDE0C8]/50 flex flex-col items-center justify-center p-3 text-center shadow-inner">
-                  <CameraPortraitIcon size={40} className="text-[#8B6914]/50 mb-2" />
+                <div className="w-28 h-36 sm:w-36 sm:h-44 rounded-md border-2 border-[#C9A84C]/60 bg-[#EDE0C8]/50 flex flex-col items-center justify-center p-3 text-center shadow-inner">
+                  <CameraPortraitIcon size={36} className="text-[#8B6914]/50 mb-1 sm:mb-2" />
                   <span className="text-[11px] font-medium text-[#8B6914]">
                     {char.name ? char.name[0] : 'D&D'}
                   </span>
@@ -436,9 +440,9 @@ export default function SharedCharacterPage({
 
             {/* Character Info */}
             <div className="flex-1 min-w-0 w-full">
-              <div className="flex items-center justify-between gap-3 flex-wrap pb-2 border-b border-[#8B6914]/25">
+              <div className="flex items-center justify-between gap-2 sm:gap-3 flex-wrap pb-2 border-b border-[#8B6914]/25">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-[#3C2415] tracking-wide leading-tight">
+                  <h1 className="text-xl sm:text-3xl font-extrabold text-[#3C2415] tracking-wide leading-tight">
                     {char.name || 'Безымянный персонаж'}
                   </h1>
                   {char.playerName && (
@@ -449,17 +453,17 @@ export default function SharedCharacterPage({
                 </div>
 
                 {/* Badges */}
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                   {char.inspiration && (
-                    <span className="px-2.5 py-1 rounded bg-amber-500/20 border border-amber-600/50 text-[#8B4513] text-xs font-bold flex items-center gap-1 shadow-sm">
+                    <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-amber-500/20 border border-amber-600/50 text-[#8B4513] text-xs font-bold flex items-center gap-1 shadow-sm">
                       ✨ Вдохновение
                     </span>
                   )}
-                  <span className="px-2.5 py-1 rounded bg-[#6B3A2A]/10 border border-[#6B3A2A]/30 text-[#6B3A2A] text-xs font-bold">
+                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-[#6B3A2A]/10 border border-[#6B3A2A]/30 text-[#6B3A2A] text-xs font-bold">
                     Уровень {char.level || 1}
                   </span>
                   {char.experiencePoints > 0 && (
-                    <span className="px-2.5 py-1 rounded bg-[#EDE0C8] border border-[#8B6914]/30 text-[#8B6914] text-xs font-medium">
+                    <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-[#EDE0C8] border border-[#8B6914]/30 text-[#8B6914] text-xs font-medium">
                       {char.experiencePoints.toLocaleString()} XP
                     </span>
                   )}
@@ -467,12 +471,12 @@ export default function SharedCharacterPage({
               </div>
 
               {/* Descriptive grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2.5 sm:pt-3 text-xs">
                 <div>
                   <span className="text-[10px] text-[#8B6914] uppercase tracking-wider block font-semibold">
                     Класс и подкласс
                   </span>
-                  <span className="font-semibold text-[#3C2415] text-sm">
+                  <span className="font-semibold text-[#3C2415] text-xs sm:text-sm truncate block">
                     {char.className || '—'}
                     {char.subclass ? ` (${char.subclass})` : ''}
                   </span>
@@ -482,7 +486,7 @@ export default function SharedCharacterPage({
                   <span className="text-[10px] text-[#8B6914] uppercase tracking-wider block font-semibold">
                     Раса / Народ
                   </span>
-                  <span className="font-semibold text-[#3C2415] text-sm">
+                  <span className="font-semibold text-[#3C2415] text-xs sm:text-sm truncate block">
                     {char.race || '—'}
                   </span>
                 </div>
@@ -491,7 +495,7 @@ export default function SharedCharacterPage({
                   <span className="text-[10px] text-[#8B6914] uppercase tracking-wider block font-semibold">
                     Предыстория
                   </span>
-                  <span className="font-semibold text-[#3C2415] text-sm">
+                  <span className="font-semibold text-[#3C2415] text-xs sm:text-sm truncate block">
                     {char.background || '—'}
                   </span>
                 </div>
@@ -500,7 +504,7 @@ export default function SharedCharacterPage({
                   <span className="text-[10px] text-[#8B6914] uppercase tracking-wider block font-semibold">
                     Мировоззрение
                   </span>
-                  <span className="font-semibold text-[#3C2415] text-sm">
+                  <span className="font-semibold text-[#3C2415] text-xs sm:text-sm truncate block">
                     {char.alignment || '—'}
                   </span>
                 </div>
@@ -510,95 +514,95 @@ export default function SharedCharacterPage({
         </section>
 
         {/* ── 2. CORE VITALS STRIP ── */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+        <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-2.5">
           {/* Armor Class */}
-          <div className="parchment-card p-3 text-center flex flex-col justify-center items-center">
-            <div className="flex items-center gap-1 text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-1">
+          <div className="parchment-card p-2.5 sm:p-3 text-center flex flex-col justify-center items-center">
+            <div className="flex items-center gap-1 text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-0.5 sm:mb-1">
               <EngravedShieldIcon size={14} />
               <span>КД</span>
             </div>
-            <span className="text-2xl font-extrabold text-[#3C2415] leading-none">
+            <span className="text-xl sm:text-2xl font-extrabold text-[#3C2415] leading-none">
               {getAC(char)}
             </span>
-            <span className="text-[10px] text-[#8B6914] mt-1">
+            <span className="text-[10px] text-[#8B6914] mt-0.5 sm:mt-1 truncate max-w-full">
               {char.equippedArmor || 'Без доспеха'}
               {char.equippedShield ? ' + Щит' : ''}
             </span>
           </div>
 
           {/* Initiative */}
-          <div className="parchment-card p-3 text-center flex flex-col justify-center items-center">
-            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-1">
+          <div className="parchment-card p-2.5 sm:p-3 text-center flex flex-col justify-center items-center">
+            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-0.5 sm:mb-1">
               Инициатива
             </span>
-            <span className="text-2xl font-extrabold text-[#3C2415] leading-none">
+            <span className="text-xl sm:text-2xl font-extrabold text-[#3C2415] leading-none">
               {formatModifier(getInitiative(char))}
             </span>
-            <span className="text-[10px] text-[#8B6914] mt-1">
+            <span className="text-[10px] text-[#8B6914] mt-0.5 sm:mt-1">
               {char.initiativeOverride !== null ? 'Особая' : 'Мод. ЛОВ'}
             </span>
           </div>
 
           {/* Speed */}
-          <div className="parchment-card p-3 text-center flex flex-col justify-center items-center">
-            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-1">
+          <div className="parchment-card p-2.5 sm:p-3 text-center flex flex-col justify-center items-center">
+            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-0.5 sm:mb-1">
               Скорость
             </span>
-            <span className="text-2xl font-extrabold text-[#3C2415] leading-none">
+            <span className="text-xl sm:text-2xl font-extrabold text-[#3C2415] leading-none">
               {char.speed || 30}
             </span>
-            <span className="text-[10px] text-[#8B6914] mt-1">футов</span>
+            <span className="text-[10px] text-[#8B6914] mt-0.5 sm:mt-1">футов</span>
+          </div>
+
+          {/* Proficiency Bonus */}
+          <div className="parchment-card p-2.5 sm:p-3 text-center flex flex-col justify-center items-center">
+            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-0.5 sm:mb-1">
+              Мастерство
+            </span>
+            <span className="text-xl sm:text-2xl font-extrabold text-[#6B3A2A] leading-none">
+              +{calcProficiencyBonus(char.level)}
+            </span>
+            <span className="text-[10px] text-[#8B6914] mt-0.5 sm:mt-1">Бонус</span>
           </div>
 
           {/* Hit Points (HP) */}
-          <div className="parchment-card p-3 text-center flex flex-col justify-center items-center col-span-2 sm:col-span-1">
-            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-1">
+          <div className="parchment-card p-2.5 sm:p-3 text-center flex flex-col justify-center items-center col-span-2 sm:col-span-1">
+            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-0.5 sm:mb-1">
               Хиты (HP)
             </span>
             <div className="flex items-baseline justify-center gap-1">
-              <span className="text-2xl font-extrabold text-[#8B2500] leading-none">
+              <span className="text-xl sm:text-2xl font-extrabold text-[#8B2500] leading-none">
                 {char.hpCurrent ?? getHPMax(char)}
               </span>
               <span className="text-xs text-[#8B6914]">/ {getHPMax(char) || '—'}</span>
             </div>
             {char.hpTemp > 0 && (
-              <span className="text-[10px] font-bold text-emerald-800 mt-1">
+              <span className="text-[10px] font-bold text-emerald-800 mt-0.5">
                 +{char.hpTemp} врем.
               </span>
             )}
           </div>
 
           {/* Hit Dice */}
-          <div className="parchment-card p-3 text-center flex flex-col justify-center items-center">
-            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-1">
+          <div className="parchment-card p-2.5 sm:p-3 text-center flex flex-col justify-center items-center">
+            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-0.5 sm:mb-1">
               Кость хитов
             </span>
-            <span className="text-xl font-bold text-[#3C2415] leading-none">
+            <span className="text-lg sm:text-xl font-bold text-[#3C2415] leading-none">
               {char.hitDice || `${char.level}d8`}
             </span>
-            <span className="text-[10px] text-[#8B6914] mt-1">Всего</span>
-          </div>
-
-          {/* Proficiency Bonus */}
-          <div className="parchment-card p-3 text-center flex flex-col justify-center items-center">
-            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-1">
-              Мастерство
-            </span>
-            <span className="text-2xl font-extrabold text-[#6B3A2A] leading-none">
-              +{calcProficiencyBonus(char.level)}
-            </span>
-            <span className="text-[10px] text-[#8B6914] mt-1">Бонус</span>
+            <span className="text-[10px] text-[#8B6914] mt-0.5 sm:mt-1">Всего</span>
           </div>
 
           {/* Passive Perception */}
-          <div className="parchment-card p-3 text-center flex flex-col justify-center items-center col-span-2 sm:col-span-1">
-            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-1">
+          <div className="parchment-card p-2.5 sm:p-3 text-center flex flex-col justify-center items-center">
+            <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider mb-0.5 sm:mb-1">
               Пасс. Вним.
             </span>
-            <span className="text-2xl font-extrabold text-[#3C2415] leading-none">
+            <span className="text-xl sm:text-2xl font-extrabold text-[#3C2415] leading-none">
               {getPassivePerception(char)}
             </span>
-            <span className="text-[10px] text-[#8B6914] mt-1">10 + Внимательность</span>
+            <span className="text-[10px] text-[#8B6914] mt-0.5 sm:mt-1">10 + Внимат.</span>
           </div>
         </section>
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { createExampleWarrior } from '@/lib/dnd-types';
 
 // Публичное чтение снимка персонажа по коду — авторизация не требуется,
 // код и есть секрет. Используется внешними приложениями (AI Dungeon Master).
@@ -11,6 +12,27 @@ export async function GET(
 
   if (!code || !/^[A-Za-z0-9_-]{4,64}$/.test(code)) {
     return NextResponse.json({ error: 'Некорректный код' }, { status: 400 });
+  }
+
+  // Demo fallback for visual testing and local preview without DB
+  if (code.toUpperCase() === 'DEMO1234' || code.toUpperCase() === 'DEMO') {
+    const demoChar = createExampleWarrior();
+    return NextResponse.json(
+      {
+        character: {
+          code,
+          name: demoChar.name,
+          data: demoChar,
+          created_at: new Date().toISOString(),
+        },
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=60',
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    );
   }
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';

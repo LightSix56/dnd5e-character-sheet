@@ -3452,14 +3452,14 @@ export default function DnDCharacterSheet() {
 
       <main className="max-w-7xl mx-auto px-4 py-6 relative z-10">
         {/* Tabs */}
-        <div className="grid grid-cols-3 gap-1 mb-6 parchment-tabs">
+        <div className="grid grid-cols-3 gap-1.5 mb-6 parchment-tabs">
           {[
             { key: 'page1' as const, label: 'Основной лист', shortLabel: 'Лист' },
             { key: 'page2' as const, label: 'Детали', shortLabel: 'Детали' },
             { key: 'page3' as const, label: 'Заклинания', shortLabel: 'Магия' },
           ].map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className={`px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded transition-colors ${activeTab === tab.key ? 'parchment-tab-active' : 'parchment-tab-inactive'}`}>
+              className={`px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-medium rounded transition-colors min-h-[44px] flex items-center justify-center cursor-pointer ${activeTab === tab.key ? 'parchment-tab-active' : 'parchment-tab-inactive'}`}>
               <span className="hidden sm:inline">{tab.label}</span><span className="sm:hidden">{tab.shortLabel}</span>
             </button>
           ))}
@@ -3723,10 +3723,10 @@ export default function DnDCharacterSheet() {
               <div className="parchment-card">
                 <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><EngravedShieldIcon size={20} /><span>Боевые параметры</span></h3></div>
                 <div className="px-4 pb-4 space-y-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <div className="space-y-1"><label className="parchment-label">КД</label><input type="number" value={char.armorClass ?? ''} onChange={e => update('armorClass', e.target.value === '' ? null : Number(e.target.value))} placeholder={String(getAC(char))} className={inputClass} /></div>
-                    <div className="space-y-1"><label className="parchment-label">Инициатива</label><div className="flex items-center gap-1"><RollBadge value={formatModifier(getInitiative(char))} label="Инициатива" modifier={getInitiative(char)} onRoll={handleRoll} /><input type="number" value={char.initiativeOverride ?? ''} onChange={e => update('initiativeOverride', e.target.value === '' ? null : Number(e.target.value))} placeholder="Авто" className={inputClass + " flex-1"} /></div></div>
-                    <div className="space-y-1"><label className="parchment-label">Скорость (фт.)</label><input type="number" value={char.speed} onChange={e => update('speed', Number(e.target.value) || 30)} className={inputClass} /></div>
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                    <div className="space-y-1"><label className="parchment-label text-xs">КД</label><input type="number" value={char.armorClass ?? ''} onChange={e => update('armorClass', e.target.value === '' ? null : Number(e.target.value))} placeholder={String(getAC(char))} className={inputClass} /></div>
+                    <div className="space-y-1"><label className="parchment-label text-xs">Инициатива</label><div className="flex items-center gap-1"><RollBadge value={formatModifier(getInitiative(char))} label="Инициатива" modifier={getInitiative(char)} onRoll={handleRoll} /><input type="number" value={char.initiativeOverride ?? ''} onChange={e => update('initiativeOverride', e.target.value === '' ? null : Number(e.target.value))} placeholder="Авто" className={inputClass + " flex-1"} /></div></div>
+                    <div className="space-y-1"><label className="parchment-label text-xs">Скорость</label><input type="number" value={char.speed} onChange={e => update('speed', Number(e.target.value) || 30)} className={inputClass} /></div>
                   </div>
                   {/* Armor & Shield Selector */}
                   <div className="p-2.5 rounded space-y-2" style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
@@ -3784,10 +3784,10 @@ export default function DnDCharacterSheet() {
                       </label>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <div className="space-y-1"><label className="parchment-label">Макс. хитов</label><input type="number" value={char.hpMax ?? ''} onChange={e => update('hpMax', e.target.value === '' ? null : Number(e.target.value))} className={inputClass} /></div>
-                    <div className="space-y-1"><label className="parchment-label">Текущие хиты</label><input type="number" value={char.hpCurrent} onChange={e => update('hpCurrent', Number(e.target.value) || 0)} className={inputClass} /></div>
-                    <div className="space-y-1"><label className="parchment-label">Врем. хиты</label><input type="number" value={char.hpTemp} onChange={e => update('hpTemp', Number(e.target.value) || 0)} className={inputClass} /></div>
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                    <div className="space-y-1"><label className="parchment-label text-xs truncate">Макс. хитов</label><input type="number" value={char.hpMax ?? ''} onChange={e => update('hpMax', e.target.value === '' ? null : Number(e.target.value))} className={inputClass} /></div>
+                    <div className="space-y-1"><label className="parchment-label text-xs truncate">Текущие</label><input type="number" value={char.hpCurrent} onChange={e => update('hpCurrent', Number(e.target.value) || 0)} className={inputClass} /></div>
+                    <div className="space-y-1"><label className="parchment-label text-xs truncate">Временные</label><input type="number" value={char.hpTemp} onChange={e => update('hpTemp', Number(e.target.value) || 0)} className={inputClass} /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <StatInput label="Кость хитов" value={char.hitDice} onChange={v => update('hitDice', v)} type="text" placeholder="1d10" />
@@ -3845,61 +3845,65 @@ export default function DnDCharacterSheet() {
               {/* Attacks */}
               <div className="parchment-card">
                 <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><CrossedSwordsIcon size={20} /><span>Атаки и оружие</span></h3></div>
-                <div className="px-4 pb-4 space-y-2">
-                  <div className="grid grid-cols-[1fr_70px_1fr_32px_32px] gap-1.5 text-xs font-medium px-1" style={{ color: '#8B6914' }}>
-                    <span>Оружие (автопоиск)</span>
-                    <span>Бонус</span>
-                    <span>Урон / Вид</span>
-                    <span className="text-center" title="Свойства и правила">Инфо</span>
-                    <span />
-                  </div>
-                  {char.attacks.map((atk, i) => {
-                    const weaponDef = findWeaponByName(atk.name);
-                    return (
-                      <div key={i} className="grid grid-cols-[1fr_70px_1fr_32px_32px] gap-1.5 items-center">
-                        <AutocompleteInput
-                          value={atk.name}
-                          onChange={val => updateAttack(i, 'name', val)}
-                          onSelect={item => handleSelectWeapon(i, item)}
-                          items={weaponAutocompleteItems}
-                          placeholder="Оружие или атака..."
-                          className={inputClass}
-                        />
-                        <input
-                          value={atk.attackBonus}
-                          onChange={e => updateAttack(i, 'attackBonus', e.target.value)}
-                          placeholder="+5"
-                          className={inputClassCenter + " w-full"}
-                        />
-                        <input
-                          value={atk.damageAndType}
-                          onChange={e => updateAttack(i, 'damageAndType', e.target.value)}
-                          placeholder="1d8+3 рубящий"
-                          className={inputClass}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setActiveWeaponModal({
-                            weapon: weaponDef || null,
-                            customName: atk.name || 'Атака',
-                            customBonus: atk.attackBonus,
-                            customDamage: atk.damageAndType
-                          })}
-                          title="Посмотреть свойства оружия"
-                          className="w-8 h-8 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
-                          style={{
-                            background: 'rgba(237, 224, 200, 0.6)',
-                            border: '1px solid rgba(139, 105, 20, 0.35)',
-                            boxShadow: '0 1px 3px rgba(61, 32, 18, 0.15)'
-                          }}
-                        >
-                          <InfoSealIcon size={18} />
-                        </button>
-                        <button onClick={() => removeAttack(i)} className="parchment-remove-btn w-8 h-8 flex items-center justify-center">✕</button>
+                <div className="px-3 sm:px-4 pb-4 space-y-2">
+                  <div className="overflow-x-auto custom-scrollbar pb-1">
+                    <div className="min-w-[330px] space-y-2">
+                      <div className="grid grid-cols-[1fr_60px_1fr_32px_32px] gap-1.5 text-xs font-medium px-1" style={{ color: '#8B6914' }}>
+                        <span>Оружие (автопоиск)</span>
+                        <span className="text-center">Бонус</span>
+                        <span>Урон / Вид</span>
+                        <span className="text-center" title="Свойства и правила">Инфо</span>
+                        <span />
                       </div>
-                    );
-                  })}
-                  <button onClick={addAttack} className="w-full parchment-btn-secondary text-xs py-2">+ Добавить атаку</button>
+                      {char.attacks.map((atk, i) => {
+                        const weaponDef = findWeaponByName(atk.name);
+                        return (
+                          <div key={i} className="grid grid-cols-[1fr_60px_1fr_32px_32px] gap-1.5 items-center">
+                            <AutocompleteInput
+                              value={atk.name}
+                              onChange={val => updateAttack(i, 'name', val)}
+                              onSelect={item => handleSelectWeapon(i, item)}
+                              items={weaponAutocompleteItems}
+                              placeholder="Оружие или атака..."
+                              className={inputClass}
+                            />
+                            <input
+                              value={atk.attackBonus}
+                              onChange={e => updateAttack(i, 'attackBonus', e.target.value)}
+                              placeholder="+5"
+                              className={inputClassCenter + " w-full"}
+                            />
+                            <input
+                              value={atk.damageAndType}
+                              onChange={e => updateAttack(i, 'damageAndType', e.target.value)}
+                              placeholder="1d8+3 рубящий"
+                              className={inputClass}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setActiveWeaponModal({
+                                weapon: weaponDef || null,
+                                customName: atk.name || 'Атака',
+                                customBonus: atk.attackBonus,
+                                customDamage: atk.damageAndType
+                              })}
+                              title="Посмотреть свойства оружия"
+                              className="w-8 h-8 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110 shrink-0"
+                              style={{
+                                background: 'rgba(237, 224, 200, 0.6)',
+                                border: '1px solid rgba(139, 105, 20, 0.35)',
+                                boxShadow: '0 1px 3px rgba(61, 32, 18, 0.15)'
+                              }}
+                            >
+                              <InfoSealIcon size={18} />
+                            </button>
+                            <button onClick={() => removeAttack(i)} className="parchment-remove-btn w-8 h-8 flex items-center justify-center shrink-0">✕</button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <button onClick={addAttack} className="w-full parchment-btn-secondary text-xs py-2 min-h-[38px]">+ Добавить атаку</button>
                 </div>
               </div>
 

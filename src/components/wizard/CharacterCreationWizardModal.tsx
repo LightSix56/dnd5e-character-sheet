@@ -28,7 +28,11 @@ import {
   DRAGON_ANCESTRIES,
   ALL_DND_LANGUAGES,
   STANDARD_LANGUAGES,
-  EXOTIC_LANGUAGES
+  EXOTIC_LANGUAGES,
+  getClassLevel1ChoicesConfig,
+  FIGHTING_STYLES,
+  RANGER_FAVORED_ENEMIES,
+  RANGER_FAVORED_TERRAINS
 } from './wizard-helpers';
 import {
   D20Icon, ScrollIcon, SpellbookIcon, CrossedSwordsIcon,
@@ -69,6 +73,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [selectedClassId, setSelectedClassId] = useState<string>('fighter');
   const [selectedClassSkills, setSelectedClassSkills] = useState<string[]>(['Атлетика', 'Внимательность']);
   const [selectedSubclassId, setSelectedSubclassId] = useState<string>('');
+  const [selectedFightingStyle, setSelectedFightingStyle] = useState<string>('defense');
+  const [selectedExpertise, setSelectedExpertise] = useState<string[]>([]);
+  const [selectedFavoredEnemy, setSelectedFavoredEnemy] = useState<string>('Звери');
+  const [selectedFavoredTerrain, setSelectedFavoredTerrain] = useState<string>('Лес');
+  const [selectedSorcererDragon, setSelectedSorcererDragon] = useState<string>('Красный');
 
   // ── Step 3: Background ──
   const [selectedBackgroundId, setSelectedBackgroundId] = useState<string>('soldier');
@@ -228,6 +237,21 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return getClassSkillConfig(selectedClass.name);
   }, [selectedClass]);
 
+  // Class Level 1 choices config
+  const classChoicesConfig = useMemo(() => {
+    return getClassLevel1ChoicesConfig(selectedClass.name, selectedSubclass?.id);
+  }, [selectedClass, selectedSubclass]);
+
+  // Selected dragon ancestry for Draconic Sorcerer
+  const selectedSorcererDragonAncestry = useMemo(() => {
+    return DRAGON_ANCESTRIES.find(d => d.color === selectedSorcererDragon) || DRAGON_ANCESTRIES[0];
+  }, [selectedSorcererDragon]);
+
+  // Available proficient skills for Rogue expertise (from race + class)
+  const availableExpertiseSkills = useMemo(() => {
+    return Array.from(new Set([...finalRacialSkills, ...selectedClassSkills]));
+  }, [finalRacialSkills, selectedClassSkills]);
+
   // Spellcasting limits
   const spellLimits = useMemo(() => {
     return getClassSpellcastingLimits(selectedClass.name, baseScores, racialBonuses);
@@ -375,7 +399,22 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
     // Filter out skills already given by race
     const availableRec = cfg.recommendedSkills.filter(s => !finalRacialSkills.includes(s));
-    setSelectedClassSkills(availableRec.slice(0, cfg.skillChoices));
+    const chosenClassSkills = availableRec.slice(0, cfg.skillChoices);
+    setSelectedClassSkills(chosenClassSkills);
+
+    // Initialize defaults for class choices
+    setSelectedFightingStyle('defense');
+    setSelectedFavoredEnemy('Звери');
+    setSelectedFavoredTerrain('Лес');
+    setSelectedSorcererDragon('Красный');
+
+    // For Rogue: auto-suggest the first 2 class skills into selectedExpertise
+    const normName = cls.name.toLowerCase();
+    if (normName.includes('плут') || cls.id === 'rogue') {
+      setSelectedExpertise(chosenClassSkills.slice(0, 2));
+    } else {
+      setSelectedExpertise([]);
+    }
 
     // Reset spells
     setSelectedCantrips([]);
@@ -394,6 +433,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
     setSelectedClassSkills(prev => {
       if (prev.includes(skill)) {
+        // Also remove from expertise if it's no longer proficient
+        setSelectedExpertise(ex => ex.filter(s => s !== skill || finalRacialSkills.includes(s)));
         return prev.filter(s => s !== skill);
       }
       if (prev.length >= classSkillConfig.skillChoices) {
@@ -402,6 +443,19 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       return [...prev, skill];
     });
   }, [finalRacialSkills, classSkillConfig]);
+
+  // Toggle rogue expertise skill
+  const handleToggleExpertise = useCallback((skill: string) => {
+    setSelectedExpertise(prev => {
+      if (prev.includes(skill)) {
+        return prev.filter(s => s !== skill);
+      }
+      if (prev.length >= (classChoicesConfig?.expertiseCount || 2)) {
+        return prev;
+      }
+      return [...prev, skill];
+    });
+  }, [classChoicesConfig]);
 
   // Toggle custom racial skill (for Half-Elf, Kenku, etc.)
   const handleToggleCustomRacialSkill = useCallback((skill: string) => {
@@ -547,6 +601,18 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
           error: `Навык «${overlap}» уже получен от расы. Пожалуйста, выберите другой навык класса.`
         };
       }
+      if (classChoicesConfig.needsFightingStyle && !selectedFightingStyle) {
+        return { valid: false, error: 'Пожалуйста, выберите боевой стиль воина.' };
+      }
+      if (classChoicesConfig.needsExpertise && selectedExpertise.length < classChoicesConfig.expertiseCount) {
+        return { valid: false, error: `Пожалуйста, выберите ${classChoicesConfig.expertiseCount} навыка для экспертизы плута.` };
+      }
+      if (classChoicesConfig.needsFavoredEnemy && !selectedFavoredEnemy) {
+        return { valid: false, error: 'Пожалуйста, выберите избранного врага следопыта.' };
+      }
+      if (classChoicesConfig.needsFavoredTerrain && !selectedFavoredTerrain) {
+        return { valid: false, error: 'Пожалуйста, выберите любимую местность следопыта.' };
+      }
       return { valid: true };
     }
     if (step === 3) {
@@ -661,7 +727,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     // Hill Dwarf gets +1 HP per level
     const isHillDwarf = selectedSubraceId.includes('hill') || selectedSubrace?.name.toLowerCase().includes('холмов');
     const racialHpBonus = isHillDwarf ? 1 : 0;
-    const hpMax = Math.max(1, classSkillConfig.hitDieSize + conMod + racialHpBonus);
+    const isDraconicSorcerer = classChoicesConfig.needsDraconicAncestor;
+    const draconicHpBonus = isDraconicSorcerer ? 1 : 0;
+    const hpMax = Math.max(1, classSkillConfig.hitDieSize + conMod + racialHpBonus + draconicHpBonus);
 
     // Armor and Shield detection
     let equippedArmor = '';
@@ -673,8 +741,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       equippedShield = tmpl.equipment.toLowerCase().includes('щит');
     }
 
-    // Dynamic AC calculation based on actual ability modifiers
-    const ac = calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod);
+    // Dynamic AC calculation based on actual ability modifiers, fighting style, and draconic ancestry
+    const hasDefenseFightingStyle = classChoicesConfig.needsFightingStyle && selectedFightingStyle === 'defense';
+    const ac = calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod, {
+      hasDefenseFightingStyle,
+      isDraconicSorcerer
+    });
 
     // Saving throws map
     const savingThrowProficiencies: Record<AbilityName, boolean> = {
@@ -690,26 +762,22 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       skillProficiencies[s] = allProficientSkills.includes(s);
     }
 
-    // Skill expertise map (Rogue gets expertise in 2 skills at 1st level)
+    // Skill expertise map
     const skillExpertise: Record<string, boolean> = {};
     for (const s of ALL_SKILLS) {
-      skillExpertise[s] = false;
-    }
-    if (selectedClass.name === 'Плут') {
-      // Pick first 2 proficient skills for expertise by default
-      const profs = allProficientSkills.slice(0, 2);
-      for (const p of profs) skillExpertise[p] = true;
+      skillExpertise[s] = selectedExpertise.includes(s);
     }
 
     // Starting gold
     const startingGold = (selectedBackground.startingGold || 10);
 
-    // Languages: Base Race languages + Selected Extra languages + Background languages
+    // Languages: Base Race languages + Selected Extra languages + Background languages (+ Draconic for Draconic Sorcerer)
     const baseLangs = (selectedRace?.languages || []).filter(l => !l.toLowerCase().includes('выбор'));
     const languagesList = Array.from(new Set([
       ...baseLangs,
       ...selectedExtraLanguages,
-      ...(selectedBackground.languages || [])
+      ...(selectedBackground.languages || []),
+      ...(classChoicesConfig.needsDraconicAncestor ? ['Драконий'] : [])
     ]));
     const toolsList: string[] = [...(selectedBackground.toolProficiencies || [])];
     if (racialChoicesConfig?.needsTool && selectedRacialTool && !toolsList.includes(selectedRacialTool)) {
@@ -745,7 +813,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       }
     }
 
-    // Draconic Ancestry trait
+    // Draconic Ancestry trait (Dragonborn)
     if (racialChoicesConfig?.needsDragonColor && selectedDragonAncestry) {
       traitsList.push({
         id: 'race-dragon-ancestry',
@@ -818,6 +886,68 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         });
         featureTextLines.push(`[${selectedSubclass.name}] 1 ур. — ${f.name}: ${f.description}`);
       }
+    }
+
+    // Fighting Style trait (Fighter)
+    if (classChoicesConfig.needsFightingStyle && selectedFightingStyle) {
+      const fs = FIGHTING_STYLES.find(f => f.id === selectedFightingStyle);
+      if (fs) {
+        traitsList.push({
+          id: `class-fighting-style-${fs.id}`,
+          name: `Боевой стиль: ${fs.name}`,
+          source: selectedClass.name,
+          summary: fs.description,
+          description: `${fs.name} (${fs.nameEn}): ${fs.description}`
+        });
+        featureTextLines.push(`[Боевой стиль] ${fs.name} (${fs.nameEn}): ${fs.description}`);
+      }
+    }
+
+    // Rogue Expertise trait
+    if (classChoicesConfig.needsExpertise && selectedExpertise.length > 0) {
+      traitsList.push({
+        id: 'rogue-expertise',
+        name: `Компетентность: ${selectedExpertise.join(', ')}`,
+        source: selectedClass.name,
+        summary: `Бонус мастерства удваивается для проверок навыков: ${selectedExpertise.join(', ')}.`,
+        description: `На 1-м уровне выберите два ваших навыка, в которых вы владеете мастерством. Ваш бонус мастерства удваивается для всех проверок характеристик, использующих любое из выбранных владений.`
+      });
+      featureTextLines.push(`[Компетентность] Бонус мастерства удваивается для навыков: ${selectedExpertise.join(', ')}.`);
+    }
+
+    // Ranger Favored Enemy & Favored Terrain
+    if (classChoicesConfig.needsFavoredEnemy && selectedFavoredEnemy) {
+      traitsList.push({
+        id: 'ranger-favored-enemy',
+        name: `Избранный враг: ${selectedFavoredEnemy}`,
+        source: selectedClass.name,
+        summary: `Избранный враг — ${selectedFavoredEnemy}. Преимущество на проверки Выживания и Интеллекта.`,
+        description: `Вы обладаете значительным опытом изучения, выслеживания и охоты на определенный вид врагов: ${selectedFavoredEnemy}. Вы совершаете с преимуществом проверки Мудрости (Выживание) при выслеживании избранных врагов, а также проверки Интеллекта при вспоминании информации о них.`
+      });
+      featureTextLines.push(`[Избранный враг] ${selectedFavoredEnemy}: преимущество на выслеживание (Выживание) и знания (Интеллект).`);
+    }
+
+    if (classChoicesConfig.needsFavoredTerrain && selectedFavoredTerrain) {
+      traitsList.push({
+        id: 'ranger-favored-terrain',
+        name: `Любимая местность: ${selectedFavoredTerrain}`,
+        source: selectedClass.name,
+        summary: `Естественный исследователь — ${selectedFavoredTerrain}. Сложная местность не замедляет группу.`,
+        description: `Вы отлично ориентируетесь в местности типа «${selectedFavoredTerrain}». Передвижение по труднопроходимой местности не замедляет вашу группу при путешествии длительностью от 1 часа. Ваша группа не может заблудиться, если только не задействована магия.`
+      });
+      featureTextLines.push(`[Естественный исследователь] ${selectedFavoredTerrain}: группа не замедляется сложной местностью, невозможно немагически заблудиться.`);
+    }
+
+    // Sorcerer Draconic Ancestor
+    if (classChoicesConfig.needsDraconicAncestor && selectedSorcererDragonAncestry) {
+      traitsList.push({
+        id: 'sorcerer-draconic-ancestor',
+        name: `Драконий предок: ${selectedSorcererDragonAncestry.color}`,
+        source: `Чародей (${selectedSubclass?.name || 'Драконья кровь'})`,
+        summary: `Драконья кровь: ${selectedSorcererDragonAncestry.color} (урон: ${selectedSorcererDragonAncestry.damageType}). +1 хит за уровень, КД 13 + ЛОВ.`,
+        description: `Вид дракона: ${selectedSorcererDragonAncestry.color}. Тип урона: ${selectedSorcererDragonAncestry.damageType}. Вы говорите, читаете и пишете на драконьем языке. Кроме того, всякий раз, когда вы совершаете проверку Харизмы при взаимодействии с драконами, ваш бонус мастерства удваивается. Максимум ваших хитов увеличивается на 1 за каждый уровень в этом классе, а пока вы без доспехов, базовый КД равен 13 + модификатор Ловкости.`
+      });
+      featureTextLines.push(`[Драконий предок] ${selectedSorcererDragonAncestry.color} (урон: ${selectedSorcererDragonAncestry.damageType}). Максимум хитов +1, базовый КД 13 + ЛОВ.`);
     }
 
     // Background feature
@@ -1916,6 +2046,278 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   })}
                 </div>
               </div>
+
+              {/* ── Fighting Style Selector (Fighter) ── */}
+              {classChoicesConfig.needsFightingStyle && (
+                <div
+                  className="p-4 rounded-lg space-y-3"
+                  style={{
+                    background: 'rgba(232, 211, 162, 0.35)',
+                    border: '1px solid rgba(201, 168, 76, 0.4)'
+                  }}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                    <div>
+                      <h4 className="text-sm font-bold text-[#3D2012] flex items-center gap-1.5">
+                        <span>⚔️</span>
+                        <span>Боевой стиль (выберите 1):</span>
+                      </h4>
+                      <p className="text-[11px] text-[#8B6914]">
+                        Выберите боевую специализацию воина, дающую постоянный пассивный бонус.
+                      </p>
+                    </div>
+                    {selectedFightingStyle && (
+                      <span
+                        className="text-xs font-bold px-2.5 py-1 rounded shadow-xs self-start sm:self-auto"
+                        style={{ background: '#5C341F', color: '#FFE58F' }}
+                      >
+                        {FIGHTING_STYLES.find(fs => fs.id === selectedFightingStyle)?.name || 'Выбран'}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    {FIGHTING_STYLES.map(style => {
+                      const isSel = selectedFightingStyle === style.id;
+                      return (
+                        <button
+                          key={style.id}
+                          type="button"
+                          onClick={() => setSelectedFightingStyle(style.id)}
+                          className={`p-3 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                            isSel ? 'shadow-md scale-[1.01]' : 'hover:bg-[rgba(201,168,76,0.18)]'
+                          }`}
+                          style={
+                            isSel
+                              ? { background: '#E8D3A2', border: '2px solid #C9A84C', color: '#3D2012' }
+                              : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#4A2A18' }
+                          }
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm">{isSel ? '🔘' : '⚪'}</span>
+                              <span className="font-bold text-xs" style={{ color: isSel ? '#3D2012' : '#5C341F' }}>
+                                {style.name}
+                              </span>
+                            </div>
+                            <span className="text-[10px] opacity-70 italic">{style.nameEn}</span>
+                          </div>
+                          <p className="text-[11px] leading-snug opacity-90 pl-5">{style.description}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Rogue Expertise Selector (Rogue) ── */}
+              {classChoicesConfig.needsExpertise && (
+                <div
+                  className="p-4 rounded-lg space-y-3"
+                  style={{
+                    background: 'rgba(232, 211, 162, 0.35)',
+                    border: '1px solid rgba(201, 168, 76, 0.4)'
+                  }}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                    <div>
+                      <h4 className="text-sm font-bold text-[#3D2012] flex items-center gap-1.5">
+                        <span>⭐</span>
+                        <span>Компетентность / Экспертиза (выберите {classChoicesConfig.expertiseCount} навыка):</span>
+                      </h4>
+                      <p className="text-[11px] text-[#8B6914]">
+                        Бонус мастерства удваивается для любых проверок выбранных характеристик. Выберите из имеющихся владений:
+                      </p>
+                    </div>
+                    <div
+                      className="text-xs font-bold px-3 py-1 rounded-full shadow-xs self-start sm:self-auto"
+                      style={{
+                        background: selectedExpertise.length === classChoicesConfig.expertiseCount ? '#D1E7DD' : '#FFF3CD',
+                        color: selectedExpertise.length === classChoicesConfig.expertiseCount ? '#0F5132' : '#664D03',
+                        border: `1px solid ${selectedExpertise.length === classChoicesConfig.expertiseCount ? '#BADBCC' : '#FFECB5'}`
+                      }}
+                    >
+                      Выбрано {selectedExpertise.length} из {classChoicesConfig.expertiseCount}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+                    {availableExpertiseSkills.map(skill => {
+                      const isSelected = selectedExpertise.includes(skill);
+                      const isMaxReached = selectedExpertise.length >= classChoicesConfig.expertiseCount;
+                      const isDisabled = !isSelected && isMaxReached;
+
+                      return (
+                        <button
+                          key={skill}
+                          type="button"
+                          onClick={() => handleToggleExpertise(skill)}
+                          disabled={isDisabled}
+                          className={`p-2.5 rounded-md text-left text-xs transition-all flex items-center justify-between ${
+                            isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-xs'
+                          }`}
+                          style={
+                            isSelected
+                              ? { background: '#E8D3A2', border: '2px solid #C9A84C', color: '#3D2012' }
+                              : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#3D2012' }
+                          }
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-sm">
+                              {isSelected ? '⭐' : '☆'}
+                            </span>
+                            <div>
+                              <div className="font-semibold text-xs text-[#3D2012]">
+                                {skill}
+                              </div>
+                              <div className="text-[10px] text-[#8B6914]">
+                                {SKILL_MAP[skill] ? `${ABILITY_FULL[SKILL_MAP[skill]]} (${SKILL_MAP[skill]})` : ''}
+                              </div>
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <span
+                              className="px-1.5 py-0.5 rounded text-[10px] font-bold"
+                              style={{ background: '#5C341F', color: '#FFE58F' }}
+                            >
+                              Экспертиза
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Ranger Favored Enemy & Favored Terrain (Ranger) ── */}
+              {classChoicesConfig.needsFavoredEnemy && (
+                <div
+                  className="p-4 rounded-lg space-y-3"
+                  style={{
+                    background: 'rgba(232, 211, 162, 0.35)',
+                    border: '1px solid rgba(201, 168, 76, 0.4)'
+                  }}
+                >
+                  <div className="border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                    <h4 className="text-sm font-bold text-[#3D2012] flex items-center gap-1.5">
+                      <span>🏹</span>
+                      <span>Особенности следопыта (1 уровень):</span>
+                    </h4>
+                    <p className="text-[11px] text-[#8B6914]">
+                      Настройте избранного врага и естественного исследователя (любимую местность) вашего следопыта.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    {/* Favored Enemy */}
+                    <div className="space-y-1.5">
+                      <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                        Избранный враг:
+                      </label>
+                      <select
+                        value={selectedFavoredEnemy}
+                        onChange={e => setSelectedFavoredEnemy(e.target.value)}
+                        className="parchment-select w-full text-xs py-2 px-2.5"
+                      >
+                        {RANGER_FAVORED_ENEMIES.map(enemy => (
+                          <option key={enemy} value={enemy}>
+                            {enemy}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-[10px] text-[#5C341F]">
+                        Преимущество на проверки Выживания при выслеживании и проверки Интеллекта для воспоминания информации.
+                      </p>
+                    </div>
+
+                    {/* Favored Terrain */}
+                    <div className="space-y-1.5">
+                      <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                        Естественный исследователь (местность):
+                      </label>
+                      <select
+                        value={selectedFavoredTerrain}
+                        onChange={e => setSelectedFavoredTerrain(e.target.value)}
+                        className="parchment-select w-full text-xs py-2 px-2.5"
+                      >
+                        {RANGER_FAVORED_TERRAINS.map(terrain => (
+                          <option key={terrain} value={terrain}>
+                            {terrain}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-[10px] text-[#5C341F]">
+                        Сложная местность не замедляет путешествие группы, невозможно заблудиться немагическим образом.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── Sorcerer Draconic Ancestor (Draconic Sorcerer) ── */}
+              {classChoicesConfig.needsDraconicAncestor && (
+                <div
+                  className="p-4 rounded-lg space-y-3"
+                  style={{
+                    background: 'rgba(232, 211, 162, 0.35)',
+                    border: '1px solid rgba(201, 168, 76, 0.4)'
+                  }}
+                >
+                  <div className="border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                    <h4 className="text-sm font-bold text-[#3D2012] flex items-center gap-1.5">
+                      <span>🐉</span>
+                      <span>Драконий предок (Драконья кровь):</span>
+                    </h4>
+                    <p className="text-[11px] text-[#8B6914]">
+                      Выберите вид дракона, кровь которого течёт в ваших жилах. Это определит связанный тип урона и устойчивость.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 pt-1">
+                    <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                      Вид дракона:
+                    </label>
+                    <select
+                      value={selectedSorcererDragon}
+                      onChange={e => setSelectedSorcererDragon(e.target.value)}
+                      className="parchment-select w-full text-xs py-2 px-2.5"
+                    >
+                      {DRAGON_ANCESTRIES.map(d => (
+                        <option key={d.color} value={d.color}>
+                          {d.color} дракон (Урон: {d.damageType})
+                        </option>
+                      ))}
+                    </select>
+
+                    {selectedSorcererDragonAncestry && (
+                      <div
+                        className="p-3 rounded-lg text-xs space-y-1.5"
+                        style={{
+                          background: 'rgba(251, 240, 220, 0.9)',
+                          border: '1px solid rgba(201, 168, 76, 0.5)'
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-xs text-[#3D2012]">
+                            {selectedSorcererDragonAncestry.color} дракон
+                          </span>
+                          <span
+                            className="px-2 py-0.5 rounded text-[10px] font-bold"
+                            style={{ background: '#E8D3A2', color: '#5C341F' }}
+                          >
+                            Стихия: {selectedSorcererDragonAncestry.damageType}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-[#5C341F]">
+                          <strong>Особенность чародея: </strong>
+                          Вы говорите на драконьем языке, удваиваете бонус мастерства при проверках Харизмы при взаимодействии с драконами, ваш максимум хитов увеличивается на 1 за каждый уровень чародея, а ваш базовый КД без доспехов равен 13 + ЛОВ.
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -2663,7 +3065,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   <div className="p-2 rounded" style={{ background: 'rgba(139, 37, 0, 0.08)', border: '1px solid rgba(139, 37, 0, 0.2)' }}>
                     <div className="text-[10px] text-[#8B2500]">Макс. Хиты</div>
                     <div className="text-base font-bold text-[#8B2500]">
-                      {Math.max(1, classSkillConfig.hitDieSize + finalAbilityScores.mods['ТЕЛ'] + (selectedSubraceId.includes('hill') || selectedSubrace?.name.toLowerCase().includes('холмов') ? 1 : 0))}
+                      {Math.max(1, classSkillConfig.hitDieSize + finalAbilityScores.mods['ТЕЛ'] + (selectedSubraceId.includes('hill') || selectedSubrace?.name.toLowerCase().includes('холмов') ? 1 : 0) + (classChoicesConfig.needsDraconicAncestor ? 1 : 0))}
                     </div>
                   </div>
                   <div className="p-2 rounded" style={{ background: 'rgba(139, 105, 20, 0.08)', border: '1px solid rgba(139, 105, 20, 0.2)' }}>
@@ -2682,7 +3084,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                           tmpl.equipment.toLowerCase().includes('кожан') ? 'Кожаный доспех' : '';
                           equippedShield = tmpl.equipment.toLowerCase().includes('щит');
                         }
-                        return calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod);
+                        const hasDefenseFightingStyle = classChoicesConfig.needsFightingStyle && selectedFightingStyle === 'defense';
+                        const isDraconicSorcerer = classChoicesConfig.needsDraconicAncestor;
+                        return calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod, {
+                          hasDefenseFightingStyle,
+                          isDraconicSorcerer
+                        });
                       })()}
                     </div>
                   </div>
@@ -2743,6 +3150,33 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     })}
                   </div>
                 </div>
+
+                {/* Class Choices summary */}
+                {(classChoicesConfig.needsFightingStyle || classChoicesConfig.needsExpertise || classChoicesConfig.needsFavoredEnemy || classChoicesConfig.needsDraconicAncestor) && (
+                  <div className="text-xs space-y-1 pt-1 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.25)' }}>
+                    <div className="font-semibold text-[#5C341F]">⚔️ Классовые особенности и выбор:</div>
+                    {classChoicesConfig.needsFightingStyle && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Боевой стиль: </strong>{FIGHTING_STYLES.find(f => f.id === selectedFightingStyle)?.name || selectedFightingStyle}
+                      </div>
+                    )}
+                    {classChoicesConfig.needsExpertise && selectedExpertise.length > 0 && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Экспертиза (Компетентность): </strong>⭐ {selectedExpertise.join(', ')}
+                      </div>
+                    )}
+                    {classChoicesConfig.needsFavoredEnemy && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Избранный враг: </strong>{selectedFavoredEnemy} · <strong>Местность: </strong>{selectedFavoredTerrain}
+                      </div>
+                    )}
+                    {classChoicesConfig.needsDraconicAncestor && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Драконий предок: </strong>{selectedSorcererDragonAncestry.color} дракон (Стихия: {selectedSorcererDragonAncestry.damageType})
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Spells summary (if caster) */}
                 {spellLimits.isCaster && (

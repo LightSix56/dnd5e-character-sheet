@@ -8,7 +8,8 @@ import {
   EXOTIC_LANGUAGES,
   ALL_DND_LANGUAGES,
   getRacialChoicesConfig,
-  getClassLevel1ChoicesConfig
+  getClassLevel1ChoicesConfig,
+  calculateWizardAC
 } from '../src/components/wizard/wizard-helpers';
 import { DND_COMPENDIUM_RACES } from '../src/data/compendium/races';
 
@@ -86,4 +87,34 @@ test('Level 1 Rule Engine: getClassLevel1ChoicesConfig flags class choices accur
 
   const draconicSorcererCfg = getClassLevel1ChoicesConfig('Чародей', 'sorcerer-draconic');
   assert.equal(draconicSorcererCfg.needsDraconicAncestor, true, 'Draconic Sorcerer needs dragon color');
+});
+
+test('Level 1 Rule Engine: calculateWizardAC applies Defense Fighting Style and Draconic Resilience', () => {
+  // Fighter with Chain Mail (base 16) and Defense (+1) -> 17
+  assert.equal(
+    calculateWizardAC('Воин', 'Кольчуга', false, 0, 2, 0, { hasDefenseFightingStyle: true }),
+    17
+  );
+  // Fighter with Chain Mail and Shield (+2) and Defense (+1) -> 19
+  assert.equal(
+    calculateWizardAC('Воин', 'Кольчуга', true, 0, 2, 0, { hasDefenseFightingStyle: true }),
+    19
+  );
+  // Fighter with Defense but NO armor (unarmored) -> NO +1 bonus (10 + DEX)
+  assert.equal(
+    calculateWizardAC('Воин', '', false, 2, 2, 0, { hasDefenseFightingStyle: true }),
+    12
+  );
+
+  // Draconic Sorcerer unarmored (13 + DEX)
+  // DEX +3 -> 16
+  assert.equal(
+    calculateWizardAC('Чародей', '', false, 3, 2, 0, { isDraconicSorcerer: true }),
+    16
+  );
+  // Draconic Sorcerer unarmored with shield (+2) -> 18
+  assert.equal(
+    calculateWizardAC('Чародей', '', true, 3, 2, 0, { isDraconicSorcerer: true }),
+    18
+  );
 });

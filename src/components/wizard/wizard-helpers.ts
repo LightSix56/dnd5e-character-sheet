@@ -521,10 +521,19 @@ export function calculateWizardAC(
   equippedShield: boolean,
   dexMod: number,
   conMod: number,
-  wisMod: number
+  wisMod: number,
+  options?: {
+    hasDefenseFightingStyle?: boolean;
+    isDraconicSorcerer?: boolean;
+  }
 ): number {
   const shieldBonus = equippedShield ? 2 : 0;
   const normClass = className.trim().toLowerCase();
+
+  // Draconic Sorcerer Unarmored Defense (13 + DEX, shield allowed)
+  if (options?.isDraconicSorcerer && !equippedArmor) {
+    return 13 + dexMod + shieldBonus;
+  }
 
   // Barbarian Unarmored Defense (10 + DEX + CON + shield)
   if ((normClass.includes('варвар') || normClass.includes('barbarian')) && !equippedArmor) {
@@ -535,24 +544,29 @@ export function calculateWizardAC(
     return 10 + dexMod + wisMod;
   }
 
+  let ac = 10 + dexMod + shieldBonus;
+
   if (equippedArmor) {
     const lowerArmor = equippedArmor.toLowerCase();
     // Heavy: Chain Mail / Кольчуга / Латы
     if (lowerArmor.includes('кольчуг') || lowerArmor.includes('chain mail') || lowerArmor.includes('латы') || lowerArmor.includes('наборн') || lowerArmor.includes('колечн')) {
-      return 16 + shieldBonus;
+      ac = 16 + shieldBonus;
     }
     // Medium: Scale Mail / Чешуйчатый доспех (14 + min(2, max(0, dexMod)))
-    if (lowerArmor.includes('чешуйчат') || lowerArmor.includes('scale mail') || lowerArmor.includes('рубах') || lowerArmor.includes('кирас') || lowerArmor.includes('полулат') || lowerArmor.includes('шкурн')) {
-      return 14 + Math.min(2, Math.max(0, dexMod)) + shieldBonus;
+    else if (lowerArmor.includes('чешуйчат') || lowerArmor.includes('scale mail') || lowerArmor.includes('рубах') || lowerArmor.includes('кирас') || lowerArmor.includes('полулат') || lowerArmor.includes('шкурн')) {
+      ac = 14 + Math.min(2, Math.max(0, dexMod)) + shieldBonus;
     }
     // Light: Leather / Кожаный доспех (11 + dexMod)
-    if (lowerArmor.includes('кожан') || lowerArmor.includes('leather') || lowerArmor.includes('стеган') || lowerArmor.includes('проклепан')) {
-      return 11 + dexMod + shieldBonus;
+    else if (lowerArmor.includes('кожан') || lowerArmor.includes('leather') || lowerArmor.includes('стеган') || lowerArmor.includes('проклепан')) {
+      ac = 11 + dexMod + shieldBonus;
+    }
+
+    if (options?.hasDefenseFightingStyle) {
+      ac += 1;
     }
   }
 
-  // Default Unarmored
-  return 10 + dexMod + shieldBonus;
+  return ac;
 }
 
 

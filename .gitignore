@@ -33,3 +33,5 @@ mobile_audit/
 artifacts/
 scratch/
 graphify-out/cache/
+playwright-report/
+test-results/

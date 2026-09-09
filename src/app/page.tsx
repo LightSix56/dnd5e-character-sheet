@@ -3266,52 +3266,60 @@ export default function DnDCharacterSheet() {
                         <span className="text-center" title="Свойства и правила">Инфо</span>
                         <span />
                       </div>
-                      {char.attacks.map((atk, i) => {
-                        const weaponDef = findWeaponByName(atk.name);
-                        return (
-                          <div key={i} className="grid grid-cols-[1fr_60px_1fr_32px_32px] gap-1.5 items-center">
-                            <AutocompleteInput
-                              value={atk.name}
-                              onChange={val => updateAttack(i, 'name', val)}
-                              onSelect={item => handleSelectWeapon(i, item)}
-                              items={weaponAutocompleteItems}
-                              placeholder="Оружие или атака…"
-                              className={inputClass}
-                            />
-                            <input
-                              value={atk.attackBonus}
-                              onChange={e => updateAttack(i, 'attackBonus', e.target.value)}
-                              placeholder="+5"
-                              className={inputClassCenter + " w-full"}
-                            />
-                            <input
-                              value={atk.damageAndType}
-                              onChange={e => updateAttack(i, 'damageAndType', e.target.value)}
-                              placeholder="1d8+3 рубящий"
-                              className={inputClass}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setActiveWeaponModal({
-                                weapon: weaponDef || null,
-                                customName: atk.name || 'Атака',
-                                customBonus: atk.attackBonus,
-                                customDamage: atk.damageAndType
-                              })}
-                              title="Посмотреть свойства оружия"
-                              className="w-8 h-8 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110 shrink-0"
-                              style={{
-                                background: 'rgba(237, 224, 200, 0.6)',
-                                border: '1px solid rgba(139, 105, 20, 0.35)',
-                                boxShadow: '0 1px 3px rgba(61, 32, 18, 0.15)'
-                              }}
-                            >
-                              <InfoSealIcon size={18} />
-                            </button>
-                            <button onClick={() => removeAttack(i)} className="parchment-remove-btn w-8 h-8 flex items-center justify-center shrink-0">✕</button>
-                          </div>
-                        );
-                      })}
+                      {char.attacks.length === 0 ? (
+                        <div className="parchment-empty-state my-2">
+                          <CrossedSwordsIcon size={26} />
+                          <p className="text-xs text-[#5C341F] font-semibold">Оружие не экипировано</p>
+                          <p className="text-[11px] text-[#8B6914]">Оружие не выбрано. Добавьте атаку или воспользуйтесь шаблоном снаряжения.</p>
+                        </div>
+                      ) : (
+                        char.attacks.map((atk, i) => {
+                          const weaponDef = findWeaponByName(atk.name);
+                          return (
+                            <div key={i} className="grid grid-cols-[1fr_60px_1fr_32px_32px] gap-1.5 items-center">
+                              <AutocompleteInput
+                                value={atk.name}
+                                onChange={val => updateAttack(i, 'name', val)}
+                                onSelect={item => handleSelectWeapon(i, item)}
+                                items={weaponAutocompleteItems}
+                                placeholder="Оружие или атака…"
+                                className={inputClass}
+                              />
+                              <input
+                                value={atk.attackBonus}
+                                onChange={e => updateAttack(i, 'attackBonus', e.target.value)}
+                                placeholder="+5"
+                                className={inputClassCenter + " w-full"}
+                              />
+                              <input
+                                value={atk.damageAndType}
+                                onChange={e => updateAttack(i, 'damageAndType', e.target.value)}
+                                placeholder="1d8+3 рубящий"
+                                className={inputClass}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setActiveWeaponModal({
+                                  weapon: weaponDef || null,
+                                  customName: atk.name || 'Атака',
+                                  customBonus: atk.attackBonus,
+                                  customDamage: atk.damageAndType
+                                })}
+                                title="Посмотреть свойства оружия"
+                                className="w-8 h-8 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110 shrink-0"
+                                style={{
+                                  background: 'rgba(237, 224, 200, 0.6)',
+                                  border: '1px solid rgba(139, 105, 20, 0.35)',
+                                  boxShadow: '0 1px 3px rgba(61, 32, 18, 0.15)'
+                                }}
+                              >
+                                <InfoSealIcon size={18} />
+                              </button>
+                              <button onClick={() => removeAttack(i)} className="parchment-remove-btn w-8 h-8 flex items-center justify-center shrink-0">✕</button>
+                            </div>
+                          );
+                        })
+                      )}
                     </div>
                   </div>
                   <button onClick={addAttack} className="w-full parchment-btn-secondary text-xs py-2 min-h-[38px]">+ Добавить атаку</button>
@@ -3337,7 +3345,16 @@ export default function DnDCharacterSheet() {
               {/* Equipment */}
               <div className="parchment-card">
                 <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><BackpackPackIcon size={18} /><span>Снаряжение</span></h3></div>
-                <div className="px-4 pb-4"><textarea value={char.equipment} onChange={e => update('equipment', e.target.value)} rows={3} className={textareaClass} /></div>
+                <div className="px-4 pb-4 space-y-2">
+                  {!char.equipment?.trim() && (
+                    <div className="parchment-empty-state">
+                      <BackpackPackIcon size={24} />
+                      <p className="text-xs text-[#5C341F] font-semibold">Рюкзак пуст</p>
+                      <p className="text-[11px] text-[#8B6914]">Снаряжение не записано. Запишите предметы походного набора или экипировку.</p>
+                    </div>
+                  )}
+                  <textarea value={char.equipment} onChange={e => update('equipment', e.target.value)} rows={3} placeholder="Набор путешественника, факелы (10), рационы (10 дн.), верёвка..." className={textareaClass} />
+                </div>
               </div>
 
               {/* Features & Traits Table */}
@@ -3696,53 +3713,61 @@ export default function DnDCharacterSheet() {
                     )}
                   </div>
                   <div className="px-4 pb-4 space-y-2">
-                    {spells.map((spell, i) => {
-                      const spellDef = findSpellByName(spell.name);
-                      const check = spell.name.trim() ? isSpellAllowedForCharacter(char, spellDef || spell.name) : null;
-                      return (
-                        <div key={i} className="flex gap-1.5 items-center">
-                          <label className="parchment-checkbox" title="Подготовлено"><input type="checkbox" checked={spell.prepared} onChange={e => updateSpellEntry(lvl, i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label>
-                          <div className="flex-1 relative flex items-center">
-                            <AutocompleteInput
-                              value={spell.name}
-                              onChange={val => updateSpellEntry(lvl, i, 'name', val)}
-                              items={spellAutocompleteItems}
-                              placeholder={`Заклинание ${lvl} ур.…`}
-                              className={inputClass + (check ? " pr-28" : "")}
-                            />
-                            {check && (
-                              <span
-                                className="absolute right-2 text-[10px] px-1.5 py-0.5 rounded font-mono pointer-events-none truncate max-w-[110px]"
-                                style={{
-                                  background: check.allowed ? (check.source === 'class' ? 'rgba(40, 140, 40, 0.15)' : 'rgba(30, 100, 200, 0.15)') : 'rgba(217, 83, 79, 0.18)',
-                                  color: check.allowed ? (check.source === 'class' ? '#276727' : '#1B4D89') : '#900',
-                                  border: check.allowed ? (check.source === 'class' ? '1px solid rgba(40, 140, 40, 0.3)' : '1px solid rgba(30, 100, 200, 0.3)') : '1px solid rgba(217, 83, 79, 0.4)'
-                                }}
-                                title={check.reason || check.sourceLabel}
-                              >
-                                {check.allowed ? check.sourceLabel : '⚠️ Чужой'}
-                              </span>
-                            )}
+                    {spells.length === 0 ? (
+                      <div className="parchment-empty-state">
+                        <SpellbookIcon size={22} />
+                        <p className="text-xs text-[#5C341F] font-semibold">В книге заклинаний пока нет записей</p>
+                        <p className="text-[11px] text-[#8B6914]">Нажмите «+ Добавить», чтобы записать заклинание {lvl}-го круга.</p>
+                      </div>
+                    ) : (
+                      spells.map((spell, i) => {
+                        const spellDef = findSpellByName(spell.name);
+                        const check = spell.name.trim() ? isSpellAllowedForCharacter(char, spellDef || spell.name) : null;
+                        return (
+                          <div key={i} className="flex gap-1.5 items-center">
+                            <label className="parchment-checkbox" title="Подготовлено"><input type="checkbox" checked={spell.prepared} onChange={e => updateSpellEntry(lvl, i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label>
+                            <div className="flex-1 relative flex items-center">
+                              <AutocompleteInput
+                                value={spell.name}
+                                onChange={val => updateSpellEntry(lvl, i, 'name', val)}
+                                items={spellAutocompleteItems}
+                                placeholder={`Заклинание ${lvl} ур.…`}
+                                className={inputClass + (check ? " pr-28" : "")}
+                              />
+                              {check && (
+                                <span
+                                  className="absolute right-2 text-[10px] px-1.5 py-0.5 rounded font-mono pointer-events-none truncate max-w-[110px]"
+                                  style={{
+                                    background: check.allowed ? (check.source === 'class' ? 'rgba(40, 140, 40, 0.15)' : 'rgba(30, 100, 200, 0.15)') : 'rgba(217, 83, 79, 0.18)',
+                                    color: check.allowed ? (check.source === 'class' ? '#276727' : '#1B4D89') : '#900',
+                                    border: check.allowed ? (check.source === 'class' ? '1px solid rgba(40, 140, 40, 0.3)' : '1px solid rgba(30, 100, 200, 0.3)') : '1px solid rgba(217, 83, 79, 0.4)'
+                                  }}
+                                  title={check.reason || check.sourceLabel}
+                                >
+                                  {check.allowed ? check.sourceLabel : '⚠️ Чужой'}
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setActiveSpellModal({
+                                spell: spellDef || null,
+                                customName: spell.name || `Заклинание ${lvl} ур.`
+                              })}
+                              title="Подробности заклинания"
+                              className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
+                              style={{
+                                background: 'rgba(237, 224, 200, 0.6)',
+                                border: '1px solid rgba(139, 105, 20, 0.35)'
+                              }}
+                            >
+                              <InfoSealIcon size={18} />
+                            </button>
+                            <button onClick={() => removeSpell(lvl, i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center">✕</button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => setActiveSpellModal({
-                              spell: spellDef || null,
-                              customName: spell.name || `Заклинание ${lvl} ур.`
-                            })}
-                            title="Подробности заклинания"
-                            className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
-                            style={{
-                              background: 'rgba(237, 224, 200, 0.6)',
-                              border: '1px solid rgba(139, 105, 20, 0.35)'
-                            }}
-                          >
-                            <InfoSealIcon size={18} />
-                          </button>
-                          <button onClick={() => removeSpell(lvl, i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center">✕</button>
-                        </div>
-                      );
-                    })}
+                        );
+                      })
+                    )}
                     <button
                       type="button"
                       onClick={() => {

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { DND_COMPENDIUM_CLASSES, getSubclassesForClass, type CompendiumSubclass } from '@/data/compendium/classes';
 import { CrossedSwordsIcon, SparklesDndIcon } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface SubclassSelectorModalProps {
   classNameString: string;
@@ -12,6 +13,7 @@ interface SubclassSelectorModalProps {
 }
 
 export function SubclassSelectorModal({ classNameString, currentSubclass, onSelect, onClose }: SubclassSelectorModalProps) {
+  useEscapeKey(onClose);
   const compClass = DND_COMPENDIUM_CLASSES.find(c => 
     classNameString.toLowerCase().includes(c.name.toLowerCase()) || 
     classNameString.toLowerCase().includes(c.nameEn.toLowerCase())

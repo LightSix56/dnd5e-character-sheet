@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { DND_COMPENDIUM_CLASSES, type CompendiumClass } from '@/data/compendium/classes';
 import { CrossedSwordsIcon, SparklesDndIcon, ScrollIcon, EngravedShieldIcon } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface ClassSelectorModalProps {
   currentClass?: string;
@@ -12,6 +13,7 @@ interface ClassSelectorModalProps {
 }
 
 export function ClassSelectorModal({ currentClass, currentLevel, onSelect, onClose }: ClassSelectorModalProps) {
+  useEscapeKey(onClose);
   const [search, setSearch] = useState('');
   const [autoAssignScores, setAutoAssignScores] = useState(true);
   const [selectedClassId, setSelectedClassId] = useState<string>(() => {

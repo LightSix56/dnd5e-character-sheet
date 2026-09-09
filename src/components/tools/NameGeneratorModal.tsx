@@ -9,6 +9,7 @@ import {
   type FantasyNameResult,
 } from '@/data/compendium/names-data';
 import { QuillIcon, SparklesDndIcon } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 export interface NameGeneratorModalProps {
   currentRace?: string;
@@ -17,6 +18,8 @@ export interface NameGeneratorModalProps {
 }
 
 export function NameGeneratorModal({ currentRace, onSelectName, onClose }: NameGeneratorModalProps) {
+  useEscapeKey(onClose);
+
   // Initialize race based on current character race
   const initialRaceKey = useMemo(() => {
     return normalizeRaceKey(currentRace || 'human');

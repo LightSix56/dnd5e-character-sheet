@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { BackpackPackIcon, EngravedShieldIcon, CrossedSwordsIcon } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import type { CompendiumItem } from '@/data/compendium/items';
 
 interface ItemDetailModalProps {
@@ -12,6 +13,7 @@ interface ItemDetailModalProps {
 }
 
 export function ItemDetailModal({ item, onEquipArmor, onToggleShield, onClose }: ItemDetailModalProps) {
+  useEscapeKey(onClose, Boolean(item));
   if (!item) return null;
 
   const isArmor = item.category === 'Доспех';

@@ -9,6 +9,7 @@ import {
   formatModifier,
 } from '@/lib/dnd-types';
 import { D20Icon, SparklesDndIcon } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 export interface StatsCalculatorModalProps {
   initialScores?: Partial<Record<AbilityName, number>>;
@@ -101,6 +102,7 @@ export function StatsCalculatorModal({
   onApply,
   onClose,
 }: StatsCalculatorModalProps) {
+  useEscapeKey(onClose);
   const [activeTab, setActiveTab] = useState<CalculatorTab>('point_buy');
 
   // Racial bonuses state (initialized from character's race bonuses)

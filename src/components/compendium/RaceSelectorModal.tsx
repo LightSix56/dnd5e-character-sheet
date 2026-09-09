@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { DND_COMPENDIUM_RACES, type CompendiumRace, type CompendiumSubrace, type RaceCategory } from '@/data/compendium/races';
 import { UserHeroIcon, SparklesDndIcon } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface RaceSelectorModalProps {
   currentRace?: string;
@@ -21,6 +22,7 @@ const CATEGORIES: { id: 'all' | RaceCategory; label: string }[] = [
 ];
 
 export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose }: RaceSelectorModalProps) {
+  useEscapeKey(onClose);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | RaceCategory>('all');
   const [selectedRaceId, setSelectedRaceId] = useState<string>(() => {

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { SpellbookIcon, CrossedSwordsIcon, SparklesDndIcon } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import type { DndSpell } from '@/data/dnd-spells';
 import type { DndWeapon } from '@/data/dnd-weapons';
 import type { DndTrait } from '@/data/dnd-traits';
@@ -14,6 +15,7 @@ interface SpellModalProps {
 }
 
 export function SpellDetailModal({ spell, customName, onClose }: SpellModalProps) {
+  useEscapeKey(onClose, Boolean(spell || customName));
   if (!spell && !customName) return null;
 
   return (
@@ -159,6 +161,7 @@ interface WeaponModalProps {
 }
 
 export function WeaponDetailModal({ weapon, customName, customBonus, customDamage, onClose }: WeaponModalProps) {
+  useEscapeKey(onClose, Boolean(weapon || customName));
   if (!weapon && !customName) return null;
 
   return (
@@ -309,6 +312,7 @@ export function TraitDetailModal({
   onSaveDescription,
   onClose
 }: TraitModalProps) {
+  useEscapeKey(onClose, Boolean(trait || customName));
   const [editDesc, setEditDesc] = useState(customDescription || trait?.description || '');
   const isCustom = !trait;
 

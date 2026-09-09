@@ -40,6 +40,7 @@ import {
   MasksDramaIcon, BackpackPackIcon, InfoSealIcon,
   UserHeroIcon, GoldSealCheckIcon
 } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface CharacterCreationWizardModalProps {
   isOpen: boolean;
@@ -48,6 +49,8 @@ interface CharacterCreationWizardModalProps {
 }
 
 export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: CharacterCreationWizardModalProps) {
+  useEscapeKey(onClose, isOpen);
+
   // ── Step Navigation ──
   // 1: Concept & Race, 2: Class & Skills, 3: Background, 4: Ability Scores, 5: Spells, 6: Finalize & Review
   const [currentStep, setCurrentStep] = useState<number>(1);

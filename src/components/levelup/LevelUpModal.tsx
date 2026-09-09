@@ -56,6 +56,7 @@ import {
   CrystalBallDndIcon,
   HourglassIcon,
 } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 export interface LevelUpModalProps {
   char: CharacterData;
@@ -68,6 +69,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
   onConfirm,
   onCancel,
 }: LevelUpModalProps) {
+  useEscapeKey(onCancel);
   const newLevel = char.level + 1;
   const dieSize = char.hitDice ? getHitDieSize(char.hitDice) : 8;
   const diceNotation = char.hitDice ? getHitDiceNotation(char.hitDice) : 'd';

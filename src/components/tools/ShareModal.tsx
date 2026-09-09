@@ -8,6 +8,7 @@ import {
   MysticSpinnerIcon,
   RunedKeyIcon,
 } from '@/components/dnd-icons';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -26,6 +27,8 @@ export function ShareModal({
   onOpenAuth,
   onToast,
 }: ShareModalProps) {
+  useEscapeKey(onClose, isOpen);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shareCode, setShareCode] = useState<string | null>(null);

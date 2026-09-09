@@ -28,6 +28,7 @@ import { RaceSelectorModal } from '@/components/compendium/RaceSelectorModal';
 import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorModal';
 import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { LevelUpModal } from '@/components/levelup/LevelUpModal';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { calculateWizardAC } from '@/components/wizard/wizard-helpers';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
 import type { CompendiumRace, CompendiumSubrace } from '@/data/compendium/races';
@@ -91,6 +92,8 @@ const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }:
     setTimeout(onClose, 300);
   }, [onClose]);
 
+  useEscapeKey(handleClose);
+
   // Auto-close after 3.5 seconds
   React.useEffect(() => {
     const timer = setTimeout(handleClose, 3500);
@@ -125,7 +128,7 @@ const RollBadge = React.memo(function RollBadge({ value, label, modifier, onRoll
   modifier: number;
   onRoll: (result: RollResult) => void;
 }) {
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     const dieResult = rollD20();
     const total = dieResult + modifier;
@@ -133,9 +136,20 @@ const RollBadge = React.memo(function RollBadge({ value, label, modifier, onRoll
   };
 
   return (
-    <span className="calc-badge roll-badge" title={label ? `${label} — нажмите для броска d20` : 'Нажмите для броска d20'} onClick={handleClick}>
+    <button
+      type="button"
+      className="calc-badge roll-badge cursor-pointer"
+      title={label ? `${label} — нажмите для броска d20` : 'Нажмите для броска d20'}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick(e as any);
+        }
+      }}
+    >
       {value}
-    </span>
+    </button>
   );
 });
 
@@ -181,6 +195,7 @@ interface LevelDownModalProps {
 }
 
 const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onCancel }: LevelDownModalProps) {
+  useEscapeKey(onCancel);
   const history = Array.isArray(char.levelHistory) ? char.levelHistory : [];
   const last = history[history.length - 1];
   const targetLevel = Math.max(1, char.level - 1);
@@ -248,6 +263,7 @@ interface LevelHistoryModalProps {
 }
 
 const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose, onClearHistory, onDeleteEntry }: LevelHistoryModalProps) {
+  useEscapeKey(onClose);
   const history = Array.isArray(char.levelHistory) ? char.levelHistory : [];
 
   return (
@@ -430,6 +446,7 @@ interface NonClassSpellConfirmModalProps {
 }
 
 function NonClassSpellConfirmModal({ char, spell, onConfirm, onCancel }: NonClassSpellConfirmModalProps) {
+  useEscapeKey(onCancel);
   const allowedClasses = (spell.classes || []).join(', ') || 'Другие классы';
   const charClass = char.className || char.spellcastingClass || 'Без класса';
 
@@ -511,6 +528,7 @@ interface TemplateModalProps {
 }
 
 const TemplateModal = React.memo(function TemplateModal({ onSelect, onCancel }: TemplateModalProps) {
+  useEscapeKey(onCancel);
   const [selected, setSelected] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'martial' | 'caster' | 'hybrid'>('all');
 
@@ -674,6 +692,7 @@ const AuthModal = React.memo(function AuthModal({ onClose, onAuth, onGoogleAuth,
   isSignUp: boolean; setIsSignUp: (v: boolean) => void;
   loading: boolean; error: string;
 }) {
+  useEscapeKey(onClose);
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
       <div className="parchment-modal max-w-sm w-full" onClick={e => e.stopPropagation()}>
@@ -731,6 +750,7 @@ const SignOutModal = React.memo(function SignOutModal({ userEmail, onConfirmSign
   onSwitchAccount: () => void;
   onCancel: () => void;
 }) {
+  useEscapeKey(onCancel);
   return (
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
       <div className="parchment-modal max-w-sm w-full" onClick={e => e.stopPropagation()}>
@@ -776,6 +796,135 @@ const SignOutModal = React.memo(function SignOutModal({ userEmail, onConfirmSign
               Отмена
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// ── Reset Confirmation Modal ──
+const ResetModal = React.memo(function ResetModal({ onConfirm, onCancel }: { onConfirm?: () => void; onCancel: () => void }) {
+  useEscapeKey(onCancel);
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm" onClick={onCancel}>
+      <div className="parchment-modal max-w-md w-full p-5 sm:p-6 space-y-4" onClick={e => e.stopPropagation()}>
+        <h3 className="text-lg font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>Очистить лист персонажа?</h3>
+        <p className="text-xs" style={{ color: '#5C341F' }}>Все введённые данные будут сброшены к начальным значениям 1-го уровня.</p>
+        <div className="flex gap-3 justify-end pt-2">
+          <button type="button" onClick={onCancel} className="parchment-btn-secondary text-xs px-4 py-2">Отмена</button>
+          <button type="button" onClick={onConfirm} className="parchment-btn text-xs px-4 py-2">Сбросить</button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// ── Create Choice Modal ──
+interface CreateChoiceModalProps {
+  onClose: () => void;
+  onSelectWizard: () => void;
+  onSelectManual: () => void;
+}
+
+const CreateChoiceModal = React.memo(function CreateChoiceModal({
+  onClose,
+  onSelectWizard,
+  onSelectManual,
+}: CreateChoiceModalProps) {
+  useEscapeKey(onClose);
+
+  return (
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="parchment-modal max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl relative rounded-xl"
+        style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
+          <div className="flex items-center gap-2.5">
+            <UserHeroIcon size={26} />
+            <div>
+              <h3 className="text-base sm:text-lg font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
+                Создание нового персонажа
+              </h3>
+              <p className="text-xs" style={{ color: '#8B6914' }}>
+                Выберите удобный для вас способ создания
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="parchment-remove-btn w-7 h-7 flex items-center justify-center text-sm font-bold"
+            title="Закрыть"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="space-y-3 pt-1">
+          {/* Option 1: Interactive Wizard */}
+          <button
+            type="button"
+            onClick={onSelectWizard}
+            className="w-full text-left p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-2 group"
+            style={{
+              background: 'rgba(232, 211, 162, 0.55)',
+              border: '2px solid #C9A84C',
+              boxShadow: '0 2px 8px rgba(60, 36, 21, 0.15)'
+            }}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 font-bold text-sm text-[#3D2012]">
+                <SparklesDndIcon size={22} />
+                <span style={{ fontFamily: 'Georgia, serif' }}>Интерактивное пошаговое создание</span>
+              </div>
+              <span
+                className="text-[11px] px-2.5 py-0.5 rounded font-bold shrink-0"
+                style={{
+                  background: '#5C341F',
+                  color: '#FFE58F',
+                  border: '1px solid #3D2012',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                }}
+              >
+                Рекомендуется
+              </span>
+            </div>
+            <p className="text-xs text-[#5C341F] leading-relaxed pl-8">
+              Пошаговый мастер: выбор расы, класса с жестким лимитом навыков, предыстории с защитой от совпадений, расчет характеристик (Point Buy, 4d6, стандартный массив) и выбор заклинаний с лимитами.
+            </p>
+          </button>
+
+          {/* Option 2: Manual Blank Sheet */}
+          <button
+            type="button"
+            onClick={onSelectManual}
+            className="w-full text-left p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-2 group"
+            style={{
+              background: 'rgba(245, 230, 200, 0.75)',
+              border: '1.5px solid rgba(139, 105, 20, 0.4)',
+              boxShadow: '0 2px 6px rgba(60, 36, 21, 0.1)'
+            }}
+          >
+            <div className="flex items-center gap-2.5 font-bold text-sm text-[#3D2012]">
+              <QuillIcon size={22} />
+              <span style={{ fontFamily: 'Georgia, serif' }}>Полностью ручное создание (Чистый бланк)</span>
+            </div>
+            <p className="text-xs text-[#5C341F] leading-relaxed pl-8">
+              Создать пустой лист персонажа 1-го уровня. Вы сможете самостоятельно вручную вписать все названия, значения характеристик, особенности и снаряжение.
+            </p>
+          </button>
+        </div>
+
+        <div className="pt-2 border-t flex justify-end" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+          <button
+            type="button"
+            onClick={onClose}
+            className="parchment-btn-secondary text-xs px-5 py-2 cursor-pointer"
+          >
+            Отмена
+          </button>
         </div>
       </div>
     </div>
@@ -2274,103 +2423,14 @@ export default function DnDCharacterSheet() {
       />
 
       {showCreateChoiceModal && (
-        <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowCreateChoiceModal(false)}>
-          <div
-            className="parchment-modal max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl relative rounded-xl"
-            style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
-              <div className="flex items-center gap-2.5">
-                <UserHeroIcon size={26} />
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
-                    Создание нового персонажа
-                  </h3>
-                  <p className="text-xs" style={{ color: '#8B6914' }}>
-                    Выберите удобный для вас способ создания
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCreateChoiceModal(false)}
-                className="parchment-remove-btn w-7 h-7 flex items-center justify-center text-sm font-bold"
-                title="Закрыть"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-3 pt-1">
-              {/* Option 1: Interactive Wizard */}
-              <button
-                type="button"
-                onClick={() => {
-                  setShowCreateChoiceModal(false);
-                  setShowCreationWizard(true);
-                }}
-                className="w-full text-left p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-2 group"
-                style={{
-                  background: 'rgba(232, 211, 162, 0.55)',
-                  border: '2px solid #C9A84C',
-                  boxShadow: '0 2px 8px rgba(60, 36, 21, 0.15)'
-                }}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5 font-bold text-sm text-[#3D2012]">
-                    <SparklesDndIcon size={22} />
-                    <span style={{ fontFamily: 'Georgia, serif' }}>Интерактивное пошаговое создание</span>
-                  </div>
-                  <span
-                    className="text-[11px] px-2.5 py-0.5 rounded font-bold shrink-0"
-                    style={{
-                      background: '#5C341F',
-                      color: '#FFE58F',
-                      border: '1px solid #3D2012',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
-                    }}
-                  >
-                    Рекомендуется
-                  </span>
-                </div>
-                <p className="text-xs text-[#5C341F] leading-relaxed pl-8">
-                  Пошаговый мастер: выбор расы, класса с жестким лимитом навыков, предыстории с защитой от совпадений, расчет характеристик (Point Buy, 4d6, стандартный массив) и выбор заклинаний с лимитами.
-                </p>
-              </button>
-
-              {/* Option 2: Manual Blank Sheet */}
-              <button
-                type="button"
-                onClick={handleManualCreate}
-                className="w-full text-left p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md space-y-2 group"
-                style={{
-                  background: 'rgba(245, 230, 200, 0.75)',
-                  border: '1.5px solid rgba(139, 105, 20, 0.4)',
-                  boxShadow: '0 2px 6px rgba(60, 36, 21, 0.1)'
-                }}
-              >
-                <div className="flex items-center gap-2.5 font-bold text-sm text-[#3D2012]">
-                  <QuillIcon size={22} />
-                  <span style={{ fontFamily: 'Georgia, serif' }}>Полностью ручное создание (Чистый бланк)</span>
-                </div>
-                <p className="text-xs text-[#5C341F] leading-relaxed pl-8">
-                  Создать пустой лист персонажа 1-го уровня. Вы сможете самостоятельно вручную вписать все названия, значения характеристик, особенности и снаряжение.
-                </p>
-              </button>
-            </div>
-
-            <div className="pt-2 border-t flex justify-end" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
-              <button
-                type="button"
-                onClick={() => setShowCreateChoiceModal(false)}
-                className="parchment-btn-secondary text-xs px-5 py-2 cursor-pointer"
-              >
-                Отмена
-              </button>
-            </div>
-          </div>
-        </div>
+        <CreateChoiceModal
+          onClose={() => setShowCreateChoiceModal(false)}
+          onSelectWizard={() => {
+            setShowCreateChoiceModal(false);
+            setShowCreationWizard(true);
+          }}
+          onSelectManual={handleManualCreate}
+        />
       )}
 
       <header className="sticky top-0 z-50 parchment-header">

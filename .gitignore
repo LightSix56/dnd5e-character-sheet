@@ -10,7 +10,8 @@ mini-services/
 !.agents/skills/
 prisma/
 src/components/ui/
-src/hooks/
+src/hooks/*
+!src/hooks/useEscapeKey.ts
 src/lib/db.ts
 src/app/api/route.ts
 .env

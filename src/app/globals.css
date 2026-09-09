@@ -115,7 +115,7 @@
   background: rgba(245, 230, 200, 0.92);
   border: 2px solid rgba(139, 105, 20, 0.4);
   border-radius: 4px;
-  box-shadow: 0 4px 20px rgba(60, 36, 21, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+  box-shadow: 0 4px 20px rgba(60, 36, 21, 0.22), inset 0 1px 0 rgba(255, 240, 200, 0.4);
   outline: 1px solid rgba(139, 105, 20, 0.15);
   outline-offset: -5px;
   position: relative;
@@ -307,6 +307,19 @@ input[type="number"] {
   font-variant-numeric: tabular-nums;
 }
 
+.roll-badge {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.roll-badge:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 2px 10px rgba(201, 168, 76, 0.45), inset 0 1px 2px rgba(255, 240, 200, 0.4);
+}
+
+.roll-badge:active {
+  transform: scale(0.95) translateY(1px);
+}
+
 /* Primary button — leather brown with gold */
 .parchment-btn {
   display: inline-flex;
@@ -323,16 +336,16 @@ input[type="number"] {
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  box-shadow: 0 2px 6px rgba(60, 36, 21, 0.3);
+  box-shadow: 0 2px 6px rgba(60, 36, 21, 0.25), inset 0 1px 0 rgba(255, 240, 200, 0.4);
 }
 
 .parchment-btn:hover {
   background: linear-gradient(180deg, #A0522D, #8B4513);
-  box-shadow: 0 2px 12px rgba(201, 168, 76, 0.3);
+  box-shadow: 0 2px 12px rgba(201, 168, 76, 0.35);
 }
 
 .parchment-btn:active {
-  transform: translateY(1px);
+  transform: scale(0.98) translateY(1px);
   box-shadow: 0 1px 3px rgba(60, 36, 21, 0.3);
 }
 
@@ -364,7 +377,7 @@ input[type="number"] {
 }
 
 .parchment-btn-secondary:active {
-  transform: translateY(1px);
+  transform: scale(0.98) translateY(1px);
 }
 
 /* Header — leather binding */

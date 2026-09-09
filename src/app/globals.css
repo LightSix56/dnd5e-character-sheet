@@ -1096,4 +1096,12 @@ input[type="number"] {
   }
 }
 
+/* Header and Contextual Parchment Dropdown Menu */
+.parchment-menu-dropdown {
+  background: #F5E6C8;
+  border: 2px solid #C9A84C;
+  box-shadow: 0 10px 25px rgba(60, 36, 21, 0.4), inset 0 1px 0 rgba(255, 240, 200, 0.6);
+  border-radius: 4px;
+}
+
 

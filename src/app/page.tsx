@@ -1122,6 +1122,16 @@ export default function DnDCharacterSheet() {
   const [showCreationWizard, setShowCreationWizard] = useState(false);
   const [showCreateChoiceModal, setShowCreateChoiceModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showSheetMenu, setShowSheetMenu] = useState(false);
+
+  useEffect(() => {
+    if (!showSheetMenu) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowSheetMenu(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSheetMenu]);
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -2524,28 +2534,70 @@ export default function DnDCharacterSheet() {
               </button>
             </div>
 
-            {/* Template presets group */}
-            <div className="parchment-btn-group">
-              <button type="button" onClick={() => setShowTemplates(true)} className="parchment-header-btn flex items-center gap-1.5" title="Выбрать готовый шаблон класса">
+            {/* Sheet Actions Dropdown Menu */}
+            <div className="relative parchment-btn-group">
+              <button
+                type="button"
+                onClick={() => setShowSheetMenu(prev => !prev)}
+                className="parchment-header-btn flex items-center gap-1.5 font-semibold"
+                title="Управление бланком (шаблоны, JSON, сброс)"
+                aria-expanded={showSheetMenu}
+              >
                 <ScrollIcon size={16} />
-                <span>Шаблоны</span>
+                <span>Бланк</span>
+                <span className="text-[10px] opacity-75">▾</span>
               </button>
-            </div>
 
-            {/* File actions group */}
-            <div className="parchment-btn-group">
-              <button type="button" onClick={handleSaveJSON} className="parchment-header-btn flex items-center gap-1.5" title="Сохранить в JSON">
-                <SpellbookIcon size={16} />
-                <span>JSON</span>
-              </button>
-              <button type="button" onClick={handleLoadJSON} className="parchment-header-btn flex items-center gap-1.5" title="Загрузить из JSON">
-                <ChestIcon size={16} />
-                <span>Загрузить<span className="hidden xl:inline"> JSON</span></span>
-              </button>
-              <button type="button" onClick={handleReset} className="parchment-header-btn flex items-center gap-1.5" title="Очистить лист">
-                <HourglassIcon size={16} />
-                <span>Сброс</span>
-              </button>
+              {showSheetMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-[110]"
+                    onClick={() => setShowSheetMenu(false)}
+                  />
+                  <div
+                    className="absolute left-0 top-full mt-1.5 w-52 parchment-menu-dropdown z-[120] py-1.5 rounded shadow-xl"
+                    role="menu"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => { setShowSheetMenu(false); setShowTemplates(true); }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                      role="menuitem"
+                    >
+                      <ScrollIcon size={14} />
+                      <span>Готовые шаблоны</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowSheetMenu(false); handleSaveJSON(); }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                      role="menuitem"
+                    >
+                      <SpellbookIcon size={14} />
+                      <span>Сохранить в JSON</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowSheetMenu(false); handleLoadJSON(); }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                      role="menuitem"
+                    >
+                      <ChestIcon size={14} />
+                      <span>Загрузить из JSON</span>
+                    </button>
+                    <div className="my-1 border-t border-[#C9A84C]/30" />
+                    <button
+                      type="button"
+                      onClick={() => { setShowSheetMenu(false); handleReset(); }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#8B2500] hover:bg-[#8B2500]/10 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                      role="menuitem"
+                    >
+                      <HourglassIcon size={14} />
+                      <span>Сбросить бланк</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Cloud / Auth group */}

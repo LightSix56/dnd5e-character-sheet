@@ -143,10 +143,11 @@ function StatInput({ label, value, onChange, type = 'number', placeholder, class
   label: string; value: string | number; onChange: (v: any) => void;
   type?: string; placeholder?: string; className?: string;
 }) {
+  const inputId = 'stat-input-' + label.toLowerCase().replace(/[^a-z0-9а-яё]/gi, '-');
   return (
     <div className={`space-y-1 ${className}`}>
-      <label className="parchment-label">{label}</label>
-      <input type={type} value={value}
+      <label className="parchment-label" htmlFor={inputId}>{label}</label>
+      <input id={inputId} type={type} value={value}
         onChange={e => onChange(type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value)}
         placeholder={placeholder}
         className="parchment-input" />
@@ -2675,7 +2676,7 @@ export default function DnDCharacterSheet() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <label className="parchment-label">Имя персонажа</label>
+                        <label className="parchment-label" htmlFor="char-input-name">Имя персонажа</label>
                         <button
                           type="button"
                           onClick={() => setShowNameGenModal(true)}
@@ -2687,6 +2688,7 @@ export default function DnDCharacterSheet() {
                         </button>
                       </div>
                       <input
+                        id="char-input-name"
                         type="text"
                         value={char.name}
                         onChange={e => update('name', e.target.value)}
@@ -2699,7 +2701,7 @@ export default function DnDCharacterSheet() {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <label className="parchment-label">Класс</label>
+                        <label className="parchment-label" htmlFor="char-input-class">Класс</label>
                         {char.level <= 1 && (
                           <button
                             type="button"
@@ -2713,6 +2715,7 @@ export default function DnDCharacterSheet() {
                         )}
                       </div>
                       <input
+                        id="char-input-class"
                         type="text"
                         value={char.className}
                         onChange={e => update('className', e.target.value)}
@@ -2746,7 +2749,7 @@ export default function DnDCharacterSheet() {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <label className="parchment-label">Раса</label>
+                        <label className="parchment-label" htmlFor="char-input-race">Раса</label>
                         {char.level <= 1 && (
                           <button
                             type="button"
@@ -2760,6 +2763,7 @@ export default function DnDCharacterSheet() {
                         )}
                       </div>
                       <input
+                        id="char-input-race"
                         type="text"
                         value={char.race}
                         onChange={e => update('race', e.target.value)}
@@ -2839,7 +2843,14 @@ export default function DnDCharacterSheet() {
                           <div className="sm:hidden grid grid-cols-2 gap-x-2 gap-y-1 items-center">
                             {/* Name + total+mod in top-left */}
                             <div className="flex items-baseline gap-1.5">
-                              <span className="text-xs font-bold" style={{ color: '#3C2415' }}>{abbr}</span>
+                              <span
+                                onClick={() => updateSaveProf(abbr, !isProf)}
+                                className="text-xs font-bold cursor-pointer select-none hover:text-[#8B4513] transition-colors"
+                                style={{ color: '#3C2415' }}
+                                title={`Нажмите, чтобы ${isProf ? 'снять владение' : 'выбрать владение'} спасброском (${abbr})`}
+                              >
+                                {abbr}
+                              </span>
                               <span className={`text-xs font-bold ${isOverMax ? 'text-red-700' : ''}`} style={{ color: isOverMax ? '#C92A2A' : '#6B3A2A' }}>
                                 {total}
                               </span>
@@ -2869,7 +2880,14 @@ export default function DnDCharacterSheet() {
                           </div>
                           {/* Desktop layout */}
                           <div className={`hidden sm:grid gap-1 items-center p-1.5 rounded ${isProf ? 'parchment-prof' : 'parchment-no-prof'}`} style={{ gridTemplateColumns: '2fr repeat(6, 1fr)' }}>
-                            <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3C2415' }}>{ABILITY_FULL[abbr]}</span>
+                            <span
+                              onClick={() => updateSaveProf(abbr, !isProf)}
+                              className="text-xs font-bold whitespace-nowrap cursor-pointer select-none hover:text-[#8B4513] transition-colors"
+                              style={{ color: '#3C2415' }}
+                              title={`Нажмите, чтобы ${isProf ? 'снять владение' : 'выбрать владение'} спасброском (${ABILITY_FULL[abbr]})`}
+                            >
+                              {ABILITY_FULL[abbr]}
+                            </span>
                             <input type="number" value={base} onChange={e => updateAbility(abbr, 'abilityScores', Number(e.target.value) || 10)} className={inputClassCenter + " text-xs"} />
                             <input type="number" value={racial} onChange={e => updateAbility(abbr, 'abilityBonuses', Number(e.target.value) || 0)} className={inputClassCenter + " text-xs"} title="Расовый бонус" />
                             <CalcBadge value={asi > 0 ? `+${asi}` : '0'} />
@@ -3031,7 +3049,14 @@ export default function DnDCharacterSheet() {
                         <div key={skill} className={`flex items-center gap-2 py-1 px-2 rounded text-sm ${isExpert ? 'parchment-skill-expert' : isProf ? 'parchment-skill-prof' : ''}`}>
                           <label className="parchment-checkbox parchment-checkbox-sm"><input type="checkbox" checked={isProf} onChange={e => updateSkillProf(skill, 'skillProficiencies', e.target.checked)} /><span className="checkmark"></span></label>
                           <label className="parchment-checkbox parchment-checkbox-sm parchment-checkbox-expert"><input type="checkbox" checked={isExpert} onChange={e => updateSkillProf(skill, 'skillExpertise', e.target.checked)} disabled={!isProf} /><span className="checkmark"></span></label>
-                          <span className="flex-1 text-xs" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>{skill} <span style={{ color: '#8B6914' }}>({ability})</span></span>
+                          <span
+                            onClick={() => updateSkillProf(skill, 'skillProficiencies', !isProf)}
+                            className="flex-1 text-xs cursor-pointer select-none hover:text-[#8B4513] transition-colors"
+                            style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+                            title={`Нажмите, чтобы ${isProf ? 'снять владение' : 'выбрать владение'} (${skill})`}
+                          >
+                            {skill} <span style={{ color: '#8B6914' }}>({ability})</span>
+                          </span>
                           <RollBadge value={formatModifier(bonus)} label={`Проверка ${skill}`} modifier={bonus} onRoll={handleRoll} />
                         </div>
                       );

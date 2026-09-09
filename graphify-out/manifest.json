@@ -126,9 +126,9 @@
     "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
   },
   "src/app/page.tsx": {
-    "mtime": 1788967923.4520555,
-    "seen": 1788968151.5136306,
-    "ast_hash": "93077337f06cc25eeaf5cf7f6b8b4b6d",
+    "mtime": 1788970269.0910728,
+    "seen": 1788970487.2554722,
+    "ast_hash": "c496e02da839a7f908bf0fa44b3a863b",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -636,9 +636,51 @@
     "semantic_hash": ""
   },
   "e2e/ux-enhancements.spec.ts": {
-    "mtime": 1788968683.0669074,
-    "seen": 1788968773.2434385,
-    "ast_hash": "9774fb7ae8d6ac5c0f8480f9e7881cdc",
+    "mtime": 1788970279.1782053,
+    "seen": 1788970487.2469618,
+    "ast_hash": "203d1ca8eedc67f6d41f66822751c623",
+    "semantic_hash": ""
+  },
+  "test/dice-spring-physics.test.ts": {
+    "mtime": 1788969528.3189573,
+    "seen": 1788970487.27181,
+    "ast_hash": "500098260c757335045426bc925c0861",
+    "semantic_hash": ""
+  },
+  "test/empty-states.test.ts": {
+    "mtime": 1788969911.163249,
+    "seen": 1788970487.2718148,
+    "ast_hash": "dee2a67a9cfc55eada042bed45f74f41",
+    "semantic_hash": ""
+  },
+  "test/header-menu.test.ts": {
+    "mtime": 1788969730.7172112,
+    "seen": 1788970487.2721202,
+    "ast_hash": "98cafeb9cf4f7f5a732bb31467e31d25",
+    "semantic_hash": ""
+  },
+  "test/materiality-and-tactility.test.ts": {
+    "mtime": 1788969419.5840547,
+    "seen": 1788970487.2737272,
+    "ast_hash": "e2deacc7830be019b86459b8c1c97995",
+    "semantic_hash": ""
+  },
+  "test/sliding-tabs.test.ts": {
+    "mtime": 1788969656.0351362,
+    "seen": 1788970487.2737315,
+    "ast_hash": "6f42c8c797fd8bdaca7851ee7625c089",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-09-premium-medieval-design-enhancements-plan.md": {
+    "mtime": 1788969302.0711472,
+    "seen": 1788970487.2806563,
+    "ast_hash": "878785e36dd313b8b52e199dee2a8c1d",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-09-premium-medieval-design-enhancements-design.md": {
+    "mtime": 1788969229.5978782,
+    "seen": 1788970487.2823727,
+    "ast_hash": "c2ff0d94b20150adc7682bf14d0c2a92",
     "semantic_hash": ""
   }
 }

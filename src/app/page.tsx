@@ -2826,7 +2826,14 @@ export default function DnDCharacterSheet() {
 
       <main className="max-w-7xl mx-auto px-4 py-6 relative z-10">
         {/* Tabs */}
-        <div className="grid grid-cols-3 gap-1.5 mb-6 parchment-tabs relative p-1 rounded-md" style={{ background: 'rgba(60, 36, 21, 0.15)', border: '1px solid rgba(139, 105, 20, 0.3)' }}>
+        <div
+          className="grid grid-cols-3 gap-2 mb-6 parchment-tabs relative p-1.5 rounded-lg"
+          style={{
+            background: 'rgba(32, 18, 11, 0.85)',
+            border: '1px solid rgba(201, 168, 76, 0.45)',
+            boxShadow: '0 4px 18px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 240, 200, 0.15)'
+          }}
+        >
           {[
             { key: 'page1' as const, label: 'Основной лист', shortLabel: 'Лист' },
             { key: 'page2' as const, label: 'Детали', shortLabel: 'Детали' },
@@ -2838,7 +2845,11 @@ export default function DnDCharacterSheet() {
                 key={tab.key}
                 type="button"
                 onClick={() => setActiveTab(tab.key)}
-                className={`relative px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-bold rounded min-h-[44px] flex items-center justify-center cursor-pointer select-none transition-colors ${isActive ? 'text-[#3D2012]' : 'text-[#8B6914] hover:text-[#3D2012]'}`}
+                className={`relative px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-bold rounded min-h-[44px] flex items-center justify-center cursor-pointer select-none transition-all ${
+                  isActive
+                    ? 'text-[#3D2012]'
+                    : 'text-[#F5E6C8] bg-[rgba(60,36,21,0.7)] hover:bg-[rgba(85,48,28,0.9)] hover:text-[#FFF8EB] border border-[rgba(201,168,76,0.3)] shadow-sm'
+                }`}
               >
                 {isActive && (
                   <motion.span

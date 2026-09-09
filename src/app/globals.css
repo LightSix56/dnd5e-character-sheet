@@ -407,23 +407,28 @@ input[type="number"] {
 }
 
 .parchment-tab-active {
-  background: rgba(245, 230, 200, 0.95);
+  background: rgba(245, 230, 200, 0.96);
   color: #3C2415;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(60, 36, 21, 0.2);
+  box-shadow: 0 2px 8px rgba(60, 36, 21, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  border: 1px solid #C9A84C;
   border-bottom: 2px solid #C9A84C;
-  border-radius: 2px;
+  border-radius: 4px;
   font-family: Georgia, "Times New Roman", serif;
 }
 
 .parchment-tab-inactive {
-  color: rgba(251, 240, 220, 0.6);
+  background: rgba(60, 36, 21, 0.7);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  color: #F5E6C8;
   font-family: Georgia, "Times New Roman", serif;
+  border-radius: 4px;
 }
 
 .parchment-tab-inactive:hover {
-  color: rgba(251, 240, 220, 0.9);
-  background: rgba(245, 230, 200, 0.1);
+  color: #FFF8EB;
+  background: rgba(85, 48, 28, 0.9);
+  border-color: rgba(201, 168, 76, 0.5);
 }
 
 /* Modal overlay */

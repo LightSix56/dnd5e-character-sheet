@@ -714,23 +714,45 @@ const AuthModal = React.memo(function AuthModal({ onClose, onAuth, onGoogleAuth,
             <div className="flex-1 h-px" style={{ background: 'rgba(139, 105, 20, 0.3)' }}></div>
           </div>
 
-          <div className="space-y-3 mb-4">
-            <div className="space-y-1">
-              <label className="parchment-label">Email</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="parchment-input" />
+          <form onSubmit={(e) => { e.preventDefault(); onAuth(); }}>
+            <div className="space-y-3 mb-4">
+              <div className="space-y-1">
+                <label className="parchment-label">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  spellCheck={false}
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="email@example.com"
+                  className="parchment-input"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="parchment-label">Пароль</label>
+                <input
+                  type="password"
+                  name="password"
+                  autoComplete={isSignUp ? "new-password" : "current-password"}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Минимум 6 символов"
+                  className="parchment-input"
+                />
+              </div>
             </div>
-            <div className="space-y-1">
-              <label className="parchment-label">Пароль</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Минимум 6 символов" className="parchment-input" />
-            </div>
-          </div>
 
-          {error && <p className="text-xs mb-3 p-2 rounded" style={{ color: error.includes('Проверьте') ? '#4a7c3f' : '#8B2500', background: error.includes('Проверьте') ? 'rgba(74,124,63,0.08)' : 'rgba(139,37,0,0.06)' }}>{error}</p>}
+            {error && <p className="text-xs mb-3 p-2 rounded" style={{ color: error.includes('Проверьте') ? '#4a7c3f' : '#8B2500', background: error.includes('Проверьте') ? 'rgba(74,124,63,0.08)' : 'rgba(139,37,0,0.06)' }}>{error}</p>}
 
-          <button onClick={onAuth} disabled={loading || !email || !password}
-            className="w-full parchment-btn py-2.5 mb-3">
-            {loading ? 'Загрузка...' : isSignUp ? 'Зарегистрироваться' : 'Войти'}
-          </button>
+            <button
+              type="submit"
+              disabled={loading || !email || !password}
+              className="w-full parchment-btn py-2.5 mb-3"
+            >
+              {loading ? 'Загрузка…' : isSignUp ? 'Зарегистрироваться' : 'Войти'}
+            </button>
+          </form>
 
           <button onClick={() => setIsSignUp(!isSignUp)} className="w-full text-xs" style={{ color: '#8B6914', fontFamily: 'Georgia, "Times New Roman", serif', cursor: 'pointer', background: 'none', border: 'none' }}>
             {isSignUp ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}
@@ -2499,7 +2521,7 @@ export default function DnDCharacterSheet() {
                   {cloudSaveStatus === 'saving' ? (
                     <>
                       <MysticSpinnerIcon size={15} />
-                      <span>Сохранение...</span>
+                      <span>Сохранение…</span>
                     </>
                   ) : (
                     <>
@@ -3147,7 +3169,7 @@ export default function DnDCharacterSheet() {
                               onChange={val => updateAttack(i, 'name', val)}
                               onSelect={item => handleSelectWeapon(i, item)}
                               items={weaponAutocompleteItems}
-                              placeholder="Оружие или атака..."
+                              placeholder="Оружие или атака…"
                               className={inputClass}
                             />
                             <input
@@ -3233,7 +3255,7 @@ export default function DnDCharacterSheet() {
                           addTraitItem(t);
                         }}
                         items={traitAutocompleteItems}
-                        placeholder="Поиск способности (Второе дыхание, Ярость, Темное зрение)..."
+                        placeholder="Поиск способности (Второе дыхание, Ярость, Темное зрение)…"
                         autoClearOnSelect={true}
                         className={inputClass + " w-full text-xs"}
                       />
@@ -3280,7 +3302,7 @@ export default function DnDCharacterSheet() {
                                     }
                                   }}
                                   items={traitAutocompleteItems}
-                                  placeholder="Название умения..."
+                                  placeholder="Название умения…"
                                   className={inputClass + " font-bold text-xs"}
                                 />
                               </div>
@@ -3319,7 +3341,7 @@ export default function DnDCharacterSheet() {
                             <input
                               value={traitItem.summary || ''}
                               onChange={e => updateTraitItem(i, 'summary', e.target.value)}
-                              placeholder="Краткая суть умения (действие, урон, хиты...)"
+                              placeholder="Краткая суть умения (действие, урон, хиты…)"
                               className={inputClass + " text-[11px] opacity-85"}
                             />
                           </div>
@@ -3347,7 +3369,7 @@ export default function DnDCharacterSheet() {
                         <div className="relative w-24 h-24 rounded" style={{ border: '2px solid rgba(139, 105, 20, 0.4)', overflow: 'hidden' }}>
                           <label className="w-full h-full cursor-pointer block">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={portraitUrl} alt="Портрет" className="w-full h-full object-cover" />
+                            <img src={portraitUrl} alt="Портрет" width={144} height={176} loading="lazy" className="w-full h-full object-cover" />
                             <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
                           </label>
                           <button onClick={() => setPortraitUrl(null)} className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center text-[10px] cursor-pointer" style={{ background: 'rgba(139, 37, 0, 0.7)', color: '#FBF0DC', border: 'none', borderRadius: '0 0 0 3px' }}>✕</button>
@@ -3362,7 +3384,7 @@ export default function DnDCharacterSheet() {
                     </div>
                     <div className="flex-1 space-y-1">
                       <label className="parchment-label">Внешность (описание)</label>
-                      <textarea value={char.appearance} onChange={e => update('appearance', e.target.value)} rows={4} className={textareaClass} placeholder="Опишите внешность персонажа: цвет волос, глаз, отличительные черты..." />
+                      <textarea value={char.appearance} onChange={e => update('appearance', e.target.value)} rows={4} className={textareaClass} placeholder="Опишите внешность персонажа: цвет волос, глаз, отличительные черты…" />
                     </div>
                   </div>
                   {!portraitUrl && (
@@ -3400,7 +3422,7 @@ export default function DnDCharacterSheet() {
             ].map(item => (
               <div key={item.key} className="parchment-card lg:col-span-2">
                 <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">{item.icon}<span>{item.label}</span></h3></div>
-                <div className="px-4 pb-4"><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={item.rows} className={textareaClass} placeholder={item.key === 'backstory' ? 'Расскажите историю персонажа...' : ''} /></div>
+                <div className="px-4 pb-4"><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={item.rows} className={textareaClass} placeholder={item.key === 'backstory' ? 'Расскажите историю персонажа…' : ''} /></div>
               </div>
             ))}
           </div>
@@ -3473,7 +3495,7 @@ export default function DnDCharacterSheet() {
                       onChange={setSpellSearchQuery}
                       onSelect={handleQuickAddSpell}
                       items={spellAutocompleteItems}
-                      placeholder="Введите заклинание (Огненный шар, Щит, Лечащее слово)..."
+                      placeholder="Введите заклинание (Огненный шар, Щит, Лечащее слово)…"
                       autoClearOnSelect={true}
                       className={inputClass + " w-full font-medium"}
                     />
@@ -3512,7 +3534,7 @@ export default function DnDCharacterSheet() {
                         <input
                           value={c}
                           onChange={e => updateCantrip(i, e.target.value)}
-                          placeholder="Название заговора..."
+                          placeholder="Название заговора…"
                           className={inputClass + (check ? " pr-28" : "")}
                         />
                         {check && (
@@ -3579,7 +3601,7 @@ export default function DnDCharacterSheet() {
                               value={spell.name}
                               onChange={val => updateSpellEntry(lvl, i, 'name', val)}
                               items={spellAutocompleteItems}
-                              placeholder={`Заклинание ${lvl} ур....`}
+                              placeholder={`Заклинание ${lvl} ур.…`}
                               className={inputClass + (check ? " pr-28" : "")}
                             />
                             {check && (

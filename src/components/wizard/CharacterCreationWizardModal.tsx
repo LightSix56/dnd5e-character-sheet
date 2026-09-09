@@ -798,7 +798,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         id: `race-${t.name}`,
         name: t.name,
         source: selectedRace?.name || '',
-        summary: t.description.slice(0, 90) + '...',
+        summary: t.description.slice(0, 90) + '…',
         description: t.description
       });
       featureTextLines.push(`[${selectedRace?.name || ''}] ${t.name}: ${t.description}`);
@@ -809,7 +809,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
           id: `subrace-${t.name}`,
           name: t.name,
           source: selectedSubrace.name,
-          summary: t.description.slice(0, 90) + '...',
+          summary: t.description.slice(0, 90) + '…',
           description: t.description
         });
         featureTextLines.push(`[${selectedSubrace.name}] ${t.name}: ${t.description}`);
@@ -884,7 +884,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
           id: `subclass-${f.name}`,
           name: f.name,
           source: `Подкласс: ${selectedSubclass.name}`,
-          summary: f.description.slice(0, 90) + '...',
+          summary: f.description.slice(0, 90) + '…',
           description: f.description
         });
         featureTextLines.push(`[${selectedSubclass.name}] 1 ур. — ${f.name}: ${f.description}`);
@@ -959,7 +959,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         id: `bg-${selectedBackground.feature.name}`,
         name: selectedBackground.feature.name,
         source: selectedBackground.name,
-        summary: selectedBackground.feature.description.slice(0, 90) + '...',
+        summary: selectedBackground.feature.description.slice(0, 90) + '…',
         description: selectedBackground.feature.description
       });
       featureTextLines.push(`[Предыстория: ${selectedBackground.name}] ${selectedBackground.feature.name}: ${selectedBackground.feature.description}`);
@@ -1260,8 +1260,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     disabled={!selectedRaceId}
                     placeholder={
                       !selectedRaceId
-                        ? "Сначала выберите расу персонажа из списка ниже..."
-                        : "Например, Торин Дубощит, Лираэль Лунная Тень..."
+                        ? "Сначала выберите расу персонажа из списка ниже…"
+                        : "Например, Торин Дубощит, Лираэль Лунная Тень…"
                     }
                     className={`parchment-input-boxed flex-1 text-sm py-1.5 px-3 ${
                       !selectedRaceId ? 'opacity-60 cursor-not-allowed' : ''
@@ -1294,7 +1294,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     type="text"
                     value={raceSearch}
                     onChange={e => setRaceSearch(e.target.value)}
-                    placeholder="Поиск расы..."
+                    placeholder="Поиск расы…"
                     className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
                   />
                   <div className="max-h-[380px] overflow-y-auto space-y-1 pr-1">
@@ -2796,7 +2796,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       type="text"
                       value={spellSearch}
                       onChange={e => setSpellSearch(e.target.value)}
-                      placeholder="Быстрый поиск по заклинаниям..."
+                      placeholder="Быстрый поиск по заклинаниям…"
                       className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
                     />
                   </div>
@@ -3035,7 +3035,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   <textarea
                     value={appearance}
                     onChange={e => setAppearance(e.target.value)}
-                    placeholder="Опишите внешность вашего персонажа, особые приметы, шрамы, осанку..."
+                    placeholder="Опишите внешность вашего персонажа: особые приметы, шрамы, осанку…"
                     rows={2}
                     className="parchment-textarea text-xs w-full p-2.5"
                   />

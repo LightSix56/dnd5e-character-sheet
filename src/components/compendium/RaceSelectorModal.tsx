@@ -98,7 +98,7 @@ export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Поиск расы или книги..."
+              placeholder="Поиск расы или книги…"
               className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
             />
 

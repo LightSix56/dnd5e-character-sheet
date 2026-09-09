@@ -373,7 +373,7 @@ export function TraitDetailModal({
               <textarea
                 value={editDesc}
                 onChange={e => setEditDesc(e.target.value)}
-                placeholder="Введите подробное описание умения..."
+                placeholder="Введите подробное описание умения…"
                 rows={5}
                 className="w-full text-xs p-2 rounded parchment-textarea"
               />

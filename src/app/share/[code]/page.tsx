@@ -241,7 +241,7 @@ export default function SharedCharacterPage({
       <div className="parchment-bg min-h-screen flex items-center justify-center p-4">
         <div className="parchment-card p-8 max-w-md w-full text-center space-y-4">
           <MysticSpinnerIcon size={44} className="text-[#6B3A2A] mx-auto" />
-          <h2 className="text-xl font-bold text-[#3C2415]">Загрузка свитка персонажа...</h2>
+          <h2 className="text-xl font-bold text-[#3C2415]">Загрузка свитка персонажа…</h2>
           <p className="text-sm text-[#8B6914]">
             Считывание рунической печати кода <span className="font-mono font-bold text-[#3C2415]">{code}</span>
           </p>
@@ -381,7 +381,7 @@ export default function SharedCharacterPage({
               {savingStatus === 'saving' ? (
                 <>
                   <MysticSpinnerIcon size={14} />
-                  <span className="truncate text-[11px]">Запись...</span>
+                  <span className="truncate text-[11px]">Запись…</span>
                 </>
               ) : savingStatus === 'saved' ? (
                 <>
@@ -425,6 +425,9 @@ export default function SharedCharacterPage({
                   <img
                     src={portraitUrl}
                     alt={char.name || 'Портрет персонажа'}
+                    width={144}
+                    height={176}
+                    loading="lazy"
                     className="w-full h-full object-cover object-top"
                   />
                 </div>

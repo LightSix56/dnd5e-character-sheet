@@ -2107,7 +2107,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                             value={c}
                             onChange={v => updateCantripRow(i, v)}
                             items={cantripAutocompleteItems}
-                            placeholder="Название заговора вашего класса..."
+                            placeholder="Название заговора вашего класса…"
                             className="w-full parchment-input-boxed"
                           />
                         </div>
@@ -2185,7 +2185,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                               value={s.name}
                               onChange={v => updateSpellRow(i, 'name', v)}
                               items={leveledSpellAutocompleteItems}
-                              placeholder="Название заклинания вашего класса..."
+                              placeholder="Название заклинания вашего класса…"
                               className="w-full parchment-input-boxed"
                             />
                           </div>
@@ -2237,7 +2237,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
               onChange={e => setNotes(e.target.value)}
               rows={2}
               className="parchment-textarea"
-              placeholder="Дополнительные примечания к повышению уровня..."
+              placeholder="Дополнительные примечания к повышению уровня…"
             />
           </div>
 

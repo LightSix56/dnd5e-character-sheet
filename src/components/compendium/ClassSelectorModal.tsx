@@ -80,7 +80,7 @@ export function ClassSelectorModal({ currentClass, currentLevel, onSelect, onClo
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Поиск класса..."
+              placeholder="Поиск класса…"
               className="parchment-input-boxed text-xs w-full py-1.5 px-2.5"
             />
             <div className="space-y-1 overflow-y-auto">

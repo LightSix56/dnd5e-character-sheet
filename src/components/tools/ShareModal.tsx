@@ -157,7 +157,7 @@ export function ShareModal({
           <div className="py-12 flex flex-col items-center justify-center gap-3 text-center">
             <MysticSpinnerIcon size={36} className="text-[#6B3A2A]" />
             <p className="text-sm font-medium text-[#6B3A2A]">
-              Создание магической ссылки и снимка листа...
+              Создание магической ссылки и снимка листа…
             </p>
             <p className="text-xs text-[#8B6914]">
               Формируются данные персонажа для Мастера подземелий
@@ -246,6 +246,7 @@ export function ShareModal({
                   type="text"
                   readOnly
                   value={shareUrl}
+                  spellCheck={false}
                   onClick={(e) => (e.target as HTMLInputElement).select()}
                   className="parchment-input-boxed flex-1 px-3 py-1.5 text-xs font-mono"
                 />

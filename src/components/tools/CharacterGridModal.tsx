@@ -537,7 +537,7 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Поиск по имени, классу или расе..."
+              placeholder="Поиск по имени, классу или расе…"
               className="parchment-input-boxed w-full pl-9 pr-8 py-2 text-sm shadow-inner"
             />
             {searchQuery && (
@@ -685,6 +685,9 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                             <img
                               src={portrait}
                               alt={name}
+                              width={72}
+                              height={72}
+                              loading="lazy"
                               className="w-16 h-16 sm:w-18 sm:h-18 rounded-md object-cover object-top border-2 border-[#C9A84C]/80 shadow-md bg-[#2C1810]"
                             />
                           ) : (

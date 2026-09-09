@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   CharacterData, AbilityName, ABILITY_NAMES, ABILITY_FULL, ALL_SKILLS, SKILL_MAP,
   formatModifier, calcModifier, calcProficiencyBonus, getTotalScore, getModifier,
@@ -89,7 +90,7 @@ const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }:
 
   const handleClose = useCallback(() => {
     setClosing(true);
-    setTimeout(onClose, 300);
+    setTimeout(onClose, 250);
   }, [onClose]);
 
   useEscapeKey(handleClose);
@@ -101,21 +102,59 @@ const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }:
   }, [handleClose]);
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[300] flex items-center justify-center" onClick={handleClose}>
-      <div className={`roll-result-popup ${closing ? 'closing' : ''}`} onClick={e => e.stopPropagation()}>
-        <div className="roll-result-label">{result.label}</div>
-        <div className={`roll-result-die ${isNat20 ? 'nat20' : ''} ${isNat1 ? 'nat1' : ''}`}>
-          {result.dieResult}
+    <div className="fixed inset-0 parchment-modal-overlay z-[300] flex items-center justify-center bg-black/60 backdrop-blur-xs" onClick={handleClose}>
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0, y: 20 }}
+        animate={closing ? { scale: 0.8, opacity: 0, y: 10 } : { scale: 1, opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 220, damping: 18 }}
+        className={`roll-result-popup ${closing ? 'closing' : ''} ${isNat20 ? 'shadow-[0_0_25px_rgba(201,168,76,0.5)] border-[#C9A84C]' : isNat1 ? 'shadow-[0_0_25px_rgba(139,37,0,0.4)] border-[#8B2500]' : ''}`}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-center gap-1.5 mb-1 text-xs">
+          <motion.div
+            initial={{ rotate: -180, scale: 0.7 }}
+            animate={{ rotate: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 15 }}
+          >
+            <D20Icon size={18} />
+          </motion.div>
+          <span className="roll-result-label font-bold mb-0">{result.label}</span>
         </div>
+
+        <motion.div
+          initial={{ scale: 0.6 }}
+          animate={{ scale: [0.6, 1.15, 1] }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className={`roll-result-die ${isNat20 ? 'nat20' : ''} ${isNat1 ? 'nat1' : ''}`}
+        >
+          {result.dieResult}
+        </motion.div>
+
         <div className="roll-result-breakdown">
           d20 ({result.dieResult}) {result.modifier >= 0 ? '+' : ''}{result.modifier}
         </div>
         <div className="roll-result-total">
           = {result.total}
         </div>
-        {isNat20 && <div className="roll-result-tag crit">Критический успех!</div>}
-        {isNat1 && <div className="roll-result-tag fumble">Критический провал!</div>}
-      </div>
+        {isNat20 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="roll-result-tag crit"
+          >
+            ✨ Критический успех!
+          </motion.div>
+        )}
+        {isNat1 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="roll-result-tag fumble"
+          >
+            💀 Критический провал!
+          </motion.div>
+        )}
+      </motion.div>
     </div>
   );
 });

@@ -107,4 +107,43 @@ test.describe('UX and Accessibility Enhancements', () => {
 
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '05_focus_visible_tab.png') });
   });
+
+  test('6. Sheet dropdown menu ("Бланк") toggle and Escape dismissal', async ({ page }) => {
+    const sheetBtn = page.locator('button:has-text("Бланк"):visible').first();
+    await expect(sheetBtn).toBeVisible();
+
+    await sheetBtn.click();
+    const menuDropdown = page.locator('.parchment-menu-dropdown:visible');
+    await expect(menuDropdown).toBeVisible();
+    await expect(menuDropdown.locator('button:has-text("Готовые шаблоны")')).toBeVisible();
+
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '06_sheet_dropdown.png') });
+
+    await page.keyboard.press('Escape');
+    await expect(menuDropdown).toBeHidden({ timeout: 3000 });
+  });
+
+  test('7. Sliding tab indicator across navigation tabs', async ({ page }) => {
+    const spellsTab = page.locator('.parchment-tabs button:has-text("Заклинания"):visible');
+    await spellsTab.click();
+    await page.waitForTimeout(300);
+
+    const activeIndicator = page.locator('.parchment-tabs .parchment-tab-active:visible');
+    await expect(activeIndicator).toBeVisible();
+
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '07_sliding_tabs.png') });
+  });
+
+  test('8. Alive empty states for weapons, equipment, and spells', async ({ page }) => {
+    // Navigate to spells tab to verify empty states on fresh/unprepared slots
+    const spellsTab = page.locator('.parchment-tabs button:has-text("Заклинания"):visible');
+    await spellsTab.click();
+    await page.waitForTimeout(300);
+
+    const emptyStates = page.locator('.parchment-empty-state:visible');
+    await expect(emptyStates.first()).toBeVisible();
+    await emptyStates.first().scrollIntoViewIfNeeded();
+
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '08_empty_states.png') });
+  });
 });

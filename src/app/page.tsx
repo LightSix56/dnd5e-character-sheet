@@ -2535,18 +2535,20 @@ export default function DnDCharacterSheet() {
             </div>
 
             {/* Sheet Actions Dropdown Menu */}
-            <div className="relative parchment-btn-group">
-              <button
-                type="button"
-                onClick={() => setShowSheetMenu(prev => !prev)}
-                className="parchment-header-btn flex items-center gap-1.5 font-semibold"
-                title="Управление бланком (шаблоны, JSON, сброс)"
-                aria-expanded={showSheetMenu}
-              >
-                <ScrollIcon size={16} />
-                <span>Бланк</span>
-                <span className="text-[10px] opacity-75">▾</span>
-              </button>
+            <div className="relative">
+              <div className="parchment-btn-group">
+                <button
+                  type="button"
+                  onClick={() => setShowSheetMenu(prev => !prev)}
+                  className="parchment-header-btn flex items-center gap-1.5 font-semibold"
+                  title="Управление бланком (шаблоны, JSON, сброс)"
+                  aria-expanded={showSheetMenu}
+                >
+                  <ScrollIcon size={16} />
+                  <span>Бланк</span>
+                  <span className="text-[10px] opacity-75">▾</span>
+                </button>
+              </div>
 
               {showSheetMenu && (
                 <>

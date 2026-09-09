@@ -199,7 +199,9 @@ function StatInput({ label, value, onChange, type = 'number', placeholder, class
   const inputId = 'stat-input-' + label.toLowerCase().replace(/[^a-z0-9а-яё]/gi, '-');
   return (
     <div className={`space-y-1 ${className}`}>
-      <label className="parchment-label" htmlFor={inputId}>{label}</label>
+      <div className="h-5 flex items-center">
+        <label className="parchment-label" htmlFor={inputId}>{label}</label>
+      </div>
       <input id={inputId} type={type} value={value}
         onChange={e => onChange(type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value)}
         placeholder={placeholder}
@@ -2876,12 +2878,12 @@ export default function DnDCharacterSheet() {
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
+                      <div className="h-5 flex items-center justify-between">
                         <label className="parchment-label" htmlFor="char-input-name">Имя персонажа</label>
                         <button
                           type="button"
                           onClick={() => setShowNameGenModal(true)}
-                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5"
+                          className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5 leading-none"
                           style={{ color: '#8B6914' }}
                           title="Открыть генератор фэнтезийных имён с этимологией и корнями"
                         >
@@ -2901,13 +2903,13 @@ export default function DnDCharacterSheet() {
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
+                      <div className="h-5 flex items-center justify-between">
                         <label className="parchment-label" htmlFor="char-input-class">Класс</label>
                         {char.level <= 1 && (
                           <button
                             type="button"
                             onClick={() => setShowClassModal(true)}
-                            className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5"
+                            className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5 leading-none"
                             style={{ color: '#8B6914' }}
                             title="Выбрать класс из компендиума"
                           >
@@ -2935,9 +2937,11 @@ export default function DnDCharacterSheet() {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="parchment-label">Уровень</label>
-                      <div className="flex items-center gap-1">
-                        <span className="flex-1 text-center font-bold text-lg" style={{ color: '#6B3A2A', fontFamily: 'Georgia, "Times New Roman", serif' }}>{char.level}</span>
+                      <div className="h-5 flex items-center">
+                        <label className="parchment-label">Уровень</label>
+                      </div>
+                      <div className="flex items-center gap-1 h-[28px]">
+                        <span className="flex-1 text-center font-bold text-lg leading-none" style={{ color: '#6B3A2A', fontFamily: 'Georgia, "Times New Roman", serif' }}>{char.level}</span>
                         <button onClick={() => char.level > 1 && setShowLevelDown(true)} disabled={char.level <= 1}
                           className="parchment-level-btn" title="Понизить">−</button>
                         <button onClick={() => char.level < 20 && setShowLevelUp(true)} disabled={char.level >= 20}
@@ -2949,13 +2953,13 @@ export default function DnDCharacterSheet() {
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
+                      <div className="h-5 flex items-center justify-between">
                         <label className="parchment-label" htmlFor="char-input-race">Раса</label>
                         {char.level <= 1 && (
                           <button
                             type="button"
                             onClick={() => setShowRaceModal(true)}
-                            className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5"
+                            className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5 leading-none"
                             style={{ color: '#8B6914' }}
                             title="Открыть полный компендиум рас"
                           >

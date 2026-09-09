@@ -2772,17 +2772,32 @@ export default function DnDCharacterSheet() {
 
       <main className="max-w-7xl mx-auto px-4 py-6 relative z-10">
         {/* Tabs */}
-        <div className="grid grid-cols-3 gap-1.5 mb-6 parchment-tabs">
+        <div className="grid grid-cols-3 gap-1.5 mb-6 parchment-tabs relative p-1 rounded-md" style={{ background: 'rgba(60, 36, 21, 0.15)', border: '1px solid rgba(139, 105, 20, 0.3)' }}>
           {[
             { key: 'page1' as const, label: 'Основной лист', shortLabel: 'Лист' },
             { key: 'page2' as const, label: 'Детали', shortLabel: 'Детали' },
             { key: 'page3' as const, label: 'Заклинания', shortLabel: 'Магия' },
-          ].map(tab => (
-            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-              className={`px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-medium rounded transition-colors min-h-[44px] flex items-center justify-center cursor-pointer ${activeTab === tab.key ? 'parchment-tab-active' : 'parchment-tab-inactive'}`}>
-              <span className="hidden sm:inline">{tab.label}</span><span className="sm:hidden">{tab.shortLabel}</span>
-            </button>
-          ))}
+          ].map(tab => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveTab(tab.key)}
+                className={`relative px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-bold rounded min-h-[44px] flex items-center justify-center cursor-pointer select-none transition-colors ${isActive ? 'text-[#3D2012]' : 'text-[#8B6914] hover:text-[#3D2012]'}`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="activeTabParchment"
+                    className="absolute inset-0 rounded parchment-tab-active shadow-md"
+                    transition={{ type: "spring", stiffness: 300, damping: 26 }}
+                  />
+                )}
+                <span className="relative z-10 hidden sm:inline">{tab.label}</span>
+                <span className="relative z-10 sm:hidden">{tab.shortLabel}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* ═══ PAGE 1 ═══ */}

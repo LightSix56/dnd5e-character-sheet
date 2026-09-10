@@ -10,6 +10,7 @@ import { DND_COMPENDIUM_CLASSES, type CompendiumClass } from '@/data/compendium/
 import { DND_COMPENDIUM_BACKGROUNDS, type CompendiumBackground } from '@/data/compendium/backgrounds';
 import { DND_COMPENDIUM_SPELLS, type DndSpell } from '@/data/compendium/spells';
 import { DND_COMPENDIUM_FEATS } from '@/data/compendium/feats';
+import { GENIE_KINDS, GENIE_KINDS_LIST, type GenieKindId } from '@/data/compendium/warlock-choices';
 import {
   generateFantasyName,
   getRacialSkillData,
@@ -81,6 +82,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [selectedFavoredEnemy, setSelectedFavoredEnemy] = useState<string>('Звери');
   const [selectedFavoredTerrain, setSelectedFavoredTerrain] = useState<string>('Лес');
   const [selectedSorcererDragon, setSelectedSorcererDragon] = useState<string>('Красный');
+  const [selectedGenieKind, setSelectedGenieKind] = useState<GenieKindId>('dao');
 
   // ── Step 3: Background ──
   const [selectedBackgroundId, setSelectedBackgroundId] = useState<string>('soldier');
@@ -410,6 +412,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     setSelectedFavoredEnemy('Звери');
     setSelectedFavoredTerrain('Лес');
     setSelectedSorcererDragon('Красный');
+    setSelectedGenieKind('dao');
 
     // For Rogue: auto-suggest the first 2 class skills into selectedExpertise
     const normName = cls.name.toLowerCase();
@@ -615,6 +618,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       }
       if (classChoicesConfig.needsFavoredTerrain && !selectedFavoredTerrain) {
         return { valid: false, error: 'Пожалуйста, выберите любимую местность следопыта.' };
+      }
+      if (classChoicesConfig.needsWarlockPatron && !selectedSubclassId) {
+        return { valid: false, error: 'Пожалуйста, выберите покровителя колдуна (подкласс 1-го уровня).' };
+      }
+      if (classChoicesConfig.needsGenieKind && !selectedGenieKind) {
+        return { valid: false, error: 'Пожалуйста, выберите вид джинна-покровителя (Дао, Джинни, Ифрит или Марид).' };
       }
       return { valid: true };
     }
@@ -953,6 +962,46 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       featureTextLines.push(`[Драконий предок] ${selectedSorcererDragonAncestry.color} (урон: ${selectedSorcererDragonAncestry.damageType}). Максимум хитов +1, базовый КД 13 + ЛОВ.`);
     }
 
+    // Warlock choices and features
+    const isWarlockClass = selectedClass.name.toLowerCase().includes('колдун') || selectedClass.id === 'warlock';
+    const isCelestialWarlock = isWarlockClass && (selectedSubclassId.includes('celestial') || (selectedSubclass?.name || '').toLowerCase().includes('небожитель'));
+    const isUndyingWarlock = isWarlockClass && (selectedSubclassId.includes('undying') || (selectedSubclass?.name || '').toLowerCase().includes('бессмертный'));
+
+    if (isWarlockClass && classChoicesConfig.needsGenieKind && selectedGenieKind) {
+      const genieData = GENIE_KINDS[selectedGenieKind] || GENIE_KINDS.dao;
+      const allGenieSpells = Object.values(genieData.spells).flat().join(', ');
+      traitsList.push({
+        id: 'warlock-genie-kind',
+        name: `Покровитель: Джинн (${genieData.name})`,
+        source: `Колдун (${selectedSubclass?.name || 'Джинн'})`,
+        summary: `Стихия: ${genieData.element}. Урон: ${genieData.damageType}. Сосуд: ${genieData.vesselType}.`,
+        description: `Вид джинна: ${genieData.name}. Стихия: ${genieData.element}. Дополнительный урон от «Гнева джинна»: ${genieData.damageType}. Сосуд джинна: ${genieData.vesselType}. Заклинания списка: ${allGenieSpells}.`
+      });
+      featureTextLines.push(`[Покровитель джинн] ${genieData.name}: стихия ${genieData.element}, урон ${genieData.damageType}, сосуд: ${genieData.vesselType}.`);
+    }
+
+    if (isCelestialWarlock) {
+      traitsList.push({
+        id: 'warlock-celestial-bonus-cantrips',
+        name: 'Бонусные заговоры (Небожитель)',
+        source: 'Колдун (Небожитель)',
+        summary: 'Вы знаете заговоры «Свет» и «Священное пламя». Они считаются заговорами колдуна и не учитываются в лимите.',
+        description: 'Вы изучаете заговоры «Свет» и «Священное пламя». Для вас они считаются заговорами колдуна, но не учитываются при подсчёте известных вам заговоров.'
+      });
+      featureTextLines.push('[Бонусные заговоры] «Свет» и «Священное пламя» от покровителя Небожителя.');
+    }
+
+    if (isUndyingWarlock) {
+      traitsList.push({
+        id: 'warlock-undying-among-the-dead',
+        name: 'Среди мертвецов (Бессмертный)',
+        source: 'Колдун (Бессмертный)',
+        summary: 'Заговор «Уход за умирающим», преимущество против болезней, защита от нежити.',
+        description: 'Вы знаете заговор «Уход за умирающим». Преимущество на спасброски против болезней. Нежить, пытающаяся атаковать вас, должна совершить спасбросок Мудрости Сл вашей магии.'
+      });
+      featureTextLines.push('[Среди мертвецов] Заговор «Уход за умирающим», преимущество против болезней, защита от нежити.');
+    }
+
     // Background feature
     if (selectedBackground.feature) {
       traitsList.push({
@@ -1080,7 +1129,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       spellSlots: spellLimits.isCaster && spellLimits.spellSlotsAt1[1]
         ? { 1: { totalSlots: spellLimits.spellSlotsAt1[1], expendedSlots: 0 } }
         : {},
-      cantrips: Array.from(new Set([...(spellLimits.isCaster ? selectedCantrips : []), ...(racialChoicesConfig?.needsCantrip && selectedRacialCantrip ? [selectedRacialCantrip] : [])])),
+      cantrips: Array.from(new Set([
+        ...(spellLimits.isCaster ? selectedCantrips : []),
+        ...(racialChoicesConfig?.needsCantrip && selectedRacialCantrip ? [selectedRacialCantrip] : []),
+        ...(isCelestialWarlock ? ['Свет', 'Священное пламя'] : []),
+        ...(isUndyingWarlock ? ['Уход за умирающим'] : [])
+      ])),
       spellsByLevel,
       levelHistory: []
     };
@@ -2321,6 +2375,66 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   </div>
                 </div>
               )}
+
+              {/* ── Warlock Genie Kind (Джинн) ── */}
+              {classChoicesConfig.needsGenieKind && (
+                <div
+                  className="p-4 rounded-lg space-y-3"
+                  style={{
+                    background: 'rgba(232, 211, 162, 0.35)',
+                    border: '1px solid rgba(201, 168, 76, 0.4)'
+                  }}
+                >
+                  <div className="border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                    <h4 className="text-sm font-bold text-[#3D2012] flex items-center gap-1.5">
+                      <span>🏺</span>
+                      <span>Вид джинна-покровителя (Джинн):</span>
+                    </h4>
+                    <p className="text-[11px] text-[#8B6914]">
+                      Выберите благородного джинна, с которым заключён ваш договор. Это определит стихию, тип дополнительного урона «Гнева джинна», вид сосуда и расширенный список заклинаний по правилам dnd.su.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    {GENIE_KINDS_LIST.map(g => {
+                      const isSel = g.id === selectedGenieKind;
+                      const spellPreview = Object.values(g.spells).flat().slice(0, 4).join(', ') + '…';
+                      return (
+                        <button
+                          key={g.id}
+                          type="button"
+                          onClick={() => setSelectedGenieKind(g.id)}
+                          className={`p-3 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                            isSel ? 'shadow-md scale-[1.01]' : 'hover:bg-[rgba(201,168,76,0.18)]'
+                          }`}
+                          style={
+                            isSel
+                              ? { background: '#E8D3A2', border: '2px solid #5C341F', color: '#3D2012' }
+                              : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#4A2A18' }
+                          }
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-xs" style={{ color: isSel ? '#3D2012' : '#5C341F' }}>
+                              {g.name}
+                            </span>
+                            <span
+                              className="text-[10px] px-2 py-0.5 rounded font-bold"
+                              style={{ background: '#5C341F', color: '#FFE58F' }}
+                            >
+                              {g.damageType}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-[#5C341F] space-y-1">
+                            <div><strong>Стихия:</strong> {g.element}</div>
+                            <div className="text-[10px] opacity-90 leading-tight"><strong>Сосуд:</strong> {g.vesselType}</div>
+                            <div className="text-[10px] opacity-80 line-clamp-1"><strong>Заклинания:</strong> {spellPreview}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -3155,7 +3269,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                 </div>
 
                 {/* Class Choices summary */}
-                {(classChoicesConfig.needsFightingStyle || classChoicesConfig.needsExpertise || classChoicesConfig.needsFavoredEnemy || classChoicesConfig.needsDraconicAncestor) && (
+                {(classChoicesConfig.needsFightingStyle || classChoicesConfig.needsExpertise || classChoicesConfig.needsFavoredEnemy || classChoicesConfig.needsDraconicAncestor || classChoicesConfig.needsGenieKind) && (
                   <div className="text-xs space-y-1 pt-1 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.25)' }}>
                     <div className="font-semibold text-[#5C341F]">⚔️ Классовые особенности и выбор:</div>
                     {classChoicesConfig.needsFightingStyle && (
@@ -3176,6 +3290,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     {classChoicesConfig.needsDraconicAncestor && (
                       <div className="text-[11px] text-[#3D2012]">
                         <strong>Драконий предок: </strong>{selectedSorcererDragonAncestry.color} дракон (Стихия: {selectedSorcererDragonAncestry.damageType})
+                      </div>
+                    )}
+                    {classChoicesConfig.needsGenieKind && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Вид джинна: </strong>{GENIE_KINDS[selectedGenieKind]?.name || selectedGenieKind} (Урон: {GENIE_KINDS[selectedGenieKind]?.damageType})
                       </div>
                     )}
                   </div>

@@ -843,6 +843,8 @@ export interface ClassLevel1ChoicesConfig {
   needsFavoredEnemy: boolean;
   needsFavoredTerrain: boolean;
   needsDraconicAncestor: boolean;
+  needsWarlockPatron: boolean;
+  needsGenieKind: boolean;
 }
 
 export function getClassLevel1ChoicesConfig(
@@ -857,6 +859,8 @@ export function getClassLevel1ChoicesConfig(
   const isRanger = normClass.includes('следопыт') || normClass.includes('ranger');
   const isSorcerer = normClass.includes('чародей') || normClass.includes('sorcerer');
   const isDraconicSorcerer = isSorcerer && (normSubclass.includes('draconic') || normSubclass.includes('дракон'));
+  const isWarlock = normClass.includes('колдун') || normClass.includes('warlock');
+  const isGenieWarlock = isWarlock && (normSubclass.includes('genie') || normSubclass.includes('джинн'));
 
   return {
     needsFightingStyle: isFighter,
@@ -864,6 +868,8 @@ export function getClassLevel1ChoicesConfig(
     expertiseCount: isRogue ? 2 : 0,
     needsFavoredEnemy: isRanger,
     needsFavoredTerrain: isRanger,
-    needsDraconicAncestor: isDraconicSorcerer
+    needsDraconicAncestor: isDraconicSorcerer,
+    needsWarlockPatron: isWarlock,
+    needsGenieKind: isGenieWarlock
   };
 }

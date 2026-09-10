@@ -599,6 +599,9 @@ export const GENIE_KINDS: Record<GenieKindId, GenieKindDefinition> = {
   }
 };
 
+export const WARLOCK_PACT_BOONS_LIST: PactBoonDefinition[] = Object.values(WARLOCK_PACT_BOONS);
+export const GENIE_KINDS_LIST: GenieKindDefinition[] = Object.values(GENIE_KINDS);
+
 /**
  * Spells eligible for Warlock Mystic Arcanum (Таинственный арканум) 6th-9th level
  */

@@ -126,9 +126,9 @@
     "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
   },
   "src/app/page.tsx": {
-    "mtime": 1788970269.0910728,
-    "seen": 1788970487.2554722,
-    "ast_hash": "c496e02da839a7f908bf0fa44b3a863b",
+    "mtime": 1789022772.5081167,
+    "seen": 1789023729.2923968,
+    "ast_hash": "25a02b8a4fd0f4649fd6e5ba2593655f",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -216,15 +216,15 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1788968000.2258677,
-    "seen": 1788968151.516728,
-    "ast_hash": "7677e4aae49e1717ea0d526298abacfa",
+    "mtime": 1789022507.2319317,
+    "seen": 1789023729.2976563,
+    "ast_hash": "91b6fcf758975f98c7a1e8c848c277b9",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
-    "mtime": 1788783835.1633832,
-    "seen": 1788785411.61499,
-    "ast_hash": "fdcc4cc6926b1c84848073d529188c1e",
+    "mtime": 1789022214.3387628,
+    "seen": 1789023729.2976606,
+    "ast_hash": "15be6e26eae31a496941b03009f0a84b",
     "semantic_hash": ""
   },
   "src/data/compendium/backgrounds.ts": {
@@ -240,16 +240,16 @@
     "semantic_hash": "3e3a2f1e7d22e6f0a2e7ea6f3bfa4730"
   },
   "src/data/compendium/class-spells.ts": {
-    "mtime": 1788762897.632627,
-    "seen": 1788767676.2556572,
-    "ast_hash": "9e43525f8103ccf127bdf9057bdae121",
-    "semantic_hash": "9e43525f8103ccf127bdf9057bdae121"
+    "mtime": 1789022003.9010112,
+    "seen": 1789023729.2982914,
+    "ast_hash": "18c60b023e3e3742fdcde9123abff641",
+    "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1788424136.7996948,
-    "seen": 1788767676.2556596,
-    "ast_hash": "433ad0ce560a6997fd2e3a1b1280e72f",
-    "semantic_hash": "433ad0ce560a6997fd2e3a1b1280e72f"
+    "mtime": 1789021941.4199593,
+    "seen": 1789023729.2982957,
+    "ast_hash": "2747a37d4ae4813cc25f28fc765f3e17",
+    "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
     "mtime": 1788424163.0035713,
@@ -258,10 +258,10 @@
     "semantic_hash": "250f266dddae938cd06c6394e5bf4a65"
   },
   "src/data/compendium/index.ts": {
-    "mtime": 1788609201.1747694,
-    "seen": 1788767676.2556643,
-    "ast_hash": "2e01cb546c62aad52895a6545d786b3c",
-    "semantic_hash": "2e01cb546c62aad52895a6545d786b3c"
+    "mtime": 1789021775.7386475,
+    "seen": 1789023729.2985861,
+    "ast_hash": "56823f47a1051a16a6d55a96675434d7",
+    "semantic_hash": ""
   },
   "src/data/compendium/items.ts": {
     "mtime": 1788424016.9791262,
@@ -312,9 +312,9 @@
     "semantic_hash": "9eafb37eb44d5898e34ced88980be7a0"
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1788802686.3697696,
-    "seen": 1788802849.6928146,
-    "ast_hash": "80d4e8570903e111981b2911077d23ad",
+    "mtime": 1789022614.7093496,
+    "seen": 1789023729.3021162,
+    "ast_hash": "2fc2b64da9d4de0c5c09b63257d483c9",
     "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
@@ -552,15 +552,15 @@
     "semantic_hash": ""
   },
   "src/components/levelup/level-up-choices.ts": {
-    "mtime": 1788802075.5786974,
-    "seen": 1788802318.02199,
-    "ast_hash": "48f8d0ef9301d42f3655a77fab88d618",
+    "mtime": 1789022573.9759462,
+    "seen": 1789023729.295721,
+    "ast_hash": "fa08f82f89ccfdeb06d045ec9c609fe2",
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
-    "mtime": 1788801480.0125718,
-    "seen": 1788801808.04282,
-    "ast_hash": "53572b5b865d0a26f555c91bb9a54e93",
+    "mtime": 1789022020.0930514,
+    "seen": 1789023729.2976642,
+    "ast_hash": "f1705ac97ade86c7914909713103ae8e",
     "semantic_hash": ""
   },
   "test/auto-spells-engine.test.ts": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1788968027.128487,
-    "seen": 1788968151.515248,
-    "ast_hash": "27cf7670c4809a0e584f6f037399a1b5",
+    "mtime": 1789022965.5233471,
+    "seen": 1789023729.2957153,
+    "ast_hash": "95415f3c8437561de67bd02004a3752c",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -681,6 +681,72 @@
     "mtime": 1788969229.5978782,
     "seen": 1788970487.2823727,
     "ast_hash": "c2ff0d94b20150adc7682bf14d0c2a92",
+    "semantic_hash": ""
+  },
+  "e2e/warlock-level-up.spec.ts": {
+    "mtime": 1789023607.060496,
+    "seen": 1789023729.2848203,
+    "ast_hash": "f071b5b954384b387655355ed102558f",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/warlock-choices.ts": {
+    "mtime": 1789022468.6637323,
+    "seen": 1789023729.3005936,
+    "ast_hash": "d9556f7f6b359974ef5a538c6c39cec5",
+    "semantic_hash": ""
+  },
+  "test/label-alignment.test.ts": {
+    "mtime": 1788971915.113027,
+    "seen": 1789023729.3073752,
+    "ast_hash": "5102bd9e7fe661a9c7bd9272eb40c762",
+    "semantic_hash": ""
+  },
+  "test/level-up-warlock-choices.test.ts": {
+    "mtime": 1789021986.0847802,
+    "seen": 1789023729.3086345,
+    "ast_hash": "a937b3f398561b71007fab553c504eab",
+    "semantic_hash": ""
+  },
+  "test/warlock-choices.test.ts": {
+    "mtime": 1789021724.15618,
+    "seen": 1789023729.3095064,
+    "ast_hash": "5005df05e16172b0a93ca77b87cce386",
+    "semantic_hash": ""
+  },
+  "test/warlock-level-up-flow.test.ts": {
+    "mtime": 1789023008.7949488,
+    "seen": 1789023729.309511,
+    "ast_hash": "d3b84e0a5f11a9d3bb5072785f08a13c",
+    "semantic_hash": ""
+  },
+  "test/warlock-subclasses.test.ts": {
+    "mtime": 1789021907.4346938,
+    "seen": 1789023729.3095145,
+    "ast_hash": "3adcfd72a344c611be9861e3a8948ddc",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/2026-09-10-warlock-level-up-and-subclasses-plan/progress.md": {
+    "mtime": 1789021630.7590573,
+    "seen": 1789023729.3124602,
+    "ast_hash": "bf0ceba70b2669f103de51d5a96acbe3",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/2026-09-10-warlock-level-up-and-subclasses-plan/task-1-brief.md": {
+    "mtime": 1789021641.4848528,
+    "seen": 1789023729.312467,
+    "ast_hash": "67645f53ebff1085c61cb75306b5c74d",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-10-warlock-level-up-and-subclasses-plan.md": {
+    "mtime": 1789021608.5883064,
+    "seen": 1789023729.3167255,
+    "ast_hash": "f0bb1b424d07080958ed7feb7607e461",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-10-warlock-level-up-deepening-design.md": {
+    "mtime": 1789021580.329511,
+    "seen": 1789023729.3192108,
+    "ast_hash": "e8a1d34a8cb64f4389b54e47744811d5",
     "semantic_hash": ""
   }
 }

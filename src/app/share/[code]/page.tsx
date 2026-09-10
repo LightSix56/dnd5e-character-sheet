@@ -173,14 +173,19 @@ export default function SharedCharacterPage({
     try {
       const supabase = createClient();
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user;
 
       if (user) {
         // User is authenticated -> save to /api/characters
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (session?.access_token) {
+          headers['Authorization'] = `Bearer ${session.access_token}`;
+        }
         const res = await fetch('/api/characters', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({
             name: char.name || 'Безымянный',
             data: char,
@@ -224,14 +229,25 @@ export default function SharedCharacterPage({
     if (!char) return;
     try {
       if (typeof window !== 'undefined') {
+        const importPayload = {
+          char,
+          portraitUrl: portraitUrl || null,
+          fromCode: code,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem('dnd5e_shared_import', JSON.stringify(importPayload));
         localStorage.setItem('dnd5e_character', JSON.stringify(char));
         if (portraitUrl) {
           localStorage.setItem('dnd5e_portrait', portraitUrl);
+        } else {
+          localStorage.removeItem('dnd5e_portrait');
         }
+        window.location.href = '/?import=shared';
+      } else {
+        router.push('/?import=shared');
       }
-      router.push('/');
     } catch {
-      router.push('/');
+      window.location.href = '/?import=shared';
     }
   };
 

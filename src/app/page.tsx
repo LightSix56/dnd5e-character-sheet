@@ -1024,6 +1024,15 @@ export default function DnDCharacterSheet() {
   const [initialChar] = useState<CharacterData>(() => {
     if (typeof window === 'undefined') return createDefaultCharacter();
     try {
+      // Priority 1: Character imported from shared link
+      const sharedImportRaw = localStorage.getItem('dnd5e_shared_import');
+      if (sharedImportRaw) {
+        const parsed = JSON.parse(sharedImportRaw);
+        if (parsed?.char) {
+          return normalizeCharacterData(parsed.char);
+        }
+      }
+      // Priority 2: Character saved locally
       const saved = localStorage.getItem('dnd5e_character');
       if (saved) {
         return normalizeCharacterData(JSON.parse(saved));
@@ -1035,6 +1044,13 @@ export default function DnDCharacterSheet() {
   const [initialPortrait] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
     try {
+      const sharedImportRaw = localStorage.getItem('dnd5e_shared_import');
+      if (sharedImportRaw) {
+        const parsed = JSON.parse(sharedImportRaw);
+        if (parsed?.portraitUrl !== undefined) {
+          return parsed.portraitUrl;
+        }
+      }
       return localStorage.getItem('dnd5e_portrait') || null;
     } catch { return null; }
   });
@@ -1163,6 +1179,10 @@ export default function DnDCharacterSheet() {
   const cloudSaveInProgressRef = React.useRef(false);
   const pendingCloudSaveRef = React.useRef(false);
   const isCloudSyncingRef = React.useRef(false);
+  const isSharedImportRef = React.useRef(
+    typeof window !== 'undefined' &&
+      (Boolean(localStorage.getItem('dnd5e_shared_import')) || window.location.search.includes('import=shared'))
+  );
 
   // Helper: extract active JWT session token for Authorization header
   const getAuthHeaders = useCallback(async () => {
@@ -1198,15 +1218,8 @@ export default function DnDCharacterSheet() {
         }),
       });
       const result = await res.json().catch(() => ({}));
-      if (!res.ok || result.error) {
-        const errorMsg = result.error || `Ошибка сервера (HTTP ${res.status})`;
-        console.error('[Cloud Save Error]', res.status, errorMsg);
-        setCloudSaveError(errorMsg);
-        setCloudSaveStatus('error');
-        return { ok: false, error: errorMsg };
-      }
 
-      if (result.character?.id) {
+      if (res.ok && result.character) {
         cloudCharIdRef.current = result.character.id;
         setActiveCloudCharId(result.character.id);
         setCloudSaveError(null);
@@ -1224,9 +1237,11 @@ export default function DnDCharacterSheet() {
         return { ok: true, id: result.character.id };
       }
 
-      setCloudSaveError('Не удалось сохранить данные персонажа');
+      const errorMsg = result.error || `Ошибка сервера (HTTP ${res.status})`;
+      console.error('[Cloud Save Error]', res.status, errorMsg);
+      setCloudSaveError(errorMsg);
       setCloudSaveStatus('error');
-      return { ok: false, error: 'Не удалось сохранить данные персонажа' };
+      return { ok: false, error: errorMsg };
     } catch (err: any) {
       console.error('[Cloud Save Network Exception]', err);
       const msg = err.message || 'Сетевая ошибка при сохранении';
@@ -1275,6 +1290,11 @@ export default function DnDCharacterSheet() {
       setUser(newUser);
       // On login / page load with existing session: load latest cloud save (cloud > localStorage)
       if (newUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        if (isSharedImportRef.current) {
+          // If a shared character was just imported for editing, do NOT overwrite it with latest cloud character!
+          isSharedImportRef.current = false;
+          return;
+        }
         isCloudSyncingRef.current = true;
         try {
           const headers: Record<string, string> = {};
@@ -1328,6 +1348,40 @@ export default function DnDCharacterSheet() {
     setToast({ title, description });
     setTimeout(() => setToast(null), 3000);
   }, []);
+
+  // ── Handle shared character import from /share/[code] ──
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const sharedImportRaw = localStorage.getItem('dnd5e_shared_import');
+      if (sharedImportRaw) {
+        const parsed = JSON.parse(sharedImportRaw);
+        if (parsed?.char) {
+          const normalized = normalizeCharacterData(parsed.char);
+          setChar(normalized);
+          const port = parsed.portraitUrl || null;
+          setPortraitUrl(port);
+          // Ensure cloud IDs are cleared so this is treated as a separate/new character
+          cloudCharIdRef.current = null;
+          setActiveCloudCharId(null);
+          lastCloudSaveRef.current = '';
+          setCloudSaveStatus('idle');
+          setCloudSaveError(null);
+          showToast(
+            'Свиток открыт для редактирования',
+            `Персонаж "${normalized.name || 'Безымянный'}" загружен из ссылки`
+          );
+        }
+        localStorage.removeItem('dnd5e_shared_import');
+      }
+      if (window.location.search.includes('import=shared')) {
+        const cleanUrl = window.location.pathname + window.location.search.replace(/[?&]import=shared(&|$)/, '$1').replace(/\?$/, '');
+        window.history.replaceState({}, '', cleanUrl || '/');
+      }
+    } catch (e) {
+      console.error('[Shared Import Error]', e);
+    }
+  }, [showToast]);
 
   const handleRoll = useCallback((result: RollResult) => {
     setRollResult(result);

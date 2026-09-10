@@ -240,15 +240,15 @@
     "semantic_hash": ""
   },
   "src/data/compendium/class-spells.ts": {
-    "mtime": 1789022003.9010112,
-    "seen": 1789023729.2982914,
-    "ast_hash": "18c60b023e3e3742fdcde9123abff641",
+    "mtime": 1789044047.8184204,
+    "seen": 1789044231.3724213,
+    "ast_hash": "5978c42ed02c28b0b75afb1149adfe3a",
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789030744.4690928,
-    "seen": 1789031726.6626701,
-    "ast_hash": "e26990e9a29e58bad82943b65a8a12e9",
+    "mtime": 1789044032.575228,
+    "seen": 1789044231.372427,
+    "ast_hash": "d4f1b54d091b5dba9cf345ca2ee13094",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -765,6 +765,12 @@
     "mtime": 1789043249.5219471,
     "seen": 1789043492.8197677,
     "ast_hash": "2861a05819e660bf045d9ba45083b71a",
+    "semantic_hash": ""
+  },
+  "test/paladin-subclasses.test.ts": {
+    "mtime": 1789044153.3698852,
+    "seen": 1789044231.3828986,
+    "ast_hash": "2769ac9e8d47054997291bd08f84986f",
     "semantic_hash": ""
   }
 }

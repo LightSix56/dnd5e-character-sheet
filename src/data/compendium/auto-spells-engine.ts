@@ -141,6 +141,47 @@ export function getAutoGrantedSpellsForLevel(
     }
   }
 
+  // 1e. Wizard subclasses (Школа Иллюзии, Школа Некромантии, Школа Преобразования)
+  const isWizard = classNameLower === 'волшебник' || classNameLower === 'wizard' || classNameLower.includes('волшебник');
+  if (isWizard) {
+    const subLower = (subclassOverride || char.subclass || '').toLowerCase();
+    // School of Illusion: Minor Illusion at level 2
+    if (subLower.includes('иллюзи') || subLower.includes('illusion')) {
+      if (newLevel === 2) {
+        result.push({
+          name: 'Малая иллюзия',
+          level: 0,
+          prepared: true,
+          source: 'Школа Иллюзии: Улучшенная малая иллюзия',
+        });
+      }
+    }
+
+    // School of Necromancy: Animate Dead at level 6
+    if (subLower.includes('некромант') || subLower.includes('necromanc')) {
+      if (newLevel === 6) {
+        result.push({
+          name: 'Восставший труп',
+          level: 3,
+          prepared: false,
+          source: 'Школа Некромантии: Неживые рабы',
+        });
+      }
+    }
+
+    // School of Transmutation: Polymorph at level 10
+    if (subLower.includes('преобразован') || subLower.includes('transmut')) {
+      if (newLevel === 10) {
+        result.push({
+          name: 'Превращение',
+          level: 4,
+          prepared: false,
+          source: 'Школа Преобразования: Преобразователь формы',
+        });
+      }
+    }
+  }
+
   // 1e. Ranger archetype bonus cantrips at level 3
   const isRanger = classNameLower === 'следопыт' || classNameLower === 'ranger' || classNameLower.includes('следопыт');
   if (isRanger && newLevel === 3) {

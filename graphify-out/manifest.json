@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789050449.5643065,
-    "seen": 1789051049.445941,
-    "ast_hash": "cd13d6d6903d1eebc3b4fc13fcee4972",
+    "mtime": 1789051513.5349772,
+    "seen": 1789051816.472528,
+    "ast_hash": "0744900a7bfe48753b63459eee6d8324",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -552,15 +552,15 @@
     "semantic_hash": ""
   },
   "src/components/levelup/level-up-choices.ts": {
-    "mtime": 1789050857.7688415,
-    "seen": 1789051049.4431646,
-    "ast_hash": "e1eb9ec405c418c9734737a99804ce0b",
+    "mtime": 1789051581.2489028,
+    "seen": 1789051816.4695022,
+    "ast_hash": "04a951987aa9d65d7e51afd0ebbcad1d",
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
-    "mtime": 1789050868.5956717,
-    "seen": 1789051049.4453485,
-    "ast_hash": "737a58e9605a63c02d54ea11b619db14",
+    "mtime": 1789051543.321678,
+    "seen": 1789051816.4716566,
+    "ast_hash": "1d09188a6ebaf655eba068913d55be0a",
     "semantic_hash": ""
   },
   "test/auto-spells-engine.test.ts": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789050826.6486309,
-    "seen": 1789051049.4431577,
-    "ast_hash": "02aed00fb21b13cc445f36814e769a6f",
+    "mtime": 1789051710.020231,
+    "seen": 1789051816.469496,
+    "ast_hash": "88bd6d6c5e04d089777d1fefc07d2141",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -801,6 +801,12 @@
     "mtime": 1789050976.5619628,
     "seen": 1789051049.4583683,
     "ast_hash": "0f5a23e66825c8f141178d1910469215",
+    "semantic_hash": ""
+  },
+  "test/wizard-subclasses.test.ts": {
+    "mtime": 1789051462.1743958,
+    "seen": 1789051816.48787,
+    "ast_hash": "ddf389b26571dc85bd0508eeaa509e48",
     "semantic_hash": ""
   }
 }

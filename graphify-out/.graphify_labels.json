@@ -1,7 +1,7 @@
 {
   "0": "package.json",
   "1": "dependencies",
-  "2": "level-up-choices.ts",
+  "2": "LevelUpModal.tsx",
   "3": "CharacterCreationWizardModal.tsx",
   "4": "dnd-types.ts",
   "5": "@supabase/ssr",
@@ -64,9 +64,8 @@
   "62": "📜 D&D.su Class & Mechanics Parser Skill",
   "63": "app/page.tsx",
   "64": "CompendiumModals.tsx",
-  "65": "LevelUpModal.tsx",
-  "66": "ItemDetailModal.tsx",
-  "67": "CharacterGridModal.tsx",
-  "68": "ClassSelectorModal.tsx",
-  "69": "feats.ts"
+  "65": "class-progression.ts",
+  "66": "escape-key-and-keyboard-rolls.test.ts",
+  "67": "CharacterData",
+  "68": "react"
 }

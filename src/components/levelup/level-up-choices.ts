@@ -112,6 +112,22 @@ export const DIVINE_AFFINITY_OPTIONS: DivineAffinityOption[] = [
   { id: 'neutrality', name: 'Нейтралитет', spell: 'Защита от зла и добра', description: 'Ваш предок воплощает космическое равновесие. Дополнительное заклинание: Защита от зла и добра.' },
 ];
 
+// ── Bladesinging Weapons (Wizard) ──
+
+export const BLADESINGING_WEAPONS: string[] = [
+  'Рапира',
+  'Скимитар',
+  'Короткий меч',
+  'Длинный меч',
+  'Плеть',
+  'Боевой молот',
+  'Боевой топор',
+  'Булава',
+  'Цеп',
+  'Моргенштерн',
+  'Боевая кирка',
+];
+
 // ── Eldritch Invocations (Warlock) ──
 
 export interface InvocationOption {
@@ -434,6 +450,10 @@ export interface LevelUpChoicesConfig {
   needsManeuvers?: boolean;
   maneuverCount?: number;
   maneuverOptions?: { id: string; name: string; description: string }[];
+  needsBladesingingWeapon?: boolean;
+  bladesingingWeaponOptions?: string[];
+  needsSpellMastery?: boolean;
+  needsSignatureSpells?: boolean;
 }
 
 // ── Rules Engine for Level-Up Choices ──
@@ -531,6 +551,30 @@ export function getLevelUpChoicesConfig(
       config.needsMetamagic = true;
       config.metamagicCount = 1;
       config.metamagicOptions = METAMAGIC_OPTIONS.filter(opt => !existingMetamagicIds.has(opt.id));
+    }
+  }
+
+  // 3.8. Wizard Choices (Bladesinging weapon at level 2, Spell Mastery at 18, Signature Spells at 20)
+  if (normClass === 'Волшебник') {
+    // 3.8.1. Bladesinging (Песнь клинка) at level 2
+    if (rawSubclass.includes('песнь клинка') || rawSubclass.includes('bladesing')) {
+      const hasBladesingingWeapon = (char.traitsList || []).some(t =>
+        (t.name && t.name.includes('Оружие песни клинка')) || (t.id && t.id.startsWith('bladesinging-weapon-'))
+      );
+      if (newLevel === 2 || (!hasBladesingingWeapon && (char.level || 1) >= 2)) {
+        config.needsBladesingingWeapon = true;
+        config.bladesingingWeaponOptions = BLADESINGING_WEAPONS;
+      }
+    }
+
+    // 3.8.2. Spell Mastery (Мастерство заклинаний) at level 18
+    if (newLevel === 18) {
+      config.needsSpellMastery = true;
+    }
+
+    // 3.8.3. Signature Spells (Превосходство заклинаний) at level 20
+    if (newLevel === 20) {
+      config.needsSignatureSpells = true;
     }
   }
 

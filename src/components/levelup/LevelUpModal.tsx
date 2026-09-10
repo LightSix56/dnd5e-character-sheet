@@ -42,6 +42,7 @@ import {
   METAMAGIC_OPTIONS,
   DRACONIC_ANCESTRY_OPTIONS,
   DIVINE_AFFINITY_OPTIONS,
+  BLADESINGING_WEAPONS,
   ELDRITCH_INVOCATIONS,
   BATTLE_MASTER_MANEUVERS,
   getKnownSpellNames,
@@ -328,6 +329,21 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       setSelectedDivineAffinity(choicesConfig.divineAffinityOptions[0].id);
     }
   }, [choicesConfig.divineAffinityOptions]);
+
+  // Wizard specific choices states
+  const [selectedBladesingingWeapon, setSelectedBladesingingWeapon] = useState<string>(
+    () => choicesConfig.bladesingingWeaponOptions?.[0] || 'Рапира'
+  );
+  const [selectedSpellMastery1, setSelectedSpellMastery1] = useState<string>('');
+  const [selectedSpellMastery2, setSelectedSpellMastery2] = useState<string>('');
+  const [selectedSignatureSpell1, setSelectedSignatureSpell1] = useState<string>('');
+  const [selectedSignatureSpell2, setSelectedSignatureSpell2] = useState<string>('');
+
+  useEffect(() => {
+    if (choicesConfig.bladesingingWeaponOptions?.length) {
+      setSelectedBladesingingWeapon(choicesConfig.bladesingingWeaponOptions[0]);
+    }
+  }, [choicesConfig.bladesingingWeaponOptions]);
 
 
   // ASI / Feat choice
@@ -875,6 +891,43 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       }
     }
 
+    // Wizard Bladesinging Weapon and Training (Level 2)
+    if (choicesConfig.needsBladesingingWeapon && selectedBladesingingWeapon) {
+      addedTraits.push({
+        id: `bladesinging-weapon-${selectedBladesingingWeapon.toLowerCase()}`,
+        name: `Песнь клинка: ${selectedBladesingingWeapon}`,
+        source: `Волшебник: Песнь клинка (${newLevel} ур.)`,
+        summary: `Владение: Лёгкие доспехи, ${selectedBladesingingWeapon}, навык «Выступление».`,
+        description: `Тренировка войны и песни: вы получаете владение лёгкими доспехами, одноручным рукопашным оружием (${selectedBladesingingWeapon}) и навыком Выступление.`,
+      });
+    }
+
+    // Wizard Spell Mastery (Level 18)
+    if (choicesConfig.needsSpellMastery) {
+      const sp1 = selectedSpellMastery1.trim();
+      const sp2 = selectedSpellMastery2.trim();
+      addedTraits.push({
+        id: 'wizard-spell-mastery',
+        name: 'Мастерство заклинаний',
+        source: `Волшебник (${newLevel} ур.)`,
+        summary: sp1 || sp2 ? `1 круг: ${sp1 || '—'}, 2 круг: ${sp2 || '—'}` : 'Сотворение 1 заклинания 1-го круга и 1 заклинания 2-го круга без траты ячеек.',
+        description: `Мастерство заклинаний: вы можете накладывать выбранное заклинание 1-го круга (${sp1 || 'не выбрано'}) и 2-го круга (${sp2 || 'не выбрано'}) наименьшим кругом без траты ячейки заклинания.`,
+      });
+    }
+
+    // Wizard Signature Spells (Level 20)
+    if (choicesConfig.needsSignatureSpells) {
+      const sig1 = selectedSignatureSpell1.trim();
+      const sig2 = selectedSignatureSpell2.trim();
+      addedTraits.push({
+        id: 'wizard-signature-spells',
+        name: 'Превосходство заклинаний',
+        source: `Волшебник (${newLevel} ур.)`,
+        summary: sig1 || sig2 ? `3 круг: ${sig1 || '—'}, ${sig2 || '—'}` : 'Два заклинания 3-го круга всегда подготовлены и творятся 1/отдых бесплатно.',
+        description: `Превосходство заклинаний: выберите два заклинания 3-го круга (${sig1 || '—'}, ${sig2 || '—'}). Они всегда подготовлены, не учитываются в лимите подготовленных, и каждое можно наложить 3-м кругом 1 раз без траты ячейки заклинания за короткий или длинный отдых.`,
+      });
+    }
+
     // Warlock Pact Boon trait (Level 3)
     if (choicesConfig.needsPactBoon && selectedPactBoon) {
       const pb = (choicesConfig.pactBoonOptions || WARLOCK_PACT_BOONS_LIST).find(b => b.id === selectedPactBoon);
@@ -1274,7 +1327,33 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       extraNotes.push(`[Владения специализации]: ${choicesConfig.rogueToolsText}`);
     }
 
-    const combinedProfText = [drakewardenProfText, giantProfText, rogueToolsProfText]
+    // Wizard Bladesinging weapon and training (lvl 2)
+    const bladesingerSkillProfs: string[] = [];
+    let bladesingerProfText = '';
+    if (choicesConfig.needsBladesingingWeapon && selectedBladesingingWeapon) {
+      if (!char.skillProficiencies?.['Выступление']) {
+        bladesingerSkillProfs.push('Выступление');
+      }
+      bladesingerProfText = `Доспехи: Лёгкие доспехи. Оружие: ${selectedBladesingingWeapon}. Навык: Выступление.`;
+      extraNotes.push(`[Песнь клинка]: Владение лёгкими доспехами, оружием «${selectedBladesingingWeapon}», навыком «Выступление»`);
+    }
+
+    if (choicesConfig.needsSpellMastery) {
+      const sp1 = selectedSpellMastery1.trim();
+      const sp2 = selectedSpellMastery2.trim();
+      if (sp1 || sp2) {
+        extraNotes.push(`[Мастерство заклинаний]: 1 круг: «${sp1 || '—'}», 2 круг: «${sp2 || '—'}»`);
+      }
+    }
+    if (choicesConfig.needsSignatureSpells) {
+      const sig1 = selectedSignatureSpell1.trim();
+      const sig2 = selectedSignatureSpell2.trim();
+      if (sig1 || sig2) {
+        extraNotes.push(`[Превосходство заклинаний]: 3 круг: «${sig1 || '—'}», «${sig2 || '—'}»`);
+      }
+    }
+
+    const combinedProfText = [drakewardenProfText, giantProfText, rogueToolsProfText, bladesingerProfText]
       .filter(Boolean)
       .join('\n');
 
@@ -1316,6 +1395,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
         ...totemTigerSkillProfs,
         ...primalKnowledgeSkillProfs,
         ...warlockInvocationSkillProfs,
+        ...bladesingerSkillProfs,
       ])),
       newSkillExpertise: Array.from(new Set([...selectedExpertise, ...scoutSkillExpertise])),
       newAttacks: [],
@@ -2140,6 +2220,159 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                     </button>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Wizard Bladesinging Weapon (2nd Level) ── */}
+          {choicesConfig.needsBladesingingWeapon && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <CrossedSwordsIcon size={16} />
+                  <span>Песнь клинка: Тренировка войны и песни</span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{
+                    background: '#5C341F',
+                    color: '#FFE58F',
+                  }}
+                >
+                  2-й уровень
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#8B6914' }}>
+                Вы получаете владение лёгкими доспехами, навыком «Выступление» и одним видом одноручного рукопашного оружия по вашему выбору:
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {(choicesConfig.bladesingingWeaponOptions || BLADESINGING_WEAPONS).map(wep => {
+                  const isSel = selectedBladesingingWeapon === wep;
+                  return (
+                    <button
+                      key={wep}
+                      type="button"
+                      onClick={() => setSelectedBladesingingWeapon(wep)}
+                      className="text-left p-2.5 rounded-lg transition-all flex items-center justify-between"
+                      style={{
+                        background: isSel
+                          ? 'rgba(232, 211, 162, 0.85)'
+                          : 'rgba(232, 211, 162, 0.25)',
+                        border: isSel
+                          ? '2px solid #C9A84C'
+                          : '1px solid rgba(201, 168, 76, 0.4)',
+                        boxShadow: isSel
+                          ? '0 0 10px rgba(201, 168, 76, 0.4)'
+                          : 'none',
+                      }}
+                    >
+                      <span className="font-bold text-xs" style={{ color: '#3D2012' }}>
+                        {wep}
+                      </span>
+                      {isSel && <GoldSealCheckIcon size={16} />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Wizard Spell Mastery (18th Level) ── */}
+          {choicesConfig.needsSpellMastery && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <SpellbookIcon size={16} />
+                  <span>Мастерство заклинаний (Spell Mastery):</span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{
+                    background: '#5C341F',
+                    color: '#FFE58F',
+                  }}
+                >
+                  18-й уровень
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#8B6914' }}>
+                Выберите одно заклинание волшебника 1-го круга и одно заклинание 2-го круга из вашей книги. Вы можете творить их наименьшим кругом без траты ячеек заклинаний:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <label className="text-[11px] font-bold block mb-1" style={{ color: '#5C341F' }}>
+                    Заклинание 1-го круга:
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedSpellMastery1}
+                    onChange={e => setSelectedSpellMastery1(e.target.value)}
+                    placeholder="Например, Щит или Доспех мага"
+                    className="parchment-input-boxed w-full text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold block mb-1" style={{ color: '#5C341F' }}>
+                    Заклинание 2-го круга:
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedSpellMastery2}
+                    onChange={e => setSelectedSpellMastery2(e.target.value)}
+                    placeholder="Например, Туманный шаг или Зеркальный образ"
+                    className="parchment-input-boxed w-full text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Wizard Signature Spells (20th Level) ── */}
+          {choicesConfig.needsSignatureSpells && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <SparklesDndIcon size={16} />
+                  <span>Превосходство заклинаний (Signature Spells):</span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{
+                    background: '#5C341F',
+                    color: '#FFE58F',
+                  }}
+                >
+                  20-й уровень
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#8B6914' }}>
+                Выберите два заклинания волшебника 3-го круга из вашей книги. Они всегда подготовлены и каждое можно наложить 3-м кругом 1 раз без траты ячеек за отдых:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <label className="text-[11px] font-bold block mb-1" style={{ color: '#5C341F' }}>
+                    Первое сигнатурное заклинание (3 круг):
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedSignatureSpell1}
+                    onChange={e => setSelectedSignatureSpell1(e.target.value)}
+                    placeholder="Например, Огненный шар или Контрзаклинание"
+                    className="parchment-input-boxed w-full text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold block mb-1" style={{ color: '#5C341F' }}>
+                    Второе сигнатурное заклинание (3 круг):
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedSignatureSpell2}
+                    onChange={e => setSelectedSignatureSpell2(e.target.value)}
+                    placeholder="Например, Полёт или Рассеивание магии"
+                    className="parchment-input-boxed w-full text-xs"
+                  />
+                </div>
               </div>
             </div>
           )}

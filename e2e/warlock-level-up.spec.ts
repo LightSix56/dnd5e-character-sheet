@@ -216,5 +216,94 @@ test.describe('Warlock Character Creation and Level-Up E2E', () => {
     // Freeform notes must remain visible
     await expect(levelUpModal.locator('h3:has-text("Заметки к уровню:")')).toBeVisible();
   });
+
+  test('Warlock Level 2 spell learning UI renders wide modal with circle selector, spell dropdown, and counter', async ({ page }) => {
+    const warlockChar = {
+      name: 'Мордекай',
+      race: 'Тифлинг',
+      className: 'Колдун',
+      subclass: 'Исчадие',
+      level: 1,
+      maxHp: 10,
+      currentHp: 10,
+      tempHp: 0,
+      hitDice: '1d8',
+      hitDiceTotal: '1',
+      proficiencyBonus: 2,
+      armorClass: 12,
+      speed: 30,
+      initiative: 2,
+      abilityScores: { str: 8, dex: 14, con: 14, int: 12, wis: 10, cha: 16 },
+      savingThrowProficiencies: { СИЛ: false, ЛОВ: false, ТЕЛ: false, ИНТ: false, МДР: true, ХАР: true },
+      skillProficiencies: { 'Магия': true, 'Обман': true },
+      spellSlots: { 1: { current: 1, max: 1 } },
+      cantrips: [],
+      spellsByLevel: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] },
+      spells: [],
+      traitsList: [],
+      levelHistory: [],
+    };
+
+    await page.addInitScript((data) => {
+      localStorage.setItem('dnd5e_character', JSON.stringify(data));
+    }, warlockChar);
+
+    await page.goto('/', { waitUntil: 'networkidle' });
+
+    // Click Level Up
+    const levelUpBtn = page.locator('button[title="Повысить"]:visible');
+    await levelUpBtn.click();
+
+    const levelUpModal = page.locator('.parchment-modal:visible');
+    await expect(levelUpModal).toBeVisible();
+
+    // Verify modal has max-w-4xl
+    await expect(levelUpModal).toHaveClass(/max-w-4xl/);
+
+    // Spell section is visible
+    const spellSection = levelUpModal.locator('.parchment-modal-section:has(h3:has-text("Изучение новых заклинаний:"))');
+    await expect(spellSection).toBeVisible();
+
+    // Counter badge: "Выбрано 0 из 1"
+    await expect(spellSection).toContainText('Выбрано 0 из 1');
+    await expect(spellSection).toContainText('+1 заклинание');
+
+    // Row contains circle select and spell select
+    const circleSelect = spellSection.locator('select').first();
+    await expect(circleSelect).toBeVisible();
+
+    const spellSelect = spellSection.locator('select').nth(1);
+    await expect(spellSelect).toBeVisible();
+
+    // Check that spell select contains Warlock 1st-circle spells
+    await expect(spellSelect).toContainText('Адское возмездие');
+
+    // Select "Адское возмездие"
+    await spellSelect.selectOption('Адское возмездие');
+
+    // Counter updates to "Выбрано 1 из 1"
+    await expect(spellSection).toContainText('Выбрано 1 из 1');
+
+    // Pick 2 invocations to enable confirm button
+    await levelUpModal.locator('button:has-text("Мучительный взрыв")').click();
+    await levelUpModal.locator('button:has-text("Броня теней")').click();
+
+    // Scroll to spell section to capture the complete spell selection UI
+    await spellSection.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: 'artifacts/levelup_modal_spell_selection.png', fullPage: false });
+
+    // Confirm level-up
+    const confirmBtn = levelUpModal.locator('button:has-text("Повысить до 2-го уровня")');
+    await expect(confirmBtn).toBeEnabled();
+    await confirmBtn.click();
+    await expect(levelUpModal).toBeHidden({ timeout: 5000 });
+
+    // Switch to Spells tab to verify spell is on sheet
+    const spellsTab = page.locator('button:has-text("Заклинания")').first();
+    if (await spellsTab.isVisible()) {
+      await spellsTab.click();
+    }
+    await expect(page.locator('input[value="Адское возмездие"]').first()).toBeVisible();
+  });
 });
 

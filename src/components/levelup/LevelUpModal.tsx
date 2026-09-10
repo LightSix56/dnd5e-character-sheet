@@ -296,12 +296,6 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
   const [notes, setNotes] = useState('');
 
-  // Clean spellcasting learning state
-  const [newCantrips, setNewCantrips] = useState<string[]>([]);
-  const [newSpells, setNewSpells] = useState<
-    { level: number; name: string; prepared: boolean }[]
-  >([]);
-
   const finalHP = Math.max(
     1,
     hpMode === 'average'
@@ -364,55 +358,79 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     return getAvailableSpellsForCharacter(charWithEffectiveSubclass);
   }, [isCasterAtNewLevel, charWithEffectiveSubclass]);
 
-  const cantripAutocompleteItems: AutocompleteItem[] = useMemo(() => {
-    return availableClassSpells
-      .filter(s => s.level === 0)
-      .map(s => ({
-        name: s.name,
-        badge: 'Заговор',
-        secondary: s.school,
-        data: s,
-      }));
+  const availableCantrips = useMemo(() => {
+    const list = availableClassSpells.filter(s => s.level === 0);
+    const effectiveList = list.length > 0 ? list : DND_COMPENDIUM_SPELLS.filter(s => s.level === 0);
+    return [...effectiveList].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   }, [availableClassSpells]);
 
-  const leveledSpellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
-    return availableClassSpells
-      .filter(s => s.level > 0 && s.level <= maxSlotLevelAtNewLevel)
-      .map(s => ({
-        name: s.name,
-        badge: `${s.level} ур.`,
-        secondary: s.school,
-        data: s,
+  const getAvailableSpellsForLevel = useCallback(
+    (lvl: number) => {
+      const list = availableClassSpells.filter(s => s.level === lvl);
+      const effectiveList = list.length > 0 ? list : DND_COMPENDIUM_SPELLS.filter(s => s.level === lvl);
+      return [...effectiveList].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+    },
+    [availableClassSpells]
+  );
+
+  const defaultSpellLevel = Math.min(
+    unlockedCircle || 1,
+    Math.max(1, maxSlotLevelAtNewLevel)
+  );
+
+  // Clean spellcasting learning state (pre-populated with count gained at this level per dnd.su)
+  const [newCantrips, setNewCantrips] = useState<string[]>(() => {
+    return newCantripsGained > 0 ? Array(newCantripsGained).fill('') : [];
+  });
+  const [customCantrips, setCustomCantrips] = useState<Record<number, boolean>>({});
+
+  const [newSpells, setNewSpells] = useState<
+    { level: number; name: string; prepared: boolean; isCustom?: boolean }[]
+  >(() => {
+    if (newSpellsLearned > 0 && maxSlotLevelAtNewLevel > 0) {
+      return Array.from({ length: newSpellsLearned }, () => ({
+        level: defaultSpellLevel,
+        name: '',
+        prepared: true,
+        isCustom: false,
       }));
-  }, [availableClassSpells, maxSlotLevelAtNewLevel]);
+    }
+    return [];
+  });
 
   const addCantripRow = () => setNewCantrips(prev => [...prev, '']);
-  const removeCantripRow = (i: number) =>
+  const removeCantripRow = (i: number) => {
     setNewCantrips(prev => prev.filter((_, j) => j !== i));
+    setCustomCantrips(prev => {
+      const next = { ...prev };
+      delete next[i];
+      return next;
+    });
+  };
   const updateCantripRow = (i: number, v: string) =>
     setNewCantrips(prev => {
       const a = [...prev];
       a[i] = v;
       return a;
     });
+  const toggleCustomCantrip = (i: number, isCustom: boolean) =>
+    setCustomCantrips(prev => ({ ...prev, [i]: isCustom }));
 
   const addSpellRow = () =>
     setNewSpells(prev => [
       ...prev,
       {
-        level: Math.min(
-          unlockedCircle || 1,
-          Math.max(1, maxSlotLevelAtNewLevel)
-        ),
+        level: defaultSpellLevel,
         name: '',
         prepared: true,
+        isCustom: false,
       },
     ]);
   const removeSpellRow = (i: number) =>
     setNewSpells(prev => prev.filter((_, j) => j !== i));
   const updateSpellRow = (
     i: number,
-    field: 'level' | 'name' | 'prepared',
+    field: 'level' | 'name' | 'prepared' | 'isCustom',
     value: string | number | boolean
   ) =>
     setNewSpells(prev => {
@@ -930,7 +948,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       onClick={onCancel}
     >
       <div
-        className="parchment-modal max-w-2xl w-full max-h-[92vh] flex flex-col rounded-xl overflow-hidden shadow-2xl"
+        className="parchment-modal max-w-4xl w-[96vw] max-h-[92vh] flex flex-col rounded-xl overflow-hidden shadow-2xl"
         style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}
         onClick={e => e.stopPropagation()}
       >
@@ -977,7 +995,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4 pr-3 sm:pr-6">
           {/* Proficiency Bonus Notification */}
           {profChanged && (
             <div
@@ -2567,7 +2585,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
           {/* 9.b. New Cantrips (only if class gains new cantrips at this level) */}
           {newCantripsGained > 0 && (
-            <div className="parchment-modal-section">
+            <div className="parchment-modal-section space-y-2">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <h3
@@ -2577,20 +2595,42 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                     <SparklesDndIcon size={16} />
                     <span>Новые заговоры:</span>
                   </h3>
-                  <span className="text-[11px] font-mono font-bold" style={{ color: '#5C341F' }}>
-                    +{newCantripsGained}{' '}
-                    {newCantripsGained === 1
-                      ? 'новый заговор'
-                      : newCantripsGained < 5
-                        ? 'новых заговора'
-                        : 'новых заговоров'}{' '}
-                    (по таблице класса на {newLevel}-м ур.)
-                  </span>
+                  <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                    <span className="text-[11px] font-mono font-bold" style={{ color: '#5C341F' }}>
+                      +{newCantripsGained}{' '}
+                      {newCantripsGained === 1
+                        ? 'новый заговор'
+                        : newCantripsGained < 5
+                          ? 'новых заговора'
+                          : 'новых заговоров'}{' '}
+                      (по таблице класса на {newLevel}-м ур.)
+                    </span>
+                    <span
+                      className="text-[10px] font-mono px-2 py-0.5 rounded font-bold"
+                      style={{
+                        background:
+                          newCantrips.filter(c => c.trim()).length >= newCantripsGained
+                            ? 'rgba(74, 124, 63, 0.15)'
+                            : 'rgba(139, 37, 0, 0.12)',
+                        color:
+                          newCantrips.filter(c => c.trim()).length >= newCantripsGained
+                            ? '#4a7c3f'
+                            : '#8B2500',
+                        border: `1px solid ${
+                          newCantrips.filter(c => c.trim()).length >= newCantripsGained
+                            ? 'rgba(74, 124, 63, 0.35)'
+                            : 'rgba(139, 37, 0, 0.35)'
+                        }`,
+                      }}
+                    >
+                      Выбрано {newCantrips.filter(c => c.trim()).length} из {newCantripsGained}
+                    </span>
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={addCantripRow}
-                  className="parchment-btn-sm font-bold"
+                  className="parchment-btn-sm font-bold shrink-0"
                   style={{ color: '#4a7c3f' }}
                 >
                   + Заговор
@@ -2604,25 +2644,71 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   Нажмите «+ Заговор», чтобы выбрать положенный заговор для персонажа.
                 </p>
               ) : (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {newCantrips.map((c, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <div className="flex-1">
-                        <AutocompleteInput
-                          value={c}
-                          onChange={v => updateCantripRow(i, v)}
-                          items={cantripAutocompleteItems}
-                          placeholder="Название заговора вашего класса…"
-                          className="w-full parchment-input-boxed"
-                        />
+                    <div
+                      key={i}
+                      className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 rounded-lg border"
+                      style={{
+                        background: 'rgba(245, 230, 200, 0.65)',
+                        borderColor: 'rgba(201, 168, 76, 0.45)',
+                      }}
+                    >
+                      <div className="flex-1 min-w-0">
+                        {customCantrips[i] ? (
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              type="text"
+                              value={c}
+                              onChange={e => updateCantripRow(i, e.target.value)}
+                              placeholder="Название заговора вашего класса…"
+                              className="w-full parchment-input-boxed text-xs py-1 px-2.5"
+                              autoFocus
+                            />
+                            <button
+                              type="button"
+                              onClick={() => toggleCustomCantrip(i, false)}
+                              className="parchment-btn-secondary text-[11px] py-1 px-2 shrink-0"
+                              title="Вернуться к списку заговоров"
+                            >
+                              Список
+                            </button>
+                          </div>
+                        ) : (
+                          <select
+                            value={c}
+                            onChange={e => {
+                              if (e.target.value === '__custom__') {
+                                toggleCustomCantrip(i, true);
+                                updateCantripRow(i, '');
+                              } else {
+                                updateCantripRow(i, e.target.value);
+                              }
+                            }}
+                            className="parchment-select text-xs w-full py-1 px-2 font-medium"
+                          >
+                            <option value="">
+                              -- Выберите заговор ({availableCantrips.length} доступно) --
+                            </option>
+                            {availableCantrips.map(spell => (
+                              <option key={spell.name} value={spell.name}>
+                                {spell.name} ({spell.school}){spell.nameEn ? ` — ${spell.nameEn}` : ''}
+                              </option>
+                            ))}
+                            <option value="__custom__">✍️ Ввести другое название вручную...</option>
+                          </select>
+                        )}
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeCantripRow(i)}
-                        className="parchment-remove-btn"
-                      >
-                        ✕
-                      </button>
+                      <div className="flex items-center justify-end shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => removeCantripRow(i)}
+                          className="parchment-remove-btn w-6 h-6 flex items-center justify-center text-xs"
+                          title="Удалить заговор"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -2632,7 +2718,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
           {/* 9.c. New Leveled Spells (only if class learns new spells at this level) */}
           {newSpellsLearned > 0 && maxSlotLevelAtNewLevel > 0 && (
-            <div className="parchment-modal-section">
+            <div className="parchment-modal-section space-y-2">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <h3
@@ -2646,7 +2732,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                         : 'Изучение новых заклинаний:'}
                     </span>
                   </h3>
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 flex-wrap mt-0.5">
                     <span
                       className="text-[11px] font-mono font-bold"
                       style={{ color: '#5C341F' }}
@@ -2665,12 +2751,32 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                     >
                       • Доступны круги до {maxSlotLevelAtNewLevel}-го включительно
                     </span>
+                    <span
+                      className="text-[10px] font-mono px-2 py-0.5 rounded font-bold"
+                      style={{
+                        background:
+                          newSpells.filter(s => s.name.trim()).length >= newSpellsLearned
+                            ? 'rgba(74, 124, 63, 0.15)'
+                            : 'rgba(139, 37, 0, 0.12)',
+                        color:
+                          newSpells.filter(s => s.name.trim()).length >= newSpellsLearned
+                            ? '#4a7c3f'
+                            : '#8B2500',
+                        border: `1px solid ${
+                          newSpells.filter(s => s.name.trim()).length >= newSpellsLearned
+                            ? 'rgba(74, 124, 63, 0.35)'
+                            : 'rgba(139, 37, 0, 0.35)'
+                        }`,
+                      }}
+                    >
+                      Выбрано {newSpells.filter(s => s.name.trim()).length} из {newSpellsLearned}
+                    </span>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={addSpellRow}
-                  className="parchment-btn-sm font-bold"
+                  className="parchment-btn-sm font-bold shrink-0"
                   style={{ color: '#6B3A2A' }}
                 >
                   + Заклинание
@@ -2684,60 +2790,117 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   Нажмите «+ Заклинание», чтобы добавить положенные заклинания вашего класса.
                 </p>
               ) : (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {newSpells.map((s, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <select
-                        value={s.level}
-                        onChange={e =>
-                          updateSpellRow(i, 'level', Number(e.target.value))
-                        }
-                        className="parchment-select text-xs w-20 shrink-0"
-                      >
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9]
-                          .filter(
-                            l => l <= Math.max(1, maxSlotLevelAtNewLevel)
-                          )
-                          .map(l => (
-                            <option key={l} value={l}>
-                              {l} ур.
-                            </option>
-                          ))}
-                      </select>
-                      <div className="flex-1 min-w-0">
-                        <AutocompleteInput
-                          value={s.name}
-                          onChange={v => updateSpellRow(i, 'name', v)}
-                          items={leveledSpellAutocompleteItems}
-                          placeholder="Название заклинания вашего класса…"
-                          className="w-full parchment-input-boxed"
-                        />
+                    <div
+                      key={i}
+                      className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 rounded-lg border"
+                      style={{
+                        background: 'rgba(245, 230, 200, 0.65)',
+                        borderColor: 'rgba(201, 168, 76, 0.45)',
+                      }}
+                    >
+                      {/* Circle Selector */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <label className="text-[11px] font-bold" style={{ color: '#8B6914' }}>
+                          Круг:
+                        </label>
+                        <select
+                          value={s.level}
+                          onChange={e => {
+                            const lvl = Number(e.target.value);
+                            updateSpellRow(i, 'level', lvl);
+                            updateSpellRow(i, 'name', '');
+                          }}
+                          className="parchment-select text-xs font-bold shrink-0"
+                          style={{ width: '82px' }}
+                        >
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            .filter(l => l <= Math.max(1, maxSlotLevelAtNewLevel))
+                            .map(l => (
+                              <option key={l} value={l}>
+                                {l} круг
+                              </option>
+                            ))}
+                        </select>
                       </div>
-                      <label
-                        className="parchment-checkbox parchment-checkbox-sm flex items-center gap-1"
-                        style={{ color: '#8B6914' }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={s.prepared}
-                          onChange={e =>
-                            updateSpellRow(
-                              i,
-                              'prepared',
-                              e.target.checked
-                            )
-                          }
-                        />
-                        <span className="checkmark"></span>
-                        <span className="text-xs">Подг.</span>
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => removeSpellRow(i)}
-                        className="parchment-remove-btn"
-                      >
-                        ✕
-                      </button>
+
+                      {/* Spell Selector / Custom Input */}
+                      <div className="flex-1 min-w-0">
+                        {s.isCustom ? (
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              type="text"
+                              value={s.name}
+                              onChange={e => updateSpellRow(i, 'name', e.target.value)}
+                              placeholder="Название заклинания вашего класса…"
+                              className="w-full parchment-input-boxed text-xs py-1 px-2.5"
+                              autoFocus
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateSpellRow(i, 'isCustom', false);
+                                updateSpellRow(i, 'name', '');
+                              }}
+                              className="parchment-btn-secondary text-[11px] py-1 px-2 shrink-0"
+                              title="Вернуться к каталогу заклинаний"
+                            >
+                              Список
+                            </button>
+                          </div>
+                        ) : (
+                          <select
+                            value={s.name}
+                            onChange={e => {
+                              if (e.target.value === '__custom__') {
+                                updateSpellRow(i, 'isCustom', true);
+                                updateSpellRow(i, 'name', '');
+                              } else {
+                                updateSpellRow(i, 'name', e.target.value);
+                              }
+                            }}
+                            className="parchment-select text-xs w-full py-1 px-2 font-medium"
+                          >
+                            <option value="">
+                              -- Выберите заклинание {s.level}-го круга ({getAvailableSpellsForLevel(s.level).length} доступно) --
+                            </option>
+                            {getAvailableSpellsForLevel(s.level).map(spell => (
+                              <option key={spell.name} value={spell.name}>
+                                {spell.name} ({spell.school}){spell.nameEn ? ` — ${spell.nameEn}` : ''}
+                              </option>
+                            ))}
+                            <option value="__custom__">✍️ Ввести другое название вручную...</option>
+                          </select>
+                        )}
+                      </div>
+
+                      {/* Prepared checkbox & Remove */}
+                      <div className="flex items-center justify-end gap-2 shrink-0">
+                        <label
+                          className="parchment-checkbox parchment-checkbox-sm flex items-center gap-1"
+                          style={{ color: '#8B6914' }}
+                          title="Заклинание подготовлено к использованию"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={s.prepared}
+                            onChange={e =>
+                              updateSpellRow(i, 'prepared', e.target.checked)
+                            }
+                          />
+                          <span className="checkmark"></span>
+                          <span className="text-xs select-none">Подг.</span>
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => removeSpellRow(i)}
+                          className="parchment-remove-btn w-6 h-6 flex items-center justify-center text-xs"
+                          title="Удалить строку"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789025177.8711607,
-    "seen": 1789025749.4482422,
-    "ast_hash": "eb1f58356100177215f73cf933b2d5e1",
+    "mtime": 1789026621.9906125,
+    "seen": 1789027323.8986838,
+    "ast_hash": "f3e86b2a8bca7e4b2488f3e5c933abcd",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "e2e/warlock-level-up.spec.ts": {
-    "mtime": 1789025616.2740114,
-    "seen": 1789025749.4380221,
-    "ast_hash": "cb6461957cf36d0485d596143724fd0a",
+    "mtime": 1789027201.944273,
+    "seen": 1789027323.8868716,
+    "ast_hash": "82d46de6ecc35410f1060b2a2b8d64fd",
     "semantic_hash": ""
   },
   "src/data/compendium/warlock-choices.ts": {

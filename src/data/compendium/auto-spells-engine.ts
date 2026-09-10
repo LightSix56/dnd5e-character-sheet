@@ -68,6 +68,20 @@ export function getAutoGrantedSpellsForLevel(
     }
   }
 
+  // 1c. Arcane Trickster (Мистический ловкач) level 3: Mage Hand (Волшебная рука)
+  const isRogue = classNameLower === 'плут' || classNameLower === 'rogue' || classNameLower.includes('плут');
+  if (isRogue && newLevel === 3) {
+    const subLower = (subclassOverride || char.subclass || '').toLowerCase();
+    if (subLower.includes('мистический ловкач') || subLower.includes('arcane trickster')) {
+      result.push({
+        name: 'Волшебная рука',
+        level: 0,
+        prepared: true,
+        source: 'Архетип: Мистический ловкач',
+      });
+    }
+  }
+
   // 2. Subclass expanded spells
   const effectiveSubclass = (subclassOverride || char.subclass || '').trim();
   if (effectiveSubclass) {

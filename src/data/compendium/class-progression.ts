@@ -2552,7 +2552,44 @@ export function getClassFeaturesForLevel(className: string, level: number): Clas
   return prog.featuresByLevel[String(level)] || [];
 }
 
-export function getSpellSlotsForClassLevel(className: string, level: number): Record<number, number> | null {
+export const THIRD_CASTER_SPELL_SLOTS: Record<number, Record<number, number>> = {
+  3: { 1: 2 },
+  4: { 1: 3 },
+  5: { 1: 3 },
+  6: { 1: 3 },
+  7: { 1: 4, 2: 2 },
+  8: { 1: 4, 2: 2 },
+  9: { 1: 4, 2: 2 },
+  10: { 1: 4, 2: 3 },
+  11: { 1: 4, 2: 3 },
+  12: { 1: 4, 2: 3 },
+  13: { 1: 4, 2: 3, 3: 2 },
+  14: { 1: 4, 2: 3, 3: 2 },
+  15: { 1: 4, 2: 3, 3: 2 },
+  16: { 1: 4, 2: 3, 3: 3 },
+  17: { 1: 4, 2: 3, 3: 3 },
+  18: { 1: 4, 2: 3, 3: 3 },
+  19: { 1: 4, 2: 3, 3: 3, 4: 1 },
+  20: { 1: 4, 2: 3, 3: 3, 4: 1 },
+};
+
+function isEldritchKnight(subclass?: string): boolean {
+  if (!subclass) return false;
+  const s = subclass.toLowerCase();
+  return s.includes('мистический рыцарь') || s.includes('eldritch knight');
+}
+
+function isArcaneTrickster(subclass?: string): boolean {
+  if (!subclass) return false;
+  const s = subclass.toLowerCase();
+  return s.includes('мистический ловкач') || s.includes('arcane trickster');
+}
+
+export function getSpellSlotsForClassLevel(
+  className: string,
+  level: number,
+  subclass?: string
+): Record<number, number> | null {
   const norm = normalizeClassName(className);
   if (['Волшебник', 'Жрец', 'Друид', 'Бард', 'Чародей'].includes(norm)) {
     return FULL_CASTER_SPELL_SLOTS[level] || null;
@@ -2566,12 +2603,22 @@ export function getSpellSlotsForClassLevel(className: string, level: number): Re
   if (norm === 'Колдун') {
     return WARLOCK_PACT_SPELL_SLOTS[level] || null;
   }
+  if (norm === 'Воин' && isEldritchKnight(subclass)) {
+    return THIRD_CASTER_SPELL_SLOTS[level] || null;
+  }
+  if (norm === 'Плут' && isArcaneTrickster(subclass)) {
+    return THIRD_CASTER_SPELL_SLOTS[level] || null;
+  }
   return null;
 }
 
-export function getNewSpellLevelUnlocked(className: string, level: number): number | null {
-  const currentSlots = getSpellSlotsForClassLevel(className, level);
-  const prevSlots = level > 1 ? getSpellSlotsForClassLevel(className, level - 1) : null;
+export function getNewSpellLevelUnlocked(
+  className: string,
+  level: number,
+  subclass?: string
+): number | null {
+  const currentSlots = getSpellSlotsForClassLevel(className, level, subclass);
+  const prevSlots = level > 1 ? getSpellSlotsForClassLevel(className, level - 1, subclass) : null;
   if (!currentSlots) return null;
 
   const currentMaxCircle = Math.max(...Object.keys(currentSlots).map(Number), 0);
@@ -2584,18 +2631,6 @@ export function getNewSpellLevelUnlocked(className: string, level: number): numb
 }
 
 // ── Cantrips Known & Spells Known Progression (per dnd.su / SRD 5.1) ──
-
-function isEldritchKnight(subclass?: string): boolean {
-  if (!subclass) return false;
-  const s = subclass.toLowerCase();
-  return s.includes('мистический рыцарь') || s.includes('eldritch knight');
-}
-
-function isArcaneTrickster(subclass?: string): boolean {
-  if (!subclass) return false;
-  const s = subclass.toLowerCase();
-  return s.includes('мистический ловкач') || s.includes('arcane trickster');
-}
 
 export const CLASS_CANTRIPS_PROGRESSION: Record<string, (level: number) => number> = {
   'Колдун': lvl => (lvl >= 10 ? 4 : lvl >= 4 ? 3 : lvl >= 1 ? 2 : 0),

@@ -234,9 +234,9 @@
     "semantic_hash": "ea4881d6f6d3a5fd3c7cf9610afa3481"
   },
   "src/data/compendium/class-progression.ts": {
-    "mtime": 1789025073.8384361,
-    "seen": 1789025749.4516,
-    "ast_hash": "7b2aa810dfb381205d9483f220297eb0",
+    "mtime": 1789030389.6055064,
+    "seen": 1789031726.6622524,
+    "ast_hash": "af5c23b02ace24d34885797e089d2e85",
     "semantic_hash": ""
   },
   "src/data/compendium/class-spells.ts": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789021941.4199593,
-    "seen": 1789023729.2982957,
-    "ast_hash": "2747a37d4ae4813cc25f28fc765f3e17",
+    "mtime": 1789030744.4690928,
+    "seen": 1789031726.6626701,
+    "ast_hash": "e26990e9a29e58bad82943b65a8a12e9",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -558,9 +558,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
-    "mtime": 1789022020.0930514,
-    "seen": 1789023729.2976642,
-    "ast_hash": "f1705ac97ade86c7914909713103ae8e",
+    "mtime": 1789030651.251497,
+    "seen": 1789031726.6618075,
+    "ast_hash": "a2cbe2a1da1d215ae6cb0feaafe88270",
     "semantic_hash": ""
   },
   "test/auto-spells-engine.test.ts": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789027869.2037215,
-    "seen": 1789028219.7562811,
-    "ast_hash": "323843d285cebecff605f411cd5110fb",
+    "mtime": 1789031302.453137,
+    "seen": 1789031726.6583831,
+    "ast_hash": "aba86c20def02956a89852ed93c1ddfd",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -741,6 +741,18 @@
     "mtime": 1789025044.265386,
     "seen": 1789025749.460156,
     "ast_hash": "4fa9a30921e63fde62106208165ea451",
+    "semantic_hash": ""
+  },
+  "e2e/rogue-level-up.spec.ts": {
+    "mtime": 1789031508.395418,
+    "seen": 1789031726.6435378,
+    "ast_hash": "4a7e4bd84de4d79ae9f46f5551cf095d",
+    "semantic_hash": ""
+  },
+  "test/rogue-subclasses.test.ts": {
+    "mtime": 1789030714.7877817,
+    "seen": 1789031726.6767168,
+    "ast_hash": "b3096d73100d6c2a6f3a6cb967536ce5",
     "semantic_hash": ""
   }
 }

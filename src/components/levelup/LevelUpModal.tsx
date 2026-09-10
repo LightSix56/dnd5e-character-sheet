@@ -390,9 +390,17 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     return getKnownSpellNames(char, additional);
   }, [char, autoSpells, racialFeatures]);
 
+  const autoCantripsCount = useMemo(() => {
+    return autoSpells.filter(s => s.level === 0).length;
+  }, [autoSpells]);
+
+  const selectableCantripsGained = useMemo(() => {
+    return Math.max(0, newCantripsGained - autoCantripsCount);
+  }, [newCantripsGained, autoCantripsCount]);
+
   // Clean spellcasting learning state (pre-populated with count gained at this level per dnd.su)
   const [newCantrips, setNewCantrips] = useState<string[]>(() => {
-    return newCantripsGained > 0 ? Array(newCantripsGained).fill('') : [];
+    return selectableCantripsGained > 0 ? Array(selectableCantripsGained).fill('') : [];
   });
   const [customCantrips, setCustomCantrips] = useState<Record<number, boolean>>({});
 
@@ -409,6 +417,39 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     }
     return [];
   });
+
+  // Synchronize cantrip slots when subclass or selectable cantrips change
+  useEffect(() => {
+    if (selectableCantripsGained > 0) {
+      setNewCantrips(prev => {
+        if (prev.length === 0) {
+          return Array(selectableCantripsGained).fill('');
+        }
+        return prev;
+      });
+    } else if (newCantripsGained === 0) {
+      setNewCantrips([]);
+    }
+  }, [selectableCantripsGained, newCantripsGained]);
+
+  // Synchronize spell slots when subclass or spells learned change
+  useEffect(() => {
+    if (newSpellsLearned > 0 && maxSlotLevelAtNewLevel > 0) {
+      setNewSpells(prev => {
+        if (prev.length === 0) {
+          return Array.from({ length: newSpellsLearned }, () => ({
+            level: defaultSpellLevel,
+            name: '',
+            prepared: true,
+            isCustom: false,
+          }));
+        }
+        return prev;
+      });
+    } else if (newSpellsLearned === 0 || maxSlotLevelAtNewLevel === 0) {
+      setNewSpells([]);
+    }
+  }, [newSpellsLearned, maxSlotLevelAtNewLevel, defaultSpellLevel]);
 
   const addCantripRow = () => setNewCantrips(prev => [...prev, '']);
   const removeCantripRow = (i: number) => {
@@ -659,7 +700,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
     // Subclass features
     for (const sf of subclassFeatures) {
-      if (selectedFeatures[sf.name]) {
+      if (isSubclassChoice || selectedFeatures[sf.name] !== false) {
         addedTraits.push({
           id: `subfeat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
           name: sf.name,
@@ -974,6 +1015,19 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       if (g) extraNotes.push(`[Покровитель джинн]: ${g.name}`);
     }
 
+    // Scout Level 3: Survivalist (Nature + Survival proficiency and expertise)
+    const isScoutLevel3 =
+      normClass === 'Плут' &&
+      newLevel === 3 &&
+      (effectiveSubclass.toLowerCase().includes('скаут') ||
+        effectiveSubclass.toLowerCase().includes('scout'));
+
+    const scoutSkillProfs = isScoutLevel3 ? ['Природа', 'Выживание'] : [];
+    const scoutSkillExpertise = isScoutLevel3 ? ['Природа', 'Выживание'] : [];
+    if (isScoutLevel3) {
+      extraNotes.push('[Мастер выживания]: Владение и компетентность в навыках «Природа» и «Выживание»');
+    }
+
     if (extraNotes.length > 0) {
       fullNotes = fullNotes
         ? `${fullNotes}\n${extraNotes.join('\n')}`
@@ -1005,8 +1059,8 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       newCantrips: allNewCantrips,
       newSpells: combinedSpells,
       newSavingThrowProfs: [],
-      newSkillProfs: [],
-      newSkillExpertise: selectedExpertise,
+      newSkillProfs: scoutSkillProfs,
+      newSkillExpertise: Array.from(new Set([...selectedExpertise, ...scoutSkillExpertise])),
       newAttacks: [],
       newProficienciesText: '',
       newEquipmentText: '',
@@ -1239,24 +1293,19 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                         ?.description
                     }
                   </p>
-                  {availableSubclasses.find(s => s.name === chosenSubclass)
-                    ?.features?.[0] && (
-                    <div
-                      className="text-[10px] mt-1 border-t pt-1"
-                      style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}
-                    >
-                      <strong>Стартовое умение архетипа: </strong>
-                      {
-                        availableSubclasses.find(s => s.name === chosenSubclass)
-                          ?.features[0].name
-                      }{' '}
-                      —{' '}
-                      {
-                        availableSubclasses.find(s => s.name === chosenSubclass)
-                          ?.features[0].description
-                      }
-                    </div>
-                  )}
+                  {availableSubclasses
+                    .find(s => s.name === chosenSubclass)
+                    ?.features?.filter(f => f.level <= newLevel)
+                    .map(feat => (
+                      <div
+                        key={feat.name}
+                        className="text-[10px] mt-1 border-t pt-1"
+                        style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}
+                      >
+                        <strong>{feat.name}: </strong>
+                        {feat.description}
+                      </div>
+                    ))}
                 </div>
               )}
             </div>
@@ -2673,8 +2722,8 @@ export const LevelUpModal = React.memo(function LevelUpModal({
             </div>
           )}
 
-          {/* 9.b. New Cantrips (only if class gains new cantrips at this level) */}
-          {newCantripsGained > 0 && (
+          {/* 9.b. New Cantrips (only if class gains new selectable cantrips at this level) */}
+          {selectableCantripsGained > 0 && (
             <div className="parchment-modal-section space-y-2">
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -2687,33 +2736,33 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   </h3>
                   <div className="flex items-center gap-2 flex-wrap mt-0.5">
                     <span className="text-[11px] font-mono font-bold" style={{ color: '#5C341F' }}>
-                      +{newCantripsGained}{' '}
-                      {newCantripsGained === 1
+                      +{selectableCantripsGained}{' '}
+                      {selectableCantripsGained === 1
                         ? 'новый заговор'
-                        : newCantripsGained < 5
+                        : selectableCantripsGained < 5
                           ? 'новых заговора'
                           : 'новых заговоров'}{' '}
-                      (по таблице класса на {newLevel}-м ур.)
+                      (по таблице класса на {newLevel}-м ур.{autoCantripsCount > 0 ? ` + ${autoCantripsCount} авт.: ${autoSpells.filter(s => s.level === 0).map(s => s.name).join(', ')}` : ''})
                     </span>
                     <span
                       className="text-[10px] font-mono px-2 py-0.5 rounded font-bold"
                       style={{
                         background:
-                          newCantrips.filter(c => c.trim()).length >= newCantripsGained
+                          newCantrips.filter(c => c.trim()).length >= selectableCantripsGained
                             ? 'rgba(74, 124, 63, 0.15)'
                             : 'rgba(139, 37, 0, 0.12)',
                         color:
-                          newCantrips.filter(c => c.trim()).length >= newCantripsGained
+                          newCantrips.filter(c => c.trim()).length >= selectableCantripsGained
                             ? '#4a7c3f'
                             : '#8B2500',
                         border: `1px solid ${
-                          newCantrips.filter(c => c.trim()).length >= newCantripsGained
+                          newCantrips.filter(c => c.trim()).length >= selectableCantripsGained
                             ? 'rgba(74, 124, 63, 0.35)'
                             : 'rgba(139, 37, 0, 0.35)'
                         }`,
                       }}
                     >
-                      Выбрано {newCantrips.filter(c => c.trim()).length} из {newCantripsGained}
+                      Выбрано {newCantrips.filter(c => c.trim()).length} из {selectableCantripsGained}
                     </span>
                   </div>
                 </div>

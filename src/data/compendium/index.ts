@@ -8,6 +8,7 @@ export * from './race-progression';
 export * from './class-spells';
 export * from './backgrounds';
 export * from './names-data';
+export * from './warlock-choices';
 
 import { DND_COMPENDIUM_SPELLS } from './spells';
 import { DND_COMPENDIUM_ITEMS } from './items';

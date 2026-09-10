@@ -406,8 +406,11 @@ export function getLevelUpChoicesConfig(
       else if (tName.includes('договор талисмана') || tId.includes('talisman')) currentPactBoon = 'talisman';
     }
 
-    // Determine known cantrips from spellsByLevel[0]
-    const knownCantrips = (char.spellsByLevel?.[0] || []).map(s => s.name);
+    // Determine known cantrips from char.cantrips and spellsByLevel[0]
+    const knownCantrips = Array.from(new Set([
+      ...(char.cantrips || []),
+      ...((char.spellsByLevel?.[0] || []).map(s => s.name))
+    ]));
 
     // 4.4. Eldritch Invocations
     // Level 2: choose 2

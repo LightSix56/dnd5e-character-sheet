@@ -80,6 +80,16 @@ export interface LevelUpEntry {
   newAttacks: Attack[];                               // new attacks added
   newProficienciesText: string;                       // text to append to otherProficienciesLanguages
   newEquipmentText: string;                           // text to append to equipment
+
+  // Warlock Choices
+  pactBoon?: string;
+  tomeCantrips?: string[];
+  warlockInvocations?: string[];
+  swappedOutInvocation?: string;
+  swappedInInvocation?: string;
+  mysticArcanumSpell?: string;
+  fiendResilienceDamageType?: string;
+  genieKind?: string;
 }
 
 export interface CharacterData {

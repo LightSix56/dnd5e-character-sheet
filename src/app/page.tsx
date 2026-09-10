@@ -39,7 +39,9 @@ import {
   getSpellSlotsForClassLevel,
   isSpellAllowedForCharacter,
   getMaxAvailableSpellSlotLevel,
+  normalizeClassName,
 } from '@/data/compendium';
+import { WARLOCK_INVOCATIONS } from '@/data/compendium/warlock-choices';
 import type { TraitItem } from '@/lib/dnd-types';
 
 import {
@@ -1597,6 +1599,13 @@ export default function DnDCharacterSheet() {
 
       // Add traits to traitsList
       let updatedTraits = [...(prev.traitsList || [])];
+
+      // If an invocation was swapped out, remove it from traits
+      if (entry.swappedOutInvocation) {
+        const swapName = entry.swappedOutInvocation.trim().toLowerCase();
+        updatedTraits = updatedTraits.filter(t => !t.name.toLowerCase().includes(swapName));
+      }
+
       if (entry.addedTraits && entry.addedTraits.length > 0) {
         updatedTraits = [...updatedTraits, ...entry.addedTraits];
       }
@@ -1609,13 +1618,26 @@ export default function DnDCharacterSheet() {
 
       // Update spell slots if caster
       let updatedSpellSlots = { ...prev.spellSlots };
+      const isWarlockClass = normalizeClassName(prev.className) === 'Колдун';
       if (entry.spellSlotsGained) {
-        for (const [lvlStr, count] of Object.entries(entry.spellSlotsGained)) {
-          const l = Number(lvlStr);
-          updatedSpellSlots[l] = {
-            totalSlots: count,
-            expendedSlots: prev.spellSlots?.[l]?.expendedSlots || 0,
-          };
+        if (isWarlockClass) {
+          // Warlock pact magic slots all upgrade together into a single circle
+          updatedSpellSlots = {};
+          for (const [lvlStr, count] of Object.entries(entry.spellSlotsGained)) {
+            const l = Number(lvlStr);
+            updatedSpellSlots[l] = {
+              totalSlots: count,
+              expendedSlots: 0,
+            };
+          }
+        } else {
+          for (const [lvlStr, count] of Object.entries(entry.spellSlotsGained)) {
+            const l = Number(lvlStr);
+            updatedSpellSlots[l] = {
+              totalSlots: count,
+              expendedSlots: prev.spellSlots?.[l]?.expendedSlots || 0,
+            };
+          }
         }
       }
 
@@ -1762,6 +1784,20 @@ export default function DnDCharacterSheet() {
         const addedIds = new Set(last.addedTraits.map(t => t.id));
         const addedNames = new Set(last.addedTraits.map(t => t.name.toLowerCase()));
         updatedTraits = updatedTraits.filter(t => !addedIds.has(t.id) && !addedNames.has(t.name.toLowerCase()));
+      }
+
+      // If an invocation was swapped out at this level, restore the original one
+      if (last?.swappedOutInvocation) {
+        const inv = WARLOCK_INVOCATIONS.find(opt => opt.name.toLowerCase() === last.swappedOutInvocation?.toLowerCase());
+        if (inv) {
+          updatedTraits.push({
+            id: `invocation-${inv.id}`,
+            name: `Таинственное воззвание: ${inv.name}`,
+            source: `Колдун (${newLevel} ур.)`,
+            summary: inv.description,
+            description: `${inv.name}${inv.prerequisiteDescription ? ` [${inv.prerequisiteDescription}]` : ''}: ${inv.description}`,
+          });
+        }
       }
 
       // Revert subclass if set at this level

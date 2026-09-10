@@ -41,6 +41,15 @@ import {
   ELDRITCH_INVOCATIONS,
   BATTLE_MASTER_MANEUVERS,
 } from './level-up-choices';
+import { DND_COMPENDIUM_SPELLS } from '@/data/compendium/spells';
+import {
+  WARLOCK_INVOCATIONS,
+  WARLOCK_PACT_BOONS,
+  WARLOCK_PACT_BOONS_LIST,
+  GENIE_KINDS,
+  GENIE_KINDS_LIST,
+  WARLOCK_MYSTIC_ARCANUM_SPELLS,
+} from '@/data/compendium/warlock-choices';
 import { FIGHTING_STYLES } from '@/components/wizard/wizard-helpers';
 import {
   AutocompleteInput,
@@ -241,6 +250,23 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     () => choicesConfig.totemOptions?.[0]?.id || ''
   );
   const [selectedManeuvers, setSelectedManeuvers] = useState<string[]>([]);
+
+  // Warlock specific choices states
+  const [selectedPactBoon, setSelectedPactBoon] = useState<string>(
+    () => choicesConfig.pactBoonOptions?.[0]?.id || 'blade'
+  );
+  const [selectedTomeCantrips, setSelectedTomeCantrips] = useState<string[]>([]);
+  const [swappedOutInvocation, setSwappedOutInvocation] = useState<string>('');
+  const [swappedInInvocation, setSwappedInInvocation] = useState<string>('');
+  const [selectedArcanumSpell, setSelectedArcanumSpell] = useState<string>(
+    () => choicesConfig.arcanumOptions?.[0] || ''
+  );
+  const [selectedFiendResilience, setSelectedFiendResilience] = useState<string>(
+    () => choicesConfig.fiendResilienceOptions?.[0] || 'огонь'
+  );
+  const [selectedGenieKind, setSelectedGenieKind] = useState<string>(
+    () => choicesConfig.genieKindOptions?.[0]?.id || 'dao'
+  );
 
   // ASI / Feat choice
   const [asiChoice, setAsiChoice] = useState<'stats' | 'feat'>('stats');
@@ -462,6 +488,24 @@ export const LevelUpModal = React.memo(function LevelUpModal({
         `Выберите ${requiredManeuversCount} маневра (выбрано: ${selectedManeuvers.length}).`
       );
     }
+    if (choicesConfig.needsPactBoon && !selectedPactBoon) {
+      errs.push('Необходимо выбрать Предмет договора (Клинок, Гримуар, Цепь или Талисман).');
+    }
+    if (choicesConfig.needsPactBoon && selectedPactBoon === 'tome' && selectedTomeCantrips.length < 3) {
+      errs.push(`Выберите 3 заговора для Книги Теней (выбрано: ${selectedTomeCantrips.length}).`);
+    }
+    if (choicesConfig.needsMysticArcanum && !selectedArcanumSpell) {
+      errs.push(`Необходимо выбрать заклинание для Таинственного арканума (${choicesConfig.arcanumCircle || 6} круг).`);
+    }
+    if (choicesConfig.needsFiendResilience && !selectedFiendResilience) {
+      errs.push('Необходимо выбрать тип урона для Стойкости исчадия.');
+    }
+    if (choicesConfig.needsGenieKind && !selectedGenieKind) {
+      errs.push('Необходимо выбрать вид джинна-покровителя.');
+    }
+    if (choicesConfig.canSwapInvocation && swappedOutInvocation && !swappedInInvocation) {
+      errs.push(`Выберите новое воззвание взамен «${swappedOutInvocation}».`);
+    }
     return errs;
   }, [
     isASIOverCap,
@@ -480,6 +524,13 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     selectedTotemChoice,
     selectedManeuvers,
     requiredManeuversCount,
+    selectedPactBoon,
+    selectedTomeCantrips,
+    selectedArcanumSpell,
+    selectedFiendResilience,
+    selectedGenieKind,
+    swappedOutInvocation,
+    swappedInInvocation,
   ]);
 
   // Serialization
@@ -557,19 +608,86 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       }
     }
 
+    // Warlock Pact Boon trait (Level 3)
+    if (choicesConfig.needsPactBoon && selectedPactBoon) {
+      const pb = (choicesConfig.pactBoonOptions || WARLOCK_PACT_BOONS_LIST).find(b => b.id === selectedPactBoon);
+      if (pb) {
+        addedTraits.push({
+          id: `pact-boon-${pb.id}`,
+          name: pb.name,
+          source: `Колдун (${newLevel} ур.)`,
+          summary: pb.description,
+          description: `${pb.name} (${pb.nameEn}): ${pb.description}\n${pb.features.map(f => `• ${f}`).join('\n')}${selectedPactBoon === 'tome' && selectedTomeCantrips.length > 0 ? `\n\nВыбранные заговоры Книги Теней: ${selectedTomeCantrips.join(', ')}` : ''}`,
+        });
+      }
+    }
+
     // Invocations traits
     if (choicesConfig.needsInvocations && selectedInvocations.length > 0) {
       for (const invId of selectedInvocations) {
-        const inv = ELDRITCH_INVOCATIONS.find(opt => opt.id === invId);
+        const inv = WARLOCK_INVOCATIONS.find(opt => opt.id === invId) || ELDRITCH_INVOCATIONS.find(opt => opt.id === invId);
         if (inv) {
+          const prereq = 'prerequisiteDescription' in inv && inv.prerequisiteDescription ? ` [${inv.prerequisiteDescription}]` : '';
           addedTraits.push({
             id: `invocation-${inv.id}`,
             name: `Таинственное воззвание: ${inv.name}`,
             source: `Колдун (${newLevel} ур.)`,
             summary: inv.description,
-            description: `${inv.name}: ${inv.description}`,
+            description: `${inv.name}${prereq}: ${inv.description}`,
           });
         }
+      }
+    }
+
+    // Swapped Invocation
+    if (choicesConfig.canSwapInvocation && swappedOutInvocation && swappedInInvocation) {
+      const inv = WARLOCK_INVOCATIONS.find(opt => opt.id === swappedInInvocation || opt.name === swappedInInvocation);
+      if (inv) {
+        const prereq = 'prerequisiteDescription' in inv && inv.prerequisiteDescription ? ` [${inv.prerequisiteDescription}]` : '';
+        addedTraits.push({
+          id: `invocation-${inv.id}`,
+          name: `Таинственное воззвание: ${inv.name}`,
+          source: `Колдун (${newLevel} ур., замена: ${swappedOutInvocation})`,
+          summary: inv.description,
+          description: `${inv.name}${prereq}: ${inv.description} (заменено вместо «${swappedOutInvocation}»)`,
+        });
+      }
+    }
+
+    // Mystic Arcanum trait (Levels 11, 13, 15, 17)
+    if (choicesConfig.needsMysticArcanum && selectedArcanumSpell) {
+      const circle = choicesConfig.arcanumCircle || (newLevel === 11 ? 6 : newLevel === 13 ? 7 : newLevel === 15 ? 8 : 9);
+      addedTraits.push({
+        id: `mystic-arcanum-${circle}`,
+        name: `Таинственный арканум (${circle} круг): ${selectedArcanumSpell}`,
+        source: `Колдун (${newLevel} ур.)`,
+        summary: `1 раз в день без ячейки заклинаний сотворяет «${selectedArcanumSpell}».`,
+        description: `Вы можете сотворить это заклинание арканума один раз без траты ячейки заклинаний. Вы должны окончить продолжительный отдых, чтобы сделать это снова.`,
+      });
+    }
+
+    // Fiend Resilience (Level 10 Fiend)
+    if (choicesConfig.needsFiendResilience && selectedFiendResilience) {
+      addedTraits.push({
+        id: 'fiendish-resilience',
+        name: `Стойкость исчадия (Сопротивление: ${selectedFiendResilience})`,
+        source: `Колдун: Исчадие (${newLevel} ур.)`,
+        summary: `Сопротивление урону типа «${selectedFiendResilience}».`,
+        description: `Вы выбираете один тип урона при окончании короткого или продолжительного отдыха. Вы получаете сопротивление этому типу урона.`,
+      });
+    }
+
+    // Genie Kind (Level 1 or missing)
+    if (choicesConfig.needsGenieKind && selectedGenieKind) {
+      const g = (choicesConfig.genieKindOptions || GENIE_KINDS_LIST).find(k => k.id === selectedGenieKind);
+      if (g) {
+        addedTraits.push({
+          id: 'warlock-genie-kind',
+          name: `Покровитель: Джинн (${g.name})`,
+          source: `Колдун: Джинн (${newLevel} ур.)`,
+          summary: `Стихия: ${g.element}. Урон: ${g.damageType}. Сосуд: ${g.vesselType}.`,
+          description: `Вид джинна: ${g.name}. Стихия: ${g.element}. Дополнительный урон от «Гнева джинна»: ${g.damageType}. Сосуд джинна: ${g.vesselType}.`,
+        });
       }
     }
 
@@ -727,12 +845,38 @@ export const LevelUpModal = React.memo(function LevelUpModal({
         .join(', ');
       extraNotes.push(`[Маневры]: ${names}`);
     }
+    if (choicesConfig.needsPactBoon && selectedPactBoon) {
+      const pb = (choicesConfig.pactBoonOptions || WARLOCK_PACT_BOONS_LIST).find(b => b.id === selectedPactBoon);
+      if (pb) extraNotes.push(`[Предмет договора]: ${pb.name}`);
+      if (selectedPactBoon === 'tome' && selectedTomeCantrips.length > 0) {
+        extraNotes.push(`[Заговоры Книги Теней]: ${selectedTomeCantrips.join(', ')}`);
+      }
+    }
+    if (choicesConfig.needsMysticArcanum && selectedArcanumSpell) {
+      extraNotes.push(`[Таинственный арканум (${choicesConfig.arcanumCircle || 6} круг)]: ${selectedArcanumSpell}`);
+    }
+    if (choicesConfig.canSwapInvocation && swappedOutInvocation && swappedInInvocation) {
+      const inv = WARLOCK_INVOCATIONS.find(opt => opt.id === swappedInInvocation || opt.name === swappedInInvocation);
+      extraNotes.push(`[Замена воззвания]: «${swappedOutInvocation}» ➔ «${inv?.name || swappedInInvocation}»`);
+    }
+    if (choicesConfig.needsFiendResilience && selectedFiendResilience) {
+      extraNotes.push(`[Стойкость исчадия]: сопротивление «${selectedFiendResilience}»`);
+    }
+    if (choicesConfig.needsGenieKind && selectedGenieKind) {
+      const g = (choicesConfig.genieKindOptions || GENIE_KINDS_LIST).find(k => k.id === selectedGenieKind);
+      if (g) extraNotes.push(`[Покровитель джинн]: ${g.name}`);
+    }
 
     if (extraNotes.length > 0) {
       fullNotes = fullNotes
         ? `${fullNotes}\n${extraNotes.join('\n')}`
         : extraNotes.join('\n');
     }
+
+    const allNewCantrips = Array.from(new Set([
+      ...newCantrips.filter(c => c.trim()),
+      ...(choicesConfig.needsPactBoon && selectedPactBoon === 'tome' ? selectedTomeCantrips : [])
+    ]));
 
     return {
       level: newLevel,
@@ -751,7 +895,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       addedTraits,
       spellSlotsGained: newSpellSlots || undefined,
       notes: fullNotes,
-      newCantrips: newCantrips.filter(c => c.trim()),
+      newCantrips: allNewCantrips,
       newSpells: combinedSpells,
       newSavingThrowProfs: [],
       newSkillProfs: [],
@@ -759,6 +903,14 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       newAttacks: [],
       newProficienciesText: '',
       newEquipmentText: '',
+      pactBoon: choicesConfig.needsPactBoon ? selectedPactBoon : undefined,
+      tomeCantrips: (choicesConfig.needsPactBoon && selectedPactBoon === 'tome') ? selectedTomeCantrips : undefined,
+      warlockInvocations: choicesConfig.needsInvocations ? selectedInvocations : undefined,
+      swappedOutInvocation: (choicesConfig.canSwapInvocation && swappedOutInvocation && swappedInInvocation) ? swappedOutInvocation : undefined,
+      swappedInInvocation: (choicesConfig.canSwapInvocation && swappedOutInvocation && swappedInInvocation) ? swappedInInvocation : undefined,
+      mysticArcanumSpell: choicesConfig.needsMysticArcanum ? selectedArcanumSpell : undefined,
+      fiendResilienceDamageType: choicesConfig.needsFiendResilience ? selectedFiendResilience : undefined,
+      genieKind: choicesConfig.needsGenieKind ? selectedGenieKind : undefined,
     };
   };
 
@@ -1453,6 +1605,128 @@ export const LevelUpModal = React.memo(function LevelUpModal({
             </div>
           )}
 
+          {/* ── Warlock Pact Boon (3rd Level) ── */}
+          {choicesConfig.needsPactBoon && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <CrossedSwordsIcon size={16} />
+                  <span>Предмет договора колдуна (Pact Boon):</span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{
+                    background: '#5C341F',
+                    color: '#FFE58F',
+                  }}
+                >
+                  3-й уровень
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#8B6914' }}>
+                Ваш покровитель одаряет вас особым магическим даром в знак верности и служения (dnd.su):
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {(choicesConfig.pactBoonOptions || WARLOCK_PACT_BOONS_LIST).map(boon => {
+                  const isSel = selectedPactBoon === boon.id;
+                  return (
+                    <button
+                      key={boon.id}
+                      type="button"
+                      onClick={() => setSelectedPactBoon(boon.id)}
+                      className={`text-left p-3 rounded-lg transition-all flex flex-col justify-between gap-1.5 cursor-pointer ${
+                        isSel ? 'shadow-md scale-[1.01]' : 'hover:bg-[rgba(201,168,76,0.18)]'
+                      }`}
+                      style={
+                        isSel
+                          ? { background: '#E8D3A2', border: '2px solid #5C341F', color: '#3D2012' }
+                          : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#4A2A18' }
+                      }
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs" style={{ color: isSel ? '#3D2012' : '#5C341F' }}>
+                          {boon.name}
+                        </span>
+                        {isSel ? (
+                          <GoldSealCheckIcon size={16} />
+                        ) : (
+                          <span className="text-[10px] opacity-70 italic">{boon.nameEn}</span>
+                        )}
+                      </div>
+                      <p className="text-[11px] leading-relaxed opacity-90">{boon.description}</p>
+                      <div className="text-[10px] pt-1.5 border-t border-[rgba(201,168,76,0.3)] space-y-0.5">
+                        {boon.features.slice(0, 2).map((feat, idx) => (
+                          <div key={idx} className="flex items-start gap-1">
+                            <span className="text-[#8B6914]">✦</span>
+                            <span className="line-clamp-1">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* If Tome is selected: 3 cantrips picker from any class */}
+              {selectedPactBoon === 'tome' && (
+                <div
+                  className="p-3 rounded-lg space-y-2 mt-2"
+                  style={{
+                    background: 'rgba(251, 240, 220, 0.9)',
+                    border: '1px solid rgba(201, 168, 76, 0.5)',
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#3D2012]">
+                      📖 Заговоры «Книги Теней» (выберите 3 заговора из любых классов):
+                    </span>
+                    <span
+                      className="text-[10px] px-2 py-0.5 rounded font-bold"
+                      style={{
+                        background: selectedTomeCantrips.length === 3 ? '#5C341F' : '#E8D3A2',
+                        color: selectedTomeCantrips.length === 3 ? '#FFE58F' : '#5C341F',
+                      }}
+                    >
+                      {selectedTomeCantrips.length} / 3
+                    </span>
+                  </div>
+                  <div className="max-h-40 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 gap-1.5 custom-scrollbar">
+                    {DND_COMPENDIUM_SPELLS.filter(s => s.level === 0).map(cantrip => {
+                      const isChosen = selectedTomeCantrips.includes(cantrip.name);
+                      return (
+                        <button
+                          key={cantrip.name}
+                          type="button"
+                          onClick={() => {
+                            if (isChosen) {
+                              setSelectedTomeCantrips(prev => prev.filter(n => n !== cantrip.name));
+                            } else if (selectedTomeCantrips.length < 3) {
+                              setSelectedTomeCantrips(prev => [...prev, cantrip.name]);
+                            }
+                          }}
+                          disabled={!isChosen && selectedTomeCantrips.length >= 3}
+                          className={`text-left px-2 py-1.5 rounded text-[11px] transition-all flex items-center justify-between ${
+                            isChosen ? 'font-bold' : 'disabled:opacity-40'
+                          }`}
+                          style={
+                            isChosen
+                              ? { background: '#E8D3A2', border: '1px solid #5C341F', color: '#3D2012' }
+                              : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#4A2A18' }
+                          }
+                        >
+                          <span className="truncate mr-1">{cantrip.name}</span>
+                          <span className="shrink-0 text-[10px] opacity-70">
+                            {cantrip.classes?.[0] || 'заговор'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* 6.d. Eldritch Invocations Choice */}
           {choicesConfig.needsInvocations && (
             <div className="parchment-modal-section space-y-2.5">
@@ -1533,6 +1807,218 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                       >
                         {opt.description}
                       </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Invocation Swapping (Level 3+) ── */}
+          {choicesConfig.canSwapInvocation && choicesConfig.existingInvocations && choicesConfig.existingInvocations.length > 0 && (
+            <div
+              className="parchment-modal-section space-y-2.5 p-3 rounded-lg"
+              style={{
+                background: 'rgba(232, 211, 162, 0.25)',
+                border: '1px solid rgba(201, 168, 76, 0.4)',
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-[#3D2012] flex items-center gap-1.5">
+                  <span>🔄</span>
+                  <span>Замена одного воззвания (опционально по dnd.su):</span>
+                </h4>
+                <span className="text-[10px] text-[#8B6914] italic">При повышении уровня</span>
+              </div>
+              <p className="text-[11px] text-[#5C341F]">
+                Вы можете заменить одно из известных вам таинственных воззваний на другое доступное воззвание:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-bold text-[#3D2012] block mb-1">Забыть воззвание:</label>
+                  <select
+                    value={swappedOutInvocation}
+                    onChange={e => {
+                      setSwappedOutInvocation(e.target.value);
+                      if (!e.target.value) setSwappedInInvocation('');
+                    }}
+                    className="parchment-select w-full text-xs py-1.5 px-2"
+                  >
+                    <option value="">-- Не заменять --</option>
+                    {choicesConfig.existingInvocations.map(invName => (
+                      <option key={invName} value={invName}>
+                        {invName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {swappedOutInvocation && (
+                  <div>
+                    <label className="text-[10px] font-bold text-[#3D2012] block mb-1">Изучить взамен:</label>
+                    <select
+                      value={swappedInInvocation}
+                      onChange={e => setSwappedInInvocation(e.target.value)}
+                      className="parchment-select w-full text-xs py-1.5 px-2"
+                    >
+                      <option value="">-- Выберите новое воззвание --</option>
+                      {(choicesConfig.invocationsOptions || WARLOCK_INVOCATIONS)
+                        .filter(opt => !selectedInvocations.includes(opt.id) && opt.name !== swappedOutInvocation)
+                        .map(opt => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.name} ({opt.levelReq} ур.)
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── Warlock Mystic Arcanum (Levels 11, 13, 15, 17) ── */}
+          {choicesConfig.needsMysticArcanum && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <CrystalBallDndIcon size={16} />
+                  <span>
+                    Таинственный арканум ({choicesConfig.arcanumCircle || 6}-й круг):
+                  </span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{ background: '#5C341F', color: '#FFE58F' }}
+                >
+                  1 заклинание
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#8B6914' }}>
+                Ваш покровитель дарует вам доступ к великой магии. Выберите одно заклинание {choicesConfig.arcanumCircle || 6}-го круга, которое вы сможете сотворять один раз в день без ячейки заклинаний (dnd.su):
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {(choicesConfig.arcanumOptions || []).map(spellName => {
+                  const isSel = selectedArcanumSpell === spellName;
+                  const spellData = DND_COMPENDIUM_SPELLS.find(s => s.name.toLowerCase() === spellName.toLowerCase());
+                  return (
+                    <button
+                      key={spellName}
+                      type="button"
+                      onClick={() => setSelectedArcanumSpell(spellName)}
+                      className={`text-left p-3 rounded-lg transition-all flex flex-col justify-between gap-1 cursor-pointer ${
+                        isSel ? 'shadow-md scale-[1.01]' : 'hover:bg-[rgba(201,168,76,0.18)]'
+                      }`}
+                      style={
+                        isSel
+                          ? { background: '#E8D3A2', border: '2px solid #5C341F', color: '#3D2012' }
+                          : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#4A2A18' }
+                      }
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs" style={{ color: isSel ? '#3D2012' : '#5C341F' }}>
+                          {spellName}
+                        </span>
+                        {isSel ? (
+                          <GoldSealCheckIcon size={16} />
+                        ) : (
+                          <span className="text-[10px] opacity-75 font-mono">
+                            {spellData?.school || 'Арканум'}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] leading-relaxed line-clamp-2 opacity-90">
+                        {spellData?.description || 'Могущественное заклинание великой магии.'}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Warlock The Fiend: Fiendish Resilience (Level 10) ── */}
+          {choicesConfig.needsFiendResilience && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <span>🛡️</span>
+                  <span>Стойкость исчадия (10-й уровень):</span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{ background: '#5C341F', color: '#FFE58F' }}
+                >
+                  Сопротивление
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#8B6914' }}>
+                Выберите тип урона, к которому вы получаете сопротивление. Вы можете менять его в конце короткого или продолжительного отдыха (dnd.su):
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {(choicesConfig.fiendResilienceOptions || []).map(dt => {
+                  const isSel = selectedFiendResilience === dt;
+                  return (
+                    <button
+                      key={dt}
+                      type="button"
+                      onClick={() => setSelectedFiendResilience(dt)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                        isSel ? 'shadow-md scale-105' : 'hover:bg-[rgba(201,168,76,0.18)]'
+                      }`}
+                      style={
+                        isSel
+                          ? { background: '#5C341F', color: '#FFE58F', border: '1px solid #C9A84C' }
+                          : { background: 'rgba(245, 230, 200, 0.75)', color: '#3D2012', border: '1px solid rgba(139, 105, 20, 0.3)' }
+                      }
+                    >
+                      {dt}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Warlock Genie Kind (if needed) ── */}
+          {choicesConfig.needsGenieKind && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <span>🏺</span>
+                  <span>Вид джинна-покровителя (Джинн):</span>
+                </h3>
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded font-bold" style={{ background: '#5C341F', color: '#FFE58F' }}>
+                  Покровитель
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {GENIE_KINDS_LIST.map(g => {
+                  const isSel = selectedGenieKind === g.id;
+                  return (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() => setSelectedGenieKind(g.id)}
+                      className={`p-3 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 ${
+                        isSel ? 'shadow-md scale-[1.01]' : 'hover:bg-[rgba(201,168,76,0.18)]'
+                      }`}
+                      style={
+                        isSel
+                          ? { background: '#E8D3A2', border: '2px solid #5C341F', color: '#3D2012' }
+                          : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#4A2A18' }
+                      }
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs" style={{ color: isSel ? '#3D2012' : '#5C341F' }}>
+                          {g.name}
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded font-bold" style={{ background: '#5C341F', color: '#FFE58F' }}>
+                          {g.damageType}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-[#5C341F] space-y-0.5">
+                        <div><strong>Стихия:</strong> {g.element}</div>
+                        <div className="text-[10px] opacity-90"><strong>Сосуд:</strong> {g.vesselType}</div>
+                      </div>
                     </button>
                   );
                 })}

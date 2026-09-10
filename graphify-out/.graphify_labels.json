@@ -12,9 +12,9 @@
   "10": "NameGeneratorModal.tsx",
   "11": "Global Constraints",
   "12": "2. Архитектурные разделы дизайна",
-  "13": "progress.md",
+  "13": "useEscapeKey",
   "14": "devDependencies",
-  "15": "task-1-brief.md",
+  "15": "StatsCalculatorModal.tsx",
   "16": "scripts",
   "17": "next",
   "18": "Proposed Changes",
@@ -60,5 +60,8 @@
   "58": "empty-states.test.ts",
   "59": "header-menu.test.ts",
   "60": "materiality-and-tactility.test.ts",
-  "61": "sliding-tabs.test.ts"
+  "61": "sliding-tabs.test.ts",
+  "62": "ItemDetailModal.tsx",
+  "63": "CharacterGridModal.tsx",
+  "64": "ClassSelectorModal.tsx"
 }

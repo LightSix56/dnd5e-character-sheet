@@ -234,10 +234,10 @@
     "semantic_hash": "ea4881d6f6d3a5fd3c7cf9610afa3481"
   },
   "src/data/compendium/class-progression.ts": {
-    "mtime": 1788762897.6305077,
-    "seen": 1788767676.255655,
-    "ast_hash": "3e3a2f1e7d22e6f0a2e7ea6f3bfa4730",
-    "semantic_hash": "3e3a2f1e7d22e6f0a2e7ea6f3bfa4730"
+    "mtime": 1789025073.8384361,
+    "seen": 1789025749.4516,
+    "ast_hash": "7b2aa810dfb381205d9483f220297eb0",
+    "semantic_hash": ""
   },
   "src/data/compendium/class-spells.ts": {
     "mtime": 1789022003.9010112,
@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1788768812.1095278,
-    "seen": 1788768857.562658,
-    "ast_hash": "f14c7f189f7e3d20bc7bf7af990258e1",
+    "mtime": 1789023998.8646908,
+    "seen": 1789025749.4721406,
+    "ast_hash": "026f0a536d38cbf4713d580da267ccd0",
     "semantic_hash": ""
   },
   "docs/TECH_SPEC.md": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789022965.5233471,
-    "seen": 1789023729.2957153,
-    "ast_hash": "95415f3c8437561de67bd02004a3752c",
+    "mtime": 1789025177.8711607,
+    "seen": 1789025749.4482422,
+    "ast_hash": "eb1f58356100177215f73cf933b2d5e1",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "e2e/warlock-level-up.spec.ts": {
-    "mtime": 1789023607.060496,
-    "seen": 1789023729.2848203,
-    "ast_hash": "f071b5b954384b387655355ed102558f",
+    "mtime": 1789025616.2740114,
+    "seen": 1789025749.4380221,
+    "ast_hash": "cb6461957cf36d0485d596143724fd0a",
     "semantic_hash": ""
   },
   "src/data/compendium/warlock-choices.ts": {
@@ -725,18 +725,6 @@
     "ast_hash": "3adcfd72a344c611be9861e3a8948ddc",
     "semantic_hash": ""
   },
-  ".superpowers/sdd/2026-09-10-warlock-level-up-and-subclasses-plan/progress.md": {
-    "mtime": 1789021630.7590573,
-    "seen": 1789023729.3124602,
-    "ast_hash": "bf0ceba70b2669f103de51d5a96acbe3",
-    "semantic_hash": ""
-  },
-  ".superpowers/sdd/2026-09-10-warlock-level-up-and-subclasses-plan/task-1-brief.md": {
-    "mtime": 1789021641.4848528,
-    "seen": 1789023729.312467,
-    "ast_hash": "67645f53ebff1085c61cb75306b5c74d",
-    "semantic_hash": ""
-  },
   "docs/superpowers/plans/2026-09-10-warlock-level-up-and-subclasses-plan.md": {
     "mtime": 1789021608.5883064,
     "seen": 1789023729.3167255,
@@ -747,6 +735,12 @@
     "mtime": 1789021580.329511,
     "seen": 1789023729.3192108,
     "ast_hash": "e8a1d34a8cb64f4389b54e47744811d5",
+    "semantic_hash": ""
+  },
+  "test/class-spell-progression.test.ts": {
+    "mtime": 1789025044.265386,
+    "seen": 1789025749.460156,
+    "ast_hash": "4fa9a30921e63fde62106208165ea451",
     "semantic_hash": ""
   }
 }

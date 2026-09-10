@@ -29,6 +29,8 @@ import {
   getAvailableSpellsForCharacter,
   getMaxAvailableSpellSlotLevel,
   normalizeClassName,
+  getNewCantripsGainedForLevel,
+  getNewSpellsLearnedForLevel,
 } from '@/data/compendium';
 import {
   getAutoGrantedSpellsForLevel,
@@ -348,6 +350,14 @@ export const LevelUpModal = React.memo(function LevelUpModal({
   );
   const isCasterAtNewLevel =
     isSpellcasterClass || hasSpellSlots || maxSlotLevelAtNewLevel > 0;
+
+  const newCantripsGained = useMemo(() => {
+    return getNewCantripsGainedForLevel(normClass, effectiveSubclass, newLevel);
+  }, [normClass, effectiveSubclass, newLevel]);
+
+  const newSpellsLearned = useMemo(() => {
+    return getNewSpellsLearnedForLevel(normClass, effectiveSubclass, newLevel);
+  }, [normClass, effectiveSubclass, newLevel]);
 
   const availableClassSpells = useMemo(() => {
     if (!isCasterAtNewLevel) return [];
@@ -2555,158 +2565,184 @@ export const LevelUpModal = React.memo(function LevelUpModal({
             </div>
           )}
 
-          {/* Spell learning only shown if caster */}
-          {isCasterAtNewLevel && (
-            <>
-              {/* New Cantrips */}
-              <div className="parchment-modal-section">
-                <div className="flex items-center justify-between mb-2">
+          {/* 9.b. New Cantrips (only if class gains new cantrips at this level) */}
+          {newCantripsGained > 0 && (
+            <div className="parchment-modal-section">
+              <div className="flex items-center justify-between mb-2">
+                <div>
                   <h3
                     className="text-sm font-bold flex items-center gap-1.5"
                     style={{ color: '#3C2415' }}
                   >
                     <SparklesDndIcon size={16} />
-                    <span>Новые заговоры (при наличии):</span>
+                    <span>Новые заговоры:</span>
                   </h3>
-                  <button
-                    type="button"
-                    onClick={addCantripRow}
-                    className="parchment-btn-sm"
-                    style={{ color: '#4a7c3f' }}
-                  >
-                    + Заговор
-                  </button>
+                  <span className="text-[11px] font-mono font-bold" style={{ color: '#5C341F' }}>
+                    +{newCantripsGained}{' '}
+                    {newCantripsGained === 1
+                      ? 'новый заговор'
+                      : newCantripsGained < 5
+                        ? 'новых заговора'
+                        : 'новых заговоров'}{' '}
+                    (по таблице класса на {newLevel}-м ур.)
+                  </span>
                 </div>
-                {newCantrips.length === 0 ? (
-                  <p
-                    className="text-xs italic"
-                    style={{ color: '#8B6914' }}
-                  >
-                    Если ваш класс получает новый заговор на этом уровне, нажмите «+ Заговор».
-                  </p>
-                ) : (
-                  <div className="space-y-1.5">
-                    {newCantrips.map((c, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <div className="flex-1">
-                          <AutocompleteInput
-                            value={c}
-                            onChange={v => updateCantripRow(i, v)}
-                            items={cantripAutocompleteItems}
-                            placeholder="Название заговора вашего класса…"
-                            className="w-full parchment-input-boxed"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeCantripRow(i)}
-                          className="parchment-remove-btn"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <button
+                  type="button"
+                  onClick={addCantripRow}
+                  className="parchment-btn-sm font-bold"
+                  style={{ color: '#4a7c3f' }}
+                >
+                  + Заговор
+                </button>
               </div>
-
-              {/* New Leveled Spells */}
-              {maxSlotLevelAtNewLevel > 0 && (
-                <div className="parchment-modal-section">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h3
-                        className="text-sm font-bold flex items-center gap-1.5"
-                        style={{ color: '#3C2415' }}
+              {newCantrips.length === 0 ? (
+                <p
+                  className="text-xs italic"
+                  style={{ color: '#8B6914' }}
+                >
+                  Нажмите «+ Заговор», чтобы выбрать положенный заговор для персонажа.
+                </p>
+              ) : (
+                <div className="space-y-1.5">
+                  {newCantrips.map((c, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <AutocompleteInput
+                          value={c}
+                          onChange={v => updateCantripRow(i, v)}
+                          items={cantripAutocompleteItems}
+                          placeholder="Название заговора вашего класса…"
+                          className="w-full parchment-input-boxed"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeCantripRow(i)}
+                        className="parchment-remove-btn"
                       >
-                        <SpellbookIcon size={16} />
-                        <span>Изучение / подготовка новых заклинаний:</span>
-                      </h3>
-                      <span
-                        className="text-[11px] font-mono"
-                        style={{ color: '#8B6914' }}
-                      >
-                        Доступны круги до {maxSlotLevelAtNewLevel}-го включительно
-                      </span>
+                        ✕
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={addSpellRow}
-                      className="parchment-btn-sm"
-                      style={{ color: '#6B3A2A' }}
-                    >
-                      + Заклинание
-                    </button>
-                  </div>
-                  {newSpells.length === 0 ? (
-                    <p
-                      className="text-xs italic"
-                      style={{ color: '#8B6914' }}
-                    >
-                      Если ваш класс изучает новые заклинания на этом уровне (например, 2 заклинания для Волшебника, 1 для Чародея/Колдуна/Барда), нажмите «+ Заклинание».
-                    </p>
-                  ) : (
-                    <div className="space-y-1.5">
-                      {newSpells.map((s, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <select
-                            value={s.level}
-                            onChange={e =>
-                              updateSpellRow(i, 'level', Number(e.target.value))
-                            }
-                            className="parchment-select text-xs w-20 shrink-0"
-                          >
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9]
-                              .filter(
-                                l => l <= Math.max(1, maxSlotLevelAtNewLevel)
-                              )
-                              .map(l => (
-                                <option key={l} value={l}>
-                                  {l} ур.
-                                </option>
-                              ))}
-                          </select>
-                          <div className="flex-1 min-w-0">
-                            <AutocompleteInput
-                              value={s.name}
-                              onChange={v => updateSpellRow(i, 'name', v)}
-                              items={leveledSpellAutocompleteItems}
-                              placeholder="Название заклинания вашего класса…"
-                              className="w-full parchment-input-boxed"
-                            />
-                          </div>
-                          <label
-                            className="parchment-checkbox parchment-checkbox-sm flex items-center gap-1"
-                            style={{ color: '#8B6914' }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={s.prepared}
-                              onChange={e =>
-                                updateSpellRow(
-                                  i,
-                                  'prepared',
-                                  e.target.checked
-                                )
-                              }
-                            />
-                            <span className="checkmark"></span>
-                            <span className="text-xs">Подг.</span>
-                          </label>
-                          <button
-                            type="button"
-                            onClick={() => removeSpellRow(i)}
-                            className="parchment-remove-btn"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  ))}
                 </div>
               )}
-            </>
+            </div>
+          )}
+
+          {/* 9.c. New Leveled Spells (only if class learns new spells at this level) */}
+          {newSpellsLearned > 0 && maxSlotLevelAtNewLevel > 0 && (
+            <div className="parchment-modal-section">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <h3
+                    className="text-sm font-bold flex items-center gap-1.5"
+                    style={{ color: '#3C2415' }}
+                  >
+                    <SpellbookIcon size={16} />
+                    <span>
+                      {normClass === 'Волшебник'
+                        ? 'Новые заклинания в книгу заклинаний:'
+                        : 'Изучение новых заклинаний:'}
+                    </span>
+                  </h3>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className="text-[11px] font-mono font-bold"
+                      style={{ color: '#5C341F' }}
+                    >
+                      +{newSpellsLearned}{' '}
+                      {newSpellsLearned === 1
+                        ? 'заклинание'
+                        : newSpellsLearned < 5
+                          ? 'заклинания'
+                          : 'заклинаний'}{' '}
+                      (по таблице класса на {newLevel}-м ур.)
+                    </span>
+                    <span
+                      className="text-[11px] font-mono"
+                      style={{ color: '#8B6914' }}
+                    >
+                      • Доступны круги до {maxSlotLevelAtNewLevel}-го включительно
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={addSpellRow}
+                  className="parchment-btn-sm font-bold"
+                  style={{ color: '#6B3A2A' }}
+                >
+                  + Заклинание
+                </button>
+              </div>
+              {newSpells.length === 0 ? (
+                <p
+                  className="text-xs italic"
+                  style={{ color: '#8B6914' }}
+                >
+                  Нажмите «+ Заклинание», чтобы добавить положенные заклинания вашего класса.
+                </p>
+              ) : (
+                <div className="space-y-1.5">
+                  {newSpells.map((s, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <select
+                        value={s.level}
+                        onChange={e =>
+                          updateSpellRow(i, 'level', Number(e.target.value))
+                        }
+                        className="parchment-select text-xs w-20 shrink-0"
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9]
+                          .filter(
+                            l => l <= Math.max(1, maxSlotLevelAtNewLevel)
+                          )
+                          .map(l => (
+                            <option key={l} value={l}>
+                              {l} ур.
+                            </option>
+                          ))}
+                      </select>
+                      <div className="flex-1 min-w-0">
+                        <AutocompleteInput
+                          value={s.name}
+                          onChange={v => updateSpellRow(i, 'name', v)}
+                          items={leveledSpellAutocompleteItems}
+                          placeholder="Название заклинания вашего класса…"
+                          className="w-full parchment-input-boxed"
+                        />
+                      </div>
+                      <label
+                        className="parchment-checkbox parchment-checkbox-sm flex items-center gap-1"
+                        style={{ color: '#8B6914' }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={s.prepared}
+                          onChange={e =>
+                            updateSpellRow(
+                              i,
+                              'prepared',
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <span className="checkmark"></span>
+                        <span className="text-xs">Подг.</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => removeSpellRow(i)}
+                        className="parchment-remove-btn"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
 
           {/* 10. Freeform Notes */}

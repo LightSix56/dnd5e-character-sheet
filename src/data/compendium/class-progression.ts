@@ -2582,3 +2582,118 @@ export function getNewSpellLevelUnlocked(className: string, level: number): numb
   }
   return null;
 }
+
+// ── Cantrips Known & Spells Known Progression (per dnd.su / SRD 5.1) ──
+
+function isEldritchKnight(subclass?: string): boolean {
+  if (!subclass) return false;
+  const s = subclass.toLowerCase();
+  return s.includes('мистический рыцарь') || s.includes('eldritch knight');
+}
+
+function isArcaneTrickster(subclass?: string): boolean {
+  if (!subclass) return false;
+  const s = subclass.toLowerCase();
+  return s.includes('мистический ловкач') || s.includes('arcane trickster');
+}
+
+export const CLASS_CANTRIPS_PROGRESSION: Record<string, (level: number) => number> = {
+  'Колдун': lvl => (lvl >= 10 ? 4 : lvl >= 4 ? 3 : lvl >= 1 ? 2 : 0),
+  'Бард': lvl => (lvl >= 10 ? 4 : lvl >= 4 ? 3 : lvl >= 1 ? 2 : 0),
+  'Друид': lvl => (lvl >= 10 ? 4 : lvl >= 4 ? 3 : lvl >= 1 ? 2 : 0),
+  'Жрец': lvl => (lvl >= 10 ? 5 : lvl >= 4 ? 4 : lvl >= 1 ? 3 : 0),
+  'Волшебник': lvl => (lvl >= 10 ? 5 : lvl >= 4 ? 4 : lvl >= 1 ? 3 : 0),
+  'Чародей': lvl => (lvl >= 10 ? 6 : lvl >= 4 ? 5 : lvl >= 1 ? 4 : 0),
+  'Изобретатель': lvl => (lvl >= 14 ? 4 : lvl >= 10 ? 3 : lvl >= 1 ? 2 : 0),
+};
+
+export function getCantripsKnownForLevel(className: string, subclass: string | undefined, level: number): number {
+  if (level < 1) return 0;
+  const norm = normalizeClassName(className);
+  if (norm === 'Воин' && isEldritchKnight(subclass)) {
+    return level >= 10 ? 3 : level >= 3 ? 2 : 0;
+  }
+  if (norm === 'Плут' && isArcaneTrickster(subclass)) {
+    return level >= 10 ? 4 : level >= 3 ? 3 : 0;
+  }
+  const fn = CLASS_CANTRIPS_PROGRESSION[norm];
+  if (fn) return fn(level);
+  return 0;
+}
+
+export function getNewCantripsGainedForLevel(className: string, subclass: string | undefined, newLevel: number): number {
+  if (newLevel <= 1) {
+    return getCantripsKnownForLevel(className, subclass, 1);
+  }
+  const current = getCantripsKnownForLevel(className, subclass, newLevel);
+  const previous = getCantripsKnownForLevel(className, subclass, newLevel - 1);
+  return Math.max(0, current - previous);
+}
+
+// Spells Known tables for Known Casters (dnd.su)
+export const WARLOCK_SPELLS_KNOWN: Record<number, number> = {
+  1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 10,
+  11: 11, 12: 11, 13: 12, 14: 12, 15: 13, 16: 13, 17: 14, 18: 14, 19: 15, 20: 15,
+};
+
+export const SORCERER_SPELLS_KNOWN: Record<number, number> = {
+  1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11,
+  11: 12, 12: 12, 13: 13, 14: 13, 15: 14, 16: 14, 17: 15, 18: 15, 19: 15, 20: 15,
+};
+
+export const BARD_SPELLS_KNOWN: Record<number, number> = {
+  1: 4, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 11, 9: 12, 10: 14,
+  11: 15, 12: 15, 13: 16, 14: 18, 15: 19, 16: 19, 17: 20, 18: 22, 19: 22, 20: 22,
+};
+
+export const RANGER_SPELLS_KNOWN: Record<number, number> = {
+  1: 0, 2: 2, 3: 3, 4: 3, 5: 4, 6: 4, 7: 5, 8: 5, 9: 6, 10: 6,
+  11: 7, 12: 7, 13: 8, 14: 8, 15: 9, 16: 9, 17: 10, 18: 10, 19: 11, 20: 11,
+};
+
+export const THIRD_CASTER_SPELLS_KNOWN: Record<number, number> = {
+  1: 0, 2: 0, 3: 3, 4: 4, 5: 4, 6: 4, 7: 5, 8: 6, 9: 6, 10: 7,
+  11: 8, 12: 8, 13: 9, 14: 10, 15: 10, 16: 11, 17: 11, 18: 11, 19: 12, 20: 13,
+};
+
+const CLASS_SPELLS_KNOWN_TABLES: Record<string, Record<number, number>> = {
+  'Колдун': WARLOCK_SPELLS_KNOWN,
+  'Чародей': SORCERER_SPELLS_KNOWN,
+  'Бард': BARD_SPELLS_KNOWN,
+  'Следопыт': RANGER_SPELLS_KNOWN,
+};
+
+export function getNewSpellsLearnedForLevel(className: string, subclass: string | undefined, newLevel: number): number {
+  if (newLevel <= 1) return 0;
+  const norm = normalizeClassName(className);
+
+  // Wizard gets exactly 2 free spells in spellbook on every level 2-20
+  if (norm === 'Волшебник') {
+    return 2;
+  }
+
+  // 1/3 casters (Eldritch Knight, Arcane Trickster)
+  if (norm === 'Воин' && isEldritchKnight(subclass)) {
+    const prev = THIRD_CASTER_SPELLS_KNOWN[newLevel - 1] || 0;
+    const curr = THIRD_CASTER_SPELLS_KNOWN[newLevel] || 0;
+    return Math.max(0, curr - prev);
+  }
+
+  if (norm === 'Плут' && isArcaneTrickster(subclass)) {
+    const prev = THIRD_CASTER_SPELLS_KNOWN[newLevel - 1] || 0;
+    const curr = THIRD_CASTER_SPELLS_KNOWN[newLevel] || 0;
+    return Math.max(0, curr - prev);
+  }
+
+  // Known casters (Warlock, Sorcerer, Bard, Ranger)
+  const table = CLASS_SPELLS_KNOWN_TABLES[norm];
+  if (table) {
+    const prev = table[newLevel - 1] || 0;
+    const curr = table[newLevel] || 0;
+    return Math.max(0, curr - prev);
+  }
+
+  // Prepared divine casters (Cleric, Druid, Paladin, Artificer) & non-casters do not learn individual spells
+  return 0;
+}
+

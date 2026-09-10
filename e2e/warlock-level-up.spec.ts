@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Warlock Character Creation and Level-Up E2E', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
-  });
-
   test('Warlock Level 1 creation with Genie patron displays Genie Kind options', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+
     // Open Character Creation Choice modal
     const createBtn = page.locator('button:has-text("Создать персонажа"):visible');
     await createBtn.click();
@@ -54,69 +52,42 @@ test.describe('Warlock Character Creation and Level-Up E2E', () => {
   });
 
   test('Warlock Level-up flow from Level 1 to 2 (Invocations) and Level 3 (Pact Boon)', async ({ page }) => {
-    // Setup a level 1 Warlock in localStorage
-    await page.evaluate(() => {
-      const warlockChar = {
-        name: 'Мордекай',
-        race: 'Тифлинг',
-        className: 'Колдун',
-        subclass: 'Исчадие',
-        level: 1,
-        maxHp: 10,
-        currentHp: 10,
-        tempHp: 0,
-        hitDice: '1d8',
-        hitDiceTotal: '1',
-        proficiencyBonus: 2,
-        armorClass: 12,
-        speed: 30,
-        initiative: 2,
-        abilityScores: {
-          str: 8,
-          dex: 14,
-          con: 14,
-          int: 12,
-          wis: 10,
-          cha: 16,
+    const warlockChar = {
+      name: 'Мордекай',
+      race: 'Тифлинг',
+      className: 'Колдун',
+      subclass: 'Исчадие',
+      level: 1,
+      maxHp: 10,
+      currentHp: 10,
+      tempHp: 0,
+      hitDice: '1d8',
+      hitDiceTotal: '1',
+      proficiencyBonus: 2,
+      armorClass: 12,
+      speed: 30,
+      initiative: 2,
+      abilityScores: { str: 8, dex: 14, con: 14, int: 12, wis: 10, cha: 16 },
+      savingThrowProficiencies: { СИЛ: false, ЛОВ: false, ТЕЛ: false, ИНТ: false, МДР: true, ХАР: true },
+      skillProficiencies: { 'Магия': true, 'Обман': true },
+      spellSlots: { 1: { current: 1, max: 1 } },
+      spells: [],
+      traitsList: [
+        {
+          id: 'trait-1',
+          name: 'Благословение Тёмного',
+          source: 'Подкласс',
+          description: 'Когда вы снижаете хиты враждебного существа до 0, вы получаете временные хиты.',
         },
-        savingThrowProficiencies: {
-          СИЛ: false,
-          ЛОВ: false,
-          ТЕЛ: false,
-          ИНТ: false,
-          МДР: true,
-          ХАР: true,
-        },
-        skillProficiencies: {
-          'Магия': true,
-          'Обман': true,
-        },
-        spellSlots: {
-          1: { current: 1, max: 1 },
-          2: { current: 0, max: 0 },
-          3: { current: 0, max: 0 },
-          4: { current: 0, max: 0 },
-          5: { current: 0, max: 0 },
-          6: { current: 0, max: 0 },
-          7: { current: 0, max: 0 },
-          8: { current: 0, max: 0 },
-          9: { current: 0, max: 0 },
-        },
-        spells: [],
-        traitsList: [
-          {
-            id: 'trait-1',
-            name: 'Благословение Тёмного',
-            source: 'Подкласс',
-            description: 'Когда вы снижаете хиты враждебного существа до 0, вы получаете временные хиты.',
-          },
-        ],
-        levelHistory: [],
-      };
-      localStorage.setItem('dnd5e_character', JSON.stringify(warlockChar));
-    });
+      ],
+      levelHistory: [],
+    };
 
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.addInitScript((data) => {
+      localStorage.setItem('dnd5e_character', JSON.stringify(data));
+    }, warlockChar);
+
+    await page.goto('/', { waitUntil: 'networkidle' });
 
     // Verify character is loaded as Level 1 Warlock
     await expect(page.locator('#char-input-class')).toHaveValue('Колдун');
@@ -134,6 +105,11 @@ test.describe('Warlock Character Creation and Level-Up E2E', () => {
     // Invocations section should be visible
     await expect(levelUpModal).toContainText('Выбор Таинственных воззваний');
     await expect(levelUpModal).toContainText('Выбрано 0 из 2');
+
+    // Per dnd.su table: Warlock at level 2 gets 0 new cantrips (hidden), but learns +1 spell (visible)
+    await expect(levelUpModal.locator('h3:has-text("Новые заговоры:")')).toBeHidden();
+    await expect(levelUpModal.locator('h3:has-text("Изучение новых заклинаний:")')).toBeVisible();
+    await expect(levelUpModal.locator('h3:has-text("Заметки к уровню:")')).toBeVisible();
 
     // Confirm button should be disabled until 2 invocations are picked
     const confirmBtn = levelUpModal.locator('button:has-text("Повысить до 2-го уровня")');
@@ -188,4 +164,57 @@ test.describe('Warlock Character Creation and Level-Up E2E', () => {
     // Verify character is now Level 3
     await expect(page.locator('span:text-is("3")').first()).toBeVisible();
   });
+
+  test('Cleric level 2 hides both cantrips and spell learning blocks, keeping notes and slots', async ({ page }) => {
+    const clericChar = {
+      name: 'София',
+      race: 'Человек',
+      className: 'Жрец',
+      subclass: 'Домен жизни',
+      level: 1,
+      maxHp: 10,
+      currentHp: 10,
+      tempHp: 0,
+      hitDice: '1d8',
+      hitDiceTotal: '1',
+      proficiencyBonus: 2,
+      armorClass: 16,
+      speed: 30,
+      initiative: 0,
+      abilityScores: { str: 14, dex: 10, con: 14, int: 10, wis: 16, cha: 10 },
+      savingThrowProficiencies: { СИЛ: false, ЛОВ: false, ТЕЛ: false, ИНТ: false, МДР: true, ХАР: true },
+      skillProficiencies: { 'Медицина': true, 'Религия': true },
+      spellSlots: { 1: { current: 2, max: 2 } },
+      spells: [],
+      traitsList: [],
+      levelHistory: [],
+    };
+
+    await page.addInitScript((data) => {
+      localStorage.setItem('dnd5e_character', JSON.stringify(data));
+    }, clericChar);
+
+    await page.goto('/', { waitUntil: 'networkidle' });
+
+    // Verify character is loaded as Level 1 Cleric
+    await expect(page.locator('#char-input-class')).toHaveValue('Жрец');
+
+    // Level up to 2
+    const levelUpBtn = page.locator('button[title="Повысить"]:visible');
+    await levelUpBtn.click();
+
+    const levelUpModal = page.locator('.parchment-modal:visible');
+    await expect(levelUpModal).toBeVisible();
+
+    // Spell slots section must be visible (showing slots for level 2)
+    await expect(levelUpModal.locator('h3:has-text("Магия и ячейки заклинаний:")')).toBeVisible();
+
+    // Per dnd.su: Cleric at lvl 2 gets 0 new cantrips (3->3) and learns 0 individual spells (prepared caster)
+    await expect(levelUpModal.locator('h3:has-text("Новые заговоры:")')).toBeHidden();
+    await expect(levelUpModal.locator('h3:has-text("Изучение новых заклинаний:")')).toBeHidden();
+
+    // Freeform notes must remain visible
+    await expect(levelUpModal.locator('h3:has-text("Заметки к уровню:")')).toBeVisible();
+  });
 });
+

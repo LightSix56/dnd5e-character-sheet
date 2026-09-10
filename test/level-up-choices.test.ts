@@ -337,12 +337,14 @@ describe('Level-Up Interactive Choices Engine', () => {
     });
 
     it('Ranger Gloom Stalker receives Iron Mind saving throw choice at level 7', () => {
+      const defaultChar = createDefaultCharacter();
       const charGloom: CharacterData = {
-        ...createDefaultCharacter(),
+        ...defaultChar,
         className: 'Следопыт',
         subclass: 'Сумрачный охотник',
         level: 6,
         savingThrowProficiencies: {
+          ...defaultChar.savingThrowProficiencies,
           'СИЛ': true,
           'ЛОВ': true,
         },

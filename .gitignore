@@ -37,4 +37,5 @@ graphify-out/20*/
 .superpowers/
 playwright-report/
 test-results/
+.dndsu-cache/
 

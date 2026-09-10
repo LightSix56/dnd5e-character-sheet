@@ -1,7 +1,7 @@
 {
   "0": "package.json",
   "1": "dependencies",
-  "2": "LevelUpModal.tsx",
+  "2": "level-up-choices.ts",
   "3": "CharacterCreationWizardModal.tsx",
   "4": "dnd-types.ts",
   "5": "@supabase/ssr",
@@ -14,7 +14,7 @@
   "12": "2. Архитектурные разделы дизайна",
   "13": "app/page.tsx",
   "14": "devDependencies",
-  "15": "dnd-icons.tsx",
+  "15": "fetch-dndsu.ts",
   "16": "scripts",
   "17": "next",
   "18": "Proposed Changes",
@@ -61,10 +61,6 @@
   "59": "header-menu.test.ts",
   "60": "materiality-and-tactility.test.ts",
   "61": "sliding-tabs.test.ts",
-  "62": "react",
-  "63": "ItemDetailModal.tsx",
-  "64": "CharacterGridModal.tsx",
-  "65": "class-progression.ts",
-  "66": "CompendiumModals.tsx",
-  "67": "StatsCalculatorModal.tsx"
+  "62": "📜 D&D.su Class & Mechanics Parser Skill",
+  "65": "LevelUpModal.tsx"
 }

@@ -12,9 +12,9 @@
     "semantic_hash": "61b75764992ae129d835c9d3c019d66e"
   },
   "package.json": {
-    "mtime": 1788768784.1525319,
-    "seen": 1788768857.5434382,
-    "ast_hash": "7a87bfdbfeb54b09766608a80216aaac",
+    "mtime": 1789049384.6393187,
+    "seen": 1789049979.0662644,
+    "ast_hash": "bc7277e088989fa2ed482815bce94319",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -570,9 +570,9 @@
     "semantic_hash": ""
   },
   "test/level-up-choices.test.ts": {
-    "mtime": 1789048677.71309,
-    "seen": 1789048710.0829859,
-    "ast_hash": "a0d8407af5c701bec8ddcc75603b506c",
+    "mtime": 1789049861.4399652,
+    "seen": 1789049979.0963073,
+    "ast_hash": "5e480ffba92169c1a963a9997ae503f4",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-07-level-up-mechanics-and-spells-plan.md": {
@@ -783,6 +783,18 @@
     "mtime": 1789047608.5306501,
     "seen": 1789047680.8677573,
     "ast_hash": "2ead638937d9d83ab58d1efc6f73e8f7",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu.ts": {
+    "mtime": 1789049774.6295946,
+    "seen": 1789049979.0697424,
+    "ast_hash": "89bb35333475a75557fa3acc4b267f98",
+    "semantic_hash": ""
+  },
+  ".agents/skills/dnd-su-parser/SKILL.md": {
+    "mtime": 1789049960.794204,
+    "seen": 1789049979.1073608,
+    "ast_hash": "066fb84e210a7aa9abc09262bd95c5b1",
     "semantic_hash": ""
   }
 }

@@ -82,6 +82,35 @@ export function getAutoGrantedSpellsForLevel(
     }
   }
 
+  // 1d. Barbarian Totem Warrior (Путь тотемного воина) ritual spells
+  const isBarbarian = classNameLower === 'варвар' || classNameLower === 'barbarian' || classNameLower.includes('варвар');
+  if (isBarbarian) {
+    const subLower = (subclassOverride || char.subclass || '').toLowerCase();
+    if (subLower.includes('тотем') || subLower.includes('totem')) {
+      if (newLevel === 3) {
+        result.push({
+          name: 'Разговор с животными',
+          level: 1,
+          prepared: true,
+          source: 'Путь тотемного воина: Поиски духа (ритуал)',
+        });
+        result.push({
+          name: 'Общение с животными',
+          level: 1,
+          prepared: true,
+          source: 'Путь тотемного воина: Поиски духа (ритуал)',
+        });
+      } else if (newLevel === 10) {
+        result.push({
+          name: 'Общение с природой',
+          level: 5,
+          prepared: true,
+          source: 'Путь тотемного воина: Проводник духов (ритуал)',
+        });
+      }
+    }
+  }
+
   // 2. Subclass expanded spells
   const effectiveSubclass = (subclassOverride || char.subclass || '').trim();
   if (effectiveSubclass) {

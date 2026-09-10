@@ -2,7 +2,7 @@
   "0": "package.json",
   "1": "dependencies",
   "2": "LevelUpModal.tsx",
-  "3": "wizard-helpers.ts",
+  "3": "CharacterCreationWizardModal.tsx",
   "4": "dnd-types.ts",
   "5": "@supabase/ssr",
   "6": "supabase-characters-api.test.ts",
@@ -14,7 +14,6 @@
   "12": "2. Архитектурные разделы дизайна",
   "13": "app/page.tsx",
   "14": "devDependencies",
-  "15": "[code]/page.tsx",
   "16": "scripts",
   "17": "next",
   "18": "Proposed Changes",
@@ -61,10 +60,5 @@
   "59": "header-menu.test.ts",
   "60": "materiality-and-tactility.test.ts",
   "61": "sliding-tabs.test.ts",
-  "62": "CharacterCreationWizardModal.tsx",
-  "63": "react",
-  "64": "items.ts",
-  "65": "CharacterData",
-  "66": "feats.ts",
-  "67": "StatsCalculatorModal.tsx"
+  "65": "class-progression.ts"
 }

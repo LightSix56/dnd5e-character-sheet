@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789044032.575228,
-    "seen": 1789044231.372427,
-    "ast_hash": "d4f1b54d091b5dba9cf345ca2ee13094",
+    "mtime": 1789045726.0218036,
+    "seen": 1789045886.347454,
+    "ast_hash": "691582b2d4bc09c0cc95b9c749031ec4",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -558,9 +558,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
-    "mtime": 1789030651.251497,
-    "seen": 1789031726.6618075,
-    "ast_hash": "a2cbe2a1da1d215ae6cb0feaafe88270",
+    "mtime": 1789045795.8288393,
+    "seen": 1789045886.3465512,
+    "ast_hash": "a935651024f6a22a3d592c483d52045c",
     "semantic_hash": ""
   },
   "test/auto-spells-engine.test.ts": {
@@ -771,6 +771,12 @@
     "mtime": 1789044153.3698852,
     "seen": 1789044231.3828986,
     "ast_hash": "2769ac9e8d47054997291bd08f84986f",
+    "semantic_hash": ""
+  },
+  "test/barbarian-subclasses.test.ts": {
+    "mtime": 1789045652.5363362,
+    "seen": 1789045886.3536708,
+    "ast_hash": "f504e640d5491c3b022f50567c7f897c",
     "semantic_hash": ""
   }
 }

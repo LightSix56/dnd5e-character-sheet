@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr';
 function createClient(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
+  const authHeader = request.headers.get('Authorization');
   return createServerClient(
     url,
     anonKey,
@@ -12,15 +13,32 @@ function createClient(request: NextRequest) {
         getAll() { return request.cookies.getAll(); },
         setAll() {},
       },
+      global: {
+        headers: authHeader ? { Authorization: authHeader } : {},
+      },
     }
   );
 }
 
+async function getAuthenticatedUser(supabase: ReturnType<typeof createClient>, request: NextRequest) {
+  const authHeader = request.headers.get('Authorization');
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
+
+  if (bearerToken) {
+    const { data: { user }, error } = await supabase.auth.getUser(bearerToken);
+    if (user) return { user, error: null };
+    if (error) console.warn('[Auth] Bearer token verification failed:', error.message);
+  }
+
+  // Fallback to cookie-based session
+  const { data: { user }, error } = await supabase.auth.getUser();
+  return { user, error };
+}
+
 export async function GET(request: NextRequest) {
   const supabase = createClient(request);
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getAuthenticatedUser(supabase, request);
+  if (!user) return NextResponse.json({ error: authError?.message || 'Unauthorized' }, { status: 401 });
 
   const { data, error } = await supabase
     .from('characters')
@@ -28,7 +46,10 @@ export async function GET(request: NextRequest) {
     .eq('user_id', user.id)
     .order('updated_at', { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('[API Characters GET] Error:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json({ characters: data });
 }
 
@@ -40,9 +61,8 @@ function isValidUUID(id: unknown): id is string {
 
 export async function POST(request: NextRequest) {
   const supabase = createClient(request);
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getAuthenticatedUser(supabase, request);
+  if (!user) return NextResponse.json({ error: authError?.message || 'Unauthorized' }, { status: 401 });
 
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== 'object') {
@@ -86,6 +106,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (updateError) {
+      console.error('[API Characters POST update] Error:', updateError.message);
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
@@ -96,22 +117,34 @@ export async function POST(request: NextRequest) {
   }
 
   // No ID or not found — INSERT new character
+  const insertPayload: Record<string, unknown> = {
+    user_id: user.id,
+    name: safeName,
+    data: data || {},
+    portrait_url: safePortraitUrl,
+  };
+  if (id && isValidUUID(id)) {
+    insertPayload.id = id;
+  }
+
   const { data: inserted, error: insertError } = await supabase
     .from('characters')
-    .insert({ user_id: user.id, name: safeName, data: data || {}, portrait_url: safePortraitUrl })
+    .insert(insertPayload)
     .select('id, name, portrait_url, created_at, updated_at')
     .maybeSingle();
 
-  if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
+  if (insertError) {
+    console.error('[API Characters POST insert] Error:', insertError.message);
+    return NextResponse.json({ error: insertError.message }, { status: 500 });
+  }
   if (!inserted) return NextResponse.json({ error: 'Failed to save character' }, { status: 500 });
   return NextResponse.json({ character: inserted });
 }
 
 export async function PUT(request: NextRequest) {
   const supabase = createClient(request);
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getAuthenticatedUser(supabase, request);
+  if (!user) return NextResponse.json({ error: authError?.message || 'Unauthorized' }, { status: 401 });
 
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== 'object') {
@@ -150,16 +183,18 @@ export async function PUT(request: NextRequest) {
     .select('id, name, portrait_url, created_at, updated_at')
     .maybeSingle();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('[API Characters PUT] Error:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   if (!character) return NextResponse.json({ error: 'Character not found' }, { status: 404 });
   return NextResponse.json({ character });
 }
 
 export async function DELETE(request: NextRequest) {
   const supabase = createClient(request);
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getAuthenticatedUser(supabase, request);
+  if (!user) return NextResponse.json({ error: authError?.message || 'Unauthorized' }, { status: 401 });
 
   const body = await request.json().catch(() => ({}));
   const { id } = body;
@@ -171,6 +206,9 @@ export async function DELETE(request: NextRequest) {
     .eq('id', id)
     .eq('user_id', user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('[API Characters DELETE] Error:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json({ success: true });
 }

@@ -1156,40 +1156,84 @@ export default function DnDCharacterSheet() {
   // ── Auto-save to cloud (debounced 400ms with instant saving status) when logged in ──
   const cloudSaveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCloudSaveRef = React.useRef<string>('');
-  const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
+  const [cloudSaveStatus, setCloudSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('saved');
+  const [cloudSaveError, setCloudSaveError] = useState<string | null>(null);
   const cloudCharIdRef = React.useRef<string | null>(null);
   const [activeCloudCharId, setActiveCloudCharId] = useState<string | null>(null);
   const cloudSaveInProgressRef = React.useRef(false);
   const pendingCloudSaveRef = React.useRef(false);
   const isCloudSyncingRef = React.useRef(false);
 
+  // Helper: extract active JWT session token for Authorization header
+  const getAuthHeaders = useCallback(async () => {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+    } catch { /* ignore */ }
+    return headers;
+  }, [supabase]);
+
   // Helper: save to cloud (POST with id = upsert, server handles update/insert)
-  const saveToCloud = useCallback(async (): Promise<boolean> => {
+  const saveToCloud = useCallback(async (forcedNew = false): Promise<{ ok: boolean; error?: string; id?: string }> => {
     // If a save is already in progress, mark as pending and skip
     if (cloudSaveInProgressRef.current) {
       pendingCloudSaveRef.current = true;
-      return false;
+      return { ok: false, error: 'Сохранение уже выполняется' };
     }
     cloudSaveInProgressRef.current = true;
     try {
+      const headers = await getAuthHeaders();
+      const targetId = forcedNew ? undefined : (cloudCharIdRef.current || undefined);
       const res = await fetch('/api/characters', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
-          id: cloudCharIdRef.current || undefined,
+          id: targetId,
           name: char.name || 'Безымянный',
           data: char,
           portrait_url: portraitUrl,
         }),
       });
-      const result = await res.json();
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || result.error) {
+        const errorMsg = result.error || `Ошибка сервера (HTTP ${res.status})`;
+        console.error('[Cloud Save Error]', res.status, errorMsg);
+        setCloudSaveError(errorMsg);
+        setCloudSaveStatus('error');
+        return { ok: false, error: errorMsg };
+      }
+
       if (result.character?.id) {
         cloudCharIdRef.current = result.character.id;
         setActiveCloudCharId(result.character.id);
+        setCloudSaveError(null);
+        setCloudSaveStatus('saved');
+        setCloudCharacters(prev => {
+          const idx = prev.findIndex((c: any) => c.id === result.character.id);
+          const updatedEntry = { ...result.character, data: char };
+          if (idx >= 0) {
+            const next = [...prev];
+            next[idx] = updatedEntry;
+            return next;
+          }
+          return [updatedEntry, ...prev];
+        });
+        return { ok: true, id: result.character.id };
       }
-      return !!result.character;
-    } catch { return false; }
-    finally {
+
+      setCloudSaveError('Не удалось сохранить данные персонажа');
+      setCloudSaveStatus('error');
+      return { ok: false, error: 'Не удалось сохранить данные персонажа' };
+    } catch (err: any) {
+      console.error('[Cloud Save Network Exception]', err);
+      const msg = err.message || 'Сетевая ошибка при сохранении';
+      setCloudSaveError(msg);
+      setCloudSaveStatus('error');
+      return { ok: false, error: msg };
+    } finally {
       cloudSaveInProgressRef.current = false;
       // If changes happened while we were saving, trigger another save
       if (pendingCloudSaveRef.current) {
@@ -1197,7 +1241,7 @@ export default function DnDCharacterSheet() {
         setTimeout(() => saveToCloud(), 100);
       }
     }
-  }, [char, portraitUrl]);
+  }, [char, portraitUrl, getAuthHeaders]);
 
   useEffect(() => {
     if (!user || isCloudSyncingRef.current) return;
@@ -1212,9 +1256,14 @@ export default function DnDCharacterSheet() {
     if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current);
     cloudSaveTimerRef.current = setTimeout(async () => {
       if (isCloudSyncingRef.current) return;
-      lastCloudSaveRef.current = snapshot;
-      const ok = await saveToCloud();
-      setCloudSaveStatus(ok ? 'saved' : 'idle');
+      const res = await saveToCloud();
+      if (res.ok) {
+        lastCloudSaveRef.current = snapshot;
+        setCloudSaveStatus('saved');
+      } else {
+        // Do NOT lock lastCloudSaveRef to snapshot on error so future edits retry
+        setCloudSaveStatus('error');
+      }
     }, 400);
     return () => { if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current); };
   }, [user, char, portraitUrl, saveToCloud]);
@@ -1228,7 +1277,11 @@ export default function DnDCharacterSheet() {
       if (newUser && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
         isCloudSyncingRef.current = true;
         try {
-          const res = await fetch('/api/characters');
+          const headers: Record<string, string> = {};
+          if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+          }
+          const res = await fetch('/api/characters', { headers });
           const data = await res.json();
           if (data.characters && data.characters.length > 0) {
             const latest = data.characters[0];
@@ -1242,6 +1295,7 @@ export default function DnDCharacterSheet() {
               setActiveCloudCharId(latest.id);
               lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: latest.portrait_url || null });
               setCloudSaveStatus('saved');
+              setCloudSaveError(null);
             }
           } else {
             // No characters in cloud yet
@@ -2160,7 +2214,12 @@ export default function DnDCharacterSheet() {
       const formData = new FormData();
       formData.append('file', file);
       try {
-        const res = await fetch('/api/upload-portrait', { method: 'POST', body: formData });
+        const { data: { session } } = await supabase.auth.getSession();
+        const headers: Record<string, string> = {};
+        if (session?.access_token) {
+          headers['Authorization'] = `Bearer ${session.access_token}`;
+        }
+        const res = await fetch('/api/upload-portrait', { method: 'POST', headers, body: formData });
         const data = await res.json();
         if (data.url) {
           setPortraitUrl(data.url);
@@ -2187,15 +2246,27 @@ export default function DnDCharacterSheet() {
       };
       reader.readAsDataURL(file);
     }
-  }, [user, showToast]);
+  }, [user, supabase, showToast]);
 
   const handleCloudSave = useCallback(async () => {
     if (!user) { showToast('Ошибка', 'Войдите в аккаунт'); return; }
-    const ok = await saveToCloud();
-    if (ok) {
-      showToast('Сохранено', `"${char.name || 'Безымянный'}" сохранён в облако`);
+    setCloudSaveStatus('saving');
+    const res = await saveToCloud();
+    if (res.ok) {
+      showToast('Сохранено в облако', `"${char.name || 'Безымянный'}" сохранён в базу данных`);
     } else {
-      showToast('Ошибка', 'Не удалось сохранить');
+      showToast('Ошибка сохранения', res.error || 'Не удалось сохранить в облако');
+    }
+  }, [user, saveToCloud, char.name, showToast]);
+
+  const handleSaveAsNew = useCallback(async () => {
+    if (!user) { showToast('Ошибка', 'Войдите в аккаунт'); return; }
+    setCloudSaveStatus('saving');
+    const res = await saveToCloud(true);
+    if (res.ok) {
+      showToast('Новая копия создана', `"${char.name || 'Безымянный'}" сохранён как отдельный персонаж`);
+    } else {
+      showToast('Ошибка сохранения', res.error || 'Не удалось создать копию');
     }
   }, [user, saveToCloud, char.name, showToast]);
 
@@ -2205,17 +2276,22 @@ export default function DnDCharacterSheet() {
       return;
     }
     try {
-      const res = await fetch('/api/characters');
+      const headers = await getAuthHeaders();
+      const res = await fetch('/api/characters', { headers });
       const data = await res.json();
-      if (data.characters) {
+      if (!res.ok || data.error) {
+        console.error('[Supabase Load Error]', res.status, data.error);
+        showToast('Ошибка базы данных', data.error || 'Не удалось загрузить персонажей');
+      } else if (data.characters) {
         setCloudCharacters(data.characters);
       }
       setShowCloudSaves(true);
-    } catch {
+    } catch (err: any) {
+      console.error('[Supabase Load Network Error]', err);
       setShowCloudSaves(true);
       showToast('Внимание', 'Не удалось связаться с облаком');
     }
-  }, [user, showToast]);
+  }, [user, getAuthHeaders, showToast]);
 
   const loadCloudCharacter = useCallback(async (cloudChar: any) => {
     if (cloudChar.data) {
@@ -2230,11 +2306,13 @@ export default function DnDCharacterSheet() {
         // Reset dedup tracker with the fresh snapshot
         lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: cloudChar.portrait_url || null });
         setCloudSaveStatus('saved');
+        setCloudSaveError(null);
       } else {
         cloudCharIdRef.current = null;
         setActiveCloudCharId(null);
         lastCloudSaveRef.current = '';
         setCloudSaveStatus('idle');
+        setCloudSaveError(null);
       }
       setShowCloudSaves(false);
       showToast('Загружено', `"${cloudChar.name || normalized.name}" загружен`);
@@ -2249,11 +2327,17 @@ export default function DnDCharacterSheet() {
       return;
     }
     try {
-      await fetch('/api/characters', {
+      const headers = await getAuthHeaders();
+      const res = await fetch('/api/characters', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ id }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.error) {
+        showToast('Ошибка удаления', data.error || 'Не удалось удалить');
+        return;
+      }
       setCloudCharacters(prev => prev.filter((c: any) => c.id !== id));
       if (cloudCharIdRef.current === id) {
         cloudCharIdRef.current = null;
@@ -2264,7 +2348,7 @@ export default function DnDCharacterSheet() {
     } catch {
       showToast('Ошибка', 'Не удалось удалить');
     }
-  }, [handleReset, showToast]);
+  }, [handleReset, getAuthHeaders, showToast]);
 
   const handleShareCharacter = useCallback(async (targetChar: any) => {
     try {
@@ -2301,6 +2385,12 @@ export default function DnDCharacterSheet() {
 
   const handleWizardComplete = useCallback((newChar: CharacterData) => {
     setChar(newChar);
+    // CRITICAL: Reset cloud character ID so this new character doesn't overwrite a previous character!
+    cloudCharIdRef.current = null;
+    setActiveCloudCharId(null);
+    lastCloudSaveRef.current = '';
+    setCloudSaveStatus('idle');
+    setCloudSaveError(null);
     setShowCreationWizard(false);
     setActiveTab('page1');
     showToast(
@@ -2625,6 +2715,17 @@ export default function DnDCharacterSheet() {
                       <ChestIcon size={14} />
                       <span>Загрузить из JSON</span>
                     </button>
+                    {user && (
+                      <button
+                        type="button"
+                        onClick={() => { setShowSheetMenu(false); handleSaveAsNew(); }}
+                        className="w-full text-left px-3 py-1.5 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                        role="menuitem"
+                      >
+                        <MysticCloudIcon size={14} />
+                        <span>Сохранить как копию</span>
+                      </button>
+                    )}
                     <div className="my-1 border-t border-[#C9A84C]/30" />
                     <button
                       type="button"
@@ -2646,18 +2747,38 @@ export default function DnDCharacterSheet() {
                 <button
                   type="button"
                   onClick={handleCloudSave}
-                  className="parchment-header-btn min-w-[110px] xl:min-w-[128px] inline-flex items-center justify-center gap-1.5 text-center"
-                  title="Синхронизировать с облаком"
+                  className={`parchment-header-btn min-w-[110px] xl:min-w-[128px] inline-flex items-center justify-center gap-1.5 text-center ${
+                    cloudSaveStatus === 'error' ? 'text-amber-800' : ''
+                  }`}
+                  title={
+                    cloudSaveStatus === 'error'
+                      ? `Ошибка: ${cloudSaveError || 'Сбой связи с БД. Нажмите для повтора'}`
+                      : cloudSaveStatus === 'saving'
+                      ? 'Сохранение в базу данных…'
+                      : cloudSaveStatus === 'saved'
+                      ? 'Все изменения сохранены в облаке (нажмите для ручного сохранения)'
+                      : 'Синхронизировать с базой данных'
+                  }
                 >
                   {cloudSaveStatus === 'saving' ? (
                     <>
                       <MysticSpinnerIcon size={15} />
                       <span>Сохранение…</span>
                     </>
-                  ) : (
+                  ) : cloudSaveStatus === 'error' ? (
+                    <>
+                      <span className="text-amber-600 font-bold text-sm">⚠️</span>
+                      <span className="text-amber-800 font-semibold text-xs">Повторить</span>
+                    </>
+                  ) : cloudSaveStatus === 'saved' ? (
                     <>
                       <GoldSealCheckIcon size={15} />
                       <span>Сохранено</span>
+                    </>
+                  ) : (
+                    <>
+                      <MysticCloudIcon size={15} />
+                      <span>Сохранить</span>
                     </>
                   )}
                 </button>
@@ -2720,12 +2841,20 @@ export default function DnDCharacterSheet() {
                 type="button"
                 onClick={handleCloudSave}
                 className="parchment-header-btn p-1.5 flex items-center justify-center"
-                title="Синхронизировать с облаком"
+                title={
+                  cloudSaveStatus === 'error'
+                    ? `Ошибка: ${cloudSaveError || 'Сбой связи с БД. Нажмите для повтора'}`
+                    : 'Синхронизировать с базой данных'
+                }
               >
                 {cloudSaveStatus === 'saving' ? (
                   <MysticSpinnerIcon size={16} />
-                ) : (
+                ) : cloudSaveStatus === 'error' ? (
+                  <span className="text-amber-600 font-bold text-xs">⚠️</span>
+                ) : cloudSaveStatus === 'saved' ? (
                   <GoldSealCheckIcon size={16} />
+                ) : (
+                  <MysticCloudIcon size={16} />
                 )}
               </button>
             )}

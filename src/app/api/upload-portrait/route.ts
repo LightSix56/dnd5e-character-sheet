@@ -4,6 +4,9 @@ import { createServerClient } from '@supabase/ssr';
 export async function POST(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
+  const authHeader = request.headers.get('Authorization');
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
+
   const supabase = createServerClient(
     url,
     anonKey,
@@ -12,10 +15,15 @@ export async function POST(request: NextRequest) {
         getAll() { return request.cookies.getAll(); },
         setAll() {},
       },
+      global: {
+        headers: authHeader ? { Authorization: authHeader } : {},
+      },
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = bearerToken
+    ? await supabase.auth.getUser(bearerToken)
+    : await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   let formData: FormData;

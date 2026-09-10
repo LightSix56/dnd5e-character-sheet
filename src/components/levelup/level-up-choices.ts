@@ -1,4 +1,5 @@
 import { CharacterData } from '@/lib/dnd-types';
+import { DndSpell } from '@/data/compendium/spells';
 import { FightingStyleOption, FIGHTING_STYLES } from '@/components/wizard/wizard-helpers';
 import { normalizeClassName } from '@/data/compendium/class-progression';
 import {
@@ -557,3 +558,81 @@ export function getThirdCasterSpellSlots(level: number): Record<number, number> 
   if (level <= 18) return { 1: 4, 2: 3, 3: 3 };
   return { 1: 4, 2: 3, 3: 3, 4: 1 };
 }
+
+// ── Known Spells Extraction and Level-Up Spell Filtering ──
+
+export function normalizeSpellName(name: string): string {
+  return name.trim().toLowerCase();
+}
+
+/**
+ * Returns a Set of normalized lowercase spell names known by the character,
+ * including cantrips, leveled spells from spellsByLevel, legacy spells array,
+ * and any optional additional spell names (e.g. from auto-spells or racial traits).
+ */
+export function getKnownSpellNames(
+  char?: Partial<CharacterData> | null,
+  additionalSpells?: (string | undefined | null)[]
+): Set<string> {
+  const known = new Set<string>();
+
+  const add = (name?: string | null) => {
+    if (!name || typeof name !== 'string') return;
+    const norm = normalizeSpellName(name);
+    if (norm) known.add(norm);
+  };
+
+  if (char) {
+    // 1. Cantrips
+    if (Array.isArray(char.cantrips)) {
+      char.cantrips.forEach(add);
+    }
+
+    // 2. Leveled spells
+    if (char.spellsByLevel && typeof char.spellsByLevel === 'object') {
+      Object.values(char.spellsByLevel).forEach(levelList => {
+        if (Array.isArray(levelList)) {
+          levelList.forEach(entry => add(entry?.name));
+        }
+      });
+    }
+
+    // 3. Fallback / legacy spells array
+    if (Array.isArray((char as unknown as { spells?: unknown }).spells)) {
+      const legacySpells = (char as unknown as { spells: unknown[] }).spells;
+      legacySpells.forEach((entry: unknown) => {
+        if (typeof entry === 'string') add(entry);
+        else if (entry && typeof (entry as { name?: unknown }).name === 'string') {
+          add((entry as { name: string }).name);
+        }
+      });
+    }
+  }
+
+  // 4. Additional spell names (autoSpells, racial spells, sibling choices, etc.)
+  if (Array.isArray(additionalSpells)) {
+    additionalSpells.forEach(add);
+  }
+
+  return known;
+}
+
+/**
+ * Filters a list of DndSpell objects to exclude any spells whose normalized name
+ * is already in the knownSet, while keeping currentSpellName if specified.
+ */
+export function filterAvailableSpells(
+  spells: DndSpell[],
+  knownSet: Set<string>,
+  currentSpellName?: string | null
+): DndSpell[] {
+  const currentNorm = currentSpellName ? normalizeSpellName(currentSpellName) : null;
+  return spells.filter(spell => {
+    const spellNorm = normalizeSpellName(spell.name);
+    if (currentNorm && spellNorm === currentNorm) {
+      return true;
+    }
+    return !knownSet.has(spellNorm);
+  });
+}
+

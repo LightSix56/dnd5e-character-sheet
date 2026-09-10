@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/level-up-choices.ts": {
-    "mtime": 1789022573.9759462,
-    "seen": 1789023729.295721,
-    "ast_hash": "fa08f82f89ccfdeb06d045ec9c609fe2",
+    "mtime": 1789027710.1579065,
+    "seen": 1789028219.7562864,
+    "ast_hash": "2beec5a7c63c33cb0bdf9f6e3d3de4f5",
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
@@ -570,9 +570,9 @@
     "semantic_hash": ""
   },
   "test/level-up-choices.test.ts": {
-    "mtime": 1788802258.4331021,
-    "seen": 1788802318.033869,
-    "ast_hash": "8bcb7289ab3ab6ae6e04b28e3bde89f3",
+    "mtime": 1789028124.5965018,
+    "seen": 1789028219.7711897,
+    "ast_hash": "d99677df1f1ba322002be81c62915b72",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-07-level-up-mechanics-and-spells-plan.md": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789026621.9906125,
-    "seen": 1789027323.8986838,
-    "ast_hash": "f3e86b2a8bca7e4b2488f3e5c933abcd",
+    "mtime": 1789027869.2037215,
+    "seen": 1789028219.7562811,
+    "ast_hash": "323843d285cebecff605f411cd5110fb",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "e2e/warlock-level-up.spec.ts": {
-    "mtime": 1789027201.944273,
-    "seen": 1789027323.8868716,
-    "ast_hash": "82d46de6ecc35410f1060b2a2b8d64fd",
+    "mtime": 1789027882.9267836,
+    "seen": 1789028219.74069,
+    "ast_hash": "b727b72ad4c21acd6ea3f4cf57efb6bd",
     "semantic_hash": ""
   },
   "src/data/compendium/warlock-choices.ts": {

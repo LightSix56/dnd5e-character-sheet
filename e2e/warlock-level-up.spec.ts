@@ -238,7 +238,7 @@ test.describe('Warlock Character Creation and Level-Up E2E', () => {
       skillProficiencies: { 'Магия': true, 'Обман': true },
       spellSlots: { 1: { current: 1, max: 1 } },
       cantrips: [],
-      spellsByLevel: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] },
+      spellsByLevel: { 1: [{ name: 'Броня Агатиса', prepared: true }], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] },
       spells: [],
       traitsList: [],
       levelHistory: [],
@@ -275,7 +275,10 @@ test.describe('Warlock Character Creation and Level-Up E2E', () => {
     const spellSelect = spellSection.locator('select').nth(1);
     await expect(spellSelect).toBeVisible();
 
-    // Check that spell select contains Warlock 1st-circle spells
+    // "Броня Агатиса" is ALREADY KNOWN by the character, so it MUST NOT be in the dropdown!
+    await expect(spellSelect).not.toContainText('Броня Агатиса');
+
+    // "Адское возмездие" is not yet known, so it MUST be in the dropdown!
     await expect(spellSelect).toContainText('Адское возмездие');
 
     // Select "Адское возмездие"
@@ -283,6 +286,16 @@ test.describe('Warlock Character Creation and Level-Up E2E', () => {
 
     // Counter updates to "Выбрано 1 из 1"
     await expect(spellSection).toContainText('Выбрано 1 из 1');
+
+    // Add a second spell row to verify that "Адское возмездие" is excluded from sibling rows
+    await spellSection.locator('button:has-text("+ Заклинание")').click();
+    const secondSpellSelect = spellSection.locator('select').nth(3);
+    await expect(secondSpellSelect).toBeVisible();
+    await expect(secondSpellSelect).not.toContainText('Адское возмездие');
+    await expect(secondSpellSelect).not.toContainText('Броня Агатиса');
+
+    // Remove the extra row
+    await spellSection.locator('button[title="Удалить строку"]').last().click();
 
     // Pick 2 invocations to enable confirm button
     await levelUpModal.locator('button:has-text("Мучительный взрыв")').click();

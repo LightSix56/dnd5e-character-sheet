@@ -42,6 +42,9 @@ import {
   METAMAGIC_OPTIONS,
   ELDRITCH_INVOCATIONS,
   BATTLE_MASTER_MANEUVERS,
+  getKnownSpellNames,
+  filterAvailableSpells,
+  normalizeSpellName,
 } from './level-up-choices';
 import { DND_COMPENDIUM_SPELLS } from '@/data/compendium/spells';
 import {
@@ -378,6 +381,15 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     Math.max(1, maxSlotLevelAtNewLevel)
   );
 
+  // Set of normalized spell names already known by the character or auto-granted at this level
+  const baseKnownSpells = useMemo(() => {
+    const additional = [
+      ...autoSpells.map(s => s.name),
+      ...racialFeatures.filter(rf => rf.spell).map(rf => rf.spell!.name),
+    ];
+    return getKnownSpellNames(char, additional);
+  }, [char, autoSpells, racialFeatures]);
+
   // Clean spellcasting learning state (pre-populated with count gained at this level per dnd.su)
   const [newCantrips, setNewCantrips] = useState<string[]>(() => {
     return newCantripsGained > 0 ? Array(newCantripsGained).fill('') : [];
@@ -438,6 +450,30 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       a[i] = { ...a[i], [field]: value };
       return a;
     });
+
+  const getSelectableCantripsForIndex = useCallback(
+    (index: number, currentName?: string) => {
+      const otherSelected = newCantrips
+        .filter((c, idx) => idx !== index && c.trim())
+        .map(normalizeSpellName);
+      const otherTome = selectedTomeCantrips.map(normalizeSpellName);
+      const excludeSet = new Set([...baseKnownSpells, ...otherSelected, ...otherTome]);
+      return filterAvailableSpells(availableCantrips, excludeSet, currentName);
+    },
+    [baseKnownSpells, newCantrips, selectedTomeCantrips, availableCantrips]
+  );
+
+  const getSelectableSpellsForIndex = useCallback(
+    (index: number, lvl: number, currentName?: string) => {
+      const otherSelected = newSpells
+        .filter((s, idx) => idx !== index && s.name.trim())
+        .map(s => normalizeSpellName(s.name));
+      const excludeSet = new Set([...baseKnownSpells, ...otherSelected]);
+      const classSpells = getAvailableSpellsForLevel(lvl);
+      return filterAvailableSpells(classSpells, excludeSet, currentName);
+    },
+    [baseKnownSpells, newSpells, getAvailableSpellsForLevel]
+  );
 
   // Validation
   const requiredExpertiseCount = Math.min(
@@ -534,6 +570,46 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     if (choicesConfig.canSwapInvocation && swappedOutInvocation && !swappedInInvocation) {
       errs.push(`Выберите новое воззвание взамен «${swappedOutInvocation}».`);
     }
+
+    // Spells and cantrips duplication validation
+    for (let i = 0; i < newSpells.length; i++) {
+      const s = newSpells[i];
+      if (s.name.trim()) {
+        const norm = normalizeSpellName(s.name);
+        if (baseKnownSpells.has(norm)) {
+          errs.push(`Заклинание «${s.name}» уже известно персонажу.`);
+        }
+        for (let j = i + 1; j < newSpells.length; j++) {
+          if (normalizeSpellName(newSpells[j].name) === norm) {
+            errs.push(`Заклинание «${s.name}» выбрано более одного раза.`);
+            break;
+          }
+        }
+      }
+    }
+
+    for (let i = 0; i < newCantrips.length; i++) {
+      const c = newCantrips[i];
+      if (c.trim()) {
+        const norm = normalizeSpellName(c);
+        if (baseKnownSpells.has(norm)) {
+          errs.push(`Заговор «${c}» уже известен персонажу.`);
+        }
+        for (let j = i + 1; j < newCantrips.length; j++) {
+          if (normalizeSpellName(newCantrips[j]) === norm) {
+            errs.push(`Заговор «${c}» выбран более одного раза.`);
+            break;
+          }
+        }
+      }
+    }
+
+    for (const tc of selectedTomeCantrips) {
+      if (baseKnownSpells.has(normalizeSpellName(tc))) {
+        errs.push(`Заговор «${tc}» для Книги Теней уже известен персонажу.`);
+      }
+    }
+
     return errs;
   }, [
     isASIOverCap,
@@ -559,6 +635,9 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     selectedGenieKind,
     swappedOutInvocation,
     swappedInInvocation,
+    newSpells,
+    newCantrips,
+    baseKnownSpells,
   ]);
 
   // Serialization
@@ -1720,31 +1799,42 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   </div>
                   <div className="max-h-40 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 gap-1.5 custom-scrollbar">
                     {DND_COMPENDIUM_SPELLS.filter(s => s.level === 0).map(cantrip => {
+                      const isAlreadyKnown =
+                        baseKnownSpells.has(normalizeSpellName(cantrip.name)) ||
+                        newCantrips.some(c => normalizeSpellName(c) === normalizeSpellName(cantrip.name));
                       const isChosen = selectedTomeCantrips.includes(cantrip.name);
                       return (
                         <button
                           key={cantrip.name}
                           type="button"
                           onClick={() => {
+                            if (isAlreadyKnown) return;
                             if (isChosen) {
                               setSelectedTomeCantrips(prev => prev.filter(n => n !== cantrip.name));
                             } else if (selectedTomeCantrips.length < 3) {
                               setSelectedTomeCantrips(prev => [...prev, cantrip.name]);
                             }
                           }}
-                          disabled={!isChosen && selectedTomeCantrips.length >= 3}
+                          disabled={isAlreadyKnown || (!isChosen && selectedTomeCantrips.length >= 3)}
+                          title={isAlreadyKnown ? 'Этот заговор уже изучен вашим персонажем' : undefined}
                           className={`text-left px-2 py-1.5 rounded text-[11px] transition-all flex items-center justify-between ${
-                            isChosen ? 'font-bold' : 'disabled:opacity-40'
+                            isChosen
+                              ? 'font-bold'
+                              : isAlreadyKnown
+                                ? 'opacity-40 cursor-not-allowed line-through'
+                                : 'disabled:opacity-40'
                           }`}
                           style={
                             isChosen
                               ? { background: '#E8D3A2', border: '1px solid #5C341F', color: '#3D2012' }
-                              : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#4A2A18' }
+                              : isAlreadyKnown
+                                ? { background: 'rgba(200, 180, 160, 0.3)', border: '1px solid rgba(139, 105, 20, 0.15)', color: '#7A6B60' }
+                                : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#4A2A18' }
                           }
                         >
                           <span className="truncate mr-1">{cantrip.name}</span>
                           <span className="shrink-0 text-[10px] opacity-70">
-                            {cantrip.classes?.[0] || 'заговор'}
+                            {isAlreadyKnown ? 'уже изучен' : cantrip.classes?.[0] || 'заговор'}
                           </span>
                         </button>
                       );
@@ -2675,28 +2765,35 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                             </button>
                           </div>
                         ) : (
-                          <select
-                            value={c}
-                            onChange={e => {
-                              if (e.target.value === '__custom__') {
-                                toggleCustomCantrip(i, true);
-                                updateCantripRow(i, '');
-                              } else {
-                                updateCantripRow(i, e.target.value);
-                              }
-                            }}
-                            className="parchment-select text-xs w-full py-1 px-2 font-medium"
-                          >
-                            <option value="">
-                              -- Выберите заговор ({availableCantrips.length} доступно) --
-                            </option>
-                            {availableCantrips.map(spell => (
-                              <option key={spell.name} value={spell.name}>
-                                {spell.name} ({spell.school}){spell.nameEn ? ` — ${spell.nameEn}` : ''}
-                              </option>
-                            ))}
-                            <option value="__custom__">✍️ Ввести другое название вручную...</option>
-                          </select>
+                          (() => {
+                            const selectableCantrips = getSelectableCantripsForIndex(i, c);
+                            return (
+                              <select
+                                value={c}
+                                onChange={e => {
+                                  if (e.target.value === '__custom__') {
+                                    toggleCustomCantrip(i, true);
+                                    updateCantripRow(i, '');
+                                  } else {
+                                    updateCantripRow(i, e.target.value);
+                                  }
+                                }}
+                                className="parchment-select text-xs w-full py-1 px-2 font-medium"
+                              >
+                                <option value="">
+                                  {selectableCantrips.length === 0
+                                    ? '-- Все доступные заговоры уже изучены --'
+                                    : `-- Выберите заговор (${selectableCantrips.length} доступно) --`}
+                                </option>
+                                {selectableCantrips.map(spell => (
+                                  <option key={spell.name} value={spell.name}>
+                                    {spell.name} ({spell.school}){spell.nameEn ? ` — ${spell.nameEn}` : ''}
+                                  </option>
+                                ))}
+                                <option value="__custom__">✍️ Ввести другое название вручную...</option>
+                              </select>
+                            );
+                          })()
                         )}
                       </div>
                       <div className="flex items-center justify-end shrink-0">
@@ -2850,28 +2947,35 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                             </button>
                           </div>
                         ) : (
-                          <select
-                            value={s.name}
-                            onChange={e => {
-                              if (e.target.value === '__custom__') {
-                                updateSpellRow(i, 'isCustom', true);
-                                updateSpellRow(i, 'name', '');
-                              } else {
-                                updateSpellRow(i, 'name', e.target.value);
-                              }
-                            }}
-                            className="parchment-select text-xs w-full py-1 px-2 font-medium"
-                          >
-                            <option value="">
-                              -- Выберите заклинание {s.level}-го круга ({getAvailableSpellsForLevel(s.level).length} доступно) --
-                            </option>
-                            {getAvailableSpellsForLevel(s.level).map(spell => (
-                              <option key={spell.name} value={spell.name}>
-                                {spell.name} ({spell.school}){spell.nameEn ? ` — ${spell.nameEn}` : ''}
-                              </option>
-                            ))}
-                            <option value="__custom__">✍️ Ввести другое название вручную...</option>
-                          </select>
+                          (() => {
+                            const selectableSpells = getSelectableSpellsForIndex(i, s.level, s.name);
+                            return (
+                              <select
+                                value={s.name}
+                                onChange={e => {
+                                  if (e.target.value === '__custom__') {
+                                    updateSpellRow(i, 'isCustom', true);
+                                    updateSpellRow(i, 'name', '');
+                                  } else {
+                                    updateSpellRow(i, 'name', e.target.value);
+                                  }
+                                }}
+                                className="parchment-select text-xs w-full py-1 px-2 font-medium"
+                              >
+                                <option value="">
+                                  {selectableSpells.length === 0
+                                    ? `-- Все доступные заклинания ${s.level}-го круга уже изучены --`
+                                    : `-- Выберите заклинание ${s.level}-го круга (${selectableSpells.length} доступно) --`}
+                                </option>
+                                {selectableSpells.map(spell => (
+                                  <option key={spell.name} value={spell.name}>
+                                    {spell.name} ({spell.school}){spell.nameEn ? ` — ${spell.nameEn}` : ''}
+                                  </option>
+                                ))}
+                                <option value="__custom__">✍️ Ввести другое название вручную...</option>
+                              </select>
+                            );
+                          })()
                         )}
                       </div>
 

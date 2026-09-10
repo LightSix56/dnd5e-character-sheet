@@ -11,7 +11,10 @@ import {
   TOTEM_SPIRIT_OPTIONS,
   TOTEM_ASPECT_OPTIONS,
   BATTLE_MASTER_MANEUVERS,
+  getKnownSpellNames,
+  filterAvailableSpells,
 } from '../src/components/levelup/level-up-choices';
+import { DndSpell } from '../src/data/compendium/spells';
 
 describe('Level-Up Interactive Choices Engine', () => {
   it('Paladin level 2 returns 4 paladin fighting styles', () => {
@@ -215,5 +218,58 @@ describe('Level-Up Interactive Choices Engine', () => {
     assert.deepStrictEqual(getThirdCasterSpellSlots(7), { 1: 4, 2: 2 });
     assert.deepStrictEqual(getThirdCasterSpellSlots(13), { 1: 4, 2: 3, 3: 2 });
     assert.deepStrictEqual(getThirdCasterSpellSlots(19), { 1: 4, 2: 3, 3: 3, 4: 1 });
+  });
+
+  describe('Known spells filtering on level-up', () => {
+    it('getKnownSpellNames extracts existing cantrips, leveled spells, and extra spells', () => {
+      const char: Partial<CharacterData> = {
+        cantrips: ['Мистический заряд', 'Зловещее орудие'],
+        spellsByLevel: {
+          1: [
+            { name: 'Адское возмездие', prepared: true },
+            { name: 'Ведьмин снаряд', prepared: false },
+          ],
+          2: [
+            { name: 'Тьма', prepared: true },
+          ],
+        },
+      };
+
+      const known = getKnownSpellNames(char, ['Священное пламя', '  Огонь фей  ']);
+      assert.ok(known.has('мистический заряд'));
+      assert.ok(known.has('зловещее орудие'));
+      assert.ok(known.has('адское возмездие'));
+      assert.ok(known.has('ведьмин снаряд'));
+      assert.ok(known.has('тьма'));
+      assert.ok(known.has('священное пламя'));
+      assert.ok(known.has('огонь фей'));
+      assert.strictEqual(known.has('волшебная стрела'), false);
+    });
+
+    it('filterAvailableSpells removes already known spells from the available pool', () => {
+      const mockSpells: DndSpell[] = [
+        { name: 'Адское возмездие', level: 1, school: 'Воплощение', castingTime: '1 р', range: '60 ф', components: { v: true, s: true }, duration: 'Мгновенная', description: '', classes: ['Колдун'] },
+        { name: 'Броня Агатиса', level: 1, school: 'Ограждение', castingTime: '1 д', range: 'На себя', components: { v: true, s: true, m: 'вода' }, duration: '1 час', description: '', classes: ['Колдун'] },
+        { name: 'Сглаз', level: 1, school: 'Очарование', castingTime: '1 бд', range: '90 ф', components: { v: true, s: true, m: 'глаз' }, duration: 'Конц., 1 час', description: '', classes: ['Колдун'] },
+      ];
+
+      const known = new Set(['адское возмездие']);
+      const filtered = filterAvailableSpells(mockSpells, known);
+      assert.strictEqual(filtered.length, 2);
+      assert.deepStrictEqual(filtered.map(s => s.name), ['Броня Агатиса', 'Сглаз']);
+    });
+
+    it('filterAvailableSpells keeps currentSpellName even if present in known set', () => {
+      const mockSpells: DndSpell[] = [
+        { name: 'Адское возмездие', level: 1, school: 'Воплощение', castingTime: '1 р', range: '60 ф', components: { v: true, s: true }, duration: 'Мгновенная', description: '', classes: ['Колдун'] },
+        { name: 'Броня Агатиса', level: 1, school: 'Ограждение', castingTime: '1 д', range: 'На себя', components: { v: true, s: true, m: 'вода' }, duration: '1 час', description: '', classes: ['Колдун'] },
+      ];
+
+      const known = new Set(['адское возмездие']);
+      // Row currently has "Адское возмездие" selected
+      const filtered = filterAvailableSpells(mockSpells, known, 'Адское возмездие');
+      assert.strictEqual(filtered.length, 2);
+      assert.ok(filtered.some(s => s.name === 'Адское возмездие'));
+    });
   });
 });

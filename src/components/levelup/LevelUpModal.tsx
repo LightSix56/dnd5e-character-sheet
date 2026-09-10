@@ -273,6 +273,27 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     () => choicesConfig.genieKindOptions?.[0]?.id || 'dao'
   );
 
+  // Saving throw choice (e.g. Gloom Stalker Iron Mind)
+  const [selectedSavingThrow, setSelectedSavingThrow] = useState<AbilityName>(
+    () => choicesConfig.savingThrowOptions?.[0] || 'МДР'
+  );
+  // Skill choice (e.g. Fey Wanderer Otherworldly Glamour)
+  const [selectedFeyWandererSkill, setSelectedFeyWandererSkill] = useState<string>(
+    () => choicesConfig.feyWandererSkillOptions?.[0] || 'Обман'
+  );
+
+  useEffect(() => {
+    if (choicesConfig.savingThrowOptions?.length) {
+      setSelectedSavingThrow(choicesConfig.savingThrowOptions[0]);
+    }
+  }, [choicesConfig.savingThrowOptions]);
+
+  useEffect(() => {
+    if (choicesConfig.feyWandererSkillOptions?.length) {
+      setSelectedFeyWandererSkill(choicesConfig.feyWandererSkillOptions[0]);
+    }
+  }, [choicesConfig.feyWandererSkillOptions]);
+
   // ASI / Feat choice
   const [asiChoice, setAsiChoice] = useState<'stats' | 'feat'>('stats');
   const [asiAbility1, setAsiAbility1] = useState<AbilityName>('СИЛ');
@@ -1028,6 +1049,50 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       extraNotes.push('[Мастер выживания]: Владение и компетентность в навыках «Природа» и «Выживание»');
     }
 
+    // Saving Throw Proficiencies (Gloom Stalker Iron Mind, Rogue Slippery Mind, Monk Diamond Soul)
+    const calculatedNewSavingThrowProfs: AbilityName[] = [];
+    if (choicesConfig.needsSavingThrowProficiency && selectedSavingThrow) {
+      calculatedNewSavingThrowProfs.push(selectedSavingThrow);
+      extraNotes.push(`[Владение спасброском (${choicesConfig.savingThrowTitle || 'Умение'})]: ${ABILITY_FULL[selectedSavingThrow] || selectedSavingThrow}`);
+    }
+    if (normClass === 'Плут' && newLevel === 15) {
+      if (!char.savingThrowProficiencies?.['МДР'] && !calculatedNewSavingThrowProfs.includes('МДР')) {
+        calculatedNewSavingThrowProfs.push('МДР');
+        extraNotes.push('[Скользкий разум]: Владение спасбросками Мудрости');
+      }
+    }
+    if (normClass === 'Монах' && newLevel === 14) {
+      const allAbilities: AbilityName[] = ['СИЛ', 'ЛОВ', 'ТЕЛ', 'ИНТ', 'МДР', 'ХАР'];
+      for (const a of allAbilities) {
+        if (!char.savingThrowProficiencies?.[a] && !calculatedNewSavingThrowProfs.includes(a)) {
+          calculatedNewSavingThrowProfs.push(a);
+        }
+      }
+      extraNotes.push('[Алмазная душа]: Владение всеми спасбросками');
+    }
+
+    // Fey Wanderer Level 3: Otherworldly Glamour
+    const feyWandererSkillProfs: string[] = [];
+    if (choicesConfig.needsFeyWandererSkill && selectedFeyWandererSkill) {
+      if (!char.skillProficiencies?.[selectedFeyWandererSkill]) {
+        feyWandererSkillProfs.push(selectedFeyWandererSkill);
+      }
+      extraNotes.push(`[Потустороннее очарование]: Владение навыком «${selectedFeyWandererSkill}»`);
+    }
+
+    // Drakewarden Level 3: Draconic Gift
+    let drakewardenProfText = '';
+    const isDrakewardenLvl3 =
+      normClass === 'Следопыт' &&
+      newLevel === 3 &&
+      (effectiveSubclass.toLowerCase().includes('дрейк') ||
+        effectiveSubclass.toLowerCase().includes('дракон') ||
+        effectiveSubclass.toLowerCase().includes('drake'));
+    if (isDrakewardenLvl3) {
+      drakewardenProfText = 'Язык: Драконий';
+      extraNotes.push('[Драконий дар]: Язык Драконий');
+    }
+
     if (extraNotes.length > 0) {
       fullNotes = fullNotes
         ? `${fullNotes}\n${extraNotes.join('\n')}`
@@ -1058,11 +1123,11 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       notes: fullNotes,
       newCantrips: allNewCantrips,
       newSpells: combinedSpells,
-      newSavingThrowProfs: [],
-      newSkillProfs: scoutSkillProfs,
+      newSavingThrowProfs: calculatedNewSavingThrowProfs,
+      newSkillProfs: Array.from(new Set([...scoutSkillProfs, ...feyWandererSkillProfs])),
       newSkillExpertise: Array.from(new Set([...selectedExpertise, ...scoutSkillExpertise])),
       newAttacks: [],
-      newProficienciesText: '',
+      newProficienciesText: drakewardenProfText,
       newEquipmentText: '',
       pactBoon: choicesConfig.needsPactBoon ? selectedPactBoon : undefined,
       tomeCantrips: (choicesConfig.needsPactBoon && selectedPactBoon === 'tome') ? selectedTomeCantrips : undefined,
@@ -2408,6 +2473,144 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                         style={{ color: '#5C341F' }}
                       >
                         {opt.description}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 6.h. Saving Throw Proficiency Choice (e.g. Gloom Stalker Iron Mind) */}
+          {choicesConfig.needsSavingThrowProficiency && (
+            <div className="parchment-modal-section space-y-2.5">
+              <div className="flex items-center justify-between">
+                <h3
+                  className="text-sm font-bold flex items-center gap-1.5"
+                  style={{ color: '#3C2415' }}
+                >
+                  <D20Icon size={16} />
+                  <span>
+                    {choicesConfig.savingThrowTitle || 'Владение спасброском'} ({newLevel} ур.):
+                  </span>
+                </h3>
+                <span
+                  className="text-[11px] font-bold"
+                  style={{
+                    color: selectedSavingThrow ? '#4a7c3f' : '#8B2500',
+                  }}
+                >
+                  {selectedSavingThrow ? `Выбрано: ${ABILITY_FULL[selectedSavingThrow] || selectedSavingThrow}` : 'Требуется выбор'}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {(choicesConfig.savingThrowOptions || []).map(abil => {
+                  const isSel = selectedSavingThrow === abil;
+                  return (
+                    <button
+                      key={abil}
+                      type="button"
+                      onClick={() => setSelectedSavingThrow(abil)}
+                      className="text-left p-3 rounded-lg transition-all flex flex-col justify-between gap-1.5"
+                      style={{
+                        background: isSel
+                          ? 'rgba(232, 211, 162, 0.7)'
+                          : 'rgba(232, 211, 162, 0.25)',
+                        border: isSel
+                          ? '2px solid #C9A84C'
+                          : '1px solid rgba(201, 168, 76, 0.4)',
+                        boxShadow: isSel
+                          ? '0 0 10px rgba(201, 168, 76, 0.4)'
+                          : 'none',
+                      }}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span
+                          className="font-bold text-xs"
+                          style={{ color: '#3D2012' }}
+                        >
+                          Спасбросок: {ABILITY_FULL[abil] || abil} ({abil})
+                        </span>
+                        {isSel ? (
+                          <GoldSealCheckIcon size={18} />
+                        ) : (
+                          <span className="w-4 h-4 rounded-full border border-[#C9A84C]/60" />
+                        )}
+                      </div>
+                      <p
+                        className="text-[11px] leading-relaxed"
+                        style={{ color: '#5C341F' }}
+                      >
+                        Вы получаете владение спасбросками этой характеристики, добавляя бонус мастерства.
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 6.i. Fey Wanderer Skill Choice */}
+          {choicesConfig.needsFeyWandererSkill && (
+            <div className="parchment-modal-section space-y-2.5">
+              <div className="flex items-center justify-between">
+                <h3
+                  className="text-sm font-bold flex items-center gap-1.5"
+                  style={{ color: '#3C2415' }}
+                >
+                  <SparklesDndIcon size={16} />
+                  <span>
+                    Потустороннее очарование: Выбор навыка ({newLevel} ур.):
+                  </span>
+                </h3>
+                <span
+                  className="text-[11px] font-bold"
+                  style={{
+                    color: selectedFeyWandererSkill ? '#4a7c3f' : '#8B2500',
+                  }}
+                >
+                  {selectedFeyWandererSkill ? `Выбрано: ${selectedFeyWandererSkill}` : 'Требуется выбор'}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {(choicesConfig.feyWandererSkillOptions || []).map(skillName => {
+                  const isSel = selectedFeyWandererSkill === skillName;
+                  return (
+                    <button
+                      key={skillName}
+                      type="button"
+                      onClick={() => setSelectedFeyWandererSkill(skillName)}
+                      className="text-left p-3 rounded-lg transition-all flex flex-col justify-between gap-1.5"
+                      style={{
+                        background: isSel
+                          ? 'rgba(232, 211, 162, 0.7)'
+                          : 'rgba(232, 211, 162, 0.25)',
+                        border: isSel
+                          ? '2px solid #C9A84C'
+                          : '1px solid rgba(201, 168, 76, 0.4)',
+                        boxShadow: isSel
+                          ? '0 0 10px rgba(201, 168, 76, 0.4)'
+                          : 'none',
+                      }}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span
+                          className="font-bold text-xs"
+                          style={{ color: '#3D2012' }}
+                        >
+                          {skillName}
+                        </span>
+                        {isSel ? (
+                          <GoldSealCheckIcon size={18} />
+                        ) : (
+                          <span className="w-4 h-4 rounded-full border border-[#C9A84C]/60" />
+                        )}
+                      </div>
+                      <p
+                        className="text-[11px] leading-relaxed"
+                        style={{ color: '#5C341F' }}
+                      >
+                        Владение навыком на выбор странника фей.
                       </p>
                     </button>
                   );

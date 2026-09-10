@@ -240,15 +240,15 @@
     "semantic_hash": ""
   },
   "src/data/compendium/class-spells.ts": {
-    "mtime": 1789044047.8184204,
-    "seen": 1789044231.3724213,
-    "ast_hash": "5978c42ed02c28b0b75afb1149adfe3a",
+    "mtime": 1789047388.4202561,
+    "seen": 1789047680.8566957,
+    "ast_hash": "e684340edbf29064c60e6a81e56cbdab",
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789045726.0218036,
-    "seen": 1789045886.347454,
-    "ast_hash": "691582b2d4bc09c0cc95b9c749031ec4",
+    "mtime": 1789047543.0988288,
+    "seen": 1789047680.8567002,
+    "ast_hash": "59f59710733e70dfd86b8d0dbaee1e10",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -552,15 +552,15 @@
     "semantic_hash": ""
   },
   "src/components/levelup/level-up-choices.ts": {
-    "mtime": 1789027710.1579065,
-    "seen": 1789028219.7562864,
-    "ast_hash": "2beec5a7c63c33cb0bdf9f6e3d3de4f5",
+    "mtime": 1789047585.629285,
+    "seen": 1789047680.8537052,
+    "ast_hash": "254db13edf1d5de89d5a467d04b12e60",
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
-    "mtime": 1789045795.8288393,
-    "seen": 1789045886.3465512,
-    "ast_hash": "a935651024f6a22a3d592c483d52045c",
+    "mtime": 1789047397.1821096,
+    "seen": 1789047680.8561192,
+    "ast_hash": "831750b0bc22f391bd8a7cb8b02dbe5b",
     "semantic_hash": ""
   },
   "test/auto-spells-engine.test.ts": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789031302.453137,
-    "seen": 1789031726.6583831,
-    "ast_hash": "aba86c20def02956a89852ed93c1ddfd",
+    "mtime": 1789047601.5080914,
+    "seen": 1789047680.8536987,
+    "ast_hash": "f9626f89fe65164980f6f2ab585d86ab",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -777,6 +777,12 @@
     "mtime": 1789045652.5363362,
     "seen": 1789045886.3536708,
     "ast_hash": "f504e640d5491c3b022f50567c7f897c",
+    "semantic_hash": ""
+  },
+  "test/ranger-subclasses.test.ts": {
+    "mtime": 1789047608.5306501,
+    "seen": 1789047680.8677573,
+    "ast_hash": "2ead638937d9d83ab58d1efc6f73e8f7",
     "semantic_hash": ""
   }
 }

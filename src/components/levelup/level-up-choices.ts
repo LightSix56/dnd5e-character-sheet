@@ -1,4 +1,4 @@
-import { CharacterData } from '@/lib/dnd-types';
+import { CharacterData, AbilityName } from '@/lib/dnd-types';
 import { DndSpell } from '@/data/compendium/spells';
 import { FightingStyleOption, FIGHTING_STYLES } from '@/components/wizard/wizard-helpers';
 import { normalizeClassName } from '@/data/compendium/class-progression';
@@ -177,6 +177,37 @@ export const HUNTER_DEFENSE_OPTIONS: { id: string; name: string; description: st
   }
 ];
 
+export const HUNTER_MULTIATTACK_OPTIONS: { id: string; name: string; description: string }[] = [
+  {
+    id: 'volley',
+    name: 'Залп',
+    description: 'Совершите дальнобойную атаку по любому числу существ в пределах 10 футов от выбранной точки при наличии боеприпасов.'
+  },
+  {
+    id: 'whirlwind',
+    name: 'Вихревая атака',
+    description: 'Совершите рукопашную атаку по любому числу существ в пределах 5 футов от вас.'
+  }
+];
+
+export const HUNTER_SUPERIOR_DEFENSE_OPTIONS: { id: string; name: string; description: string }[] = [
+  {
+    id: 'evasion',
+    name: 'Уклонение',
+    description: 'При успехе спасброска Ловкости от урона вы не получаете урон вовсе, а при провале получаете лишь половину.'
+  },
+  {
+    id: 'stand-against-tide',
+    name: 'Противостояние приливу',
+    description: 'Когда существо промахивается по вам рукопашной атакой, реакцией заставьте его повторить атаку по другому существу в его досягаемости.'
+  },
+  {
+    id: 'uncanny-dodge',
+    name: 'Непоколебимость',
+    description: 'Когда видимый противник попадает по вам атакой, реакцией уполовиньте получаемый от неё урон.'
+  }
+];
+
 // ── Barbarian Totem Warrior Choices ──
 
 export const TOTEM_SPIRIT_OPTIONS: { id: string; name: string; description: string }[] = [
@@ -292,6 +323,11 @@ export interface LevelUpChoicesConfig {
   needsHunterChoice?: boolean;
   hunterChoiceTitle?: string;
   hunterOptions?: { id: string; name: string; description: string }[];
+  needsSavingThrowProficiency?: boolean;
+  savingThrowTitle?: string;
+  savingThrowOptions?: AbilityName[];
+  needsFeyWandererSkill?: boolean;
+  feyWandererSkillOptions?: string[];
   needsTotemChoice?: boolean;
   totemChoiceTitle?: string;
   totemOptions?: { id: string; name: string; description: string }[];
@@ -506,6 +542,56 @@ export function getLevelUpChoicesConfig(
     config.needsHunterChoice = true;
     config.hunterChoiceTitle = 'Оборонительная тактика';
     config.hunterOptions = HUNTER_DEFENSE_OPTIONS;
+  }
+
+  // Level 11: Multiattack
+  if (
+    normClass === 'Следопыт' &&
+    newLevel === 11 &&
+    (rawSubclass.includes('охотник') || rawSubclass.includes('hunter'))
+  ) {
+    config.needsHunterChoice = true;
+    config.hunterChoiceTitle = 'Мультиатака';
+    config.hunterOptions = HUNTER_MULTIATTACK_OPTIONS;
+  }
+
+  // Level 15: Superior Hunter's Defense
+  if (
+    normClass === 'Следопыт' &&
+    newLevel === 15 &&
+    (rawSubclass.includes('охотник') || rawSubclass.includes('hunter'))
+  ) {
+    config.needsHunterChoice = true;
+    config.hunterChoiceTitle = 'Защита охотника';
+    config.hunterOptions = HUNTER_SUPERIOR_DEFENSE_OPTIONS;
+  }
+
+  // 5b. Gloom Stalker Level 7: Iron Mind (Железный разум)
+  if (
+    normClass === 'Следопыт' &&
+    newLevel === 7 &&
+    (rawSubclass.includes('сумрачный') || rawSubclass.includes('gloom'))
+  ) {
+    config.needsSavingThrowProficiency = true;
+    config.savingThrowTitle = 'Железный разум';
+    if (!char.savingThrowProficiencies?.['МДР']) {
+      config.savingThrowOptions = ['МДР'];
+    } else {
+      const alt: AbilityName[] = [];
+      if (!char.savingThrowProficiencies?.['ИНТ']) alt.push('ИНТ');
+      if (!char.savingThrowProficiencies?.['ХАР']) alt.push('ХАР');
+      config.savingThrowOptions = alt.length > 0 ? alt : ['ИНТ', 'ХАР'];
+    }
+  }
+
+  // 5c. Fey Wanderer Level 3: Otherworldly Glamour (Потустороннее очарование)
+  if (
+    normClass === 'Следопыт' &&
+    newLevel === 3 &&
+    (rawSubclass.includes('странник фей') || rawSubclass.includes('fey'))
+  ) {
+    config.needsFeyWandererSkill = true;
+    config.feyWandererSkillOptions = ['Обман', 'Выступление', 'Убеждение'];
   }
 
   // 6. Barbarian Totem Choices

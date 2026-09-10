@@ -111,6 +111,28 @@ export function getAutoGrantedSpellsForLevel(
     }
   }
 
+  // 1e. Ranger archetype bonus cantrips at level 3
+  const isRanger = classNameLower === 'следопыт' || classNameLower === 'ranger' || classNameLower.includes('следопыт');
+  if (isRanger && newLevel === 3) {
+    const subLower = (subclassOverride || char.subclass || '').toLowerCase();
+    if (subLower.includes('роя') || subLower.includes('swarm')) {
+      result.push({
+        name: 'Волшебная рука',
+        level: 0,
+        prepared: true,
+        source: 'Архетип: Хранитель роя',
+      });
+    }
+    if (subLower.includes('дрейк') || subLower.includes('дракон') || subLower.includes('drake')) {
+      result.push({
+        name: 'Волшебство',
+        level: 0,
+        prepared: true,
+        source: 'Архетип: Драконий страж',
+      });
+    }
+  }
+
   // 2. Subclass expanded spells
   const effectiveSubclass = (subclassOverride || char.subclass || '').trim();
   if (effectiveSubclass) {
@@ -149,7 +171,7 @@ export function getAutoGrantedSpellsForLevel(
           category = 'cleric';
         } else if (matchedSubKey.startsWith('круг')) {
           category = 'druid';
-        } else if (['сумрачный охотник', 'странник горизонта', 'фейский странник'].includes(matchedSubKey)) {
+        } else if (['сумрачный охотник', 'странник горизонта', 'убийца чудовищ', 'странник фей', 'фейский странник', 'хранитель роя'].includes(matchedSubKey)) {
           category = 'ranger';
         } else if (['алхимик', 'артиллерист', 'боевой кузнец'].includes(matchedSubKey)) {
           category = 'artificer';

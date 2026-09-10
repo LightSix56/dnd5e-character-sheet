@@ -1,6 +1,16 @@
 import { CharacterData } from '@/lib/dnd-types';
 import { FightingStyleOption, FIGHTING_STYLES } from '@/components/wizard/wizard-helpers';
 import { normalizeClassName } from '@/data/compendium/class-progression';
+import {
+  WARLOCK_INVOCATIONS,
+  WARLOCK_PACT_BOONS,
+  GENIE_KINDS,
+  WARLOCK_MYSTIC_ARCANUM_SPELLS,
+  isInvocationAvailable,
+  InvocationDefinition,
+  PactBoonDefinition,
+  GenieKindDefinition,
+} from '@/data/compendium/warlock-choices';
 
 // ── Metamagic Options (Sorcerer) ──
 
@@ -263,6 +273,21 @@ export interface LevelUpChoicesConfig {
   needsInvocations?: boolean;
   invocationsCount?: number;
   invocationsOptions?: InvocationOption[];
+  eligibleInvocations?: InvocationDefinition[];
+  canSwapInvocation?: boolean;
+  existingInvocations?: string[];
+  needsWarlockPatron?: boolean;
+  needsGenieKind?: boolean;
+  genieKindOptions?: GenieKindDefinition[];
+  needsPactBoon?: boolean;
+  pactBoonOptions?: PactBoonDefinition[];
+  needsTomeCantrips?: boolean;
+  tomeCantripsCount?: number;
+  needsMysticArcanum?: boolean;
+  arcanumCircle?: number;
+  arcanumOptions?: string[];
+  needsFiendResilience?: boolean;
+  fiendResilienceOptions?: string[];
   needsHunterChoice?: boolean;
   hunterChoiceTitle?: string;
   hunterOptions?: { id: string; name: string; description: string }[];
@@ -346,19 +371,114 @@ export function getLevelUpChoicesConfig(
     config.metamagicOptions = METAMAGIC_OPTIONS;
   }
 
-  // 4. Eldritch Invocations (Warlock)
-  // Warlock level 2: choose 2
-  if (normClass === 'Колдун' && newLevel === 2) {
-    config.needsInvocations = true;
-    config.invocationsCount = 2;
-    config.invocationsOptions = ELDRITCH_INVOCATIONS.filter(inv => inv.levelReq <= newLevel);
-  }
+  // 4. Warlock Choices (Invocations, Pact Boon, Mystic Arcanum, Subclass Features)
+  if (normClass === 'Колдун') {
+    // 4.1. Patron at Level 1 (if character has no subclass)
+    if (newLevel === 1 && !rawSubclass) {
+      config.needsWarlockPatron = true;
+    }
 
-  // Warlock level 5, 7, 9, 12, 15, 18: choose 1
-  if (normClass === 'Колдун' && [5, 7, 9, 12, 15, 18].includes(newLevel)) {
-    config.needsInvocations = true;
-    config.invocationsCount = 1;
-    config.invocationsOptions = ELDRITCH_INVOCATIONS.filter(inv => inv.levelReq <= newLevel);
+    // 4.2. Genie Kind at Level 1 (if patron is Genie)
+    if (rawSubclass.includes('джинн') || rawSubclass.includes('genie')) {
+      const hasGenieKindInTraits = (char.traitsList || []).some(t =>
+        (t.name && t.name.includes('Вид джинна')) || (t.id && t.id.startsWith('genie-'))
+      );
+      if (newLevel === 1 || !hasGenieKindInTraits) {
+        config.needsGenieKind = true;
+        config.genieKindOptions = Object.values(GENIE_KINDS);
+      }
+    }
+
+    // 4.3. Pact Boon at Level 3
+    if (newLevel === 3) {
+      config.needsPactBoon = true;
+      config.pactBoonOptions = Object.values(WARLOCK_PACT_BOONS);
+    }
+
+    // Determine current Pact Boon from traits
+    let currentPactBoon: string | undefined;
+    for (const t of (char.traitsList || [])) {
+      const tName = (t.name || '').toLowerCase();
+      const tId = (t.id || '').toLowerCase();
+      if (tName.includes('договор гримуара') || tName.includes('книга теней') || tId.includes('tome')) currentPactBoon = 'tome';
+      else if (tName.includes('договор клинка') || tId.includes('blade')) currentPactBoon = 'blade';
+      else if (tName.includes('договор цепи') || tId.includes('chain')) currentPactBoon = 'chain';
+      else if (tName.includes('договор талисмана') || tId.includes('talisman')) currentPactBoon = 'talisman';
+    }
+
+    // Determine known cantrips from spellsByLevel[0]
+    const knownCantrips = (char.spellsByLevel?.[0] || []).map(s => s.name);
+
+    // 4.4. Eldritch Invocations
+    // Level 2: choose 2
+    if (newLevel === 2) {
+      config.needsInvocations = true;
+      config.invocationsCount = 2;
+      const eligible = WARLOCK_INVOCATIONS.filter(inv =>
+        isInvocationAvailable(inv, newLevel, currentPactBoon, knownCantrips)
+      );
+      config.eligibleInvocations = eligible;
+      config.invocationsOptions = WARLOCK_INVOCATIONS
+        .filter(inv => inv.levelReq <= newLevel)
+        .map(inv => ({
+          id: inv.id,
+          name: inv.name,
+          levelReq: inv.levelReq,
+          description: `${inv.prerequisiteDescription ? `[${inv.prerequisiteDescription}] ` : ''}${inv.description}`
+        }));
+    }
+
+    // Level 5, 7, 9, 12, 15, 18: choose 1
+    if ([5, 7, 9, 12, 15, 18].includes(newLevel)) {
+      config.needsInvocations = true;
+      config.invocationsCount = 1;
+      const eligible = WARLOCK_INVOCATIONS.filter(inv =>
+        isInvocationAvailable(inv, newLevel, currentPactBoon, knownCantrips)
+      );
+      config.eligibleInvocations = eligible;
+      config.invocationsOptions = WARLOCK_INVOCATIONS
+        .filter(inv => inv.levelReq <= newLevel)
+        .map(inv => ({
+          id: inv.id,
+          name: inv.name,
+          levelReq: inv.levelReq,
+          description: `${inv.prerequisiteDescription ? `[${inv.prerequisiteDescription}] ` : ''}${inv.description}`
+        }));
+    }
+
+    // Invocation swapping available at level >= 3
+    if (newLevel >= 3) {
+      config.canSwapInvocation = true;
+      config.existingInvocations = (char.traitsList || [])
+        .filter(t => (t.id && t.id.startsWith('invocation-')) || (t.name && t.name.startsWith('Таинственное воззвание:')))
+        .map(t => t.name.replace('Таинственное воззвание: ', ''));
+    }
+
+    // 4.5. Mystic Arcanum (levels 11, 13, 15, 17)
+    if ([11, 13, 15, 17].includes(newLevel)) {
+      config.needsMysticArcanum = true;
+      if (newLevel === 11) {
+        config.arcanumCircle = 6;
+        config.arcanumOptions = WARLOCK_MYSTIC_ARCANUM_SPELLS[6];
+      } else if (newLevel === 13) {
+        config.arcanumCircle = 7;
+        config.arcanumOptions = WARLOCK_MYSTIC_ARCANUM_SPELLS[7];
+      } else if (newLevel === 15) {
+        config.arcanumCircle = 8;
+        config.arcanumOptions = WARLOCK_MYSTIC_ARCANUM_SPELLS[8];
+      } else if (newLevel === 17) {
+        config.arcanumCircle = 9;
+        config.arcanumOptions = WARLOCK_MYSTIC_ARCANUM_SPELLS[9];
+      }
+    }
+
+    // 4.6. Fiendish Resilience at level 10 (The Fiend)
+    if (newLevel === 10 && (rawSubclass.includes('исчадие') || rawSubclass.includes('fiend'))) {
+      config.needsFiendResilience = true;
+      config.fiendResilienceOptions = [
+        'дробящий', 'колющий', 'рубящий', 'огонь', 'холод', 'электричество', 'звук', 'кислота', 'яд', 'некротический', 'излучение'
+      ];
+    }
   }
 
   // 5. Ranger Hunter Choices

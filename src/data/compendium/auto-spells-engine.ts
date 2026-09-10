@@ -38,6 +38,36 @@ export function getAutoGrantedSpellsForLevel(
     });
   }
 
+  // 1b. Warlock Patron bonus cantrips at level 1
+  const effectiveSubclassForWarlock = (subclassOverride || char.subclass || '').toLowerCase();
+  if (
+    (classNameLower === 'колдун' || classNameLower === 'warlock' || classNameLower.includes('колдун')) &&
+    newLevel === 1
+  ) {
+    if (effectiveSubclassForWarlock.includes('небожитель') || effectiveSubclassForWarlock.includes('celestial')) {
+      result.push({
+        name: 'Священное пламя',
+        level: 0,
+        prepared: true,
+        source: 'Покровитель: Небожитель',
+      });
+      result.push({
+        name: 'Свет',
+        level: 0,
+        prepared: true,
+        source: 'Покровитель: Небожитель',
+      });
+    }
+    if (effectiveSubclassForWarlock.includes('бессмертный') || effectiveSubclassForWarlock.includes('undying')) {
+      result.push({
+        name: 'Уход за умирающим',
+        level: 0,
+        prepared: true,
+        source: 'Покровитель: Бессмертный',
+      });
+    }
+  }
+
   // 2. Subclass expanded spells
   const effectiveSubclass = (subclassOverride || char.subclass || '').trim();
   if (effectiveSubclass) {

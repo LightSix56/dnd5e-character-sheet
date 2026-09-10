@@ -8426,5 +8426,20 @@ export function findSpellByName(query: string): DndSpell | undefined {
   if (q === 'защита от добра и зла') {
     return DND_COMPENDIUM_SPELLS.find(s => s.name.toLowerCase() === 'защита от зла и добра');
   }
+  if (q === 'рассеивание магии') {
+    return DND_COMPENDIUM_SPELLS.find(s => s.name.toLowerCase() === 'развеять магию');
+  }
+  if (q === 'сигнал тревоги') {
+    return DND_COMPENDIUM_SPELLS.find(s => s.name.toLowerCase() === 'тревога');
+  }
+  if (q === 'обнаружение мыслей') {
+    return DND_COMPENDIUM_SPELLS.find(s => s.name.toLowerCase() === 'чтение мыслей');
+  }
+  if (q === 'свобода перемещения') {
+    return DND_COMPENDIUM_SPELLS.find(s => s.name.toLowerCase() === 'свобода передвижения');
+  }
+  if (q === 'высшее восстановление') {
+    return DND_COMPENDIUM_SPELLS.find(s => s.name.toLowerCase() === 'улучшенное восстановление');
+  }
   return undefined;
 }

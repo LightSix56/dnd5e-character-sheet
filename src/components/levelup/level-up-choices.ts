@@ -73,6 +73,45 @@ export const METAMAGIC_OPTIONS: MetamagicOption[] = [
   }
 ];
 
+// ── Draconic Ancestry Options (Sorcerer) ──
+
+export interface DraconicAncestryOption {
+  id: string;
+  name: string;
+  damageType: string;
+  description: string;
+}
+
+export const DRACONIC_ANCESTRY_OPTIONS: DraconicAncestryOption[] = [
+  { id: 'black', name: 'Чёрный дракон (Кислота)', damageType: 'Кислота', description: 'Драконий предок связан с кислотой. Язык: Драконий.' },
+  { id: 'copper', name: 'Медный дракон (Кислота)', damageType: 'Кислота', description: 'Драконий предок связан с кислотой. Язык: Драконий.' },
+  { id: 'blue', name: 'Синий дракон (Электричество)', damageType: 'Электричество', description: 'Драконий предок связан с электричеством (молнией). Язык: Драконий.' },
+  { id: 'bronze', name: 'Бронзовый дракон (Электричество)', damageType: 'Электричество', description: 'Драконий предок связан с электричеством (молнией). Язык: Драконий.' },
+  { id: 'brass', name: 'Латунный дракон (Огонь)', damageType: 'Огонь', description: 'Драконий предок связан с огнём. Язык: Драконий.' },
+  { id: 'gold', name: 'Золотой дракон (Огонь)', damageType: 'Огонь', description: 'Драконий предок связан с огнём. Язык: Драконий.' },
+  { id: 'red', name: 'Красный дракон (Огонь)', damageType: 'Огонь', description: 'Драконий предок связан с огнём. Язык: Драконий.' },
+  { id: 'green', name: 'Зелёный дракон (Яд)', damageType: 'Яд', description: 'Драконий предок связан с ядом. Язык: Драконий.' },
+  { id: 'white', name: 'Белый дракон (Холод)', damageType: 'Холод', description: 'Драконий предок связан с холодом. Язык: Драконий.' },
+  { id: 'silver', name: 'Серебряный дракон (Холод)', damageType: 'Холод', description: 'Драконий предок связан с холодом. Язык: Драконий.' },
+];
+
+// ── Divine Soul Affinity Options (Sorcerer) ──
+
+export interface DivineAffinityOption {
+  id: string;
+  name: string;
+  spell: string;
+  description: string;
+}
+
+export const DIVINE_AFFINITY_OPTIONS: DivineAffinityOption[] = [
+  { id: 'good', name: 'Добро', spell: 'Лечение ран', description: 'Ваш предок воплощает добро. Дополнительное заклинание: Лечение ран.' },
+  { id: 'evil', name: 'Зло', spell: 'Нанесение ран', description: 'Ваш предок воплощает злобу и тьму. Дополнительное заклинание: Нанесение ран.' },
+  { id: 'law', name: 'Закон', spell: 'Благословение', description: 'Ваш предок воплощает нерушимый космический закон. Дополнительное заклинание: Благословение.' },
+  { id: 'chaos', name: 'Хаос', spell: 'Гибель', description: 'Ваш предок воплощает переменчивый хаос. Дополнительное заклинание: Гибель.' },
+  { id: 'neutrality', name: 'Нейтралитет', spell: 'Защита от зла и добра', description: 'Ваш предок воплощает космическое равновесие. Дополнительное заклинание: Защита от зла и добра.' },
+];
+
 // ── Eldritch Invocations (Warlock) ──
 
 export interface InvocationOption {
@@ -351,6 +390,10 @@ export interface LevelUpChoicesConfig {
   needsMetamagic?: boolean;
   metamagicCount?: number;
   metamagicOptions?: MetamagicOption[];
+  needsDraconicAncestry?: boolean;
+  draconicAncestryOptions?: DraconicAncestryOption[];
+  needsDivineAffinity?: boolean;
+  divineAffinityOptions?: DivineAffinityOption[];
   needsInvocations?: boolean;
   invocationsCount?: number;
   invocationsOptions?: InvocationOption[];
@@ -450,19 +493,45 @@ export function getLevelUpChoicesConfig(
     config.eligibleSkills = Object.keys(profs).filter(s => Boolean(profs[s]) && !Boolean(exps[s]));
   }
 
-  // 3. Metamagic (Sorcerer)
-  // Sorcerer level 3: choose 2
-  if (normClass === 'Чародей' && newLevel === 3) {
-    config.needsMetamagic = true;
-    config.metamagicCount = 2;
-    config.metamagicOptions = METAMAGIC_OPTIONS;
-  }
+  // 3. Sorcerer Choices (Draconic Ancestry, Divine Affinity, Metamagic)
+  if (normClass === 'Чародей') {
+    // 3.1. Draconic Ancestor (Level 1, Draconic Bloodline)
+    if (rawSubclass.includes('дракон') || rawSubclass.includes('draconic')) {
+      const hasDraconicTrait = (char.traitsList || []).some(t =>
+        (t.name && t.name.includes('Драконий предок')) || (t.id && t.id.startsWith('draconic-ancestry-'))
+      );
+      if (newLevel === 1 || !hasDraconicTrait) {
+        config.needsDraconicAncestry = true;
+        config.draconicAncestryOptions = DRACONIC_ANCESTRY_OPTIONS;
+      }
+    }
 
-  // Sorcerer level 10 & 17: choose 1
-  if (normClass === 'Чародей' && (newLevel === 10 || newLevel === 17)) {
-    config.needsMetamagic = true;
-    config.metamagicCount = 1;
-    config.metamagicOptions = METAMAGIC_OPTIONS;
+    // 3.2. Divine Soul Affinity (Level 1, Divine Soul)
+    if (rawSubclass.includes('божественн') || rawSubclass.includes('divine')) {
+      const hasDivineTrait = (char.traitsList || []).some(t =>
+        (t.name && t.name.includes('Божественное проявление')) || (t.id && t.id.startsWith('divine-affinity-'))
+      );
+      if (newLevel === 1 || !hasDivineTrait) {
+        config.needsDivineAffinity = true;
+        config.divineAffinityOptions = DIVINE_AFFINITY_OPTIONS;
+      }
+    }
+
+    // 3.3. Metamagic (level 3: choose 2; levels 10 & 17: choose 1)
+    if (newLevel === 3) {
+      config.needsMetamagic = true;
+      config.metamagicCount = 2;
+      config.metamagicOptions = METAMAGIC_OPTIONS;
+    } else if (newLevel === 10 || newLevel === 17) {
+      const existingMetamagicIds = new Set(
+        (char.traitsList || [])
+          .filter(t => t.id && t.id.startsWith('metamagic-'))
+          .map(t => t.id.replace('metamagic-', ''))
+      );
+      config.needsMetamagic = true;
+      config.metamagicCount = 1;
+      config.metamagicOptions = METAMAGIC_OPTIONS.filter(opt => !existingMetamagicIds.has(opt.id));
+    }
   }
 
   // 4. Warlock Choices (Invocations, Pact Boon, Mystic Arcanum, Subclass Features)

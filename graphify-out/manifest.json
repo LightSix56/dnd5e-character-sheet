@@ -240,15 +240,15 @@
     "semantic_hash": ""
   },
   "src/data/compendium/class-spells.ts": {
-    "mtime": 1789047388.4202561,
-    "seen": 1789047680.8566957,
-    "ast_hash": "e684340edbf29064c60e6a81e56cbdab",
+    "mtime": 1789050502.9540715,
+    "seen": 1789051049.4459212,
+    "ast_hash": "28da220c4745e54a927a9e9558d021cc",
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789048133.8994844,
-    "seen": 1789048710.0721915,
-    "ast_hash": "b11fe176f035fcc3585b2fec196f1585",
+    "mtime": 1789050449.5643065,
+    "seen": 1789051049.445941,
+    "ast_hash": "cd13d6d6903d1eebc3b4fc13fcee4972",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/spells.ts": {
-    "mtime": 1788801438.589028,
-    "seen": 1788801808.045775,
-    "ast_hash": "3563cf8e3758bc7f1ebe86fb889e58ad",
+    "mtime": 1789050529.3512838,
+    "seen": 1789051049.4476347,
+    "ast_hash": "138a5f0482b5bbc2849518d2728c5d6c",
     "semantic_hash": ""
   },
   "src/data/dnd-spells.ts": {
@@ -552,15 +552,15 @@
     "semantic_hash": ""
   },
   "src/components/levelup/level-up-choices.ts": {
-    "mtime": 1789048235.6880176,
-    "seen": 1789048710.069046,
-    "ast_hash": "88704068b0233497266f144d5b4feaf7",
+    "mtime": 1789050857.7688415,
+    "seen": 1789051049.4431646,
+    "ast_hash": "e1eb9ec405c418c9734737a99804ce0b",
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
-    "mtime": 1789048186.7644265,
-    "seen": 1789048710.0712738,
-    "ast_hash": "bb06c7d69d4d7ceb911e8a8180d23920",
+    "mtime": 1789050868.5956717,
+    "seen": 1789051049.4453485,
+    "ast_hash": "737a58e9605a63c02d54ea11b619db14",
     "semantic_hash": ""
   },
   "test/auto-spells-engine.test.ts": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789048603.5485723,
-    "seen": 1789048710.0690405,
-    "ast_hash": "279627fb040ab75a82d06695e14558d9",
+    "mtime": 1789050826.6486309,
+    "seen": 1789051049.4431577,
+    "ast_hash": "02aed00fb21b13cc445f36814e769a6f",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -795,6 +795,12 @@
     "mtime": 1789049960.794204,
     "seen": 1789049979.1073608,
     "ast_hash": "066fb84e210a7aa9abc09262bd95c5b1",
+    "semantic_hash": ""
+  },
+  "test/sorcerer-subclasses.test.ts": {
+    "mtime": 1789050976.5619628,
+    "seen": 1789051049.4583683,
+    "ast_hash": "0f5a23e66825c8f141178d1910469215",
     "semantic_hash": ""
   }
 }

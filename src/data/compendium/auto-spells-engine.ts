@@ -163,6 +163,20 @@ export function getAutoGrantedSpellsForLevel(
     }
   }
 
+  // 1f. Shadow Magic Sorcerer (Теневая магия) level 3: Darkness (Тьма)
+  const isSorcerer = classNameLower === 'чародей' || classNameLower === 'sorcerer' || classNameLower.includes('чародей');
+  if (isSorcerer && newLevel === 3) {
+    const subLower = (subclassOverride || char.subclass || '').toLowerCase();
+    if (subLower.includes('тень') || subLower.includes('теневая') || subLower.includes('shadow')) {
+      result.push({
+        name: 'Тьма',
+        level: 2,
+        prepared: true,
+        source: 'Теневая магия: Глаза тьмы',
+      });
+    }
+  }
+
   // 2. Subclass expanded spells
   const effectiveSubclass = (subclassOverride || char.subclass || '').trim();
   if (effectiveSubclass) {
@@ -242,18 +256,28 @@ export function getAutoGrantedSpellsForLevel(
         else if (newLevel === 13) { targetCircle = 4; spellNames = bonusSpells.slice(6, 8); }
         else if (newLevel === 17) { targetCircle = 5; spellNames = bonusSpells.slice(8, 10); }
       } else if (category === 'sorcerer') {
-        if (newLevel === 1) { targetCircle = 1; spellNames = bonusSpells.slice(0, 2); }
-        else if (newLevel === 3) { targetCircle = 2; spellNames = bonusSpells.slice(2, 4); }
-        else if (newLevel === 5) { targetCircle = 3; spellNames = bonusSpells.slice(4, 6); }
-        else if (newLevel === 7) { targetCircle = 4; spellNames = bonusSpells.slice(6, 8); }
-        else if (newLevel === 9) { targetCircle = 5; spellNames = bonusSpells.slice(8, 10); }
+        const isAberrant = matchedSubKey.includes('аберра') || matchedSubKey.includes('aberrant');
+        if (isAberrant) {
+          if (newLevel === 1) { targetCircle = 1; spellNames = bonusSpells.slice(0, 3); }
+          else if (newLevel === 3) { targetCircle = 2; spellNames = bonusSpells.slice(3, 5); }
+          else if (newLevel === 5) { targetCircle = 3; spellNames = bonusSpells.slice(5, 7); }
+          else if (newLevel === 7) { targetCircle = 4; spellNames = bonusSpells.slice(7, 9); }
+          else if (newLevel === 9) { targetCircle = 5; spellNames = bonusSpells.slice(9, 11); }
+        } else {
+          if (newLevel === 1) { targetCircle = 1; spellNames = bonusSpells.slice(0, 2); }
+          else if (newLevel === 3) { targetCircle = 2; spellNames = bonusSpells.slice(2, 4); }
+          else if (newLevel === 5) { targetCircle = 3; spellNames = bonusSpells.slice(4, 6); }
+          else if (newLevel === 7) { targetCircle = 4; spellNames = bonusSpells.slice(6, 8); }
+          else if (newLevel === 9) { targetCircle = 5; spellNames = bonusSpells.slice(8, 10); }
+        }
       }
 
       for (const sName of spellNames) {
         const sp = findSpellByName(sName);
+        const lvl = sp ? sp.level : (sName.toLowerCase().includes('расщепление разума') ? 0 : targetCircle);
         result.push({
-          name: sp ? sp.name : sName,
-          level: sp ? sp.level : targetCircle,
+          name: sName,
+          level: lvl,
           prepared: true,
           source: 'Архетип: ' + effectiveSubclass,
         });

@@ -40,6 +40,8 @@ import {
   getLevelUpChoicesConfig,
   getThirdCasterSpellSlots,
   METAMAGIC_OPTIONS,
+  DRACONIC_ANCESTRY_OPTIONS,
+  DIVINE_AFFINITY_OPTIONS,
   ELDRITCH_INVOCATIONS,
   BATTLE_MASTER_MANEUVERS,
   getKnownSpellNames,
@@ -100,12 +102,6 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
   // Racial HP bonus (Hill Dwarf: +1 HP per level)
   const racialHPBonus = getRacialHPBonusPerLevel(char.race, char.subrace);
-
-  const avgHP =
-    (char.hitDice ? getHitDieAverage(char.hitDice) : 5) +
-    conMod +
-    toughBonus +
-    racialHPBonus;
 
   // Class progression data
   const classFeatures = useMemo(
@@ -313,6 +309,26 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     }
   }, [choicesConfig.giantCantripOptions]);
 
+  // Sorcerer specific choices states
+  const [selectedDraconicAncestry, setSelectedDraconicAncestry] = useState<string>(
+    () => choicesConfig.draconicAncestryOptions?.[0]?.id || 'red'
+  );
+  const [selectedDivineAffinity, setSelectedDivineAffinity] = useState<string>(
+    () => choicesConfig.divineAffinityOptions?.[0]?.id || 'good'
+  );
+
+  useEffect(() => {
+    if (choicesConfig.draconicAncestryOptions?.length) {
+      setSelectedDraconicAncestry(choicesConfig.draconicAncestryOptions[0].id);
+    }
+  }, [choicesConfig.draconicAncestryOptions]);
+
+  useEffect(() => {
+    if (choicesConfig.divineAffinityOptions?.length) {
+      setSelectedDivineAffinity(choicesConfig.divineAffinityOptions[0].id);
+    }
+  }, [choicesConfig.divineAffinityOptions]);
+
 
   // ASI / Feat choice
   const [asiChoice, setAsiChoice] = useState<'stats' | 'feat'>('stats');
@@ -340,11 +356,24 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
   const [notes, setNotes] = useState('');
 
+  const draconicHPBonus = useMemo(() => {
+    const isSorcerer = normalizeClassName(char.className || '') === 'Чародей';
+    const sub = effectiveSubclass.toLowerCase();
+    return isSorcerer && (sub.includes('дракон') || sub.includes('draconic')) ? 1 : 0;
+  }, [char.className, effectiveSubclass]);
+
+  const avgHP =
+    (char.hitDice ? getHitDieAverage(char.hitDice) : 5) +
+    conMod +
+    toughBonus +
+    racialHPBonus +
+    draconicHPBonus;
+
   const finalHP = Math.max(
     1,
     hpMode === 'average'
       ? avgHP
-      : hpRoll + conMod + toughBonus + racialHPBonus
+      : hpRoll + conMod + toughBonus + racialHPBonus + draconicHPBonus
   );
 
   const toggleFeature = (name: string) => {
@@ -663,6 +692,12 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     if (choicesConfig.canSwapInvocation && swappedOutInvocation && !swappedInInvocation) {
       errs.push(`Выберите новое воззвание взамен «${swappedOutInvocation}».`);
     }
+    if (choicesConfig.needsDraconicAncestry && !selectedDraconicAncestry) {
+      errs.push('Необходимо выбрать вид драконьего предка.');
+    }
+    if (choicesConfig.needsDivineAffinity && !selectedDivineAffinity) {
+      errs.push('Необходимо выбрать мировоззренческий источник силы (Божественное проявление).');
+    }
 
     // Spells and cantrips duplication validation
     for (let i = 0; i < newSpells.length; i++) {
@@ -728,6 +763,8 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     selectedArcanumSpell,
     selectedFiendResilience,
     selectedGenieKind,
+    selectedDraconicAncestry,
+    selectedDivineAffinity,
     swappedOutInvocation,
     swappedInInvocation,
     newSpells,
@@ -807,6 +844,34 @@ export const LevelUpModal = React.memo(function LevelUpModal({
             description: `${m.name} [${m.cost}]: ${m.description}`,
           });
         }
+      }
+    }
+
+    // Draconic Ancestry trait (Level 1, Draconic Bloodline)
+    if (choicesConfig.needsDraconicAncestry && selectedDraconicAncestry) {
+      const opt = (choicesConfig.draconicAncestryOptions || DRACONIC_ANCESTRY_OPTIONS).find(o => o.id === selectedDraconicAncestry);
+      if (opt) {
+        addedTraits.push({
+          id: `draconic-ancestry-${opt.id}`,
+          name: `Драконий предок: ${opt.name}`,
+          source: `Чародей (${newLevel} ур.)`,
+          summary: `Тип урона: ${opt.damageType}. Язык: Драконий. Удвоенное мастерство при проверках Харизмы с драконами.`,
+          description: `Драконий предок (${opt.name}): тип урона: ${opt.damageType}. ${opt.description}`,
+        });
+      }
+    }
+
+    // Divine Affinity trait (Level 1, Divine Soul)
+    if (choicesConfig.needsDivineAffinity && selectedDivineAffinity) {
+      const opt = (choicesConfig.divineAffinityOptions || DIVINE_AFFINITY_OPTIONS).find(o => o.id === selectedDivineAffinity);
+      if (opt) {
+        addedTraits.push({
+          id: `divine-affinity-${opt.id}`,
+          name: `Божественное проявление: ${opt.name}`,
+          source: `Чародей (${newLevel} ур.)`,
+          summary: `Мировоззрение: ${opt.name}. Заклинание: ${opt.spell}.`,
+          description: `Божественное проявление (${opt.name}): ${opt.description}`,
+        });
       }
     }
 
@@ -971,6 +1036,21 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       }
     }
 
+    if (choicesConfig.needsDivineAffinity && selectedDivineAffinity) {
+      const opt = (choicesConfig.divineAffinityOptions || DIVINE_AFFINITY_OPTIONS).find(o => o.id === selectedDivineAffinity);
+      if (opt && opt.spell) {
+        const key = opt.spell.trim().toLowerCase();
+        if (!seenSpellNames.has(key)) {
+          seenSpellNames.add(key);
+          combinedSpells.push({
+            name: opt.spell.trim(),
+            level: 1,
+            prepared: true,
+          });
+        }
+      }
+    }
+
     for (const rf of racialFeatures) {
       if (selectedRacialFeatures[rf.name] && rf.spell) {
         const key = rf.spell.name.trim().toLowerCase();
@@ -1014,6 +1094,14 @@ export const LevelUpModal = React.memo(function LevelUpModal({
         .map(id => METAMAGIC_OPTIONS.find(m => m.id === id)?.name || id)
         .join(', ');
       extraNotes.push(`[Метамагия]: ${names}`);
+    }
+    if (choicesConfig.needsDraconicAncestry && selectedDraconicAncestry) {
+      const opt = (choicesConfig.draconicAncestryOptions || DRACONIC_ANCESTRY_OPTIONS).find(o => o.id === selectedDraconicAncestry);
+      if (opt) extraNotes.push(`[Драконий предок]: ${opt.name} (${opt.damageType})`);
+    }
+    if (choicesConfig.needsDivineAffinity && selectedDivineAffinity) {
+      const opt = (choicesConfig.divineAffinityOptions || DIVINE_AFFINITY_OPTIONS).find(o => o.id === selectedDivineAffinity);
+      if (opt) extraNotes.push(`[Божественное проявление]: ${opt.name} (${opt.spell})`);
     }
     if (selectedInvocations.length > 0) {
       const names = selectedInvocations
@@ -1922,6 +2010,132 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                         style={{ color: '#5C341F' }}
                       >
                         {opt.description}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Sorcerer Draconic Ancestry (Level 1) ── */}
+          {choicesConfig.needsDraconicAncestry && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <D20Icon size={16} />
+                  <span>Драконий предок (Вид дракона):</span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{
+                    background: '#5C341F',
+                    color: '#FFE58F',
+                  }}
+                >
+                  1-й уровень
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#8B6914' }}>
+                Выберите вид дракона, от которого происходит ваша магия. От этого зависит тип наносимого вами стихийного урона и сопротивление:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {(choicesConfig.draconicAncestryOptions || DRACONIC_ANCESTRY_OPTIONS).map(anc => {
+                  const isSel = selectedDraconicAncestry === anc.id;
+                  return (
+                    <button
+                      key={anc.id}
+                      type="button"
+                      onClick={() => setSelectedDraconicAncestry(anc.id)}
+                      className="text-left p-2.5 rounded-lg transition-all flex flex-col justify-between gap-1"
+                      style={{
+                        background: isSel
+                          ? 'rgba(232, 211, 162, 0.85)'
+                          : 'rgba(232, 211, 162, 0.25)',
+                        border: isSel
+                          ? '2px solid #C9A84C'
+                          : '1px solid rgba(201, 168, 76, 0.4)',
+                        boxShadow: isSel
+                          ? '0 0 10px rgba(201, 168, 76, 0.4)'
+                          : 'none',
+                      }}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span className="font-bold text-xs" style={{ color: '#3D2012' }}>
+                          {anc.name}
+                        </span>
+                        <span
+                          className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+                          style={{ background: '#E8D3A2', color: '#5C341F' }}
+                        >
+                          {anc.damageType}
+                        </span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed" style={{ color: '#5C341F' }}>
+                        {anc.description}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Sorcerer Divine Soul Affinity (Level 1) ── */}
+          {choicesConfig.needsDivineAffinity && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
+                  <SparklesDndIcon size={16} />
+                  <span>Божественное проявление (Мировоззрение силы):</span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{
+                    background: '#5C341F',
+                    color: '#FFE58F',
+                  }}
+                >
+                  1-й уровень
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#8B6914' }}>
+                Выберите источник божественной силы, связанный с мировоззрением вашего предка. Вы бесплатно изучите соответствующее заклинание:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {(choicesConfig.divineAffinityOptions || DIVINE_AFFINITY_OPTIONS).map(aff => {
+                  const isSel = selectedDivineAffinity === aff.id;
+                  return (
+                    <button
+                      key={aff.id}
+                      type="button"
+                      onClick={() => setSelectedDivineAffinity(aff.id)}
+                      className="text-left p-2.5 rounded-lg transition-all flex flex-col justify-between gap-1"
+                      style={{
+                        background: isSel
+                          ? 'rgba(232, 211, 162, 0.85)'
+                          : 'rgba(232, 211, 162, 0.25)',
+                        border: isSel
+                          ? '2px solid #C9A84C'
+                          : '1px solid rgba(201, 168, 76, 0.4)',
+                        boxShadow: isSel
+                          ? '0 0 10px rgba(201, 168, 76, 0.4)'
+                          : 'none',
+                      }}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span className="font-bold text-xs" style={{ color: '#3D2012' }}>
+                          {aff.name}
+                        </span>
+                        <span
+                          className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+                          style={{ background: '#E8D3A2', color: '#5C341F' }}
+                        >
+                          {aff.spell}
+                        </span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed" style={{ color: '#5C341F' }}>
+                        {aff.description}
                       </p>
                     </button>
                   );

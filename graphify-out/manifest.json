@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789047543.0988288,
-    "seen": 1789047680.8567002,
-    "ast_hash": "59f59710733e70dfd86b8d0dbaee1e10",
+    "mtime": 1789048133.8994844,
+    "seen": 1789048710.0721915,
+    "ast_hash": "b11fe176f035fcc3585b2fec196f1585",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -552,15 +552,15 @@
     "semantic_hash": ""
   },
   "src/components/levelup/level-up-choices.ts": {
-    "mtime": 1789047585.629285,
-    "seen": 1789047680.8537052,
-    "ast_hash": "254db13edf1d5de89d5a467d04b12e60",
+    "mtime": 1789048235.6880176,
+    "seen": 1789048710.069046,
+    "ast_hash": "88704068b0233497266f144d5b4feaf7",
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
-    "mtime": 1789047397.1821096,
-    "seen": 1789047680.8561192,
-    "ast_hash": "831750b0bc22f391bd8a7cb8b02dbe5b",
+    "mtime": 1789048186.7644265,
+    "seen": 1789048710.0712738,
+    "ast_hash": "bb06c7d69d4d7ceb911e8a8180d23920",
     "semantic_hash": ""
   },
   "test/auto-spells-engine.test.ts": {
@@ -570,9 +570,9 @@
     "semantic_hash": ""
   },
   "test/level-up-choices.test.ts": {
-    "mtime": 1789028124.5965018,
-    "seen": 1789028219.7711897,
-    "ast_hash": "d99677df1f1ba322002be81c62915b72",
+    "mtime": 1789048677.71309,
+    "seen": 1789048710.0829859,
+    "ast_hash": "a0d8407af5c701bec8ddcc75603b506c",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-07-level-up-mechanics-and-spells-plan.md": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789047601.5080914,
-    "seen": 1789047680.8536987,
-    "ast_hash": "f9626f89fe65164980f6f2ab585d86ab",
+    "mtime": 1789048603.5485723,
+    "seen": 1789048710.0690405,
+    "ast_hash": "279627fb040ab75a82d06695e14558d9",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -774,9 +774,9 @@
     "semantic_hash": ""
   },
   "test/barbarian-subclasses.test.ts": {
-    "mtime": 1789045652.5363362,
-    "seen": 1789045886.3536708,
-    "ast_hash": "f504e640d5491c3b022f50567c7f897c",
+    "mtime": 1789048093.5715394,
+    "seen": 1789048710.080439,
+    "ast_hash": "19f06733c5f36622bb61eb005e569a2c",
     "semantic_hash": ""
   },
   "test/ranger-subclasses.test.ts": {

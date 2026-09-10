@@ -175,12 +175,12 @@ describe('Level-Up Interactive Choices Engine', () => {
     const config3 = getLevelUpChoicesConfig(char, 3);
     assert.strictEqual(config3.needsTotemChoice, true);
     assert.strictEqual(config3.totemChoiceTitle, 'Дух тотема');
-    assert.strictEqual(config3.totemOptions?.length, 3);
+    assert.strictEqual(config3.totemOptions?.length, 5);
 
     const config6 = getLevelUpChoicesConfig(char, 6);
     assert.strictEqual(config6.needsTotemChoice, true);
     assert.strictEqual(config6.totemChoiceTitle, 'Аспект зверя');
-    assert.strictEqual(config6.totemOptions?.length, 3);
+    assert.strictEqual(config6.totemOptions?.length, 5);
   });
 
   it('Fighter Battle Master choices at level 3', () => {
@@ -272,4 +272,109 @@ describe('Level-Up Interactive Choices Engine', () => {
       assert.ok(filtered.some(s => s.name === 'Адское возмездие'));
     });
   });
+
+  describe('Audited Class Subclass Proficiencies & Choices', () => {
+    it('Barbarian level 3 and level 10 offer Primal Knowledge skill choice', () => {
+      const char: CharacterData = {
+        ...createDefaultCharacter(),
+        className: 'Варвар',
+        level: 2,
+        skillProficiencies: {
+          'Атлетика': true,
+          'Выживание': true,
+        },
+      };
+
+      const cfg3 = getLevelUpChoicesConfig(char, 3);
+      assert.strictEqual(cfg3.needsPrimalKnowledge, true);
+      assert.ok(cfg3.primalKnowledgeOptions?.includes('Внимательность'));
+      assert.ok(cfg3.primalKnowledgeOptions?.includes('Запугивание'));
+      assert.ok(cfg3.primalKnowledgeOptions?.includes('Природа'));
+      assert.ok(cfg3.primalKnowledgeOptions?.includes('Уход за животными'));
+      // Already possessed skills should not be offered
+      assert.strictEqual(cfg3.primalKnowledgeOptions?.includes('Атлетика'), false);
+    });
+
+    it('Barbarian Totem Warrior level 6 provides tigerSkillsOptions', () => {
+      const char: CharacterData = {
+        ...createDefaultCharacter(),
+        className: 'Варвар',
+        subclass: 'Путь тотемного воина',
+        level: 5,
+      };
+
+      const cfg6 = getLevelUpChoicesConfig(char, 6);
+      assert.strictEqual(cfg6.needsTotemChoice, true);
+      assert.strictEqual(cfg6.totemOptions?.length, 5);
+      assert.ok(cfg6.tigerSkillsOptions?.includes('Акробатика'));
+      assert.ok(cfg6.tigerSkillsOptions?.includes('Атлетика'));
+      assert.ok(cfg6.tigerSkillsOptions?.includes('Выживание'));
+      assert.ok(cfg6.tigerSkillsOptions?.includes('Скрытность'));
+    });
+
+    it('Rogue Assassin and Mastermind receive bonus tools and languages at level 3', () => {
+      const charAssassin: CharacterData = {
+        ...createDefaultCharacter(),
+        className: 'Плут',
+        subclass: 'Убийца',
+        level: 2,
+      };
+      const cfgAss = getLevelUpChoicesConfig(charAssassin, 3);
+      assert.strictEqual(cfgAss.needsRogueTools, true);
+      assert.ok(cfgAss.rogueToolsText?.includes('Набор для грима'));
+      assert.ok(cfgAss.rogueToolsText?.includes('инструменты отравителя'));
+
+      const charMastermind: CharacterData = {
+        ...createDefaultCharacter(),
+        className: 'Плут',
+        subclass: 'Мастер интриг',
+        level: 2,
+      };
+      const cfgMm = getLevelUpChoicesConfig(charMastermind, 3);
+      assert.strictEqual(cfgMm.needsRogueTools, true);
+      assert.ok(cfgMm.rogueToolsText?.includes('фальсификации'));
+      assert.ok(cfgMm.rogueToolsText?.includes('2 языка'));
+    });
+
+    it('Ranger Gloom Stalker receives Iron Mind saving throw choice at level 7', () => {
+      const charGloom: CharacterData = {
+        ...createDefaultCharacter(),
+        className: 'Следопыт',
+        subclass: 'Сумрачный охотник',
+        level: 6,
+        savingThrowProficiencies: {
+          'СИЛ': true,
+          'ЛОВ': true,
+        },
+      };
+      const cfg7 = getLevelUpChoicesConfig(charGloom, 7);
+      assert.strictEqual(cfg7.needsSavingThrowProficiency, true);
+      assert.deepStrictEqual(cfg7.savingThrowOptions, ['МДР']);
+
+      // If already has Wisdom save
+      const charWithWis: CharacterData = {
+        ...charGloom,
+        savingThrowProficiencies: {
+          ...charGloom.savingThrowProficiencies,
+          'МДР': true,
+        },
+      };
+      const cfgAlt = getLevelUpChoicesConfig(charWithWis, 7);
+      assert.strictEqual(cfgAlt.needsSavingThrowProficiency, true);
+      assert.deepStrictEqual(cfgAlt.savingThrowOptions, ['ИНТ', 'ХАР']);
+    });
+
+    it('Ranger Fey Wanderer receives bonus skill choice at level 3', () => {
+      const charFey: CharacterData = {
+        ...createDefaultCharacter(),
+        className: 'Следопыт',
+        subclass: 'Странник Фей',
+        level: 2,
+      };
+      const cfg3 = getLevelUpChoicesConfig(charFey, 3);
+      assert.strictEqual(cfg3.needsFeyWandererSkill, true);
+      assert.deepStrictEqual(cfg3.feyWandererSkillOptions, ['Обман', 'Выступление', 'Убеждение']);
+    });
+  });
 });
+

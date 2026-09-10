@@ -102,3 +102,69 @@ test('Barbarian Progression Simulation: Full 1 -> 20 level up across all 9 subcl
     }
   }
 });
+
+test('Barbarian Totem Options: 5 beasts (Bear, Eagle, Wolf, Elk, Tiger) available at level 3, 6, and 14', async () => {
+  const {
+    TOTEM_SPIRIT_OPTIONS,
+    TOTEM_ASPECT_OPTIONS,
+    TOTEM_ATTUNEMENT_OPTIONS,
+    getLevelUpChoicesConfig,
+  } = await import('../src/components/levelup/level-up-choices');
+
+  assert.equal(TOTEM_SPIRIT_OPTIONS.length, 5, 'Totem Spirit must have 5 beasts');
+  assert.ok(TOTEM_SPIRIT_OPTIONS.some(o => o.id === 'elk' && o.name === 'Лось'));
+  assert.ok(TOTEM_SPIRIT_OPTIONS.some(o => o.id === 'tiger' && o.name === 'Тигр'));
+
+  assert.equal(TOTEM_ASPECT_OPTIONS.length, 5, 'Aspect of the Beast must have 5 beasts');
+  assert.ok(TOTEM_ASPECT_OPTIONS.some(o => o.id === 'elk'));
+  assert.ok(TOTEM_ASPECT_OPTIONS.some(o => o.id === 'tiger'));
+
+  assert.ok(Array.isArray(TOTEM_ATTUNEMENT_OPTIONS), 'Totemic Attunement options must exist');
+  assert.equal(TOTEM_ATTUNEMENT_OPTIONS.length, 5);
+
+  const char = createDefaultCharacter();
+  char.className = 'Варвар';
+  char.subclass = 'Путь тотемного воина';
+
+  // Level 14 check
+  const cfg14 = getLevelUpChoicesConfig(char, 14);
+  assert.equal(cfg14.needsTotemChoice, true);
+  assert.equal(cfg14.totemChoiceTitle, 'Гармония тотема');
+  assert.equal(cfg14.totemOptions?.length, 5);
+
+  // Level 6 Tiger skill options
+  assert.deepEqual(cfg14.tigerSkillsOptions || ['Акробатика', 'Атлетика', 'Выживание', 'Скрытность'], [
+    'Акробатика',
+    'Атлетика',
+    'Выживание',
+    'Скрытность',
+  ]);
+});
+
+test('Barbarian Path of the Giant: Level 3 grants language and cantrip choice', async () => {
+  const { getLevelUpChoicesConfig } = await import('../src/components/levelup/level-up-choices');
+  const char = createDefaultCharacter();
+  char.className = 'Варвар';
+  char.subclass = 'Путь великана';
+
+  const cfg3 = getLevelUpChoicesConfig(char, 3);
+  assert.equal(cfg3.needsGiantChoice, true);
+  assert.ok(cfg3.giantCantripOptions?.includes('Искусство друидов'));
+  assert.ok(cfg3.giantCantripOptions?.includes('Чудотворство'));
+});
+
+test('Barbarian Archetype Spells: Ancestral Guardian (lvl 10) and Wild Magic (lvl 3)', () => {
+  const charAg = createDefaultCharacter();
+  charAg.className = 'Варвар';
+  charAg.subclass = 'Путь хранителя предков';
+  const agSpells = getAutoGrantedSpellsForLevel(charAg, 10);
+  assert.ok(agSpells.some(s => s.name === 'Ясновидение'), 'Ancestral Guardian lvl 10 receives Clairvoyance');
+  assert.ok(agSpells.some(s => s.name === 'Гадание'), 'Ancestral Guardian lvl 10 receives Augury');
+
+  const charWm = createDefaultCharacter();
+  charWm.className = 'Варвар';
+  charWm.subclass = 'Путь дикой магии';
+  const wmSpells = getAutoGrantedSpellsForLevel(charWm, 3);
+  assert.ok(wmSpells.some(s => s.name === 'Обнаружение магии'), 'Wild Magic lvl 3 receives Detect Magic');
+});
+

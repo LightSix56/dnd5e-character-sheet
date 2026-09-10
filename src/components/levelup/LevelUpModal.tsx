@@ -69,6 +69,7 @@ import {
   GoldSealCheckIcon,
   CrystalBallDndIcon,
   HourglassIcon,
+  EngravedShieldIcon,
 } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 
@@ -282,6 +283,18 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     () => choicesConfig.feyWandererSkillOptions?.[0] || 'Обман'
   );
 
+  // Barbarian Totem Tiger skills (lvl 6)
+  const [selectedTotemTigerSkills, setSelectedTotemTigerSkills] = useState<string[]>([]);
+
+  // Barbarian Path of the Giant: Cantrip and Language (lvl 3)
+  const [selectedGiantCantrip, setSelectedGiantCantrip] = useState<string>(
+    () => choicesConfig.giantCantripOptions?.[0] || 'Искусство друидов'
+  );
+  const [selectedGiantLanguage, setSelectedGiantLanguage] = useState<string>('Великаний');
+
+  // Barbarian Primal Knowledge: optional skill (lvl 3 & 10)
+  const [selectedPrimalKnowledgeSkill, setSelectedPrimalKnowledgeSkill] = useState<string>('');
+
   useEffect(() => {
     if (choicesConfig.savingThrowOptions?.length) {
       setSelectedSavingThrow(choicesConfig.savingThrowOptions[0]);
@@ -293,6 +306,13 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       setSelectedFeyWandererSkill(choicesConfig.feyWandererSkillOptions[0]);
     }
   }, [choicesConfig.feyWandererSkillOptions]);
+
+  useEffect(() => {
+    if (choicesConfig.giantCantripOptions?.length) {
+      setSelectedGiantCantrip(choicesConfig.giantCantripOptions[0]);
+    }
+  }, [choicesConfig.giantCantripOptions]);
+
 
   // ASI / Feat choice
   const [asiChoice, setAsiChoice] = useState<'stats' | 'feat'>('stats');
@@ -607,6 +627,17 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       );
     }
     if (
+      choicesConfig.needsTotemChoice &&
+      selectedTotemChoice === 'tiger' &&
+      choicesConfig.tigerSkillsOptions &&
+      selectedTotemTigerSkills.length < 2
+    ) {
+      errs.push(`Выберите 2 навыка для духа Тигра (выбрано: ${selectedTotemTigerSkills.length}).`);
+    }
+    if (choicesConfig.needsGiantChoice && !selectedGiantCantrip) {
+      errs.push('Необходимо выбрать заговор для Силы великана (Искусство друидов или Чудотворство).');
+    }
+    if (
       choicesConfig.needsManeuvers &&
       selectedManeuvers.length < requiredManeuversCount
     ) {
@@ -688,6 +719,8 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     requiredInvocationsCount,
     selectedHunterChoice,
     selectedTotemChoice,
+    selectedTotemTigerSkills,
+    selectedGiantCantrip,
     selectedManeuvers,
     requiredManeuversCount,
     selectedPactBoon,
@@ -1080,6 +1113,45 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       extraNotes.push(`[Потустороннее очарование]: Владение навыком «${selectedFeyWandererSkill}»`);
     }
 
+    // Barbarian Totem Warrior Aspect of the Beast: Tiger skills (lvl 6)
+    const totemTigerSkillProfs: string[] = [];
+    if (
+      choicesConfig.needsTotemChoice &&
+      selectedTotemChoice === 'tiger' &&
+      choicesConfig.tigerSkillsOptions &&
+      selectedTotemTigerSkills.length > 0
+    ) {
+      for (const s of selectedTotemTigerSkills) {
+        if (!char.skillProficiencies?.[s]) {
+          totemTigerSkillProfs.push(s);
+        }
+      }
+      extraNotes.push(`[Аспект зверя: Тигр]: Владение навыками «${selectedTotemTigerSkills.join(', ')}»`);
+    }
+
+    // Barbarian Primal Knowledge: optional skill (lvl 3 & 10)
+    const primalKnowledgeSkillProfs: string[] = [];
+    if (choicesConfig.needsPrimalKnowledge && selectedPrimalKnowledgeSkill) {
+      if (!char.skillProficiencies?.[selectedPrimalKnowledgeSkill]) {
+        primalKnowledgeSkillProfs.push(selectedPrimalKnowledgeSkill);
+      }
+      extraNotes.push(`[Первобытное знание]: Владение навыком «${selectedPrimalKnowledgeSkill}»`);
+    }
+
+    // Warlock Beguiling Influence: Deception and Persuasion skills
+    const warlockInvocationSkillProfs: string[] = [];
+    if (
+      (choicesConfig.needsInvocations && selectedInvocations.includes('beguiling-influence')) ||
+      (choicesConfig.canSwapInvocation && swappedInInvocation === 'beguiling-influence')
+    ) {
+      for (const s of ['Обман', 'Убеждение']) {
+        if (!char.skillProficiencies?.[s]) {
+          warlockInvocationSkillProfs.push(s);
+        }
+      }
+      extraNotes.push('[Таинственное воззвание: Обманчивое влияние]: Владение навыками «Обман» и «Убеждение»');
+    }
+
     // Drakewarden Level 3: Draconic Gift
     let drakewardenProfText = '';
     const isDrakewardenLvl3 =
@@ -1093,6 +1165,31 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       extraNotes.push('[Драконий дар]: Язык Драконий');
     }
 
+    // Barbarian Path of the Giant: Giant power cantrip & language (lvl 3)
+    let giantProfText = '';
+    const giantCantrips: string[] = [];
+    if (choicesConfig.needsGiantChoice) {
+      if (selectedGiantCantrip) {
+        giantCantrips.push(selectedGiantCantrip);
+        extraNotes.push(`[Сила великана]: Заговор «${selectedGiantCantrip}» (Мудрость)`);
+      }
+      if (selectedGiantLanguage) {
+        giantProfText = `Язык: ${selectedGiantLanguage}`;
+        extraNotes.push(`[Сила великана]: Язык «${selectedGiantLanguage}»`);
+      }
+    }
+
+    // Rogue Assassin / Mastermind bonus proficiencies (lvl 3)
+    let rogueToolsProfText = '';
+    if (choicesConfig.needsRogueTools && choicesConfig.rogueToolsText) {
+      rogueToolsProfText = choicesConfig.rogueToolsText;
+      extraNotes.push(`[Владения специализации]: ${choicesConfig.rogueToolsText}`);
+    }
+
+    const combinedProfText = [drakewardenProfText, giantProfText, rogueToolsProfText]
+      .filter(Boolean)
+      .join('\n');
+
     if (extraNotes.length > 0) {
       fullNotes = fullNotes
         ? `${fullNotes}\n${extraNotes.join('\n')}`
@@ -1101,7 +1198,8 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
     const allNewCantrips = Array.from(new Set([
       ...newCantrips.filter(c => c.trim()),
-      ...(choicesConfig.needsPactBoon && selectedPactBoon === 'tome' ? selectedTomeCantrips : [])
+      ...(choicesConfig.needsPactBoon && selectedPactBoon === 'tome' ? selectedTomeCantrips : []),
+      ...giantCantrips,
     ]));
 
     return {
@@ -1124,10 +1222,16 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       newCantrips: allNewCantrips,
       newSpells: combinedSpells,
       newSavingThrowProfs: calculatedNewSavingThrowProfs,
-      newSkillProfs: Array.from(new Set([...scoutSkillProfs, ...feyWandererSkillProfs])),
+      newSkillProfs: Array.from(new Set([
+        ...scoutSkillProfs,
+        ...feyWandererSkillProfs,
+        ...totemTigerSkillProfs,
+        ...primalKnowledgeSkillProfs,
+        ...warlockInvocationSkillProfs,
+      ])),
       newSkillExpertise: Array.from(new Set([...selectedExpertise, ...scoutSkillExpertise])),
       newAttacks: [],
-      newProficienciesText: drakewardenProfText,
+      newProficienciesText: combinedProfText,
       newEquipmentText: '',
       pactBoon: choicesConfig.needsPactBoon ? selectedPactBoon : undefined,
       tomeCantrips: (choicesConfig.needsPactBoon && selectedPactBoon === 'tome') ? selectedTomeCantrips : undefined,
@@ -2395,6 +2499,65 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   );
                 })}
               </div>
+
+              {selectedTotemChoice === 'tiger' && choicesConfig.tigerSkillsOptions && (
+                <div
+                  className="mt-3 p-3 rounded-lg space-y-2"
+                  style={{
+                    background: 'rgba(232, 211, 162, 0.35)',
+                    border: '1px solid rgba(201, 168, 76, 0.6)',
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold" style={{ color: '#3D2012' }}>
+                      🐅 Аспект тигра: выберите 2 навыка для получения владения (dnd.su):
+                    </span>
+                    <span
+                      className="text-[10px] px-2 py-0.5 rounded font-bold"
+                      style={{ background: '#5C341F', color: '#FFE58F' }}
+                    >
+                      {selectedTotemTigerSkills.length} / 2
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {choicesConfig.tigerSkillsOptions.map(sk => {
+                      const isChosen = selectedTotemTigerSkills.includes(sk);
+                      const alreadyHas = Boolean(char.skillProficiencies?.[sk]);
+                      return (
+                        <button
+                          key={sk}
+                          type="button"
+                          disabled={alreadyHas}
+                          onClick={() => {
+                            if (isChosen) {
+                              setSelectedTotemTigerSkills(prev => prev.filter(s => s !== sk));
+                            } else if (selectedTotemTigerSkills.length < 2) {
+                              setSelectedTotemTigerSkills(prev => [...prev, sk]);
+                            }
+                          }}
+                          className="text-left p-2 rounded text-xs font-semibold flex items-center justify-between transition-all"
+                          style={
+                            isChosen
+                              ? { background: '#E8D3A2', border: '2px solid #5C341F', color: '#3D2012' }
+                              : alreadyHas
+                                ? { background: 'transparent', border: '1px dashed rgba(139, 105, 20, 0.3)', color: '#8B6914', opacity: 0.5 }
+                                : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(201, 168, 76, 0.4)', color: '#5C341F' }
+                          }
+                        >
+                          <span>{sk}</span>
+                          {isChosen ? (
+                            <GoldSealCheckIcon size={14} />
+                          ) : alreadyHas ? (
+                            <span className="text-[10px] italic">есть</span>
+                          ) : (
+                            <span className="w-3.5 h-3.5 rounded-full border border-[#C9A84C]/60" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -2616,6 +2779,193 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {/* 6.j. Giant Archetype Choice (Barbarian: Path of the Giant 3 lvl) */}
+          {choicesConfig.needsGiantChoice && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex items-center justify-between">
+                <h3
+                  className="text-sm font-bold flex items-center gap-1.5"
+                  style={{ color: '#3C2415' }}
+                >
+                  <SparklesDndIcon size={16} />
+                  <span>
+                    Сила великана: Заговор и язык ({newLevel} ур.):
+                  </span>
+                </h3>
+                <span
+                  className="text-[11px] font-bold"
+                  style={{
+                    color: selectedGiantCantrip ? '#4a7c3f' : '#8B2500',
+                  }}
+                >
+                  {selectedGiantCantrip ? `Выбран заговор: ${selectedGiantCantrip}` : 'Требуется выбор'}
+                </span>
+              </div>
+              <p className="text-xs leading-relaxed" style={{ color: '#5C341F' }}>
+                Вы постигли первобытную силу великанов. Вы изучаете один заговор на выбор: <em>Искусство друидов</em> или <em>Чудотворство</em> (заклинательная характеристика — Мудрость). Также вы обучаетесь языку Великаний.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {(choicesConfig.giantCantripOptions || ['Искусство друидов', 'Чудотворство']).map(cantripName => {
+                  const isSel = selectedGiantCantrip === cantripName;
+                  return (
+                    <button
+                      key={cantripName}
+                      type="button"
+                      onClick={() => setSelectedGiantCantrip(cantripName)}
+                      className="text-left p-3 rounded-lg transition-all flex flex-col justify-between gap-1.5"
+                      style={{
+                        background: isSel
+                          ? 'rgba(232, 211, 162, 0.7)'
+                          : 'rgba(232, 211, 162, 0.25)',
+                        border: isSel
+                          ? '2px solid #C9A84C'
+                          : '1px solid rgba(201, 168, 76, 0.4)',
+                        boxShadow: isSel
+                          ? '0 0 10px rgba(201, 168, 76, 0.4)'
+                          : 'none',
+                      }}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span
+                          className="font-bold text-xs"
+                          style={{ color: '#3D2012' }}
+                        >
+                          {cantripName}
+                        </span>
+                        {isSel ? (
+                          <GoldSealCheckIcon size={18} />
+                        ) : (
+                          <span className="w-4 h-4 rounded-full border border-[#C9A84C]/60" />
+                        )}
+                      </div>
+                      <p
+                        className="text-[11px] leading-relaxed"
+                        style={{ color: '#5C341F' }}
+                      >
+                        {cantripName === 'Искусство друидов'
+                          ? 'Творите природные эффекты погоды, распускание цветов и звуки природы.'
+                          : 'Сотворяйте проявления сверхъестественной мощи, усиливайте голос и вызывайте дрожь.'}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+              <div
+                className="p-2.5 rounded text-xs flex items-center gap-2"
+                style={{
+                  background: 'rgba(232, 211, 162, 0.4)',
+                  border: '1px solid rgba(201, 168, 76, 0.5)',
+                  color: '#5C341F',
+                }}
+              >
+                <ScrollIcon size={16} />
+                <span>
+                  <strong>Изучен язык:</strong> Великаний (автоматически добавлен в раздел «Владения и языки»).
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* 6.k. Barbarian Primal Knowledge (Levels 3 & 10) */}
+          {choicesConfig.needsPrimalKnowledge && (choicesConfig.primalKnowledgeOptions || []).length > 0 && (
+            <div className="parchment-modal-section space-y-2.5">
+              <div className="flex items-center justify-between">
+                <h3
+                  className="text-sm font-bold flex items-center gap-1.5"
+                  style={{ color: '#3C2415' }}
+                >
+                  <SparklesDndIcon size={16} />
+                  <span>
+                    Первобытное знание: Дополнительный навык ({newLevel} ур.):
+                  </span>
+                </h3>
+                <span
+                  className="text-[11px] font-bold"
+                  style={{
+                    color: selectedPrimalKnowledgeSkill ? '#4a7c3f' : '#8B6914',
+                  }}
+                >
+                  {selectedPrimalKnowledgeSkill ? `Выбрано: ${selectedPrimalKnowledgeSkill}` : 'Не выбрано (опционально)'}
+                </span>
+              </div>
+              <p className="text-xs leading-relaxed" style={{ color: '#5C341F' }}>
+                Опциональное умение варвара (Таша / dnd.su). Вы можете получить владение одним дополнительным навыком варвара на выбор:
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {(choicesConfig.primalKnowledgeOptions || []).map(skillName => {
+                  const isSel = selectedPrimalKnowledgeSkill === skillName;
+                  return (
+                    <button
+                      key={skillName}
+                      type="button"
+                      onClick={() => setSelectedPrimalKnowledgeSkill(isSel ? '' : skillName)}
+                      className="text-left p-2.5 rounded-lg transition-all flex items-center justify-between gap-2"
+                      style={{
+                        background: isSel
+                          ? 'rgba(232, 211, 162, 0.8)'
+                          : 'rgba(232, 211, 162, 0.25)',
+                        border: isSel
+                          ? '2px solid #C9A84C'
+                          : '1px solid rgba(201, 168, 76, 0.4)',
+                        boxShadow: isSel
+                          ? '0 0 8px rgba(201, 168, 76, 0.3)'
+                          : 'none',
+                      }}
+                    >
+                      <span className="font-bold text-xs" style={{ color: '#3D2012' }}>
+                        {skillName}
+                      </span>
+                      {isSel ? (
+                        <GoldSealCheckIcon size={16} />
+                      ) : (
+                        <span className="w-3.5 h-3.5 rounded-full border border-[#C9A84C]/60" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 6.l. Rogue Bonus Proficiencies (Level 3) */}
+          {choicesConfig.needsRogueTools && choicesConfig.rogueToolsText && (
+            <div
+              className="p-3.5 rounded-lg border space-y-2"
+              style={{
+                background: 'rgba(232, 211, 162, 0.35)',
+                borderColor: '#C9A84C',
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <h3
+                  className="text-sm font-bold flex items-center gap-1.5"
+                  style={{ color: '#3D2012' }}
+                >
+                  <EngravedShieldIcon size={16} />
+                  <span>
+                    Бонусные владения архетипа (3 ур.):
+                  </span>
+                </h3>
+                <span
+                  className="text-[10px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{
+                    background: '#E8D3A2',
+                    border: '1px solid #C9A84C',
+                    color: '#5C341F',
+                  }}
+                >
+                  Автоматически
+                </span>
+              </div>
+              <p className="text-xs font-semibold" style={{ color: '#3D2012' }}>
+                {choicesConfig.rogueToolsText}
+              </p>
+              <p className="text-[11px]" style={{ color: '#6B3A2A' }}>
+                Эти владения инструментами и языками дарованы вашей специализацией и автоматически внесены в раздел «Владения и языки» вашего персонажа.
+              </p>
             </div>
           )}
 
@@ -3378,6 +3728,26 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                     )?.name
                   }
                 </strong>
+              </p>
+            )}
+            {choicesConfig.needsTotemChoice && selectedTotemChoice === 'tiger' && selectedTotemTigerSkills.length > 0 && (
+              <p>
+                • Навыки духа тигра: <strong>{selectedTotemTigerSkills.join(', ')}</strong>
+              </p>
+            )}
+            {choicesConfig.needsGiantChoice && (
+              <p>
+                • Сила великана: Заговор «<strong>{selectedGiantCantrip}</strong>», язык «<strong>Великаний</strong>»
+              </p>
+            )}
+            {choicesConfig.needsPrimalKnowledge && selectedPrimalKnowledgeSkill && (
+              <p>
+                • Первобытное знание: Навык «<strong>{selectedPrimalKnowledgeSkill}</strong>»
+              </p>
+            )}
+            {choicesConfig.needsRogueTools && choicesConfig.rogueToolsText && (
+              <p>
+                • {choicesConfig.rogueToolsText}
               </p>
             )}
             {selectedManeuvers.length > 0 && (

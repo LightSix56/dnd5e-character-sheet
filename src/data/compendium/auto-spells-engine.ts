@@ -109,6 +109,36 @@ export function getAutoGrantedSpellsForLevel(
         });
       }
     }
+
+    // Path of the Ancestral Guardian: Clairvoyance & Augury at level 10
+    if (subLower.includes('предок') || subLower.includes('предков') || subLower.includes('ancestral')) {
+      if (newLevel === 10) {
+        result.push({
+          name: 'Ясновидение',
+          level: 3,
+          prepared: true,
+          source: 'Путь хранителя предков: Совет предков',
+        });
+        result.push({
+          name: 'Гадание',
+          level: 2,
+          prepared: true,
+          source: 'Путь хранителя предков: Совет предков',
+        });
+      }
+    }
+
+    // Path of Wild Magic: Detect Magic at level 3
+    if (subLower.includes('дикой магии') || subLower.includes('wild-magic') || subLower.includes('wild magic')) {
+      if (newLevel === 3) {
+        result.push({
+          name: 'Обнаружение магии',
+          level: 1,
+          prepared: true,
+          source: 'Путь дикой магии: Магическое чутьё',
+        });
+      }
+    }
   }
 
   // 1e. Ranger archetype bonus cantrips at level 3

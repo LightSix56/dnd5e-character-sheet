@@ -61,9 +61,10 @@
   "59": "header-menu.test.ts",
   "60": "materiality-and-tactility.test.ts",
   "61": "sliding-tabs.test.ts",
-  "62": "StatsCalculatorModal.tsx",
+  "62": "react",
   "63": "ItemDetailModal.tsx",
   "64": "CharacterGridModal.tsx",
   "65": "class-progression.ts",
-  "66": "ClassSelectorModal.tsx"
+  "66": "CompendiumModals.tsx",
+  "67": "StatsCalculatorModal.tsx"
 }

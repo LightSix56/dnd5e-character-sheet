@@ -225,6 +225,16 @@ export const TOTEM_SPIRIT_OPTIONS: { id: string; name: string; description: stri
     id: 'wolf',
     name: 'Волк',
     description: 'В ярости ваши союзники получают преимущество на броски рукопашных атак по врагам в 5 футах от вас.'
+  },
+  {
+    id: 'elk',
+    name: 'Лось',
+    description: 'В ярости, если вы не носите тяжёлые доспехи, ваша скорость ходьбы увеличивается на 15 футов.'
+  },
+  {
+    id: 'tiger',
+    name: 'Тигр',
+    description: 'В ярости вы добавляете 10 футов к дальности прыжка в длину и 3 фута к прыжку в высоту.'
   }
 ];
 
@@ -243,8 +253,47 @@ export const TOTEM_ASPECT_OPTIONS: { id: string; name: string; description: stri
     id: 'wolf',
     name: 'Волк',
     description: 'Выслеживание: вы можете идти по следу существ в быстром темпе и перемещаться скрытно в нормальном темпе.'
+  },
+  {
+    id: 'elk',
+    name: 'Лось',
+    description: 'Пешим или конным ваша скорость путешествий удваивается (а также у до 10 ваших спутников в пределах 60 футов).'
+  },
+  {
+    id: 'tiger',
+    name: 'Тигр',
+    description: 'Вы получаете владение двумя навыками на выбор: Акробатика, Атлетика, Выживание или Скрытность.'
   }
 ];
+
+export const TOTEM_ATTUNEMENT_OPTIONS: { id: string; name: string; description: string }[] = [
+  {
+    id: 'bear',
+    name: 'Медведь',
+    description: 'В ярости враги в пределах 5 футов совершают броски атак по другим существам с помехой.'
+  },
+  {
+    id: 'eagle',
+    name: 'Орёл',
+    description: 'В ярости вы получаете скорость полёта, равную скорости ходьбы (до конца текущего хода).'
+  },
+  {
+    id: 'wolf',
+    name: 'Волк',
+    description: 'В ярости при попадании рукопашной атакой оружием вы можете бонусным действием сбить цель с ног (размером не больше Большого).'
+  },
+  {
+    id: 'elk',
+    name: 'Лось',
+    description: 'В ярости бонусным действием при передвижении можете пройти через существо Большого или меньшего размера (спасбросок Силы или сбито с ног и 1d12+СИЛ урона).'
+  },
+  {
+    id: 'tiger',
+    name: 'Тигр',
+    description: 'В ярости при перемещении по прямой как минимум на 20 футов к цели перед рукопашной атакой бонусным действием совершите дополнительную атаку оружием.'
+  }
+];
+
 
 // ── Battle Master Maneuvers (Fighter) ──
 
@@ -331,6 +380,14 @@ export interface LevelUpChoicesConfig {
   needsTotemChoice?: boolean;
   totemChoiceTitle?: string;
   totemOptions?: { id: string; name: string; description: string }[];
+  tigerSkillsOptions?: string[];
+  needsGiantChoice?: boolean;
+  giantCantripOptions?: string[];
+  giantLanguageOptions?: string[];
+  needsPrimalKnowledge?: boolean;
+  primalKnowledgeOptions?: string[];
+  needsRogueTools?: boolean;
+  rogueToolsText?: string;
   needsManeuvers?: boolean;
   maneuverCount?: number;
   maneuverOptions?: { id: string; name: string; description: string }[];
@@ -615,6 +672,50 @@ export function getLevelUpChoicesConfig(
     config.needsTotemChoice = true;
     config.totemChoiceTitle = 'Аспект зверя';
     config.totemOptions = TOTEM_ASPECT_OPTIONS;
+    config.tigerSkillsOptions = ['Акробатика', 'Атлетика', 'Выживание', 'Скрытность'];
+  }
+
+  // Level 14: Totemic Attunement
+  if (
+    normClass === 'Варвар' &&
+    newLevel === 14 &&
+    (rawSubclass.includes('тотем') || rawSubclass.includes('totem'))
+  ) {
+    config.needsTotemChoice = true;
+    config.totemChoiceTitle = 'Гармония тотема';
+    config.totemOptions = TOTEM_ATTUNEMENT_OPTIONS;
+  }
+
+  // Path of the Giant Level 3
+  if (
+    normClass === 'Варвар' &&
+    newLevel === 3 &&
+    (rawSubclass.includes('великан') || rawSubclass.includes('giant'))
+  ) {
+    config.needsGiantChoice = true;
+    config.giantCantripOptions = ['Искусство друидов', 'Чудотворство'];
+    config.giantLanguageOptions = ['Великаний'];
+  }
+
+  // Barbarian Primal Knowledge (Optional: Levels 3 and 10)
+  if (normClass === 'Варвар' && (newLevel === 3 || newLevel === 10)) {
+    const barbarianSkills = ['Акробатика', 'Внимательность', 'Выживание', 'Запугивание', 'Природа', 'Уход за животными'];
+    const unlearned = barbarianSkills.filter(s => !char.skillProficiencies?.[s]);
+    if (unlearned.length > 0) {
+      config.needsPrimalKnowledge = true;
+      config.primalKnowledgeOptions = unlearned;
+    }
+  }
+
+  // 6b. Rogue Subclasses Bonus Proficiencies (Level 3)
+  if (normClass === 'Плут' && newLevel === 3) {
+    if (rawSubclass.includes('убийц') || rawSubclass.includes('assassin')) {
+      config.needsRogueTools = true;
+      config.rogueToolsText = 'Инструменты: Набор для грима, инструменты отравителя';
+    } else if (rawSubclass.includes('интриг') || rawSubclass.includes('mastermind')) {
+      config.needsRogueTools = true;
+      config.rogueToolsText = 'Инструменты: Набор для грима, набор для фальсификации, игровой набор; Языки: 2 языка на выбор';
+    }
   }
 
   // 7. Fighter Battle Master Maneuvers

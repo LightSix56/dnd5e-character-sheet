@@ -646,12 +646,19 @@ async function main() {
     fs.mkdirSync(cacheDir, { recursive: true });
   }
 
-  const query = args[0] ? args[0].toLowerCase() : 'elf';
+  const isAll = args.includes('--all') || args.includes('all');
+  const isOfficialOnly = args.includes('--official') || args.includes('official') || isAll;
+  const singleQuery = args.find(a => !a.startsWith('--') && a !== 'all' && a !== 'official');
 
-  if (query === '--all' || query === 'all') {
-    console.log('🚀 Запуск полного парсинга всех рас с dnd.su...');
-    const catalog = await fetchRaceCatalogue();
-    console.log(`📋 В каталоге найдено рас: ${catalog.length}`);
+  if (isAll || args.includes('--official') || args.includes('official')) {
+    const onlyOfficial = !args.includes('--all');
+    console.log(`🚀 Запуск парсинга ${onlyOfficial ? 'всех официальных WotC' : 'всех доступных'} рас с dnd.su...`);
+    let catalog = await fetchRaceCatalogue();
+
+    if (onlyOfficial) {
+      catalog = catalog.filter(item => !item.href.includes('/homebrew/') && !item.name.includes('HB:'));
+    }
+    console.log(`📋 В каталоге для обработки: ${catalog.length} рас`);
 
     const allParsedRaces: ParsedRace[] = [];
 
@@ -669,19 +676,25 @@ async function main() {
         const html = await res.text();
         const parsed = parseRaceHtml(html, url);
 
+        if (onlyOfficial && !parsed.isOfficial) {
+          console.log(`   ⏭️ Пропуск неофициальной расы: ${parsed.nameRu} (${parsed.source})`);
+          continue;
+        }
+
         fs.writeFileSync(path.join(cacheDir, `${parsed.id}.json`), JSON.stringify(parsed, null, 2), 'utf-8');
         fs.writeFileSync(path.join(cacheDir, `${parsed.id}.md`), formatRaceMarkdown(parsed), 'utf-8');
 
         allParsedRaces.push(parsed);
 
         // Friendly rate-limit delay
-        await new Promise(r => setTimeout(r, 200));
+        await new Promise(r => setTimeout(r, 150));
       } catch (err: any) {
         console.error(`❌ Ошибка парсинга ${item.name}:`, err.message);
       }
     }
 
-    const compendiumPath = path.resolve(process.cwd(), '.dndsu-cache', 'all-races.json');
+    const outName = onlyOfficial ? 'all-official-races.json' : 'all-races.json';
+    const compendiumPath = path.resolve(process.cwd(), '.dndsu-cache', outName);
     fs.writeFileSync(compendiumPath, JSON.stringify(allParsedRaces, null, 2), 'utf-8');
     console.log(`\n🎉 Парсинг завершён! Успешно обработано: ${allParsedRaces.length} рас.`);
     console.log(`📁 Сохранено в: ${cacheDir}`);
@@ -690,6 +703,7 @@ async function main() {
   }
 
   // Single race mode
+  const query = singleQuery ? singleQuery.toLowerCase() : 'elf';
   let targetUrl = query;
   if (!query.startsWith('http')) {
     const catalog = await fetchRaceCatalogue();

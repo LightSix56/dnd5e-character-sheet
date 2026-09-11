@@ -930,9 +930,9 @@
     "semantic_hash": ""
   },
   "scripts/fetch-dndsu-races.ts": {
-    "mtime": 1789134592.8378613,
-    "seen": 1789134698.5139883,
-    "ast_hash": "61d75470371aa99b72fe986e41e89988",
+    "mtime": 1789134842.9172134,
+    "seen": 1789134931.3952577,
+    "ast_hash": "4d99fdb41e1dc2178c68adcfff7169cb",
     "semantic_hash": ""
   }
 }

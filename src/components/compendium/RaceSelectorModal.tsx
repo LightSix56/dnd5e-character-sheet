@@ -77,7 +77,7 @@ export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose
                 Компендиум рас D&D 5e
               </h3>
               <span className="text-[11px]" style={{ color: '#8B6914' }}>
-                49 официальных рас и свыше 70 подрас/родословий
+                {DND_COMPENDIUM_RACES.length} официальных рас и свыше 70 подрас/родословий
               </span>
             </div>
           </div>
@@ -241,7 +241,10 @@ export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose
                       const bonuses = { ...selectedRace.abilityBonuses, ...(selectedSubrace?.abilityBonuses || {}) };
                       const entries = Object.entries(bonuses).filter(([_, v]) => v && v > 0);
                       if (entries.length === 0) {
-                        return <span className="text-xs" style={{ color: '#5C341F' }}>+1 к двум характеристикам на выбор (универсальный)</span>;
+                        if (selectedRace.id === 'custom-lineage') {
+                          return <span className="text-xs font-semibold" style={{ color: '#5C341F' }}>+2 к одной характеристике на выбор (Tasha)</span>;
+                        }
+                        return <span className="text-xs font-semibold" style={{ color: '#5C341F' }}>+2 к одной и +1 к другой ЛИБО +1 к трём различным характеристикам на выбор (правила MPMM)</span>;
                       }
                       return entries.map(([ab, val]) => (
                         <span

@@ -1,23 +1,23 @@
 # Graph Report - dnd5e-character-sheet  (2026-09-11)
 
 ## Corpus Check
-- 141 files · ~324,729 words
+- 144 files · ~326,988 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 930 nodes · 1965 edges · 70 communities (44 shown, 17 thin omitted)
+- 942 nodes · 1985 edges · 69 communities (43 shown, 17 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `890c1d76`
+- Built from commit: `3e25fea3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - package.json
 - dependencies
-- level-up-choices.ts
+- LevelUpModal.tsx
 - CharacterCreationWizardModal.tsx
 - dnd-types.ts
 - @supabase/ssr
@@ -27,7 +27,7 @@
 - NameGeneratorModal.tsx
 - Global Constraints
 - 2. Архитектурные разделы дизайна
-- LevelUpModal.tsx
+- dnd-icons.tsx
 - devDependencies
 - fetch-dndsu-backgrounds.ts
 - scripts
@@ -64,12 +64,11 @@
 - 2. Архитектура решения
 - Global Constraints
 - Global Constraints
-- CharacterData
+- CharacterGridModal.tsx
 - css-ux-standards.test.mjs
 - hit-targets.test.ts
 - auth-form-and-images.test.ts
 - 📜 D&D.su Class & Mechanics Parser Skill
-- CompendiumModals.tsx
 - compendium/index.ts
 - class-progression.ts
 - escape-key-and-keyboard-rolls.test.ts
@@ -84,7 +83,7 @@
 4. `LevelUpModal` - 29 edges
 5. `getSpellSlotsForClassLevel()` - 26 edges
 6. `createDefaultCharacter()` - 25 edges
-7. `DND_COMPENDIUM_CLASSES` - 23 edges
+7. `DND_COMPENDIUM_CLASSES` - 24 edges
 8. `getModifier()` - 22 edges
 9. `POST()` - 21 edges
 10. `getClassSubclassLevel()` - 21 edges
@@ -98,13 +97,13 @@
   test/level-up-martial.test.ts → src/lib/dnd-types.ts
 - `LevelUpModal` --indirect_call--> `normalizeSpellName()`  [INFERRED]
   src/components/levelup/LevelUpModal.tsx → src/components/levelup/level-up-choices.ts
-- `applyLevelDown()` --calls--> `getSpellSlotsForClassLevel()`  [EXTRACTED]
-  test/level-up-arcane.test.ts → src/data/compendium/class-progression.ts
+- `SavedCharacter` --references--> `CharacterData`  [EXTRACTED]
+  src/components/tools/CharacterGridModal.tsx → src/lib/dnd-types.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (70 total, 17 thin omitted)
+## Communities (69 total, 17 thin omitted)
 
 ### Community 0 - "package.json"
 Cohesion: 0.03
@@ -114,20 +113,20 @@ Nodes (77): name, private, version, bun-types, class-variance-authority, cmdk, d
 Cohesion: 0.03
 Nodes (74): dependencies, class-variance-authority, clsx, cmdk, date-fns, @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities (+66 more)
 
-### Community 2 - "level-up-choices.ts"
-Cohesion: 0.09
+### Community 2 - "LevelUpModal.tsx"
+Cohesion: 0.11
 Nodes (35): BATTLE_MASTER_MANEUVERS, BLADESINGING_WEAPONS, DIVINE_AFFINITY_OPTIONS, DivineAffinityOption, DRACONIC_ANCESTRY_OPTIONS, DraconicAncestryOption, ELDRITCH_INVOCATIONS, filterAvailableSpells() (+27 more)
 
 ### Community 3 - "CharacterCreationWizardModal.tsx"
-Cohesion: 0.09
-Nodes (46): RaceSelectorModalProps, StatsCalculatorModalProps, CharacterCreationWizardModal(), ALL_DND_LANGUAGES, calcPointBuyTotalSpent(), calcPreparedSpellsLimit(), calculateWizardAC(), ClassLevel1ChoicesConfig (+38 more)
+Cohesion: 0.08
+Nodes (47): CATEGORIES, RaceSelectorModalProps, UserHeroIcon(), StatsCalculatorModalProps, CharacterCreationWizardModal(), ALL_DND_LANGUAGES, calcPointBuyTotalSpent(), calcPreparedSpellsLimit() (+39 more)
 
 ### Community 4 - "dnd-types.ts"
 Cohesion: 0.11
-Nodes (49): pdf-lib, main(), borders(), dCell(), hCell(), isSafeImageUrl(), normalizeCharacter(), POST() (+41 more)
+Nodes (51): pdf-lib, main(), borders(), dCell(), hCell(), isSafeImageUrl(), normalizeCharacter(), POST() (+43 more)
 
 ### Community 5 - "@supabase/ssr"
-Cohesion: 0.09
+Cohesion: 0.10
 Nodes (19): @supabase/ssr, createClient(), DELETE(), GET(), getAuthenticatedUser(), isValidUUID(), POST(), PUT() (+11 more)
 
 ### Community 7 - "compilerOptions"
@@ -143,7 +142,7 @@ Cohesion: 0.22
 Nodes (8): Global Constraints, Task 1: Глобальная материальность пергамента, тени и тактильные нажатия, Task 2: Пружинная физика и кинематика бросков d20 (`RollResultPopup`), Task 3: Скользящий индикатор переключения вкладок (Sliding Tab Indicator), Task 4: Разгрузка шапки — средневековое выпадающее меню «Бланк», Task 5: Атмосферные средневековые пустые состояния (Alive Empty States), Task 6: Комплексная E2E-верификация в Playwright Microsoft Edge, План реализации: Премиальные дизайн-улучшения D&D 5e Character Sheet
 
 ### Community 10 - "NameGeneratorModal.tsx"
-Cohesion: 0.24
+Cohesion: 0.22
 Nodes (13): QuillIcon(), NameGeneratorModal(), NameGeneratorModalProps, DND_COMPENDIUM_NAMES_DB, FANTASY_NAMES_DATABASE, FantasyNameResult, generateFantasyName(), generateMultipleFantasyNames() (+5 more)
 
 ### Community 11 - "Global Constraints"
@@ -154,17 +153,17 @@ Nodes (8): Global Constraints, Task 1: Comprehensive Warlock Choices Database (`
 Cohesion: 0.22
 Nodes (8): 1. Контекст и цели, 2.1. Физика бросков d20 и тактильный отклик (Spring Physics & Tactility), 2.2. Архитектурная разгрузка шапки (Header De-Cluttering & Vintage Menu), 2.3. Слоистая глубина пергамента и золотое тиснение (Materiality & Shadows), 2.4. Атмосферные пустые состояния (Alive Empty States), 2. Архитектурные разделы дизайна, 3. План верификации и безопасность изменений, Спецификация: Премиальные дизайн-улучшения D&D 5e Character Sheet (по мотивам Taste-Skill & GPT-Taste)
 
-### Community 13 - "LevelUpModal.tsx"
-Cohesion: 0.17
-Nodes (22): ClassSelectorModal(), ClassSelectorModalProps, ArcaneLinkIcon(), BackpackPackIcon(), CameraPortraitIcon(), CoinsChestIcon(), CrossedSwordsIcon(), CrystalBallDndIcon() (+14 more)
+### Community 13 - "dnd-icons.tsx"
+Cohesion: 0.15
+Nodes (14): CameraPortraitIcon(), ChestIcon(), CoinsChestIcon(), CrystalBallDndIcon(), GoldSealCheckIcon(), HourglassIcon(), IconProps, InfoSealIcon() (+6 more)
 
 ### Community 14 - "devDependencies"
 Cohesion: 0.14
 Nodes (14): devDependencies, bun-types, cheerio, eslint, eslint-config-next, @playwright/test, puppeteer-core, tailwindcss (+6 more)
 
 ### Community 15 - "fetch-dndsu-backgrounds.ts"
-Cohesion: 0.13
-Nodes (22): cheerio, cleanText(), fetchAllOfficialBackgrounds(), fetchAndParseBackground(), fetchBackgroundList(), formatBackgroundMarkdown(), isOfficialBackgroundSource(), OFFICIAL_WOTC_SOURCES (+14 more)
+Cohesion: 0.10
+Nodes (29): cheerio, CLASS_SLUGS, ClassEquipmentChoice, ClassStartingEquipmentData, cleanEquipmentText(), fetchAllClassEquipment(), parseEquipmentHtml(), parseEquipmentListItem() (+21 more)
 
 ### Community 16 - "scripts"
 Cohesion: 0.17
@@ -192,7 +191,7 @@ Nodes (15): 🧭 1. Назначение и Философия Продукта,
 
 ### Community 33 - "📜 D&D 5e Character Sheet — Правила и Стандарты Кодовой Базы"
 Cohesion: 0.12
-Nodes (16): 1.1. Цветовая палитра (Категорический запрет на случайные цвета), 🎨 1. Единая Дизайн-Система (Parchment Medieval Theme), 2.1. Векторные двухцветные D&D-иконки (`@/components/dnd-icons`), 2.2. Текстовые эмодзи, 🗡️ 2. Стандарты Иконографики и Эмодзи, 📝 3. Стандарты Компонентов Форм, ⚔️ 4. Архитектура и Качество Кода, 🚀 5. Регламент Сборки и Git (+8 more)
+Nodes (16): 1.1. Цветовая палитра (Категорический запрет на случайные цвета), 🎨 1. Единая Дизайн-Система (Parchment Medieval Theme), 2.1. Векторные двухцветные D&D-иконки (`@/components/dnd-icons`), 2.2. Текстовые эмодзи, 🗡️ 2. Стандарты Иконографики и Эмодзи, 📝 3. Стандарты Компонентов Форм, ⚔️ 4. Архитектура и Качество Кода, 🚀 5. Регламент Сборки и Git (ОБЯЗАТЕЛЬНЫЙ GIT PUSH) (+8 more)
 
 ### Community 34 - "Global Constraints"
 Cohesion: 0.22
@@ -234,9 +233,9 @@ Nodes (8): Global Constraints, Task 1: Compendium Smite Spells & Auto-Spells Eng
 Cohesion: 0.25
 Nodes (7): Global Constraints, Task 1: Global CSS Enhancements (`globals.css`), Task 2: Clickable Hit Targets for Skills, Saves & Form Labels, Task 3: Escape Key Modal Dismissal & Keyboard Dice Rolls, Task 4: Auth Modal Form Wrapping, Image Sizing & Typographic Ellipsis, Task 5: Playwright Headless Edge E2E Verification, UX & Web Guidelines Enhancements Implementation Plan
 
-### Community 52 - "CharacterData"
-Cohesion: 0.13
-Nodes (17): LevelDownModalProps, LevelHistoryModalProps, MysticCloudIcon(), RunedKeyIcon(), LevelUpModalProps, CharacterGridModal, CharacterGridModalProps, formatRussianDate() (+9 more)
+### Community 52 - "CharacterGridModal.tsx"
+Cohesion: 0.23
+Nodes (10): ArcaneLinkIcon(), MysticCloudIcon(), CharacterGridModal, CharacterGridModalProps, formatRussianDate(), getCharAC(), getCharHP(), getCharSpecialStat() (+2 more)
 
 ### Community 53 - "css-ux-standards.test.mjs"
 Cohesion: 0.40
@@ -254,53 +253,49 @@ Nodes (3): __dirname, __filename, rootDir
 Cohesion: 0.33
 Nodes (5): 📜 D&D.su Class & Mechanics Parser Skill, Examples:, 🚀 How to Execute, 🎯 Implementation Workflow for Character Sheet, 📋 What the Output Contains
 
-### Community 63 - "CompendiumModals.tsx"
-Cohesion: 0.13
-Nodes (14): NonClassSpellConfirmModalProps, SpellDetailModal(), SpellModalProps, TraitDetailModal(), TraitModalProps, WeaponDetailModal(), WeaponModalProps, CompendiumFeat (+6 more)
-
-### Community 64 - "compendium/index.ts"
-Cohesion: 0.21
-Nodes (7): AutocompleteInput(), AutocompleteInputProps, AutocompleteItem, DND_COMPENDIUM_SPELLS, findSpellByName(), DND_SPELLS, findSpellByName
+### Community 63 - "compendium/index.ts"
+Cohesion: 0.15
+Nodes (7): AutocompleteInput(), AutocompleteInputProps, AutocompleteItem, CompendiumFeat, DND_COMPENDIUM_FEATS, DND_TRAITS, findTraitByName()
 
 ### Community 65 - "class-progression.ts"
-Cohesion: 0.07
-Nodes (68): getLevelUpChoicesConfig(), LevelUpModal, getAutoGrantedSpellsForLevel(), ARTIFICER_SPELL_SLOTS, BARD_SPELLS_KNOWN, CLASS_CANTRIPS_PROGRESSION, CLASS_NAME_MAP, CLASS_SPELLS_KNOWN_TABLES (+60 more)
+Cohesion: 0.06
+Nodes (82): LevelDownModalProps, LevelHistoryModalProps, getLevelUpChoicesConfig(), LevelUpModal, LevelUpModalProps, CharacterCreationWizardModalProps, AutoGrantedSpell, getAutoGrantedSpellsForLevel() (+74 more)
 
 ### Community 66 - "escape-key-and-keyboard-rolls.test.ts"
 Cohesion: 0.33
 Nodes (4): __dirname, __filename, KeyListener, rootDir
 
 ### Community 67 - "StatsCalculatorModal.tsx"
-Cohesion: 0.20
-Nodes (8): react, CATEGORIES, RaceSelectorModal(), UserHeroIcon(), CalculatorTab, POINT_BUY_COST, STANDARD_ARRAY_VALUES, StatsCalculatorModal()
+Cohesion: 0.14
+Nodes (15): react, ClassSelectorModal(), ClassSelectorModalProps, SubclassSelectorModal(), SubclassSelectorModalProps, CrossedSwordsIcon(), D20Icon(), ScrollIcon() (+7 more)
 
 ### Community 68 - "app/page.tsx"
 Cohesion: 0.10
-Nodes (26): AuthModal, CreateChoiceModal, CreateChoiceModalProps, getThirdCasterSpellSlots(), LevelDownModal, LevelHistoryModal, NonClassSpellConfirmModal(), ResetModal (+18 more)
+Nodes (31): AuthModal, CreateChoiceModal, CreateChoiceModalProps, getThirdCasterSpellSlots(), LevelDownModal, LevelHistoryModal, NonClassSpellConfirmModal(), NonClassSpellConfirmModalProps (+23 more)
 
 ### Community 69 - "ItemDetailModal.tsx"
-Cohesion: 0.24
-Nodes (8): ItemDetailModal(), ItemDetailModalProps, CompendiumItem, DND_COMPENDIUM_ITEMS, findItemByName(), getWeaponItems(), DND_WEAPONS, findWeaponByName()
+Cohesion: 0.20
+Nodes (10): ItemDetailModal(), ItemDetailModalProps, BackpackPackIcon(), EngravedShieldIcon(), CompendiumItem, DND_COMPENDIUM_ITEMS, findItemByName(), getWeaponItems() (+2 more)
 
 ## Knowledge Gaps
-- **403 isolated node(s):** `SCREENSHOT_DIR`, `eslintConfig`, `nextConfig`, `name`, `version` (+398 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 484 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **408 isolated node(s):** `SCREENSHOT_DIR`, `eslintConfig`, `nextConfig`, `name`, `version` (+403 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 489 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `StatsCalculatorModal.tsx` to `package.json`, `compendium/index.ts`, `CharacterCreationWizardModal.tsx`, `app/page.tsx`, `ItemDetailModal.tsx`, `NameGeneratorModal.tsx`, `LevelUpModal.tsx`, `CharacterData`, `CompendiumModals.tsx`?**
-  _High betweenness centrality (0.145) - this node is a cross-community bridge._
+- **Why does `react` connect `StatsCalculatorModal.tsx` to `package.json`, `LevelUpModal.tsx`, `CharacterCreationWizardModal.tsx`, `app/page.tsx`, `ItemDetailModal.tsx`, `dnd-types.ts`, `NameGeneratorModal.tsx`, `dnd-icons.tsx`, `CharacterGridModal.tsx`, `compendium/index.ts`?**
+  _High betweenness centrality (0.148) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `package.json`?**
-  _High betweenness centrality (0.107) - this node is a cross-community bridge._
-- **Why does `@supabase/ssr` connect `@supabase/ssr` to `package.json`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
+  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Why does `cheerio` connect `fetch-dndsu-backgrounds.ts` to `package.json`?**
+  _High betweenness centrality (0.049) - this node is a cross-community bridge._
 - **What connects `SCREENSHOT_DIR`, `eslintConfig`, `nextConfig` to the rest of the system?**
-  _403 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _408 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.02564102564102564 - nodes in this community are weakly interconnected._
 - **Should `dependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.02702702702702703 - nodes in this community are weakly interconnected._
-- **Should `level-up-choices.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.09446693657219973 - nodes in this community are weakly interconnected._
+- **Should `LevelUpModal.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.11282051282051282 - nodes in this community are weakly interconnected._

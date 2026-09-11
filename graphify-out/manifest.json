@@ -216,9 +216,9 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1789022507.2319317,
-    "seen": 1789023729.2976563,
-    "ast_hash": "91b6fcf758975f98c7a1e8c848c277b9",
+    "mtime": 1789130106.3144732,
+    "seen": 1789130249.4927576,
+    "ast_hash": "7dada593b1d24c46b50678a35c56e62d",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789126845.2863605,
-    "seen": 1789126955.1963649,
-    "ast_hash": "9731e6f3a3bb879e248460c8f44820de",
+    "mtime": 1789129758.5803175,
+    "seen": 1789130249.4941912,
+    "ast_hash": "99f5272b7a9cc04e1aa7e825de6057f6",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1789023998.8646908,
-    "seen": 1789025749.4721406,
-    "ast_hash": "026f0a536d38cbf4713d580da267ccd0",
+    "mtime": 1789129581.3386023,
+    "seen": 1789130249.5145636,
+    "ast_hash": "63ccd2464003572a6141715685a92843",
     "semantic_hash": ""
   },
   "docs/TECH_SPEC.md": {
@@ -891,6 +891,24 @@
     "mtime": 1789128355.5604937,
     "seen": 1789129232.786401,
     "ast_hash": "db09af8e2105cfb2298c2d9d12536732",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-class-equipment.ts": {
+    "mtime": 1789129668.3414156,
+    "seen": 1789130249.4834838,
+    "ast_hash": "54b901185c3c05f367ceef7834721d7c",
+    "semantic_hash": ""
+  },
+  "test/class-starting-equipment.test.ts": {
+    "mtime": 1789129707.4616601,
+    "seen": 1789130249.5018415,
+    "ast_hash": "37b9e32703b177ddca2ae50eeed9fdcd",
+    "semantic_hash": ""
+  },
+  "test/fetch-class-equipment.test.ts": {
+    "mtime": 1789129651.8704212,
+    "seen": 1789130249.5038388,
+    "ast_hash": "ecae1b0111506bf088cd80dcea0138b4",
     "semantic_hash": ""
   }
 }

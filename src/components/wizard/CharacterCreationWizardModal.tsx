@@ -83,6 +83,15 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [selectedFavoredTerrain, setSelectedFavoredTerrain] = useState<string>('Лес');
   const [selectedSorcererDragon, setSelectedSorcererDragon] = useState<string>('Красный');
   const [selectedGenieKind, setSelectedGenieKind] = useState<GenieKindId>('dao');
+  // Class starting equipment choices: record of choice index -> selected option index
+  const [selectedClassEquipmentChoices, setSelectedClassEquipmentChoices] = useState<Record<number, number>>(() => {
+    const defaultCls = DND_COMPENDIUM_CLASSES.find(c => c.id === 'fighter') || DND_COMPENDIUM_CLASSES[0];
+    const initial: Record<number, number> = {};
+    defaultCls.startingEquipment?.choices.forEach((_, idx) => {
+      initial[idx] = 0;
+    });
+    return initial;
+  });
 
   // ── Step 3: Background ──
   const [selectedBackgroundId, setSelectedBackgroundId] = useState<string>('soldier');
@@ -246,6 +255,23 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const classChoicesConfig = useMemo(() => {
     return getClassLevel1ChoicesConfig(selectedClass.name, selectedSubclass?.id);
   }, [selectedClass, selectedSubclass]);
+
+  // Class starting equipment summary derived from user choices + fixed items
+  const classEquipmentSummary = useMemo(() => {
+    if (selectedClass.startingEquipment) {
+      const chosen: string[] = [];
+      selectedClass.startingEquipment.choices.forEach((choice, idx) => {
+        const optIdx = selectedClassEquipmentChoices[idx] ?? 0;
+        const opt = choice.options[optIdx] ?? choice.options[0];
+        if (opt) chosen.push(opt);
+      });
+      if (selectedClass.startingEquipment.fixed && selectedClass.startingEquipment.fixed.length > 0) {
+        chosen.push(...selectedClass.startingEquipment.fixed);
+      }
+      return chosen.join(', ');
+    }
+    return selectedClass.equipmentDefault || '';
+  }, [selectedClass, selectedClassEquipmentChoices]);
 
   // Selected dragon ancestry for Draconic Sorcerer
   const selectedSorcererDragonAncestry = useMemo(() => {
@@ -421,6 +447,15 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     } else {
       setSelectedExpertise([]);
     }
+
+    // Reset starting equipment choices
+    const defaultEqChoices: Record<number, number> = {};
+    if (cls.startingEquipment?.choices) {
+      cls.startingEquipment.choices.forEach((_, idx) => {
+        defaultEqChoices[idx] = 0;
+      });
+    }
+    setSelectedClassEquipmentChoices(defaultEqChoices);
 
     // Reset spells
     setSelectedCantrips([]);
@@ -743,15 +778,14 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     const draconicHpBonus = isDraconicSorcerer ? 1 : 0;
     const hpMax = Math.max(1, classSkillConfig.hitDieSize + conMod + racialHpBonus + draconicHpBonus);
 
-    // Armor and Shield detection
+    // Armor and Shield detection (reacts dynamically to user-chosen starting equipment)
     let equippedArmor = '';
     let equippedShield = false;
-    if (tmpl) {
-      equippedArmor = tmpl.equipment.toLowerCase().includes('кольчуга') ? 'Кольчуга' :
-                      tmpl.equipment.toLowerCase().includes('чешуйчат') ? 'Чешуйчатый доспех' :
-                      tmpl.equipment.toLowerCase().includes('кожан') ? 'Кожаный доспех' : '';
-      equippedShield = tmpl.equipment.toLowerCase().includes('щит');
-    }
+    const eqSource = (classEquipmentSummary || tmpl?.equipment || selectedClass.equipmentDefault || '').toLowerCase();
+    equippedArmor = eqSource.includes('кольчуга') ? 'Кольчуга' :
+                    eqSource.includes('чешуйчат') ? 'Чешуйчатый доспех' :
+                    eqSource.includes('кожан') ? 'Кожаный доспех' : '';
+    equippedShield = eqSource.includes('щит');
 
     // Dynamic AC calculation based on actual ability modifiers, fighting style, and draconic ancestry
     const hasDefenseFightingStyle = classChoicesConfig.needsFightingStyle && selectedFightingStyle === 'defense';
@@ -1014,8 +1048,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       featureTextLines.push(`[Предыстория: ${selectedBackground.name}] ${selectedBackground.feature.name}: ${selectedBackground.feature.description}`);
     }
 
-    // Equipment text
-    const equipmentText = `[Класс]: ${classSkillConfig.template?.equipment || selectedClass.equipmentDefault}\n[Предыстория]: ${selectedBackground.equipment}`;
+    // Equipment text (incorporates user-chosen starting equipment options)
+    const equipmentText = `[Класс]: ${classEquipmentSummary || classSkillConfig.template?.equipment || selectedClass.equipmentDefault}\n[Предыстория]: ${selectedBackground.equipment}`;
 
     // Attacks scaled with actual stat modifiers & proficiency (+2)
     const attacks: Attack[] = (tmpl?.typicalAttacks || []).map(att => {
@@ -2435,6 +2469,95 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   </div>
                 </div>
               )}
+
+              {/* ── Стартовое снаряжение класса (dnd.su) ── */}
+              <div
+                className="p-4 rounded-lg space-y-4"
+                style={{
+                  background: 'rgba(232, 211, 162, 0.35)',
+                  border: '1px solid rgba(201, 168, 76, 0.4)'
+                }}
+              >
+                <div className="border-b pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#3D2012] flex items-center gap-1.5">
+                      <BackpackPackIcon size={18} />
+                      <span>Стартовое снаряжение класса ({selectedClass.name}):</span>
+                    </h4>
+                    <p className="text-[11px] text-[#8B6914]">
+                      Выберите стартовую экипировку по правилам D&D 5e (dnd.su). Выбранное оружие и доспехи автоматически влияют на КД и характеристики!
+                    </p>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold self-start sm:self-auto" style={{ background: '#5C341F', color: '#FFE58F' }}>
+                    dnd.su 5e
+                  </span>
+                </div>
+
+                {selectedClass.startingEquipment?.choices && selectedClass.startingEquipment.choices.length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedClass.startingEquipment.choices.map((choice, choiceIdx) => {
+                      const selectedOptIdx = selectedClassEquipmentChoices[choiceIdx] ?? 0;
+                      return (
+                        <div key={choiceIdx} className="space-y-1.5">
+                          <label className="text-xs font-bold text-[#5C341F] flex items-center gap-1">
+                            <span>Выбор {choiceIdx + 1}:</span>
+                          </label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {choice.options.map((opt, optIdx) => {
+                              const isSelected = selectedOptIdx === optIdx;
+                              return (
+                                <button
+                                  key={optIdx}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedClassEquipmentChoices(prev => ({
+                                      ...prev,
+                                      [choiceIdx]: optIdx
+                                    }));
+                                  }}
+                                  className={`p-2.5 rounded-lg text-left transition-all cursor-pointer flex items-start gap-2 ${
+                                    isSelected ? 'shadow-sm ring-1 ring-[#8B6914]' : 'hover:bg-[rgba(201,168,76,0.18)]'
+                                  }`}
+                                  style={
+                                    isSelected
+                                      ? { background: '#E8D3A2', border: '2px solid #5C341F', color: '#3D2012' }
+                                      : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#4A2A18' }
+                                  }
+                                >
+                                  <span className="text-sm mt-0.5">{isSelected ? '🔘' : '⚪'}</span>
+                                  <span className="text-xs font-medium leading-tight">{opt}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {selectedClass.startingEquipment.fixed && selectedClass.startingEquipment.fixed.length > 0 && (
+                      <div className="pt-2 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.25)' }}>
+                        <div className="text-xs font-bold text-[#5C341F] mb-1.5">Гарантированное снаряжение:</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {selectedClass.startingEquipment.fixed.map((item, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2.5 py-1 rounded text-xs"
+                              style={{ background: 'rgba(245, 230, 200, 0.85)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#3D2012' }}
+                            >
+                              ✓ {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-xs text-[#5C341F] bg-[rgba(245,230,200,0.6)] p-3 rounded border border-[rgba(139,105,20,0.25)]">
+                    <p className="font-bold mb-1">Стандартный набор:</p>
+                    <p>{selectedClass.equipmentDefault}</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -3195,12 +3318,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         const wisMod = finalAbilityScores.mods['МДР'];
                         let equippedArmor = '';
                         let equippedShield = false;
-                        if (tmpl) {
-                          equippedArmor = tmpl.equipment.toLowerCase().includes('кольчуга') ? 'Кольчуга' :
-                                          tmpl.equipment.toLowerCase().includes('чешуйчат') ? 'Чешуйчатый доспех' :
-                                          tmpl.equipment.toLowerCase().includes('кожан') ? 'Кожаный доспех' : '';
-                          equippedShield = tmpl.equipment.toLowerCase().includes('щит');
-                        }
+                        const eqSource = (classEquipmentSummary || tmpl?.equipment || selectedClass.equipmentDefault || '').toLowerCase();
+                        equippedArmor = eqSource.includes('кольчуга') ? 'Кольчуга' :
+                                        eqSource.includes('чешуйчат') ? 'Чешуйчатый доспех' :
+                                        eqSource.includes('кожан') ? 'Кожаный доспех' : '';
+                        equippedShield = eqSource.includes('щит');
                         const hasDefenseFightingStyle = classChoicesConfig.needsFightingStyle && selectedFightingStyle === 'defense';
                         const isDraconicSorcerer = classChoicesConfig.needsDraconicAncestor;
                         return calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod, {

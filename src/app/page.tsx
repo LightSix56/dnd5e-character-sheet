@@ -1143,6 +1143,7 @@ export default function DnDCharacterSheet() {
   const [showCreateChoiceModal, setShowCreateChoiceModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSheetMenu, setShowSheetMenu] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   useEffect(() => {
     if (!showSheetMenu) return;
@@ -2071,6 +2072,40 @@ export default function DnDCharacterSheet() {
     } catch (err: any) { showToast('Ошибка', err.message); }
   }, [char, portraitUrl, showToast]);
 
+  const handleExportPdf = useCallback(async () => {
+    setIsExportingPdf(true);
+    try {
+      showToast('Генерация PDF', 'Заполняем интерактивный бланк D&D 5e…');
+      const r = await fetch('/api/export-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(char),
+      });
+      if (!r.ok) {
+        const errJson = await r.json().catch(() => ({}));
+        throw new Error(errJson?.error || 'Сбой формирования PDF');
+      }
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const cleanName = (char.name || 'Персонаж').replace(/[\\/:*?"<>|]/g, '_');
+      const className = char.className || 'Герой';
+      const level = char.level || 1;
+      a.href = url;
+      a.download = `DnD5e_${cleanName}_${className}${level}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Печать PDF', 'Интерактивный бланк (5 стр.) скачан');
+    } catch (err: any) {
+      console.error('PDF export error:', err);
+      showToast('Ошибка PDF', err.message || 'Не удалось сформировать PDF');
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }, [char, showToast]);
+
   const handleLoadExample = useCallback((type: 'warrior' | 'wizard') => {
     setChar(type === 'warrior' ? createExampleWarrior() : createExampleWizard());
     showToast('Загружено', type === 'warrior' ? 'Воин 5 ур.' : 'Волшебник 5 ур.');
@@ -2566,6 +2601,8 @@ export default function DnDCharacterSheet() {
         portraitUrl={portraitUrl}
         onOpenAuth={() => setShowAuth(true)}
         onToast={showToast}
+        onExportPdf={handleExportPdf}
+        isExportingPdf={isExportingPdf}
       />
 
       {/* Compendium Detail Modals */}
@@ -2744,6 +2781,16 @@ export default function DnDCharacterSheet() {
                   >
                     <button
                       type="button"
+                      onClick={() => { setShowSheetMenu(false); handleExportPdf(); }}
+                      disabled={isExportingPdf}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                      role="menuitem"
+                    >
+                      <ScrollIcon size={14} />
+                      <span>{isExportingPdf ? 'Создание PDF…' : 'Печать PDF (5 стр.)'}</span>
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => { setShowSheetMenu(false); setShowTemplates(true); }}
                       className="w-full text-left px-3 py-1.5 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
                       role="menuitem"
@@ -2866,10 +2913,25 @@ export default function DnDCharacterSheet() {
               </div>
             )}
 
-            {/* Primary export button */}
-            <button type="button" onClick={handleExport} className="parchment-header-btn-primary flex items-center gap-1.5" title="Экспортировать лист персонажа в файл Word">
+            {/* Primary export buttons */}
+            <button
+              type="button"
+              onClick={handleExportPdf}
+              disabled={isExportingPdf}
+              className="parchment-header-btn-primary flex items-center gap-1.5"
+              title="Скачать официальный интерактивный PDF-бланк D&D 5e на русском языке (3 страницы бланка + Кодекс способностей и черт)"
+            >
+              {isExportingPdf ? <MysticSpinnerIcon size={16} /> : <ScrollIcon size={16} />}
+              <span>{isExportingPdf ? 'Создание PDF…' : 'Печать PDF'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleExport}
+              className="parchment-header-btn flex items-center gap-1.5"
+              title="Экспортировать лист персонажа в файл Word"
+            >
               <QuillIcon size={16} />
-              <span>Экспорт DOCX</span>
+              <span>DOCX</span>
             </button>
           </div>
 
@@ -2957,6 +3019,17 @@ export default function DnDCharacterSheet() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
+                  onClick={() => { setShowMobileMenu(false); handleExportPdf(); }}
+                  disabled={isExportingPdf}
+                  className="parchment-btn flex items-center gap-2 p-2.5 text-xs justify-start font-bold col-span-2"
+                  title="Скачать официальный интерактивный PDF-бланк D&D 5e (5 страниц)"
+                >
+                  {isExportingPdf ? <MysticSpinnerIcon size={15} /> : <ScrollIcon size={15} />}
+                  <span>{isExportingPdf ? 'Создание PDF…' : 'Печать официального PDF (5 стр.)'}</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => { setShowMobileMenu(false); setShowTemplates(true); }}
                   className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
                 >
@@ -2967,7 +3040,7 @@ export default function DnDCharacterSheet() {
                 <button
                   type="button"
                   onClick={() => { setShowMobileMenu(false); handleExport(); }}
-                  className="parchment-btn flex items-center gap-2 p-2.5 text-xs justify-start font-bold"
+                  className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
                 >
                   <QuillIcon size={15} />
                   <span>Экспорт DOCX</span>

@@ -89,6 +89,7 @@ export default function SharedCharacterPage({
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [savingStatus, setSavingStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [showImportConfirm, setShowImportConfirm] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   const showToast = useCallback((title: string, description: string) => {
     setToast({ title, description });
@@ -251,6 +252,42 @@ export default function SharedCharacterPage({
     }
   };
 
+  // Action: Export official PDF
+  const handleExportPdf = useCallback(async () => {
+    if (!char) return;
+    setIsExportingPdf(true);
+    try {
+      showToast('Генерация PDF', 'Заполняем интерактивный бланк D&D 5e…');
+      const r = await fetch('/api/export-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(char),
+      });
+      if (!r.ok) {
+        const errJson = await r.json().catch(() => ({}));
+        throw new Error(errJson?.error || 'Сбой формирования PDF');
+      }
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const cleanName = (char.name || 'Персонаж').replace(/[\\/:*?"<>|]/g, '_');
+      const className = char.className || 'Герой';
+      const level = char.level || 1;
+      a.href = url;
+      a.download = `DnD5e_${cleanName}_${className}${level}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Печать PDF', 'Интерактивный бланк (5 стр.) скачан');
+    } catch (err: any) {
+      console.error('PDF export error:', err);
+      showToast('Ошибка PDF', err.message || 'Не удалось сформировать PDF');
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }, [char, showToast]);
+
   // Loading Screen
   if (loading) {
     return (
@@ -364,7 +401,7 @@ export default function SharedCharacterPage({
           </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:gap-2">
+          <div className="grid grid-cols-2 sm:flex items-center gap-1.5 sm:gap-2">
             {/* Copy Link Button */}
             <button
               type="button"
@@ -382,6 +419,28 @@ export default function SharedCharacterPage({
                   <ArcaneLinkIcon size={14} />
                   <span className="hidden sm:inline">Скопировать ссылку</span>
                   <span className="sm:hidden text-[11px]">Ссылка</span>
+                </>
+              )}
+            </button>
+
+            {/* Export PDF Button */}
+            <button
+              type="button"
+              onClick={handleExportPdf}
+              disabled={isExportingPdf}
+              className="parchment-header-btn flex items-center justify-center gap-1 sm:gap-1.5 text-xs py-1.5 px-2 sm:px-3 font-semibold min-h-[36px]"
+              title="Скачать официальный интерактивный PDF-бланк D&D 5e (3 страницы бланка + Кодекс способностей и черт)"
+            >
+              {isExportingPdf ? (
+                <>
+                  <MysticSpinnerIcon size={14} />
+                  <span className="truncate text-[11px]">Генерация…</span>
+                </>
+              ) : (
+                <>
+                  <ScrollIcon size={14} />
+                  <span className="hidden sm:inline">Печать PDF</span>
+                  <span className="sm:hidden text-[11px]">PDF</span>
                 </>
               )}
             </button>

@@ -7,6 +7,7 @@ import {
   GoldSealCheckIcon,
   MysticSpinnerIcon,
   RunedKeyIcon,
+  ScrollIcon,
 } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 
@@ -17,6 +18,8 @@ interface ShareModalProps {
   portraitUrl?: string | null;
   onOpenAuth?: () => void;
   onToast?: (title: string, description: string) => void;
+  onExportPdf?: () => void;
+  isExportingPdf?: boolean;
 }
 
 export function ShareModal({
@@ -26,6 +29,8 @@ export function ShareModal({
   portraitUrl,
   onOpenAuth,
   onToast,
+  onExportPdf,
+  isExportingPdf,
 }: ShareModalProps) {
   useEscapeKey(onClose, isOpen);
 
@@ -326,6 +331,18 @@ export function ShareModal({
               </a>
 
               <div className="flex items-center gap-2">
+                {onExportPdf && (
+                  <button
+                    type="button"
+                    onClick={onExportPdf}
+                    disabled={isExportingPdf}
+                    className="parchment-btn text-xs px-3.5 py-1.5 flex items-center gap-1.5 font-bold"
+                    title="Скачать официальный интерактивный PDF-бланк D&D 5e (5 страниц)"
+                  >
+                    {isExportingPdf ? <MysticSpinnerIcon size={14} /> : <ScrollIcon size={14} />}
+                    <span>{isExportingPdf ? 'Создание…' : 'Печать PDF (5 стр.)'}</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={onClose}

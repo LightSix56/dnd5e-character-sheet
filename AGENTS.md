@@ -88,18 +88,21 @@ This block is written and re-added by next dev — verify at node_modules/next/d
 
 ---
 
-## 🚀 5. Регламент Сборки и Git
+## 🚀 5. Регламент Сборки и Git (ОБЯЗАТЕЛЬНЫЙ GIT PUSH)
 
 - **Никогда не запускать демоны dev-серверов** (`next dev` / `next start`).
-- **Обязательный чеклист перед сдачей задачи:**
+- **Обязательный чеклист перед сдачей задачи (НИКОГДА НЕ ЗАБЫВАТЬ ЗАЛИВАТЬ НА GITHUB!):**
   1. `npx tsc --noEmit` — **0 ошибок** компиляции.
   2. `npx eslint .` — **0 ошибок** линтера.
   3. `npm run test:adversarial` — все тесты зелёные.
-- **Git Push в Windows PowerShell:**
-  - Всегда очищать переменные прокси:
+  4. `graphify update .` — граф знаний актуализирован.
+  5. **ОБЯЗАТЕЛЬНЫЙ GIT COMMIT И GIT PUSH** — ни одна задача или этап не считаются выполненными без коммита и отправки на GitHub!
+- **Команда Git Push в Windows PowerShell:**
+  - Всегда очищать переменные прокси перед пушем:
     ```powershell
-    $env:HTTPS_PROXY=""; $env:HTTP_PROXY=""; git push origin main
+    $env:HTTPS_PROXY=""; $env:HTTP_PROXY=""; git add .; git commit -m "<описание изменений>"; git push origin main
     ```
+  - **КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО** отчитываться перед пользователем о завершении задачи или этапа без предварительного успешного выполнения `git push origin main`!
 
 ---
 

@@ -1,7 +1,16 @@
 // Helper functions, generators, and rules engine for Character Creation Wizard
 import { AbilityName, ABILITY_NAMES, ALL_SKILLS, calcModifier } from '@/lib/dnd-types';
 import { CLASS_TEMPLATES, type ClassTemplate } from '@/lib/dnd-types';
-import type { CompendiumRace, CompendiumSubrace } from '@/data/compendium/races';
+import type {
+  CompendiumRace,
+  CompendiumSubrace,
+  RaceCantripChoiceConfig,
+  RaceToolChoiceConfig,
+  RaceWeaponProfChoiceConfig,
+  RaceCustomFeatureChoiceConfig,
+  MagicClass,
+  ToolCategory
+} from '@/data/compendium/races';
 import { DND_COMPENDIUM_RACES } from '@/data/compendium/races';
 
 // ── Fantasy Name Generator ──
@@ -767,6 +776,46 @@ export const DWARF_TOOL_OPTIONS = [
   'Инструменты пивовара'
 ];
 
+export const ALL_ARTISAN_TOOLS = [
+  'Инструменты алхимика',
+  'Инструменты гончара',
+  'Инструменты жестянщика',
+  'Инструменты заточника',
+  'Инструменты каменщика',
+  'Инструменты картографа',
+  'Инструменты кожевника',
+  'Инструменты кузнеца',
+  'Инструменты маляра',
+  'Инструменты пивовара',
+  'Инструменты плотника',
+  'Инструменты повара',
+  'Инструменты резчика по дереву',
+  'Инструменты сапожника',
+  'Инструменты стеклодува',
+  'Инструменты ткача',
+  'Инструменты ювелира'
+];
+
+export const MUSICAL_INSTRUMENTS = [
+  'Барабан',
+  'Виола',
+  'Волынка',
+  'Лютня',
+  'Лира',
+  'Рог',
+  'Свирель',
+  'Флейта',
+  'Цимбалы',
+  'Шалмей'
+];
+
+export const GAMING_SETS = [
+  'Игральные кости',
+  'Кости дракона',
+  'Набор для трехдраконьего анте',
+  'Шахматы'
+];
+
 export const STANDARD_LANGUAGES = [
   'Общий',
   'Дворфийский',
@@ -822,13 +871,22 @@ export const RANGER_FAVORED_TERRAINS = [
 export interface RacialChoicesConfig {
   needsFeat: boolean;
   needsCantrip: boolean;
-  cantripClass?: 'wizard' | 'druid' | 'cleric' | string;
+  cantripConfig?: RaceCantripChoiceConfig;
+  cantripClass?: MagicClass | string;
   needsTool: boolean;
+  toolConfig?: RaceToolChoiceConfig;
   toolOptions: string[];
+  toolCount: number;
   needsDragonColor: boolean;
   extraLanguageCount: number;
   extraSkillsCount?: number;
   isFlexibleASI?: boolean;
+  needsSizeChoice: boolean;
+  availableSizes?: ('Средний' | 'Маленький')[];
+  needsWeaponProf: boolean;
+  weaponProfConfig?: RaceWeaponProfChoiceConfig;
+  needsCustomFeature: boolean;
+  customFeature?: RaceCustomFeatureChoiceConfig;
 }
 
 export function getRacialChoicesConfig(
@@ -851,16 +909,73 @@ export function getRacialChoicesConfig(
   const isDragonborn = raceId === 'dragonborn' || raceId.includes('dragonborn') || raceName.includes('драконорожд');
 
   const needsFeat = Boolean(choice?.hasFeat ?? (isVariantHuman || isCustomLineage));
-  const needsCantrip = Boolean(choice?.cantripChoice ? true : isHighElf);
-  const cantripClass = choice?.cantripChoice || (isHighElf ? 'wizard' : undefined);
-  const needsTool = Boolean(choice?.toolChoice ? true : isDwarf);
-  const toolOptions = choice?.toolChoice === 'dwarf_tools' ? [...DWARF_TOOL_OPTIONS] : [...DWARF_TOOL_OPTIONS];
+
+  // Cantrips resolution (supports string 'wizard' or object { class: '...', spellOptions: [...] })
+  let cantripConfig: RaceCantripChoiceConfig | undefined;
+  if (typeof choice?.cantripChoice === 'string') {
+    cantripConfig = { class: choice.cantripChoice as MagicClass, count: 1 };
+  } else if (choice?.cantripChoice && typeof choice.cantripChoice === 'object') {
+    cantripConfig = choice.cantripChoice;
+  } else if (isHighElf) {
+    cantripConfig = { class: 'wizard', count: 1 };
+  }
+  const needsCantrip = Boolean(cantripConfig);
+  const cantripClass = cantripConfig?.class || (isHighElf ? 'wizard' : undefined);
+
+  // Tools resolution (supports string 'dwarf_tools' | 'artisan' or object)
+  let toolConfig: RaceToolChoiceConfig | undefined;
+  if (typeof choice?.toolChoice === 'string') {
+    toolConfig = { category: choice.toolChoice as ToolCategory, count: 1 };
+  } else if (choice?.toolChoice && typeof choice.toolChoice === 'object') {
+    toolConfig = choice.toolChoice;
+  } else if (isDwarf) {
+    toolConfig = { category: 'dwarf_tools', count: 1 };
+  }
+  const needsTool = Boolean(toolConfig);
+  const toolCount = toolConfig?.count || 1;
+  let toolOptions: string[] = [];
+  if (toolConfig?.options && toolConfig.options.length > 0) {
+    toolOptions = [...toolConfig.options];
+  } else if (toolConfig?.category === 'dwarf_tools') {
+    toolOptions = [...DWARF_TOOL_OPTIONS];
+  } else if (toolConfig?.category === 'artisan') {
+    toolOptions = [...ALL_ARTISAN_TOOLS];
+  } else if (toolConfig?.category === 'musical') {
+    toolOptions = [...MUSICAL_INSTRUMENTS];
+  } else if (toolConfig?.category === 'gaming') {
+    toolOptions = [...GAMING_SETS];
+  } else if (toolConfig?.category === 'thieves') {
+    toolOptions = ['Воровские инструменты'];
+  } else if (toolConfig?.category === 'any') {
+    toolOptions = [...ALL_ARTISAN_TOOLS, ...MUSICAL_INSTRUMENTS, ...GAMING_SETS, 'Воровские инструменты'];
+  } else if (isDwarf) {
+    toolOptions = [...DWARF_TOOL_OPTIONS];
+  }
+
+  // Size Choice resolution (MPMM)
+  const availableSizes = choice?.sizeChoice;
+  const needsSizeChoice = Boolean(availableSizes && availableSizes.length > 1);
+
+  // Weapon proficiencies resolution
+  const weaponProfConfig = choice?.weaponProfChoice;
+  const needsWeaponProf = Boolean(weaponProfConfig);
+
+  // Custom Feature (Mutations, Seasons, etc.)
+  const customFeature = choice?.customFeatureChoice;
+  const needsCustomFeature = Boolean(customFeature && customFeature.options?.length > 0);
+
+  // Dragon Ancestry
   const needsDragonColor = Boolean(choice?.dragonAncestry ?? isDragonborn);
+
+  // Extra skills & Flexible ASI
   const extraSkillsCount = choice?.extraSkillsCount ?? (isVariantHuman ? 1 : 0);
   const isFlexibleASI = Boolean(choice?.isFlexibleASI ?? isCustomLineage);
 
+  // Extra languages
   let extraLanguageCount = 0;
-  if (isVariantHuman || isCustomLineage || isHighElf || raceId === 'half-elf' || raceName.includes('полуэльф')) {
+  if (choice?.extraLanguagesCount !== undefined) {
+    extraLanguageCount = choice.extraLanguagesCount;
+  } else if (isVariantHuman || isCustomLineage || isHighElf || raceId === 'half-elf' || raceName.includes('полуэльф')) {
     extraLanguageCount = 1;
   } else if (subrace?.traits?.some(t => t.name.toLowerCase().includes('язык') && t.description.toLowerCase().includes('выбор'))) {
     extraLanguageCount = 1;
@@ -872,13 +987,22 @@ export function getRacialChoicesConfig(
   return {
     needsFeat,
     needsCantrip,
+    cantripConfig,
     cantripClass,
     needsTool,
+    toolConfig,
     toolOptions,
+    toolCount,
     needsDragonColor,
     extraLanguageCount,
     extraSkillsCount,
-    isFlexibleASI
+    isFlexibleASI,
+    needsSizeChoice,
+    availableSizes,
+    needsWeaponProf,
+    weaponProfConfig,
+    needsCustomFeature,
+    customFeature
   };
 }
 

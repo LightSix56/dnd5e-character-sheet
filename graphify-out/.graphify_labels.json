@@ -12,7 +12,7 @@
   "10": "NameGeneratorModal.tsx",
   "11": "Global Constraints",
   "12": "2. Архитектурные разделы дизайна",
-  "13": "dnd-icons.tsx",
+  "13": "[code]/page.tsx",
   "14": "devDependencies",
   "15": "fetch-dndsu-backgrounds.ts",
   "16": "scripts",
@@ -62,13 +62,11 @@
   "60": "materiality-and-tactility.test.ts",
   "61": "sliding-tabs.test.ts",
   "62": "📜 D&D.su Class & Mechanics Parser Skill",
-  "63": "SubclassSelectorModal.tsx",
+  "63": "react",
   "64": "fetch-dndsu-races.ts",
   "65": "class-progression.ts",
-  "66": "CompendiumModals.tsx",
+  "66": "escape-key-and-keyboard-rolls.test.ts",
   "67": "StatsCalculatorModal.tsx",
   "68": "app/page.tsx",
-  "69": "ClassSelectorModal.tsx",
-  "70": "react",
-  "71": "RaceSelectorModal.tsx"
+  "70": "AutocompleteInput.tsx"
 }

@@ -79,6 +79,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [selectedRacialTool, setSelectedRacialTool] = useState<string>('Инструменты кузнеца');
   const [selectedDragonColor, setSelectedDragonColor] = useState<string>('Красный');
   const [selectedExtraLanguages, setSelectedExtraLanguages] = useState<string[]>([]);
+  const [selectedRacialSize, setSelectedRacialSize] = useState<'Средний' | 'Маленький'>('Средний');
+  const [selectedRacialSpellAbility, setSelectedRacialSpellAbility] = useState<'ИНТ' | 'МДР' | 'ХАР'>('ИНТ');
+  const [selectedCustomFeatureOptionId, setSelectedCustomFeatureOptionId] = useState<string>('');
 
   // ── Step 2: Class & Skills ──
   const [selectedClassId, setSelectedClassId] = useState<string>('fighter');
@@ -252,10 +255,31 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return [...DND_COMPENDIUM_FEATS].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   }, []);
 
-  // Dynamic racial cantrips (High Elf -> wizard, Grugach -> druid, etc.)
+  // Dynamic racial cantrips (High Elf -> wizard, Kobold -> sorcerer, Astral Elf -> fixed list, etc.)
   const availableRacialCantrips = useMemo(() => {
-    const clsTarget = racialChoicesConfig?.cantripClass || 'wizard';
-    const ruName = clsTarget === 'druid' ? 'друид' : clsTarget === 'cleric' ? 'жрец' : 'волшебник';
+    // If specific spell list is designated in cantripConfig (e.g. Astral Elf)
+    if (racialChoicesConfig?.cantripConfig?.spellOptions && racialChoicesConfig.cantripConfig.spellOptions.length > 0) {
+      const allowed = racialChoicesConfig.cantripConfig.spellOptions.map(n => n.toLowerCase());
+      return DND_COMPENDIUM_SPELLS.filter(
+        s => s.level === 0 && (allowed.includes(s.name.toLowerCase()) || (s.nameEn && allowed.includes(s.nameEn.toLowerCase())))
+      ).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+    }
+
+    const clsTarget = (racialChoicesConfig?.cantripClass || 'wizard').toLowerCase();
+    if (clsTarget === 'any') {
+      return DND_COMPENDIUM_SPELLS.filter(s => s.level === 0).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+    }
+
+    const CLASS_MAP: Record<string, string> = {
+      wizard: 'волшебник',
+      druid: 'друид',
+      cleric: 'жрец',
+      sorcerer: 'чародей',
+      warlock: 'колдун',
+      bard: 'бард',
+      artificer: 'изобретатель'
+    };
+    const ruName = CLASS_MAP[clsTarget] || clsTarget;
     const enName = clsTarget;
     return DND_COMPENDIUM_SPELLS.filter(
       s => s.level === 0 && (s.classes || []).some(cls => {
@@ -263,7 +287,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         return c === ruName || c === enName;
       })
     ).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-  }, [racialChoicesConfig?.cantripClass]);
+  }, [racialChoicesConfig]);
 
   // Selected racial feat details
   const selectedRacialFeat = useMemo(() => {
@@ -423,6 +447,10 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     setSelectedRacialTool('Инструменты кузнеца');
     setSelectedDragonColor('Красный');
     setSelectedExtraLanguages([]);
+    setSelectedRacialSize(race.choices?.sizeChoice?.[0] || race.size || 'Средний');
+    const abilityOpt = race.choices?.cantripChoice && typeof race.choices.cantripChoice === 'object' ? race.choices.cantripChoice.abilityChoice?.[0] : undefined;
+    setSelectedRacialSpellAbility(abilityOpt || 'ИНТ');
+    setSelectedCustomFeatureOptionId(race.choices?.customFeatureChoice?.options?.[0]?.id || '');
   }, []);
 
   const handleSelectSubrace = useCallback((subrace: CompendiumSubrace) => {
@@ -444,6 +472,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     setSelectedRacialTool('Инструменты кузнеца');
     setSelectedDragonColor('Красный');
     setSelectedExtraLanguages([]);
+    setSelectedRacialSize(subrace.choices?.sizeChoice?.[0] || selectedRace.choices?.sizeChoice?.[0] || selectedRace.size || 'Средний');
+    const abilityOpt = (subrace.choices?.cantripChoice && typeof subrace.choices.cantripChoice === 'object' ? subrace.choices.cantripChoice.abilityChoice?.[0] : undefined) ||
+                       (selectedRace.choices?.cantripChoice && typeof selectedRace.choices.cantripChoice === 'object' ? selectedRace.choices.cantripChoice.abilityChoice?.[0] : undefined);
+    setSelectedRacialSpellAbility(abilityOpt || 'ИНТ');
+    setSelectedCustomFeatureOptionId(subrace.choices?.customFeatureChoice?.options?.[0]?.id || selectedRace.choices?.customFeatureChoice?.options?.[0]?.id || '');
   }, [selectedRace]);
 
   // Toggle extra racial language (with strict limit enforcement)
@@ -654,13 +687,16 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         return { valid: false, error: 'Пожалуйста, выберите стартовую черту (Feat).' };
       }
       if (racialChoicesConfig?.needsCantrip && !selectedRacialCantrip) {
-        return { valid: false, error: 'Пожалуйста, выберите дополнительный заговор волшебника.' };
+        return { valid: false, error: 'Пожалуйста, выберите дополнительный расовый заговор.' };
       }
       if (racialChoicesConfig?.needsTool && !selectedRacialTool) {
-        return { valid: false, error: 'Пожалуйста, выберите ремесленный инструмент.' };
+        return { valid: false, error: 'Пожалуйста, выберите владение инструментом.' };
       }
       if (racialChoicesConfig?.needsDragonColor && !selectedDragonColor) {
         return { valid: false, error: 'Пожалуйста, выберите драконье наследие.' };
+      }
+      if (racialChoicesConfig?.needsCustomFeature && !selectedCustomFeatureOptionId) {
+        return { valid: false, error: `Пожалуйста, сделайте выбор для «${racialChoicesConfig.customFeature?.featureName || 'особенности расы'}».` };
       }
       if (racialChoicesConfig && selectedExtraLanguages.length < racialChoicesConfig.extraLanguageCount) {
         return { valid: false, error: `Пожалуйста, выберите ещё ${racialChoicesConfig.extraLanguageCount - selectedExtraLanguages.length} доп. язык(а).` };
@@ -1093,6 +1129,21 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       featureTextLines.push(`[Предыстория: ${selectedBackground.name}] ${selectedBackground.feature.name}: ${selectedBackground.feature.description}`);
     }
 
+    // Custom racial feature (Simic hybrid mutations, Eladrin seasons, Shifter beasts, etc.)
+    if (racialChoicesConfig?.needsCustomFeature && selectedCustomFeatureOptionId && racialChoicesConfig.customFeature) {
+      const opt = racialChoicesConfig.customFeature.options.find(o => o.id === selectedCustomFeatureOptionId);
+      if (opt) {
+        traitsList.push({
+          id: `race-custom-${opt.id}`,
+          name: `${racialChoicesConfig.customFeature.featureName}: ${opt.name}`,
+          source: selectedRace?.name || 'Раса',
+          summary: opt.description.slice(0, 90) + '…',
+          description: opt.description
+        });
+        featureTextLines.push(`[${racialChoicesConfig.customFeature.featureName}] ${opt.name}: ${opt.description}`);
+      }
+    }
+
     // Equipment text (incorporates user-chosen starting equipment options)
     const equipmentText = `[Класс]: ${classEquipmentSummary || classSkillConfig.template?.equipment || selectedClass.equipmentDefault}\n[Предыстория]: ${selectedBackground.equipment}`;
 
@@ -1255,7 +1306,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       bonds: bonds || selectedBackground.suggestedCharacteristics?.bonds[0] || '',
       flaws: flaws || selectedBackground.suggestedCharacteristics?.flaws[0] || '',
 
-      otherProficienciesLanguages: languagesText,
+      otherProficienciesLanguages: racialChoicesConfig?.needsTool && selectedRacialTool
+        ? (languagesText ? `${languagesText}, Владение инструментами: ${selectedRacialTool}` : `Владение инструментами: ${selectedRacialTool}`)
+        : languagesText,
       featuresTraits: featureTextLines.join('\n\n'),
       traitsList,
       equipment: equipmentText,
@@ -1266,14 +1319,16 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       eyes,
       skin,
       hair,
-      appearance,
+      appearance: racialChoicesConfig?.needsSizeChoice
+        ? (appearance ? `${appearance} (Размер: ${selectedRacialSize})` : `Размер: ${selectedRacialSize}`)
+        : appearance,
       alliesOrganizations: '',
       additionalFeaturesTraits: '',
       backstory: `Предыстория: ${selectedBackground.name}. ${selectedBackground.description}`,
       treasure: '',
 
       spellcastingClass: spellLimits.isCaster ? selectedClass.name : '',
-      spellcastingAbility: (spellLimits.spellcastingAbility || (racialChoicesConfig?.needsCantrip && selectedRacialCantrip ? 'ИНТ' : '')) as AbilityName | '',
+      spellcastingAbility: (spellLimits.spellcastingAbility || (racialChoicesConfig?.needsCantrip && selectedRacialCantrip ? (racialChoicesConfig.cantripConfig?.abilityChoice ? selectedRacialSpellAbility : 'ИНТ') : '')) as AbilityName | '',
       spellSlots: spellLimits.isCaster && spellLimits.spellSlotsAt1[1]
         ? { 1: { totalSlots: spellLimits.spellSlotsAt1[1], expendedSlots: 0 } }
         : {},
@@ -1707,8 +1762,20 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       {/* Cantrip Selector */}
                       {racialChoicesConfig?.needsCantrip && (() => {
                         const clsTarget = racialChoicesConfig?.cantripClass || 'wizard';
-                        const clsLabel = clsTarget === 'druid' ? 'друида' : clsTarget === 'cleric' ? 'жреца' : 'волшебника';
+                        const CLASS_RU_LABELS: Record<string, string> = {
+                          wizard: 'волшебника',
+                          druid: 'друида',
+                          cleric: 'жреца',
+                          sorcerer: 'чародея',
+                          warlock: 'колдуна',
+                          bard: 'барда',
+                          artificer: 'изобретателя',
+                          any: 'любого класса'
+                        };
+                        const clsLabel = CLASS_RU_LABELS[clsTarget] || clsTarget;
                         const raceLabel = selectedSubrace?.name || selectedRace?.name || 'раса';
+                        const abilityChoice = racialChoicesConfig.cantripConfig?.abilityChoice;
+
                         return (
                           <div
                             className="p-3.5 rounded-lg space-y-2.5"
@@ -1739,6 +1806,30 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                 </option>
                               ))}
                             </select>
+
+                            {/* MPMM Spellcasting Ability Picker */}
+                            {abilityChoice && abilityChoice.length > 1 && (
+                              <div className="flex items-center justify-between pt-1 border-t border-[rgba(201,168,76,0.3)]">
+                                <span className="text-[11px] text-[#8B6914] font-semibold">Базовая характеристика заговора:</span>
+                                <div className="flex items-center gap-1.5">
+                                  {abilityChoice.map(ab => (
+                                    <button
+                                      key={ab}
+                                      type="button"
+                                      onClick={() => setSelectedRacialSpellAbility(ab)}
+                                      className={`px-2.5 py-1 rounded text-xs font-bold cursor-pointer transition-all ${
+                                        selectedRacialSpellAbility === ab
+                                          ? 'bg-[#8B4513] text-[#FFE58F] shadow-xs'
+                                          : 'bg-[rgba(251,240,220,0.6)] text-[#5C341F] hover:bg-[rgba(201,168,76,0.2)]'
+                                      }`}
+                                    >
+                                      {ab}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
                             {selectedRacialCantrip && (() => {
                               const spellObj = availableRacialCantrips.find(s => s.name === selectedRacialCantrip);
                               if (!spellObj) return null;
@@ -1759,7 +1850,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         );
                       })()}
 
-                      {/* Dwarf Artisan Tools */}
+                      {/* Racial Tool Choice */}
                       {racialChoicesConfig?.needsTool && (
                         <div
                           className="p-3.5 rounded-lg space-y-2.5"
@@ -1770,18 +1861,73 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         >
                           <div className="flex items-center justify-between">
                             <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
-                              ⚒️ Ремесленные инструменты дворфа (выберите 1):
+                              ⚒️ Владение инструментами:
                             </label>
                             <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано: {selectedRacialTool}</span>
                           </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            {DWARF_TOOL_OPTIONS.map(tool => {
-                              const isSel = selectedRacialTool === tool;
+                          {racialChoicesConfig.toolOptions.length <= 4 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                              {racialChoicesConfig.toolOptions.map(tool => {
+                                const isSel = selectedRacialTool === tool;
+                                return (
+                                  <button
+                                    key={tool}
+                                    type="button"
+                                    onClick={() => setSelectedRacialTool(tool)}
+                                    className={`p-2 rounded text-xs text-center cursor-pointer transition-all ${
+                                      isSel ? 'font-bold shadow-xs' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
+                                    }`}
+                                    style={
+                                      isSel
+                                        ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                        : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.2)', color: '#5C341F' }
+                                    }
+                                  >
+                                    {isSel ? '✓ ' : ''}{tool}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <select
+                              value={selectedRacialTool}
+                              onChange={e => setSelectedRacialTool(e.target.value)}
+                              className="parchment-select w-full text-xs py-1.5 px-2.5"
+                            >
+                              <option value="">-- Выберите инструмент --</option>
+                              {racialChoicesConfig.toolOptions.map(tool => (
+                                <option key={tool} value={tool}>
+                                  {tool}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Size Choice (MPMM) */}
+                      {racialChoicesConfig?.needsSizeChoice && (
+                        <div
+                          className="p-3.5 rounded-lg space-y-2.5"
+                          style={{
+                            background: 'rgba(232, 211, 162, 0.3)',
+                            border: '1px solid rgba(201, 168, 76, 0.4)'
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                              📏 Размер персонажа (на ваш выбор):
+                            </label>
+                            <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбран: {selectedRacialSize}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            {(racialChoicesConfig.availableSizes || ['Средний', 'Маленький']).map(sz => {
+                              const isSel = selectedRacialSize === sz;
                               return (
                                 <button
-                                  key={tool}
+                                  key={sz}
                                   type="button"
-                                  onClick={() => setSelectedRacialTool(tool)}
+                                  onClick={() => setSelectedRacialSize(sz)}
                                   className={`p-2 rounded text-xs text-center cursor-pointer transition-all ${
                                     isSel ? 'font-bold shadow-xs' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
                                   }`}
@@ -1791,8 +1937,53 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                       : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.2)', color: '#5C341F' }
                                   }
                                 >
-                                  {isSel ? '✓ ' : ''}{tool}
+                                  {isSel ? '✓ ' : ''}{sz}
                                 </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Custom Feature Choice (Mutations, Seasons, etc.) */}
+                      {racialChoicesConfig?.needsCustomFeature && racialChoicesConfig.customFeature && (
+                        <div
+                          className="p-3.5 rounded-lg space-y-2.5"
+                          style={{
+                            background: 'rgba(232, 211, 162, 0.3)',
+                            border: '1px solid rgba(201, 168, 76, 0.4)'
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                              🧬 {racialChoicesConfig.customFeature.featureName}:
+                            </label>
+                            {selectedCustomFeatureOptionId ? (
+                              <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано</span>
+                            ) : (
+                              <span className="text-[11px] font-semibold text-[#B45309]">Обязательный выбор</span>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            {racialChoicesConfig.customFeature.options.map(opt => {
+                              const isSel = selectedCustomFeatureOptionId === opt.id;
+                              return (
+                                <div
+                                  key={opt.id}
+                                  onClick={() => setSelectedCustomFeatureOptionId(opt.id)}
+                                  className={`p-2.5 rounded-lg cursor-pointer transition-all border ${
+                                    isSel
+                                      ? 'bg-[rgba(251,240,220,0.95)] border-[#C9A84C] shadow-xs'
+                                      : 'bg-[rgba(251,240,220,0.5)] border-[rgba(139,105,20,0.2)] hover:border-[#C9A84C]'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-[#3D2012]">
+                                      {isSel ? '✓ ' : ''}{opt.name}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-[#5C341F] mt-1 leading-relaxed">{opt.description}</p>
+                                </div>
                               );
                             })}
                           </div>

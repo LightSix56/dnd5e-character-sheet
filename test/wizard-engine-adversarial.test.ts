@@ -360,5 +360,197 @@ test('Data-Driven Races: DND_COMPENDIUM_RACES populated with declarative choices
   assert.deepEqual(changeling.choices?.skillChoiceOptions, ['Запугивание', 'Обман', 'Проницательность', 'Убеждение']);
 });
 
+test('Data-Driven Races: Rich cantripConfig with sorcerer class and MPMM abilityChoice', () => {
+  const koboldMPMM = {
+    id: 'kobold-mpmm',
+    name: 'Кобольд (MPMM)',
+    nameEn: 'Kobold',
+    source: 'MPMM',
+    category: 'multiverse' as const,
+    description: 'Кобольд с драконьим наследием',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Маленький' as const,
+    darkvision: 60,
+    languages: ['Общий', 'Драконий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      cantripChoice: {
+        class: 'sorcerer' as const,
+        count: 1,
+        abilityChoice: ['ИНТ' as const, 'МДР' as const, 'ХАР' as const]
+      }
+    }
+  };
+
+  const config = getRacialChoicesConfig(koboldMPMM);
+  assert.equal(config.needsCantrip, true);
+  assert.equal(config.cantripClass, 'sorcerer');
+  assert.equal(config.cantripConfig?.count, 1);
+  assert.deepEqual(config.cantripConfig?.abilityChoice, ['ИНТ', 'МДР', 'ХАР']);
+});
+
+test('Data-Driven Races: Fixed spellOptions cantrip pool (Astral Elf)', () => {
+  const astralElf = {
+    id: 'elf-astral',
+    name: 'Астральный эльф',
+    nameEn: 'Astral Elf',
+    source: 'AAG',
+    category: 'spelljammer' as const,
+    description: 'Эльф Астрального плана',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 60,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      cantripChoice: {
+        spellOptions: ['Свет', 'Священное пламя', 'Пляшущие огоньки'],
+        abilityChoice: ['ИНТ' as const, 'МДР' as const, 'ХАР' as const]
+      }
+    }
+  };
+
+  const config = getRacialChoicesConfig(astralElf);
+  assert.equal(config.needsCantrip, true);
+  assert.deepEqual(config.cantripConfig?.spellOptions, ['Свет', 'Священное пламя', 'Пляшущие огоньки']);
+});
+
+test('Data-Driven Races: Size choice resolution for MPMM races (Medium or Small)', () => {
+  const harengon = {
+    id: 'harengon',
+    name: 'Харегон',
+    nameEn: 'Harengon',
+    source: 'MPMM',
+    category: 'multiverse' as const,
+    description: 'Антропоморфные кролики',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 0,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      sizeChoice: ['Средний' as const, 'Маленький' as const]
+    }
+  };
+
+  const config = getRacialChoicesConfig(harengon);
+  assert.equal(config.needsSizeChoice, true);
+  assert.deepEqual(config.availableSizes, ['Средний', 'Маленький']);
+});
+
+test('Data-Driven Races: Tool categories (musical instruments, thieves tools)', () => {
+  const bardicRace = {
+    id: 'satyr-minstrel',
+    name: 'Сатир-менестрель',
+    nameEn: 'Satyr Minstrel',
+    source: 'Homebrew',
+    category: 'setting' as const,
+    description: 'Музыкальный народ',
+    abilityBonuses: {},
+    speed: 35,
+    size: 'Средний' as const,
+    darkvision: 0,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      toolChoice: 'musical' as const
+    }
+  };
+
+  const rogueRace = {
+    id: 'shadow-scamp',
+    name: 'Теневой плутишка',
+    nameEn: 'Shadow Scamp',
+    source: 'Homebrew',
+    category: 'multiverse' as const,
+    description: 'Вор',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Маленький' as const,
+    darkvision: 60,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      toolChoice: 'thieves' as const
+    }
+  };
+
+  const bardConfig = getRacialChoicesConfig(bardicRace);
+  assert.equal(bardConfig.needsTool, true);
+  assert.ok(bardConfig.toolOptions.includes('Лютня'));
+  assert.ok(bardConfig.toolOptions.includes('Барабан'));
+
+  const rogueConfig = getRacialChoicesConfig(rogueRace);
+  assert.equal(rogueConfig.needsTool, true);
+  assert.deepEqual(rogueConfig.toolOptions, ['Воровские инструменты']);
+});
+
+test('Data-Driven Races: Custom feature choices (Simic Hybrid animal enhancements)', () => {
+  const simicHybrid = {
+    id: 'simic-hybrid',
+    name: 'Симикский гибрид',
+    nameEn: 'Simic Hybrid',
+    source: 'GGTR',
+    category: 'setting' as const,
+    description: 'Биомагический гибрид',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 60,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      customFeatureChoice: {
+        featureName: 'Животное усиление (1 уровень)',
+        options: [
+          { id: 'manta-glide', name: 'Планирующие крылья (Manta Glide)', description: 'Замедляет падение до 100 фт/раунд, снижает урон от падения до 0.' },
+          { id: 'nimble-climber', name: 'Лазающие конечности (Nimble Climber)', description: 'Скорость лазания равна вашей базовой скорости.' },
+          { id: 'underwater-adaptation', name: 'Подводная адаптация', description: 'Вы можете дышать под водой, скорость плавания равна базовой.' }
+        ]
+      }
+    }
+  };
+
+  const config = getRacialChoicesConfig(simicHybrid);
+  assert.equal(config.needsCustomFeature, true);
+  assert.equal(config.customFeature?.featureName, 'Животное усиление (1 уровень)');
+  assert.equal(config.customFeature?.options.length, 3);
+  assert.equal(config.customFeature?.options[0].id, 'manta-glide');
+});
+
+test('Data-Driven Races: Direct extraLanguagesCount in choices', () => {
+  const polyglotRace = {
+    id: 'planar-diplomat',
+    name: 'Планарный дипломат',
+    nameEn: 'Planar Diplomat',
+    source: 'Homebrew',
+    category: 'multiverse' as const,
+    description: 'Знает множество наречий',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 0,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      extraLanguagesCount: 3
+    }
+  };
+
+  const config = getRacialChoicesConfig(polyglotRace);
+  assert.equal(config.extraLanguageCount, 3, 'Must respect direct extraLanguagesCount');
+});
+
+
 
 

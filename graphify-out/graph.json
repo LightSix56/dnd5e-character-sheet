@@ -13271,7 +13271,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L1090",
+      "source_location": "L1103",
       "weight": 1.0
     },
     {
@@ -13283,7 +13283,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L1172",
+      "source_location": "L1185",
       "weight": 1.0
     },
     {
@@ -13295,7 +13295,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L1182",
+      "source_location": "L1195",
       "weight": 1.0
     },
     {
@@ -13307,7 +13307,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L183",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -13319,7 +13319,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L214",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -13331,19 +13331,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L228",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodal",
-      "target": "src_components_wizard_wizard_helpers_getclassskillconfig",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L262",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -13355,7 +13343,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L2645",
+      "source_location": "L2658",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodal",
+      "target": "src_components_wizard_wizard_helpers_getclassskillconfig",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -13367,7 +13367,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L267",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -13379,7 +13379,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L278",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -13391,7 +13391,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L280",
+      "source_location": "L293",
       "weight": 1.0
     },
     {
@@ -13403,7 +13403,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L312",
+      "source_location": "L325",
       "weight": 1.0
     },
     {
@@ -13415,7 +13415,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L337",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -13427,7 +13427,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L375",
+      "source_location": "L388",
       "weight": 1.0
     },
     {
@@ -13439,7 +13439,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L556",
+      "source_location": "L569",
       "weight": 1.0
     },
     {
@@ -13451,7 +13451,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L578",
+      "source_location": "L591",
       "weight": 1.0
     },
     {
@@ -13475,7 +13475,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L719",
+      "source_location": "L732",
       "weight": 1.0
     },
     {
@@ -13487,7 +13487,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L818",
+      "source_location": "L831",
       "weight": 1.0
     },
     {
@@ -34859,5 +34859,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a10d29b1d54532ac1ecb59e1d97057948cceac52"
+  "built_at_commit": "7ffde0a420cc796e32263f5237b89f2ee02af706"
 }

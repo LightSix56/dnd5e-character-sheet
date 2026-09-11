@@ -121,4 +121,36 @@ test('Flaw 5: AC calculation must reflect character actual DEX modifier, not sta
   assert.equal(calculateWizardAC('Монах', '', false, 3, 1, 2), 15);
 });
 
+test('Background Search: filters accurately by Russian name, English name, and skills', () => {
+  const filterBgs = (query: string) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return DND_COMPENDIUM_BACKGROUNDS;
+    return DND_COMPENDIUM_BACKGROUNDS.filter(bg =>
+      bg.name.toLowerCase().includes(q) ||
+      (bg.nameEn && bg.nameEn.toLowerCase().includes(q)) ||
+      bg.skillProficiencies.some(s => s.toLowerCase().includes(q)) ||
+      (bg.description && bg.description.toLowerCase().includes(q))
+    );
+  };
+
+  // 1. By Russian name
+  const soldier = filterBgs('солдат');
+  assert.ok(soldier.length >= 1);
+  assert.ok(soldier.some(b => b.name === 'Солдат'));
+
+  // 2. By English name
+  const acolyte = filterBgs('Acolyte');
+  assert.ok(acolyte.length >= 1);
+  assert.ok(acolyte.some(b => b.name === 'Аколит'));
+
+  // 3. By skill proficiency
+  const stealthBgs = filterBgs('Скрытность');
+  assert.ok(stealthBgs.length >= 1);
+  assert.ok(stealthBgs.every(b => b.skillProficiencies.some(s => s.toLowerCase().includes('скрытность')) || (b.description && b.description.toLowerCase().includes('скрытность'))));
+
+  // 4. Non-matching query returns empty array
+  const empty = filterBgs('НесуществующаяПредысторияXYZ123');
+  assert.equal(empty.length, 0);
+});
+
 

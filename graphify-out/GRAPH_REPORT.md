@@ -1,7 +1,7 @@
 # Graph Report - dnd5e-character-sheet  (2026-09-11)
 
 ## Corpus Check
-- 147 files · ~332,059 words
+- 147 files · ~332,327 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a10d29b1`
+- Built from commit: `7ffde0a4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

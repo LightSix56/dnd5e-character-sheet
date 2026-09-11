@@ -106,6 +106,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
   // ── Step 3: Background ──
   const [selectedBackgroundId, setSelectedBackgroundId] = useState<string>('soldier');
+  const [backgroundSearch, setBackgroundSearch] = useState<string>('');
   // If background skills overlap with race/class, user picks replacements
   const [backgroundSkillReplacements, setBackgroundSkillReplacements] = useState<Record<string, string>>({});
 
@@ -167,6 +168,18 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const selectedBackground = useMemo(() => {
     return DND_COMPENDIUM_BACKGROUNDS.find(b => b.id === selectedBackgroundId) || DND_COMPENDIUM_BACKGROUNDS[0];
   }, [selectedBackgroundId]);
+
+  // Filtered backgrounds based on search query
+  const filteredBackgrounds = useMemo(() => {
+    const q = backgroundSearch.trim().toLowerCase();
+    if (!q) return DND_COMPENDIUM_BACKGROUNDS;
+    return DND_COMPENDIUM_BACKGROUNDS.filter(bg =>
+      bg.name.toLowerCase().includes(q) ||
+      (bg.nameEn && bg.nameEn.toLowerCase().includes(q)) ||
+      bg.skillProficiencies.some(s => s.toLowerCase().includes(q)) ||
+      (bg.description && bg.description.toLowerCase().includes(q))
+    );
+  }, [backgroundSearch]);
 
   // Racial bonuses configuration
   const racialBonusConfig = useMemo(() => {
@@ -2775,35 +2788,73 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   <label className="parchment-label text-sm font-bold block" style={{ color: '#3D2012' }}>
                     Выберите предысторию персонажа:
                   </label>
-                  <span className="text-xs text-[#8B6914]">{DND_COMPENDIUM_BACKGROUNDS.length} вариантов предысторий</span>
+                  <span className="text-xs text-[#8B6914]">
+                    {backgroundSearch.trim()
+                      ? `Найдено: ${filteredBackgrounds.length} из ${DND_COMPENDIUM_BACKGROUNDS.length}`
+                      : `${DND_COMPENDIUM_BACKGROUNDS.length} вариантов предысторий`}
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {DND_COMPENDIUM_BACKGROUNDS.map(bg => {
-                    const isSel = bg.id === selectedBackgroundId;
-                    return (
-                      <button
-                        key={bg.id}
-                        type="button"
-                        onClick={() => setSelectedBackgroundId(bg.id)}
-                        className={`p-2.5 rounded-lg text-left text-xs cursor-pointer transition-all ${
-                          isSel ? 'font-bold shadow-sm' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
-                        }`}
-                        style={
-                          isSel
-                            ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
-                            : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }
-                        }
-                      >
-                        <div className="font-bold">{bg.name}</div>
-                        <div className="text-[10px] opacity-75">{bg.nameEn}</div>
-                        <div className="text-[10px] font-mono mt-1 text-[#5C3A6E]">
-                          {bg.skillProficiencies.join(', ')}
-                        </div>
-                      </button>
-                    );
-                  })}
+                {/* Поле поиска предысторий */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={backgroundSearch}
+                    onChange={e => setBackgroundSearch(e.target.value)}
+                    placeholder="Поиск предыстории (по названию, навыкам или описанию)…"
+                    className="parchment-input-boxed text-xs w-full py-2 px-3 pr-8"
+                  />
+                  {backgroundSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setBackgroundSearch('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#8B6914] hover:text-[#3D2012] font-bold p-1 cursor-pointer"
+                      title="Очистить поиск"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
+
+                {filteredBackgrounds.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[380px] overflow-y-auto pr-1">
+                    {filteredBackgrounds.map(bg => {
+                      const isSel = bg.id === selectedBackgroundId;
+                      return (
+                        <button
+                          key={bg.id}
+                          type="button"
+                          onClick={() => setSelectedBackgroundId(bg.id)}
+                          className={`p-2.5 rounded-lg text-left text-xs cursor-pointer transition-all ${
+                            isSel ? 'font-bold shadow-sm' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
+                          }`}
+                          style={
+                            isSel
+                              ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                              : { background: 'rgba(245, 230, 200, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)' }
+                          }
+                        >
+                          <div className="font-bold">{bg.name}</div>
+                          <div className="text-[10px] opacity-75">{bg.nameEn}</div>
+                          <div className="text-[10px] font-mono mt-1 text-[#5C3A6E]">
+                            {bg.skillProficiencies.join(', ')}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-lg text-center text-xs text-[#5C341F] bg-[rgba(245,230,200,0.5)] border border-[rgba(201,168,76,0.3)] space-y-2">
+                    <p>По запросу «<span className="font-semibold text-[#3D2012]">{backgroundSearch}</span>» предысторий не найдено.</p>
+                    <button
+                      type="button"
+                      onClick={() => setBackgroundSearch('')}
+                      className="parchment-btn-secondary text-[11px] py-1 px-3 rounded cursor-pointer"
+                    >
+                      Сбросить поиск
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Background Detail & Skill Overlap Resolver */}

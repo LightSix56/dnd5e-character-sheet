@@ -186,7 +186,9 @@ export function convertParsedToCompendium(p: ParsedRace, category: CompendiumRac
   const isMpmm = p.source.toLowerCase().includes('multiverse');
   const sizeVal = p.size && p.size.toLowerCase().includes('маленький') && !p.size.toLowerCase().includes('средний') ? 'Маленький' : 'Средний';
 
-  let traits = (p.traits || []).map(t => ({ name: t.name, description: t.description }));
+  let traits = (p.traits || [])
+    .filter(t => t.name && t.name.trim().length > 0 && t.description && t.description.trim().length > 0)
+    .map(t => ({ name: t.name.trim(), description: t.description.trim() }));
   if (traits.length === 0 && (p as any).loreSections && (p as any).loreSections.length > 0) {
     for (const section of (p as any).loreSections) {
       const paragraphs = (section.text || '').split(/\n\n+/);

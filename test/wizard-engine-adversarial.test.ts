@@ -12,7 +12,8 @@ import {
   generateFantasyName,
   validateStandardArray,
   calcPreparedSpellsLimit,
-  calculateWizardAC
+  calculateWizardAC,
+  getRacialChoicesConfig
 } from '../src/components/wizard/wizard-helpers';
 import { DND_COMPENDIUM_SPELLS } from '../src/data/compendium/spells';
 import { DND_COMPENDIUM_RACES } from '../src/data/compendium/races';
@@ -152,5 +153,212 @@ test('Background Search: filters accurately by Russian name, English name, and s
   const empty = filterBgs('НесуществующаяПредысторияXYZ123');
   assert.equal(empty.length, 0);
 });
+
+// ── Data-Driven Racial Architecture & Extensibility Tests ──
+
+test('Data-Driven Races: Custom race with choices.hasFeat activates feat selection without hardcoded names', () => {
+  const customRace = {
+    id: 'alien-construct',
+    name: 'Чужеродный конструкт',
+    nameEn: 'Alien Construct',
+    source: 'Homebrew',
+    category: 'multiverse' as const,
+    description: 'Тестовая раса',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 60,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      hasFeat: true
+    }
+  };
+
+  const config = getRacialChoicesConfig(customRace);
+  assert.equal(config.needsFeat, true, 'Custom race with choices.hasFeat=true must activate feat selection');
+  assert.equal(config.needsCantrip, false);
+  assert.equal(config.needsTool, false);
+});
+
+test('Data-Driven Races: Custom subrace with choices.cantripChoice activates cantrip selection with specified class', () => {
+  const parentRace = {
+    id: 'fey-folk',
+    name: 'Фейский народ',
+    nameEn: 'Fey Folk',
+    source: 'Homebrew',
+    category: 'core' as const,
+    description: 'Тестовая раса',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 60,
+    languages: ['Общий'],
+    traits: [],
+    subraces: []
+  };
+
+  const druidSubrace = {
+    id: 'fey-druidic',
+    name: 'Друидическая фейри',
+    nameEn: 'Druidic Fey',
+    description: 'Подраса с заговором друида',
+    abilityBonuses: {},
+    traits: [],
+    choices: {
+      cantripChoice: 'druid' as const
+    }
+  };
+
+  const config = getRacialChoicesConfig(parentRace, druidSubrace);
+  assert.equal(config.needsCantrip, true, 'Must activate cantrip selection');
+  assert.equal(config.cantripClass, 'druid', 'Must specify druid cantrip class');
+});
+
+test('Data-Driven Races: Custom race with choices.toolChoice and dragonAncestry', () => {
+  const blacksmithRace = {
+    id: 'crystal-forged',
+    name: 'Кристаллокованный',
+    nameEn: 'Crystal Forged',
+    source: 'Homebrew',
+    category: 'setting' as const,
+    description: 'Тестовая раса',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 0,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      toolChoice: 'dwarf_tools' as const,
+      dragonAncestry: true
+    }
+  };
+
+  const config = getRacialChoicesConfig(blacksmithRace);
+  assert.equal(config.needsTool, true);
+  assert.ok(config.toolOptions.length > 0);
+  assert.equal(config.needsDragonColor, true);
+});
+
+test('Data-Driven Races: Declarative extraSkillsCount and skillChoiceOptions', () => {
+  const skilledRace = {
+    id: 'nomad-scout',
+    name: 'Кочевник-разведчик',
+    nameEn: 'Nomad Scout',
+    source: 'Homebrew',
+    category: 'core' as const,
+    description: 'Тестовая раса',
+    abilityBonuses: {},
+    speed: 35,
+    size: 'Средний' as const,
+    darkvision: 0,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      extraSkillsCount: 2,
+      skillChoiceOptions: ['Атлетика', 'Выживание', 'Внимательность']
+    }
+  };
+
+  const skillData = getRacialSkillData(skilledRace);
+  assert.equal(skillData.choiceCount, 2, 'Must request 2 skills');
+  assert.deepEqual(skillData.choiceOptions, ['Атлетика', 'Выживание', 'Внимательность']);
+});
+
+test('Data-Driven Races: Declarative isFlexibleASI activates flexible ability distribution', () => {
+  const flexRace = {
+    id: 'astral-drifter',
+    name: 'Астральный странник',
+    nameEn: 'Astral Drifter',
+    source: 'Homebrew',
+    category: 'multiverse' as const,
+    description: 'Тестовая раса',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 0,
+    languages: ['Общий'],
+    traits: [],
+    subraces: [],
+    choices: {
+      isFlexibleASI: true
+    }
+  };
+
+  const bonusConfig = getRacialBonusConfig(flexRace);
+  assert.equal(bonusConfig.hasCustomBonus, true);
+  assert.equal(bonusConfig.choiceCount, 2);
+  assert.equal(bonusConfig.bonusAmount, 1);
+});
+
+test('Data-Driven Races: Backward compatibility fallback for legacy race objects without choices', () => {
+  const legacyHuman = {
+    id: 'human',
+    name: 'Человек',
+    nameEn: 'Human',
+    source: 'PHB',
+    category: 'core' as const,
+    description: 'Legacy human',
+    abilityBonuses: {},
+    speed: 30,
+    size: 'Средний' as const,
+    darkvision: 0,
+    languages: ['Общий', 'Один язык на выбор'],
+    traits: [],
+    subraces: []
+  };
+
+  const legacyVariant = {
+    id: 'human-variant',
+    name: 'Человек (Вариантный)',
+    nameEn: 'Variant Human',
+    description: 'Legacy variant',
+    abilityBonuses: {},
+    traits: []
+  };
+
+  // Even without choices property, legacy fallback must flag needsFeat and extraLanguageCount
+  const config = getRacialChoicesConfig(legacyHuman, legacyVariant);
+  assert.equal(config.needsFeat, true, 'Legacy human-variant must still need feat via fallback');
+  assert.equal(config.extraLanguageCount, 1);
+});
+
+test('Data-Driven Races: DND_COMPENDIUM_RACES populated with declarative choices', () => {
+  const human = DND_COMPENDIUM_RACES.find(r => r.id === 'human');
+  assert.ok(human);
+  const variant = human.subraces.find(s => s.id === 'human-variant');
+  assert.ok(variant);
+  assert.equal(variant.choices?.hasFeat, true);
+  assert.equal(variant.choices?.extraSkillsCount, 1);
+
+  const dwarf = DND_COMPENDIUM_RACES.find(r => r.id === 'dwarf');
+  assert.ok(dwarf);
+  assert.equal(dwarf.choices?.toolChoice, 'dwarf_tools');
+
+  const elf = DND_COMPENDIUM_RACES.find(r => r.id === 'elf');
+  assert.ok(elf);
+  const highElf = elf.subraces.find(s => s.id === 'elf-high');
+  assert.ok(highElf);
+  assert.equal(highElf.choices?.cantripChoice, 'wizard');
+
+  const dragonborn = DND_COMPENDIUM_RACES.find(r => r.id === 'dragonborn');
+  assert.ok(dragonborn);
+  assert.equal(dragonborn.choices?.dragonAncestry, true);
+
+  const customLineage = DND_COMPENDIUM_RACES.find(r => r.id === 'custom-lineage');
+  assert.ok(customLineage);
+  assert.equal(customLineage.choices?.hasFeat, true);
+  assert.equal(customLineage.choices?.isFlexibleASI, true);
+
+  const changeling = DND_COMPENDIUM_RACES.find(r => r.id === 'changeling');
+  assert.ok(changeling);
+  assert.equal(changeling.choices?.extraSkillsCount, 2);
+  assert.deepEqual(changeling.choices?.skillChoiceOptions, ['Запугивание', 'Обман', 'Проницательность', 'Убеждение']);
+});
+
 
 

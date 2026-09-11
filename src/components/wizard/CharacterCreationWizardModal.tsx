@@ -252,12 +252,18 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return [...DND_COMPENDIUM_FEATS].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   }, []);
 
-  // Wizard cantrips for High Elf
-  const availableWizardCantrips = useMemo(() => {
+  // Dynamic racial cantrips (High Elf -> wizard, Grugach -> druid, etc.)
+  const availableRacialCantrips = useMemo(() => {
+    const clsTarget = racialChoicesConfig?.cantripClass || 'wizard';
+    const ruName = clsTarget === 'druid' ? 'друид' : clsTarget === 'cleric' ? 'жрец' : 'волшебник';
+    const enName = clsTarget;
     return DND_COMPENDIUM_SPELLS.filter(
-      s => s.level === 0 && (s.classes || []).some(cls => cls.toLowerCase() === 'волшебник' || cls.toLowerCase() === 'wizard')
+      s => s.level === 0 && (s.classes || []).some(cls => {
+        const c = cls.toLowerCase();
+        return c === ruName || c === enName;
+      })
     ).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-  }, []);
+  }, [racialChoicesConfig?.cantripClass]);
 
   // Selected racial feat details
   const selectedRacialFeat = useMemo(() => {
@@ -1698,55 +1704,60 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         </div>
                       )}
 
-                      {/* Cantrip Selector (High Elf) */}
-                      {racialChoicesConfig?.needsCantrip && (
-                        <div
-                          className="p-3.5 rounded-lg space-y-2.5"
-                          style={{
-                            background: 'rgba(232, 211, 162, 0.3)',
-                            border: '1px solid rgba(201, 168, 76, 0.4)'
-                          }}
-                        >
-                          <div className="flex items-center justify-between">
-                            <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
-                              ✨ Заговор волшебника (Высший эльф):
-                            </label>
-                            {selectedRacialCantrip ? (
-                              <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано</span>
-                            ) : (
-                              <span className="text-[11px] font-semibold text-[#B45309]">Обязательный выбор</span>
-                            )}
-                          </div>
-                          <select
-                            value={selectedRacialCantrip}
-                            onChange={e => setSelectedRacialCantrip(e.target.value)}
-                            className="parchment-select w-full text-xs py-1.5 px-2.5"
+                      {/* Cantrip Selector */}
+                      {racialChoicesConfig?.needsCantrip && (() => {
+                        const clsTarget = racialChoicesConfig?.cantripClass || 'wizard';
+                        const clsLabel = clsTarget === 'druid' ? 'друида' : clsTarget === 'cleric' ? 'жреца' : 'волшебника';
+                        const raceLabel = selectedSubrace?.name || selectedRace?.name || 'раса';
+                        return (
+                          <div
+                            className="p-3.5 rounded-lg space-y-2.5"
+                            style={{
+                              background: 'rgba(232, 211, 162, 0.3)',
+                              border: '1px solid rgba(201, 168, 76, 0.4)'
+                            }}
                           >
-                            <option value="">-- Выберите дополнительный заговор волшебника --</option>
-                            {availableWizardCantrips.map(spell => (
-                              <option key={spell.name} value={spell.name}>
-                                {spell.name} {spell.nameEn ? `(${spell.nameEn})` : ''} · {spell.school}
-                              </option>
-                            ))}
-                          </select>
-                          {selectedRacialCantrip && (() => {
-                            const spellObj = availableWizardCantrips.find(s => s.name === selectedRacialCantrip);
-                            if (!spellObj) return null;
-                            return (
-                              <div
-                                className="p-2.5 rounded text-xs space-y-1 shadow-sm"
-                                style={{ background: 'rgba(251, 240, 220, 0.85)', border: '1px solid rgba(201, 168, 76, 0.4)' }}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <span className="font-bold text-[#3D2012]">{spellObj.name} {spellObj.nameEn ? `(${spellObj.nameEn})` : ''}</span>
-                                  <span className="text-[10px] text-[#8B6914]">{spellObj.school} · Дистанция: {spellObj.range}</span>
+                            <div className="flex items-center justify-between">
+                              <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                                ✨ Заговор {clsLabel} ({raceLabel}):
+                              </label>
+                              {selectedRacialCantrip ? (
+                                <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано</span>
+                              ) : (
+                                <span className="text-[11px] font-semibold text-[#B45309]">Обязательный выбор</span>
+                              )}
+                            </div>
+                            <select
+                              value={selectedRacialCantrip}
+                              onChange={e => setSelectedRacialCantrip(e.target.value)}
+                              className="parchment-select w-full text-xs py-1.5 px-2.5"
+                            >
+                              <option value="">-- Выберите дополнительный заговор {clsLabel} --</option>
+                              {availableRacialCantrips.map(spell => (
+                                <option key={spell.name} value={spell.name}>
+                                  {spell.name} {spell.nameEn ? `(${spell.nameEn})` : ''} · {spell.school}
+                                </option>
+                              ))}
+                            </select>
+                            {selectedRacialCantrip && (() => {
+                              const spellObj = availableRacialCantrips.find(s => s.name === selectedRacialCantrip);
+                              if (!spellObj) return null;
+                              return (
+                                <div
+                                  className="p-2.5 rounded text-xs space-y-1 shadow-sm"
+                                  style={{ background: 'rgba(251, 240, 220, 0.85)', border: '1px solid rgba(201, 168, 76, 0.4)' }}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-bold text-[#3D2012]">{spellObj.name} {spellObj.nameEn ? `(${spellObj.nameEn})` : ''}</span>
+                                    <span className="text-[10px] text-[#8B6914]">{spellObj.school} · Дистанция: {spellObj.range}</span>
+                                  </div>
+                                  <div className="text-[11px] text-[#5C341F] line-clamp-2">{spellObj.description}</div>
                                 </div>
-                                <div className="text-[11px] text-[#5C341F] line-clamp-2">{spellObj.description}</div>
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      )}
+                              );
+                            })()}
+                          </div>
+                        );
+                      })()}
 
                       {/* Dwarf Artisan Tools */}
                       {racialChoicesConfig?.needsTool && (

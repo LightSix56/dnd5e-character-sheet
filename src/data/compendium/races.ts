@@ -4,6 +4,16 @@
 
 export type RaceCategory = 'core' | 'multiverse' | 'setting' | 'spelljammer' | 'lineage';
 
+export interface RaceChoicesConfig {
+  hasFeat?: boolean;                             // Дает выбор стартовой черты (Вариантный человек, Custom Lineage)
+  cantripChoice?: 'wizard' | 'druid' | 'cleric'; // Дает выбор заговора указанного класса
+  toolChoice?: 'dwarf_tools' | 'artisan';        // Дает выбор ремесленных инструментов
+  dragonAncestry?: boolean;                      // Выбор драконьего предка (Драконорождённые)
+  extraSkillsCount?: number;                     // Количество дополнительных навыков на выбор
+  skillChoiceOptions?: string[];                 // Ограниченный список навыков для выбора (если не все)
+  isFlexibleASI?: boolean;                       // Свободные характеристики (MPMM / Tasha)
+}
+
 export interface CompendiumSubrace {
   id: string;
   name: string;
@@ -12,6 +22,7 @@ export interface CompendiumSubrace {
   abilityBonuses: Partial<Record<'СИЛ' | 'ЛОВ' | 'ТЕЛ' | 'ИНТ' | 'МДР' | 'ХАР', number>>;
   traits: { name: string; description: string }[];
   speed?: number;
+  choices?: RaceChoicesConfig;
 }
 
 export interface CompendiumRace {
@@ -28,6 +39,7 @@ export interface CompendiumRace {
   languages: string[];
   traits: { name: string; description: string }[];
   subraces: CompendiumSubrace[];
+  choices?: RaceChoicesConfig;
 }
 
 export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
@@ -86,6 +98,10 @@ export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
           "СИЛ": 1,
           "ТЕЛ": 1
         },
+        "choices": {
+          "hasFeat": true,
+          "extraSkillsCount": 1
+        },
         "traits": [
           {
             "name": "Дополнительный навык",
@@ -108,6 +124,9 @@ export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
     "description": "Стойкие и выносливые подземные воины и мастера, ценители золота, камня, клановой чести и крепкого эля.",
     "abilityBonuses": {
       "ТЕЛ": 2
+    },
+    "choices": {
+      "toolChoice": "dwarf_tools"
     },
     "speed": 25,
     "size": "Средний",
@@ -237,6 +256,9 @@ export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
         "description": "Острый ум и мастерство тайной магии. +1 к Интеллекту, один заговор волшебника и воинское обучение.",
         "abilityBonuses": {
           "ИНТ": 1
+        },
+        "choices": {
+          "cantripChoice": "wizard"
         },
         "traits": [
           {
@@ -449,6 +471,9 @@ export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
       "СИЛ": 2,
       "ХАР": 1
     },
+    "choices": {
+      "dragonAncestry": true
+    },
     "speed": 30,
     "size": "Средний",
     "darkvision": 0,
@@ -614,6 +639,9 @@ export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
       "ХАР": 2,
       "ЛОВ": 1,
       "ТЕЛ": 1
+    },
+    "choices": {
+      "extraSkillsCount": 2
     },
     "speed": 30,
     "size": "Средний",
@@ -1002,6 +1030,10 @@ export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
     "abilityBonuses": {
       "ХАР": 2,
       "ЛОВ": 1
+    },
+    "choices": {
+      "extraSkillsCount": 2,
+      "skillChoiceOptions": ["Запугивание", "Обман", "Проницательность", "Убеждение"]
     },
     "speed": 30,
     "size": "Средний",
@@ -2389,6 +2421,10 @@ export const DND_COMPENDIUM_RACES: CompendiumRace[] = [
     "description": "Свободное происхождение из книги Tasha's Cauldron: создание любой уникальной расы со стартовой чертой и гибкими статами.",
     "abilityBonuses": {
       "СИЛ": 2
+    },
+    "choices": {
+      "hasFeat": true,
+      "isFlexibleASI": true
     },
     "speed": 30,
     "size": "Средний",

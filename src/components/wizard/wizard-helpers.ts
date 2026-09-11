@@ -79,8 +79,30 @@ export interface RacialSkillData {
 }
 
 export function getRacialSkillData(race: CompendiumRace, subrace?: CompendiumSubrace): RacialSkillData {
-  const raceId = (race.id || '').toLowerCase();
+  const raceId = (race?.id || '').toLowerCase();
   const subraceId = (subrace?.id || '').toLowerCase();
+  const choice = subrace?.choices || race?.choices;
+
+  // Declarative extra skills configuration
+  if (choice?.extraSkillsCount !== undefined && choice.extraSkillsCount > 0) {
+    const fixed: string[] = [];
+    const allTraits = [...(race?.traits || []), ...(subrace?.traits || [])];
+    for (const t of allTraits) {
+      const desc = `${t.name} ${t.description}`.toLowerCase();
+      for (const skill of ALL_SKILLS) {
+        const sLower = skill.toLowerCase();
+        if (desc.includes(`владение навыком ${sLower}`) || desc.includes(`владением навыком ${sLower}`) || desc.includes(`навыком ${sLower}`)) {
+          if (!fixed.includes(skill)) fixed.push(skill);
+        }
+      }
+    }
+    return {
+      fixedSkills: fixed,
+      choiceCount: choice.extraSkillsCount,
+      choiceOptions: choice.skillChoiceOptions ? [...choice.skillChoiceOptions] : ALL_SKILLS.slice(),
+      description: `Дополнительные навыки на выбор: ${choice.extraSkillsCount}.`
+    };
+  }
 
   // Variant Human
   if (subraceId === 'human-variant') {
@@ -239,14 +261,27 @@ export interface RacialBonusConfig {
 }
 
 export function getRacialBonusConfig(race: CompendiumRace, subrace?: CompendiumSubrace): RacialBonusConfig {
-  const raceId = (race.id || '').toLowerCase();
+  const raceId = (race?.id || '').toLowerCase();
   const subraceId = (subrace?.id || '').toLowerCase();
+  const choice = subrace?.choices || race?.choices;
 
   // Combine base and subrace bonuses
   const combined: Partial<Record<AbilityName, number>> = {
-    ...(race.abilityBonuses || {}),
+    ...(race?.abilityBonuses || {}),
     ...(subrace?.abilityBonuses || {})
   };
+
+  // Declarative flexible ASI (e.g. Custom Lineage or Tasha/MPMM flexible rules)
+  if (choice?.isFlexibleASI) {
+    return {
+      hasCustomBonus: true,
+      fixedBonuses: {},
+      choiceCount: 2,
+      bonusAmount: 1,
+      availableAbilities: ABILITY_NAMES.slice() as AbilityName[],
+      description: 'Свободное распределение бонусов характеристик (+1 к двум различным характеристикам на выбор).'
+    };
+  }
 
   // Half-Elf: +2 CHA, +1 to two other distinct abilities
   if (raceId === 'half-elf' || race.name.toLowerCase().includes('полуэльф')) {
@@ -787,11 +822,13 @@ export const RANGER_FAVORED_TERRAINS = [
 export interface RacialChoicesConfig {
   needsFeat: boolean;
   needsCantrip: boolean;
-  cantripClass?: string;
+  cantripClass?: 'wizard' | 'druid' | 'cleric' | string;
   needsTool: boolean;
   toolOptions: string[];
   needsDragonColor: boolean;
   extraLanguageCount: number;
+  extraSkillsCount?: number;
+  isFlexibleASI?: boolean;
 }
 
 export function getRacialChoicesConfig(
@@ -803,17 +840,24 @@ export function getRacialChoicesConfig(
   const raceName = (race?.name || '').toLowerCase();
   const subraceName = (subrace?.name || '').toLowerCase();
 
+  // Declarative choices configuration from compendium (highest priority)
+  const choice = subrace?.choices || race?.choices;
+
+  // Fallback legacy checks for backward compatibility & safety
   const isVariantHuman = subraceId === 'human-variant' || subraceName.includes('вариантн');
   const isCustomLineage = raceId === 'custom-lineage' || raceName.includes('персонализированн');
   const isHighElf = subraceId === 'elf-high' || raceId === 'elf-high' || subraceName.includes('высший эльф');
   const isDwarf = raceId === 'dwarf' || raceId.includes('dwarf') || raceName.includes('дворф');
   const isDragonborn = raceId === 'dragonborn' || raceId.includes('dragonborn') || raceName.includes('драконорожд');
 
-  const needsFeat = isVariantHuman || isCustomLineage;
-  const needsCantrip = isHighElf;
-  const cantripClass = isHighElf ? 'wizard' : undefined;
-  const needsTool = isDwarf;
-  const needsDragonColor = isDragonborn;
+  const needsFeat = Boolean(choice?.hasFeat ?? (isVariantHuman || isCustomLineage));
+  const needsCantrip = Boolean(choice?.cantripChoice ? true : isHighElf);
+  const cantripClass = choice?.cantripChoice || (isHighElf ? 'wizard' : undefined);
+  const needsTool = Boolean(choice?.toolChoice ? true : isDwarf);
+  const toolOptions = choice?.toolChoice === 'dwarf_tools' ? [...DWARF_TOOL_OPTIONS] : [...DWARF_TOOL_OPTIONS];
+  const needsDragonColor = Boolean(choice?.dragonAncestry ?? isDragonborn);
+  const extraSkillsCount = choice?.extraSkillsCount ?? (isVariantHuman ? 1 : 0);
+  const isFlexibleASI = Boolean(choice?.isFlexibleASI ?? isCustomLineage);
 
   let extraLanguageCount = 0;
   if (isVariantHuman || isCustomLineage || isHighElf || raceId === 'half-elf' || raceName.includes('полуэльф')) {
@@ -830,9 +874,11 @@ export function getRacialChoicesConfig(
     needsCantrip,
     cantripClass,
     needsTool,
-    toolOptions: [...DWARF_TOOL_OPTIONS],
+    toolOptions,
     needsDragonColor,
-    extraLanguageCount
+    extraLanguageCount,
+    extraSkillsCount,
+    isFlexibleASI
   };
 }
 

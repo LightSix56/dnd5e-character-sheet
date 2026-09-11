@@ -62,10 +62,12 @@
   "60": "materiality-and-tactility.test.ts",
   "61": "sliding-tabs.test.ts",
   "62": "📜 D&D.su Class & Mechanics Parser Skill",
-  "63": "react",
-  "64": "RaceSelectorModal.tsx",
+  "63": "dnd-weapons.ts",
+  "64": "fetch-dndsu-races.ts",
   "65": "class-progression.ts",
   "66": "escape-key-and-keyboard-rolls.test.ts",
   "67": "StatsCalculatorModal.tsx",
-  "68": "app/page.tsx"
+  "68": "app/page.tsx",
+  "69": "ClassSelectorModal.tsx",
+  "70": "AutocompleteInput.tsx"
 }

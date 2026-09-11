@@ -928,5 +928,11 @@
     "seen": 1789132173.6824033,
     "ast_hash": "88e1b7ea0050c23e7c5a16c82401b45d",
     "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu-races.ts": {
+    "mtime": 1789134592.8378613,
+    "seen": 1789134698.5139883,
+    "ast_hash": "61d75470371aa99b72fe986e41e89988",
+    "semantic_hash": ""
   }
 }

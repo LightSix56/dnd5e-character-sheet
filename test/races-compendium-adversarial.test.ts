@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import * as assert from 'node:assert/strict';
-import { DND_COMPENDIUM_RACES, findRaceByName, CompendiumRace } from '../src/data/compendium/races.ts';
+import { DND_COMPENDIUM_RACES, findRaceByName, CompendiumRace } from '../src/data/compendium/races';
 
 describe('Adversarial Quality Gate: D&D 5e Races Compendium Integrity', () => {
   it('contains at least 49 base races and has no duplicate IDs', () => {
@@ -91,5 +91,67 @@ describe('Adversarial Quality Gate: D&D 5e Races Compendium Integrity', () => {
     const dwarfPrefix = findRaceByName('Дворф горный');
     assert.ok(dwarfPrefix, 'Should find Дворф by prefix');
     assert.equal(dwarfPrefix.id, 'dwarf');
+  });
+
+  it('verifies MPMM and Setting merged races have accurate choices configured', () => {
+    // 1. Kobold MPMM
+    const kobold = DND_COMPENDIUM_RACES.find(r => r.id === 'kobold-mpmm');
+    assert.ok(kobold, 'kobold-mpmm must exist in compendium');
+    assert.ok(kobold.choices?.isFlexibleASI, 'kobold-mpmm must have isFlexibleASI');
+    assert.ok(typeof kobold.choices?.cantripChoice === 'object');
+    if (typeof kobold.choices?.cantripChoice === 'object') {
+      assert.equal(kobold.choices.cantripChoice.class, 'sorcerer');
+      assert.deepEqual(kobold.choices.cantripChoice.abilityChoice, ['ИНТ', 'МДР', 'ХАР']);
+    }
+
+    // 2. Lizardfolk MPMM
+    const lizardfolk = DND_COMPENDIUM_RACES.find(r => r.id === 'lizardfolk-mpmm');
+    assert.ok(lizardfolk, 'lizardfolk-mpmm must exist in compendium');
+    assert.equal(lizardfolk.choices?.extraSkillsCount, 2);
+    assert.ok(lizardfolk.choices?.skillChoiceOptions?.includes('Выживание'));
+
+    // 3. Autognome
+    const autognome = DND_COMPENDIUM_RACES.find(r => r.id === 'autognome');
+    assert.ok(autognome, 'autognome must exist in compendium');
+    assert.ok(typeof autognome.choices?.toolChoice === 'object');
+    if (typeof autognome.choices?.toolChoice === 'object') {
+      assert.equal(autognome.choices.toolChoice.category, 'artisan');
+      assert.equal(autognome.choices.toolChoice.count, 2);
+    }
+
+    // 4. Astral Elf
+    const astralElf = DND_COMPENDIUM_RACES.find(r => r.id === 'astral-elf');
+    assert.ok(astralElf, 'astral-elf must exist in compendium');
+    assert.ok(typeof astralElf.choices?.cantripChoice === 'object');
+    if (typeof astralElf.choices?.cantripChoice === 'object') {
+      assert.ok(astralElf.choices.cantripChoice.spellOptions?.includes('Свет'));
+      assert.deepEqual(astralElf.choices.cantripChoice.abilityChoice, ['ИНТ', 'МДР', 'ХАР']);
+    }
+
+    // 5. Simic Hybrid
+    const simic = DND_COMPENDIUM_RACES.find(r => r.id === 'simic-hybrid');
+    assert.ok(simic, 'simic-hybrid must exist in compendium');
+    assert.ok(simic.choices?.customFeatureChoice, 'simic-hybrid must have customFeatureChoice');
+    assert.equal(simic.choices?.customFeatureChoice?.options.length, 3);
+    assert.ok(simic.choices?.customFeatureChoice?.options.some(o => o.id === 'manta-glide'));
+
+    // 6. Githyanki & Githzerai MPMM
+    const githyanki = DND_COMPENDIUM_RACES.find(r => r.id === 'githyanki-mpmm');
+    assert.ok(githyanki, 'githyanki-mpmm must exist');
+    assert.ok(githyanki.traits.length >= 3, 'githyanki-mpmm must have traits parsed');
+    if (typeof githyanki.choices?.cantripChoice === 'object') {
+      assert.deepEqual(githyanki.choices.cantripChoice.spellOptions, ['Волшебная рука']);
+      assert.deepEqual(githyanki.choices.cantripChoice.abilityChoice, ['ИНТ', 'МДР', 'ХАР']);
+    }
+
+    // 7. Harengon MPMM
+    const harengon = DND_COMPENDIUM_RACES.find(r => r.id === 'harengon-mpmm');
+    assert.ok(harengon, 'harengon-mpmm must exist');
+    assert.deepEqual(harengon.choices?.sizeChoice, ['Средний', 'Маленький']);
+
+    // 8. Kender
+    const kender = DND_COMPENDIUM_RACES.find(r => r.id === 'kender');
+    assert.ok(kender, 'kender must exist from Dragonlance');
+    assert.equal(kender.size, 'Маленький');
   });
 });

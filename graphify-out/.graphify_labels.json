@@ -1,7 +1,7 @@
 {
   "0": "package.json",
   "1": "dependencies",
-  "2": "LevelUpModal.tsx",
+  "2": "level-up-choices.ts",
   "3": "CharacterCreationWizardModal.tsx",
   "4": "dnd-types.ts",
   "5": "@supabase/ssr",
@@ -66,7 +66,11 @@
   "64": "fetch-dndsu-races.ts",
   "65": "class-progression.ts",
   "66": "escape-key-and-keyboard-rolls.test.ts",
-  "67": "StatsCalculatorModal.tsx",
+  "67": "LevelUpModal.tsx",
   "68": "app/page.tsx",
-  "70": "AutocompleteInput.tsx"
+  "69": "Глобальные ограничения",
+  "70": "dnd-weapons.ts",
+  "71": "modularize-races.js",
+  "72": "feats.ts",
+  "73": "📜 Спецификация дизайна: Модульный компендиум рас D&D 5e и автогенерация choices"
 }

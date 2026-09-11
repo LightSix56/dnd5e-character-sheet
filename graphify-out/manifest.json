@@ -282,9 +282,9 @@
     "semantic_hash": "7053fca1ba992917922ee14cbe255d8e"
   },
   "src/data/compendium/races.ts": {
-    "mtime": 1789136839.2356505,
-    "seen": 1789137249.9767716,
-    "ast_hash": "d6bd3b68ca5dcea5e786f52741709c0e",
+    "mtime": 1789137814.8615127,
+    "seen": 1789138524.8227415,
+    "ast_hash": "7eb8f0c868c33bd42663b85999f043fd",
     "semantic_hash": ""
   },
   "src/data/compendium/spells.ts": {
@@ -933,6 +933,66 @@
     "mtime": 1789134842.9172134,
     "seen": 1789134931.3952577,
     "ast_hash": "4d99fdb41e1dc2178c68adcfff7169cb",
+    "semantic_hash": ""
+  },
+  "scripts/merge-races-compendium.ts": {
+    "mtime": 1789138317.2504642,
+    "seen": 1789138524.8096125,
+    "ast_hash": "a345315db8e001ef1be9e884c1f49071",
+    "semantic_hash": ""
+  },
+  "scripts/modularize-races.js": {
+    "mtime": 1789137811.6227343,
+    "seen": 1789138524.8099515,
+    "ast_hash": "a3a06dacbe21ed06051a4798207f1656",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/core.ts": {
+    "mtime": 1789137814.8487377,
+    "seen": 1789138524.822747,
+    "ast_hash": "07d2d5617171a60f6dcdb284a388f90f",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/index.ts": {
+    "mtime": 1789137814.8603144,
+    "seen": 1789138524.822751,
+    "ast_hash": "de08ef384af10cece51a23aed2d7af36",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/multiverse.ts": {
+    "mtime": 1789138322.575076,
+    "seen": 1789138524.8227541,
+    "ast_hash": "6e36bb49f564c43094ce690b4d547aa5",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/supplements.ts": {
+    "mtime": 1789138364.7962878,
+    "seen": 1789138524.822758,
+    "ast_hash": "afc0371547235753ae695f1715076889",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/races/types.ts": {
+    "mtime": 1789137814.7319305,
+    "seen": 1789138524.8227613,
+    "ast_hash": "46a76f68d6e060f7535d907432c3fec8",
+    "semantic_hash": ""
+  },
+  "test/races-compendium-adversarial.test.ts": {
+    "mtime": 1789138483.4159222,
+    "seen": 1789138524.8376317,
+    "ast_hash": "7d4d7661e03b60c8c7f4747e03e341cb",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-11-races-compendium-merge.md": {
+    "mtime": 1789137771.9941392,
+    "seen": 1789138524.851031,
+    "ast_hash": "2cb98ccf61fdb98897cad08212042b15",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-11-races-compendium-merge-design.md": {
+    "mtime": 1789137545.2832396,
+    "seen": 1789138524.8530278,
+    "ast_hash": "3b21341de118f500bcdf01e42e055063",
     "semantic_hash": ""
   }
 }

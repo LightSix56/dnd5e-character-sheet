@@ -361,10 +361,13 @@ function run() {
       if (fs.existsSync(filePath)) {
         // Read file contents and extract existing array
         const content = fs.readFileSync(filePath, 'utf8');
-        const jsonStart = content.indexOf('[');
-        const jsonEnd = content.lastIndexOf(']');
-        if (jsonStart !== -1 && jsonEnd !== -1) {
-          existingList = JSON.parse(content.substring(jsonStart, jsonEnd + 1));
+        const assignIdx = content.indexOf(' = [');
+        if (assignIdx !== -1) {
+          const jsonStart = assignIdx + 3;
+          const jsonEnd = content.lastIndexOf(']');
+          if (jsonStart !== -1 && jsonEnd !== -1) {
+            existingList = JSON.parse(content.substring(jsonStart, jsonEnd + 1));
+          }
         }
       }
 

@@ -216,9 +216,9 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1789130869.7031093,
-    "seen": 1789131101.336684,
-    "ast_hash": "c5fb3e6497780aed6171fd9bacdbf9a5",
+    "mtime": 1789132007.972561,
+    "seen": 1789132173.6701834,
+    "ast_hash": "1f6720b6f50e059584c382b9c26b2328",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
@@ -306,10 +306,10 @@
     "semantic_hash": "9deefcbb51ad5ccfc627a17655b4425c"
   },
   "src/data/dnd-weapons.ts": {
-    "mtime": 1788424199.8655918,
-    "seen": 1788767676.2556808,
-    "ast_hash": "9eafb37eb44d5898e34ced88980be7a0",
-    "semantic_hash": "9eafb37eb44d5898e34ced88980be7a0"
+    "mtime": 1789132105.2621813,
+    "seen": 1789132173.6746979,
+    "ast_hash": "db0ddd9587de1f0f83bc689bffd2bbcf",
+    "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
     "mtime": 1789130759.8511908,
@@ -915,6 +915,18 @@
     "mtime": 1789130695.265265,
     "seen": 1789131101.3444538,
     "ast_hash": "cb04a6f690bd65685b186f5328a58733",
+    "semantic_hash": ""
+  },
+  "scripts/fetch-dndsu-weapons.ts": {
+    "mtime": 1789131511.4722998,
+    "seen": 1789132173.6616364,
+    "ast_hash": "811057c0aa1a23d4a74df91447166ccc",
+    "semantic_hash": ""
+  },
+  "test/fetch-dndsu-weapons.test.ts": {
+    "mtime": 1789132080.1924863,
+    "seen": 1789132173.6824033,
+    "ast_hash": "88e1b7ea0050c23e7c5a16c82401b45d",
     "semantic_hash": ""
   }
 }

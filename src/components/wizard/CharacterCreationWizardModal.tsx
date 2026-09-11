@@ -41,6 +41,13 @@ import {
   MasksDramaIcon, BackpackPackIcon, InfoSealIcon,
   UserHeroIcon, GoldSealCheckIcon
 } from '@/components/dnd-icons';
+import {
+  detectWeaponCategoryPlaceholder,
+  getWeaponsByCategory,
+  getDefaultWeaponForCategory,
+  findWeaponByName,
+  type DndWeapon
+} from '@/data/dnd-weapons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface CharacterCreationWizardModalProps {
@@ -92,6 +99,10 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     });
     return initial;
   });
+  // Custom chosen weapons for generic starting equipment options: key `${choiceIdx}_${slotIdx}` -> weapon name
+  const [selectedCustomWeapons, setSelectedCustomWeapons] = useState<Record<string, string>>({});
+  // Currently open weapon dropdown key
+  const [activeWeaponPickerKey, setActiveWeaponPickerKey] = useState<string | null>(null);
 
   // ── Step 3: Background ──
   const [selectedBackgroundId, setSelectedBackgroundId] = useState<string>('soldier');
@@ -263,7 +274,20 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       selectedClass.startingEquipment.choices.forEach((choice, idx) => {
         const optIdx = selectedClassEquipmentChoices[idx] ?? 0;
         const opt = choice.options[optIdx] ?? choice.options[0];
-        if (opt) chosen.push(opt);
+        if (opt) {
+          const placeholder = detectWeaponCategoryPlaceholder(opt);
+          if (placeholder.needed) {
+            const w1 = selectedCustomWeapons[`${idx}_0`] || getDefaultWeaponForCategory(placeholder.category, 0);
+            if (placeholder.count === 2) {
+              const w2 = selectedCustomWeapons[`${idx}_1`] || getDefaultWeaponForCategory(placeholder.category, 1);
+              chosen.push(`${w1}, ${w2}`);
+            } else {
+              chosen.push(placeholder.hasShield ? `${w1} и щит` : w1);
+            }
+          } else {
+            chosen.push(opt);
+          }
+        }
       });
       if (selectedClass.startingEquipment.fixed && selectedClass.startingEquipment.fixed.length > 0) {
         chosen.push(...selectedClass.startingEquipment.fixed);
@@ -271,7 +295,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       return chosen.join(', ');
     }
     return selectedClass.equipmentDefault || '';
-  }, [selectedClass, selectedClassEquipmentChoices]);
+  }, [selectedClass, selectedClassEquipmentChoices, selectedCustomWeapons]);
 
   // Selected dragon ancestry for Draconic Sorcerer
   const selectedSorcererDragonAncestry = useMemo(() => {
@@ -456,6 +480,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       });
     }
     setSelectedClassEquipmentChoices(defaultEqChoices);
+    setSelectedCustomWeapons({});
+    setActiveWeaponPickerKey(null);
 
     // Reset spells
     setSelectedCantrips([]);
@@ -1051,28 +1077,94 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     // Equipment text (incorporates user-chosen starting equipment options)
     const equipmentText = `[Класс]: ${classEquipmentSummary || classSkillConfig.template?.equipment || selectedClass.equipmentDefault}\n[Предыстория]: ${selectedBackground.equipment}`;
 
-    // Attacks scaled with actual stat modifiers & proficiency (+2)
-    const attacks: Attack[] = (tmpl?.typicalAttacks || []).map(att => {
-      const isFinesseOrRanged = /рапира|короткий меч|кинжал|лук|арбалет|дротик|rapier|bow|crossbow|dagger/i.test(att.name);
-      const mod = isFinesseOrRanged ? Math.max(dexMod, strMod) : strMod;
-      const atkBonusNum = 2 + mod;
-      const sign = atkBonusNum >= 0 ? '+' : '';
-      
-      const diceMatch = att.damageAndType.match(/(\d+d\d+)/);
-      const dice = diceMatch ? diceMatch[1] : '1d8';
-      const typeMatch = att.damageAndType.match(/(рубящий|колющий|дробящий|slashing|piercing|bludgeoning)/i);
-      const damType = typeMatch ? typeMatch[1] : '';
-      const dmgSign = mod >= 0 ? '+' : '';
-      const dmgStr = `${dice}${dmgSign}${mod} ${damType}`.trim();
-      const usedAbility: AbilityName = isFinesseOrRanged ? (dexMod >= strMod ? 'ЛОВ' : 'СИЛ') : 'СИЛ';
+    // Extract concrete weapons from chosen starting equipment
+    const startingWeaponsList: DndWeapon[] = [];
+    if (selectedClass.startingEquipment?.choices) {
+      selectedClass.startingEquipment.choices.forEach((choice, idx) => {
+        const optIdx = selectedClassEquipmentChoices[idx] ?? 0;
+        const opt = choice.options[optIdx] ?? choice.options[0];
+        if (!opt) return;
+        const placeholder = detectWeaponCategoryPlaceholder(opt);
+        if (placeholder.needed) {
+          const w1Name = selectedCustomWeapons[`${idx}_0`] || getDefaultWeaponForCategory(placeholder.category, 0);
+          const w1 = findWeaponByName(w1Name);
+          if (w1 && !startingWeaponsList.some(item => item.name === w1.name)) {
+            startingWeaponsList.push(w1);
+          }
+          if (placeholder.count === 2) {
+            const w2Name = selectedCustomWeapons[`${idx}_1`] || getDefaultWeaponForCategory(placeholder.category, 1);
+            const w2 = findWeaponByName(w2Name);
+            if (w2 && !startingWeaponsList.some(item => item.name === w2.name)) {
+              startingWeaponsList.push(w2);
+            }
+          }
+        } else {
+          // Check if opt names a concrete weapon (e.g., "секира", "длинный лук", "легкий арбалет")
+          const matched = findWeaponByName(opt);
+          if (matched && !startingWeaponsList.some(item => item.name === matched.name)) {
+            startingWeaponsList.push(matched);
+          }
+        }
+      });
+    }
 
-      return {
-        name: att.name,
-        attackBonus: `${sign}${atkBonusNum}`,
-        damageAndType: dmgStr,
-        ability: usedAbility
-      };
-    });
+    // Also check fixed starting equipment items (e.g. "четыре метательных копья")
+    if (selectedClass.startingEquipment?.fixed) {
+      selectedClass.startingEquipment.fixed.forEach(item => {
+        const matched = findWeaponByName(item);
+        if (matched && !startingWeaponsList.some(w => w.name === matched.name)) {
+          startingWeaponsList.push(matched);
+        }
+      });
+    }
+
+    // Attacks scaled with actual stat modifiers & proficiency (+2)
+    const attacks: Attack[] = [];
+    if (startingWeaponsList.length > 0) {
+      for (const weapon of startingWeaponsList) {
+        const isFinesse = !!weapon.finesse;
+        const isRanged = weapon.category.includes('дальнобойн');
+        const isMonk = selectedClass.id === 'monk';
+        const useDex = isRanged || ((isFinesse || isMonk) && dexMod >= strMod);
+        const mod = useDex ? dexMod : strMod;
+        const usedAbility: AbilityName = useDex ? 'ЛОВ' : 'СИЛ';
+        const atkBonusNum = 2 + mod;
+        const sign = atkBonusNum >= 0 ? '+' : '';
+        const dmgSign = mod >= 0 ? '+' : '';
+        const dmgStr = weapon.damageDice === '-'
+          ? '-'
+          : `${weapon.damageDice}${dmgSign}${mod} ${weapon.damageType}`.trim();
+
+        attacks.push({
+          name: weapon.name,
+          attackBonus: `${sign}${atkBonusNum}`,
+          damageAndType: dmgStr,
+          ability: usedAbility
+        });
+      }
+    } else {
+      (tmpl?.typicalAttacks || []).forEach(att => {
+        const isFinesseOrRanged = /рапира|короткий меч|кинжал|лук|арбалет|дротик|rapier|bow|crossbow|dagger/i.test(att.name);
+        const mod = isFinesseOrRanged ? Math.max(dexMod, strMod) : strMod;
+        const atkBonusNum = 2 + mod;
+        const sign = atkBonusNum >= 0 ? '+' : '';
+        
+        const diceMatch = att.damageAndType.match(/(\d+d\d+)/);
+        const dice = diceMatch ? diceMatch[1] : '1d8';
+        const typeMatch = att.damageAndType.match(/(рубящий|колющий|дробящий|slashing|piercing|bludgeoning)/i);
+        const damType = typeMatch ? typeMatch[1] : '';
+        const dmgSign = mod >= 0 ? '+' : '';
+        const dmgStr = `${dice}${dmgSign}${mod} ${damType}`.trim();
+        const usedAbility: AbilityName = isFinesseOrRanged ? (dexMod >= strMod ? 'ЛОВ' : 'СИЛ') : 'СИЛ';
+
+        attacks.push({
+          name: att.name,
+          attackBonus: `${sign}${atkBonusNum}`,
+          damageAndType: dmgStr,
+          ability: usedAbility
+        });
+      });
+    }
 
     if (attacks.length === 0) {
       attacks.push({
@@ -2488,12 +2580,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       <span>Стартовое снаряжение класса ({selectedClass.name}):</span>
                     </h4>
                     <p className="text-[11px] text-[#8B6914]">
-                      Выберите стартовую экипировку по правилам D&D 5e (dnd.su). Выбранное оружие и доспехи автоматически влияют на КД и характеристики!
+                      Выберите стартовую экипировку по правилам D&D 5e. Выбранное оружие и доспехи автоматически влияют на КД и характеристики!
                     </p>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold self-start sm:self-auto" style={{ background: '#5C341F', color: '#FFE58F' }}>
-                    dnd.su 5e
-                  </span>
                 </div>
 
                 {selectedClass.startingEquipment?.choices && selectedClass.startingEquipment.choices.length > 0 ? (
@@ -2508,17 +2597,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {choice.options.map((opt, optIdx) => {
                               const isSelected = selectedOptIdx === optIdx;
+                              const placeholder = detectWeaponCategoryPlaceholder(opt);
+
                               return (
-                                <button
+                                <div
                                   key={optIdx}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedClassEquipmentChoices(prev => ({
-                                      ...prev,
-                                      [choiceIdx]: optIdx
-                                    }));
-                                  }}
-                                  className={`p-2.5 rounded-lg text-left transition-all cursor-pointer flex items-start gap-2 ${
+                                  className={`p-2.5 rounded-lg text-left transition-all flex flex-col gap-1.5 ${
                                     isSelected ? 'shadow-sm ring-1 ring-[#8B6914]' : 'hover:bg-[rgba(201,168,76,0.18)]'
                                   }`}
                                   style={
@@ -2527,9 +2611,125 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                       : { background: 'rgba(245, 230, 200, 0.75)', border: '1px solid rgba(139, 105, 20, 0.3)', color: '#4A2A18' }
                                   }
                                 >
-                                  <span className="text-sm mt-0.5">{isSelected ? '🔘' : '⚪'}</span>
-                                  <span className="text-xs font-medium leading-tight">{opt}</span>
-                                </button>
+                                  <div
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => {
+                                      setSelectedClassEquipmentChoices(prev => ({
+                                        ...prev,
+                                        [choiceIdx]: optIdx
+                                      }));
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setSelectedClassEquipmentChoices(prev => ({
+                                          ...prev,
+                                          [choiceIdx]: optIdx
+                                        }));
+                                      }
+                                    }}
+                                    className="flex items-start gap-2 cursor-pointer select-none"
+                                  >
+                                    <span className="text-sm mt-0.5">{isSelected ? '🔘' : '⚪'}</span>
+                                    <span className="text-xs font-medium leading-tight flex-1">{opt}</span>
+                                  </div>
+
+                                  {isSelected && placeholder.needed && (
+                                    <div className="mt-1 pt-2 border-t border-[rgba(139,105,20,0.25)] space-y-2">
+                                      {Array.from({ length: placeholder.count }).map((_, slotIdx) => {
+                                        const pickerKey = `${choiceIdx}_${slotIdx}`;
+                                        const currentWeaponName = selectedCustomWeapons[pickerKey] || getDefaultWeaponForCategory(placeholder.category, slotIdx);
+                                        const currentWeaponData = findWeaponByName(currentWeaponName);
+                                        const isOpen = activeWeaponPickerKey === pickerKey;
+                                        const availableWeapons = getWeaponsByCategory(placeholder.category);
+
+                                        return (
+                                          <div key={slotIdx} className="space-y-1">
+                                            <div className="flex items-center justify-between gap-1 text-[11px] font-bold text-[#5C341F]">
+                                              <span className="flex items-center gap-1">
+                                                <CrossedSwordsIcon size={13} />
+                                                <span>{placeholder.count === 2 ? `Оружие ${slotIdx + 1}:` : 'Конкретное оружие:'}</span>
+                                              </span>
+                                              {currentWeaponData && (
+                                                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[rgba(139,105,20,0.15)] text-[#3D2012]">
+                                                  {currentWeaponData.damageDice} {currentWeaponData.damageType}
+                                                </span>
+                                              )}
+                                            </div>
+
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                setActiveWeaponPickerKey(prev => (prev === pickerKey ? null : pickerKey));
+                                              }}
+                                              className="parchment-btn-secondary w-full py-1.5 px-2 text-xs flex items-center justify-between gap-1 rounded transition-colors cursor-pointer"
+                                              style={{ borderColor: '#C9A84C', background: 'rgba(251, 240, 220, 0.95)' }}
+                                            >
+                                              <span className="font-semibold text-[#3D2012] truncate">
+                                                ⚔️ {currentWeaponName}
+                                              </span>
+                                              <span className="text-[10px] text-[#8B6914] shrink-0 font-medium">
+                                                {isOpen ? '▲ Свернуть' : '▼ Выбрать другое'}
+                                              </span>
+                                            </button>
+
+                                            {isOpen && (
+                                              <div
+                                                className="p-1.5 rounded-lg max-h-52 overflow-y-auto space-y-1 z-10 border shadow-md"
+                                                style={{ background: '#FAF2E4', borderColor: '#C9A84C' }}
+                                              >
+                                                <div className="text-[10px] uppercase tracking-wider font-bold text-[#8B6914] px-1 pb-1 border-b border-[rgba(201,168,76,0.3)]">
+                                                  Доступно ({availableWeapons.length} видов):
+                                                </div>
+                                                <div className="space-y-0.5">
+                                                  {availableWeapons.map(w => {
+                                                    const isCurrent = w.name === currentWeaponName;
+                                                    return (
+                                                      <button
+                                                        key={w.name}
+                                                        type="button"
+                                                        onClick={() => {
+                                                          setSelectedCustomWeapons(prev => ({
+                                                            ...prev,
+                                                            [pickerKey]: w.name
+                                                          }));
+                                                          setActiveWeaponPickerKey(null);
+                                                        }}
+                                                        className={`w-full text-left p-1.5 rounded text-xs transition-colors flex items-center justify-between gap-1.5 cursor-pointer ${
+                                                          isCurrent ? 'bg-[#E8D3A2] font-bold border border-[#5C341F]' : 'hover:bg-[rgba(201,168,76,0.25)]'
+                                                        }`}
+                                                      >
+                                                        <div className="flex flex-col min-w-0">
+                                                          <span className="text-[#3D2012] truncate">{w.name}</span>
+                                                          <span className="text-[10px] text-[#8B6914] truncate">
+                                                            {w.category} • {w.properties.join(', ') || 'Стандартное'}
+                                                          </span>
+                                                        </div>
+                                                        <div className="text-right shrink-0">
+                                                          <span className="text-[10px] font-mono font-bold text-[#5C341F] bg-[rgba(245,230,200,0.85)] px-1.5 py-0.5 rounded border border-[rgba(139,105,20,0.25)]">
+                                                            {w.damageDice} {w.damageType}
+                                                          </span>
+                                                        </div>
+                                                      </button>
+                                                    );
+                                                  })}
+                                                </div>
+                                              </div>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+
+                                      {placeholder.hasShield && (
+                                        <div className="flex items-center gap-1.5 text-xs text-[#5C341F] font-semibold pt-1">
+                                          <EngravedShieldIcon size={14} />
+                                          <span>В комплекте: Щит (+2 к КД)</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               );
                             })}
                           </div>

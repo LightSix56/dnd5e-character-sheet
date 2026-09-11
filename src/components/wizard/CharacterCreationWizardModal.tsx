@@ -1064,11 +1064,13 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       const damType = typeMatch ? typeMatch[1] : '';
       const dmgSign = mod >= 0 ? '+' : '';
       const dmgStr = `${dice}${dmgSign}${mod} ${damType}`.trim();
+      const usedAbility: AbilityName = isFinesseOrRanged ? (dexMod >= strMod ? 'ЛОВ' : 'СИЛ') : 'СИЛ';
 
       return {
         name: att.name,
         attackBonus: `${sign}${atkBonusNum}`,
-        damageAndType: dmgStr
+        damageAndType: dmgStr,
+        ability: usedAbility
       };
     });
 
@@ -1076,7 +1078,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       attacks.push({
         name: 'Безоружный удар',
         attackBonus: formatModifier(strMod + 2),
-        damageAndType: `${Math.max(1, 1 + strMod)} дроб.`
+        damageAndType: `${Math.max(1, 1 + strMod)} дроб.`,
+        ability: 'СИЛ'
       });
     }
 

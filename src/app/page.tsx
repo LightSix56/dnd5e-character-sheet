@@ -11,6 +11,7 @@ import {
   Attack, SpellEntry, LevelUpEntry,
   getHitDieSize, getHitDieAverage, getHitDiceNotation, isStandardASILevel, getMilestonesAtLevel, createEmptyLevelUpEntry,
   CLASS_TEMPLATES, ClassTemplate, applyClassTemplate, applyRaceTemplate, ARMOR_AC_MAP,
+  recalculateAttacksOnStatsChange,
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -1170,6 +1171,81 @@ export default function DnDCharacterSheet() {
     } catch { /* ignore */ }
   }, [portraitUrl]);
 
+  // ── Auto-scale weapon attacks when ability modifiers or proficiency bonus change ──
+  const prevModifiersRef = React.useRef<{
+    mods: Record<AbilityName, number>;
+    prof: number;
+  }>({
+    mods: {
+      'СИЛ': getModifier(initialChar, 'СИЛ'),
+      'ЛОВ': getModifier(initialChar, 'ЛОВ'),
+      'ТЕЛ': getModifier(initialChar, 'ТЕЛ'),
+      'ИНТ': getModifier(initialChar, 'ИНТ'),
+      'МДР': getModifier(initialChar, 'МДР'),
+      'ХАР': getModifier(initialChar, 'ХАР'),
+    },
+    prof: calcProficiencyBonus(initialChar.level),
+  });
+  const prevCharIdentityRef = React.useRef<string>(`${initialChar.name}#${initialChar.className}`);
+
+  useEffect(() => {
+    const currentMods: Record<AbilityName, number> = {
+      'СИЛ': getModifier(char, 'СИЛ'),
+      'ЛОВ': getModifier(char, 'ЛОВ'),
+      'ТЕЛ': getModifier(char, 'ТЕЛ'),
+      'ИНТ': getModifier(char, 'ИНТ'),
+      'МДР': getModifier(char, 'МДР'),
+      'ХАР': getModifier(char, 'ХАР'),
+    };
+    const currentProf = calcProficiencyBonus(char.level);
+    const currentCharIdentity = `${char.name}#${char.className}`;
+
+    // If character identity changed (switched character in grid / imported), reset baseline without applying deltas
+    if (prevCharIdentityRef.current !== currentCharIdentity) {
+      prevCharIdentityRef.current = currentCharIdentity;
+      prevModifiersRef.current = { mods: currentMods, prof: currentProf };
+      return;
+    }
+
+    const prev = prevModifiersRef.current;
+    let hasDelta = currentProf !== prev.prof;
+    if (!hasDelta) {
+      for (const ab of ABILITY_NAMES) {
+        if (currentMods[ab] !== prev.mods[ab]) {
+          hasDelta = true;
+          break;
+        }
+      }
+    }
+
+    if (hasDelta) {
+      const oldMods = prev.mods;
+      const oldProf = prev.prof;
+      prevModifiersRef.current = { mods: currentMods, prof: currentProf };
+
+      if (Array.isArray(char.attacks) && char.attacks.length > 0) {
+        const updatedAttacks = recalculateAttacksOnStatsChange(
+          char.attacks,
+          oldMods,
+          currentMods,
+          oldProf,
+          currentProf,
+          char
+        );
+        const isChanged = updatedAttacks.some((atk, idx) => {
+          const oldAtk = char.attacks[idx];
+          return !oldAtk ||
+            atk.attackBonus !== oldAtk.attackBonus ||
+            atk.damageAndType !== oldAtk.damageAndType ||
+            atk.ability !== oldAtk.ability;
+        });
+        if (isChanged) {
+          setChar(c => ({ ...c, attacks: updatedAttacks }));
+        }
+      }
+    }
+  }, [char]);
+
   // ── Auto-save to cloud (debounced 400ms with instant saving status) when logged in ──
   const cloudSaveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCloudSaveRef = React.useRef<string>('');
@@ -1430,10 +1506,18 @@ export default function DnDCharacterSheet() {
     const dexMod = calcModifier(dexScore);
 
     let bestMod = strMod;
+    let usedAbility: AbilityName = 'СИЛ';
     if (weapon.category.includes('дальнобойное')) {
       bestMod = dexMod;
+      usedAbility = 'ЛОВ';
     } else if (weapon.finesse) {
-      bestMod = Math.max(strMod, dexMod);
+      if (dexMod >= strMod) {
+        bestMod = dexMod;
+        usedAbility = 'ЛОВ';
+      } else {
+        bestMod = strMod;
+        usedAbility = 'СИЛ';
+      }
     }
     const currentProf = calcProficiencyBonus(char.level);
     const bonusNum = bestMod + currentProf;
@@ -1447,6 +1531,7 @@ export default function DnDCharacterSheet() {
         name: weapon.name,
         attackBonus: bonusStr,
         damageAndType: dmgStr,
+        ability: usedAbility,
       };
       return { ...prev, attacks: a };
     });

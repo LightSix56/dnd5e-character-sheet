@@ -69,19 +69,6 @@
       "source_location": "L3"
     },
     {
-      "id": "src_components_tools_sharemodal_sharemodalprops",
-      "label": "ShareModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "sharemodalprops",
-      "source_file": "src/components/tools/ShareModal.tsx",
-      "source_location": "L14"
-    },
-    {
       "id": "scripts_fetch_class_equipment_classequipmentchoice",
       "label": "ClassEquipmentChoice",
       "_callable": true,
@@ -186,6 +173,32 @@
       "source_location": "L65"
     },
     {
+      "id": "src_components_compendium_autocompleteinput_autocompleteinputprops",
+      "label": "AutocompleteInputProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "autocompleteinputprops",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L12"
+    },
+    {
+      "id": "src_components_compendium_autocompleteinput_autocompleteitem",
+      "label": "AutocompleteItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "autocompleteitem",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L5"
+    },
+    {
       "id": "src_components_levelup_level_up_choices_divineaffinityoption",
       "label": "DivineAffinityOption",
       "_callable": true,
@@ -264,6 +277,19 @@
       "source_location": "L602"
     },
     {
+      "id": "src_data_compendium_feats_compendiumfeat",
+      "label": "CompendiumFeat",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "compendiumfeat",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L3"
+    },
+    {
       "id": "src_data_compendium_warlock_choices_geniekinddefinition",
       "label": "GenieKindDefinition",
       "_callable": true,
@@ -275,6 +301,19 @@
       "norm_label": "geniekinddefinition",
       "source_file": "src/data/compendium/warlock-choices.ts",
       "source_location": "L28"
+    },
+    {
+      "id": "src_data_compendium_warlock_choices_geniekindid",
+      "label": "GenieKindId",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "geniekindid",
+      "source_file": "src/data/compendium/warlock-choices.ts",
+      "source_location": "L26"
     },
     {
       "id": "src_data_compendium_warlock_choices_invocationdefinition",
@@ -314,19 +353,6 @@
       "norm_label": "pactboontype",
       "source_file": "src/data/compendium/warlock-choices.ts",
       "source_location": "L4"
-    },
-    {
-      "id": "src_lib_dnd_types_traititem",
-      "label": "TraitItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "traititem",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L55"
     },
     {
       "id": "src_components_compendium_raceselectormodal_raceselectormodalprops",
@@ -498,19 +524,6 @@
       "source_location": "L5"
     },
     {
-      "id": "src_data_compendium_warlock_choices_geniekindid",
-      "label": "GenieKindId",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "geniekindid",
-      "source_file": "src/data/compendium/warlock-choices.ts",
-      "source_location": "L26"
-    },
-    {
       "id": "src_lib_dnd_types_abilityname",
       "label": "AbilityName",
       "_callable": true,
@@ -521,20 +534,7 @@
       "file_type": "code",
       "norm_label": "abilityname",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_lib_dnd_types_attack",
-      "label": "Attack",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "attack",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L38"
+      "source_location": "L6"
     },
     {
       "id": "src_lib_dnd_types_classtemplate",
@@ -547,7 +547,20 @@
       "file_type": "code",
       "norm_label": "classtemplate",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L549"
+      "source_location": "L677"
+    },
+    {
+      "id": "src_lib_dnd_types_attack",
+      "label": "Attack",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "attack",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L40"
     },
     {
       "id": "src_lib_dnd_types_spellentry",
@@ -555,12 +568,12 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
+      "community": 4,
+      "community_name": "dnd-types.ts",
       "file_type": "code",
       "norm_label": "spellentry",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L49"
+      "source_location": "L53"
     },
     {
       "id": "src_lib_dnd_types_spellslotinfo",
@@ -573,7 +586,20 @@
       "file_type": "code",
       "norm_label": "spellslotinfo",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L44"
+      "source_location": "L48"
+    },
+    {
+      "id": "src_lib_dnd_types_traititem",
+      "label": "TraitItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "traititem",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L59"
     },
     {
       "id": "src_lib_pdf_export_pdfexportoptions",
@@ -641,43 +667,30 @@
       "source_location": "L254"
     },
     {
-      "id": "src_components_compendium_autocompleteinput_autocompleteinputprops",
-      "label": "AutocompleteInputProps",
+      "id": "src_components_compendium_classselectormodal_classselectormodalprops",
+      "label": "ClassSelectorModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 63,
-      "community_name": "compendium/index.ts",
+      "community_name": "ClassSelectorModal.tsx",
       "file_type": "code",
-      "norm_label": "autocompleteinputprops",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L12"
+      "norm_label": "classselectormodalprops",
+      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L8"
     },
     {
-      "id": "src_components_compendium_autocompleteinput_autocompleteitem",
-      "label": "AutocompleteItem",
+      "id": "src_data_compendium_classes_compendiumclass",
+      "label": "CompendiumClass",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 63,
-      "community_name": "compendium/index.ts",
+      "community_name": "ClassSelectorModal.tsx",
       "file_type": "code",
-      "norm_label": "autocompleteitem",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_data_compendium_feats_compendiumfeat",
-      "label": "CompendiumFeat",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "compendiumfeat",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L3"
+      "norm_label": "compendiumclass",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L22"
     },
     {
       "id": "src_app_page_leveldownmodalprops",
@@ -690,7 +703,7 @@
       "file_type": "code",
       "norm_label": "leveldownmodalprops",
       "source_file": "src/app/page.tsx",
-      "source_location": "L234"
+      "source_location": "L235"
     },
     {
       "id": "src_app_page_levelhistorymodalprops",
@@ -703,7 +716,33 @@
       "file_type": "code",
       "norm_label": "levelhistorymodalprops",
       "source_file": "src/app/page.tsx",
-      "source_location": "L301"
+      "source_location": "L302"
+    },
+    {
+      "id": "src_app_page_nonclassspellconfirmmodalprops",
+      "label": "NonClassSpellConfirmModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "nonclassspellconfirmmodalprops",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L485"
+    },
+    {
+      "id": "src_components_compendium_compendiummodals_spellmodalprops",
+      "label": "SpellModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "spellmodalprops",
+      "source_file": "src/components/compendium/CompendiumModals.tsx",
+      "source_location": "L11"
     },
     {
       "id": "src_components_levelup_levelupmodal_levelupmodalprops",
@@ -717,6 +756,19 @@
       "norm_label": "levelupmodalprops",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
       "source_location": "L79"
+    },
+    {
+      "id": "src_components_tools_sharemodal_sharemodalprops",
+      "label": "ShareModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "sharemodalprops",
+      "source_file": "src/components/tools/ShareModal.tsx",
+      "source_location": "L14"
     },
     {
       "id": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodalprops",
@@ -823,6 +875,19 @@
       "source_location": "L4"
     },
     {
+      "id": "src_data_compendium_spells_dndspell",
+      "label": "DndSpell",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "dndspell",
+      "source_file": "src/data/compendium/spells.ts",
+      "source_location": "L2"
+    },
+    {
       "id": "src_lib_dnd_types_characterdata",
       "label": "CharacterData",
       "_callable": true,
@@ -833,7 +898,7 @@
       "file_type": "code",
       "norm_label": "characterdata",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L95"
+      "source_location": "L99"
     },
     {
       "id": "src_lib_dnd_types_levelupentry",
@@ -846,7 +911,7 @@
       "file_type": "code",
       "norm_label": "levelupentry",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L63"
+      "source_location": "L67"
     },
     {
       "id": "test_level_up_divine_test_classprogressionscenario",
@@ -875,19 +940,6 @@
       "source_location": "L28"
     },
     {
-      "id": "src_components_compendium_classselectormodal_classselectormodalprops",
-      "label": "ClassSelectorModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "classselectormodalprops",
-      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
-      "source_location": "L8"
-    },
-    {
       "id": "src_components_compendium_subclassselectormodal_subclassselectormodalprops",
       "label": "SubclassSelectorModalProps",
       "_callable": true,
@@ -914,19 +966,6 @@
       "source_location": "L22"
     },
     {
-      "id": "src_data_compendium_classes_compendiumclass",
-      "label": "CompendiumClass",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "compendiumclass",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L22"
-    },
-    {
       "id": "src_data_compendium_classes_compendiumsubclass",
       "label": "CompendiumSubclass",
       "_callable": true,
@@ -950,20 +989,7 @@
       "file_type": "code",
       "norm_label": "createchoicemodalprops",
       "source_file": "src/app/page.tsx",
-      "source_location": "L888"
-    },
-    {
-      "id": "src_app_page_nonclassspellconfirmmodalprops",
-      "label": "NonClassSpellConfirmModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "nonclassspellconfirmmodalprops",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L484"
+      "source_location": "L889"
     },
     {
       "id": "src_app_page_rollresult",
@@ -976,7 +1002,7 @@
       "file_type": "code",
       "norm_label": "rollresult",
       "source_file": "src/app/page.tsx",
-      "source_location": "L81"
+      "source_location": "L82"
     },
     {
       "id": "src_app_page_templatemodalprops",
@@ -989,20 +1015,7 @@
       "file_type": "code",
       "norm_label": "templatemodalprops",
       "source_file": "src/app/page.tsx",
-      "source_location": "L568"
-    },
-    {
-      "id": "src_components_compendium_compendiummodals_spellmodalprops",
-      "label": "SpellModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "spellmodalprops",
-      "source_file": "src/components/compendium/CompendiumModals.tsx",
-      "source_location": "L11"
+      "source_location": "L569"
     },
     {
       "id": "src_components_compendium_compendiummodals_traitmodalprops",
@@ -1029,19 +1042,6 @@
       "norm_label": "weaponmodalprops",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
       "source_location": "L155"
-    },
-    {
-      "id": "src_data_compendium_spells_dndspell",
-      "label": "DndSpell",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "dndspell",
-      "source_file": "src/data/compendium/spells.ts",
-      "source_location": "L2"
     },
     {
       "id": "src_data_dnd_traits_dndtrait",
@@ -1094,18 +1094,6 @@
       "norm_label": "compendiumitem",
       "source_file": "src/data/compendium/items.ts",
       "source_location": "L3"
-    },
-    {
-      "id": "src_components_dnd_icons_quillicon",
-      "label": "QuillIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "NameGeneratorModal.tsx",
-      "file_type": "code",
-      "norm_label": "quillicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L117"
     },
     {
       "id": "src_components_tools_namegeneratormodal_namegeneratormodal",
@@ -1178,6 +1166,18 @@
       "norm_label": "pickrandom()",
       "source_file": "src/data/compendium/names-data.ts",
       "source_location": "L641"
+    },
+    {
+      "id": "src_components_dnd_icons_arcanelinkicon",
+      "label": "ArcaneLinkIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dnd-icons.tsx",
+      "file_type": "code",
+      "norm_label": "arcanelinkicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L143"
     },
     {
       "id": "src_components_dnd_icons_cameraportraiticon",
@@ -1300,6 +1300,18 @@
       "source_location": "L106"
     },
     {
+      "id": "src_components_dnd_icons_quillicon",
+      "label": "QuillIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dnd-icons.tsx",
+      "file_type": "code",
+      "norm_label": "quillicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L117"
+    },
+    {
       "id": "src_components_dnd_icons_runedkeyicon",
       "label": "RunedKeyIcon()",
       "_callable": true,
@@ -1310,6 +1322,18 @@
       "norm_label": "runedkeyicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L132"
+    },
+    {
+      "id": "src_components_dnd_icons_userheroicon",
+      "label": "UserHeroIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dnd-icons.tsx",
+      "file_type": "code",
+      "norm_label": "userheroicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L174"
     },
     {
       "id": "src_components_tools_sharemodal_sharemodal",
@@ -1552,6 +1576,30 @@
       "source_location": "L15"
     },
     {
+      "id": "src_components_compendium_autocompleteinput_autocompleteinput",
+      "label": "AutocompleteInput()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "autocompleteinput()",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_components_compendium_autocompleteinput_autocompleteinput_handleclickoutside",
+      "label": "handleClickOutside()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "handleclickoutside()",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L43"
+    },
+    {
       "id": "src_components_levelup_level_up_choices_filteravailablespells",
       "label": "filterAvailableSpells()",
       "_callable": true,
@@ -1598,6 +1646,54 @@
       "norm_label": "normalizespellname()",
       "source_file": "src/components/levelup/level-up-choices.ts",
       "source_location": "L864"
+    },
+    {
+      "id": "src_data_compendium_feats_findfeatbyname",
+      "label": "findFeatByName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "findfeatbyname()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L244"
+    },
+    {
+      "id": "src_data_compendium_feats_getfeats",
+      "label": "getFeats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "getfeats()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L253"
+    },
+    {
+      "id": "src_data_compendium_feats_gettraits",
+      "label": "getTraits()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "gettraits()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L257"
+    },
+    {
+      "id": "src_data_compendium_index_getcompendiumautocompleteitems",
+      "label": "getCompendiumAutocompleteItems()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "getcompendiumautocompleteitems()",
+      "source_file": "src/data/compendium/index.ts",
+      "source_location": "L25"
     },
     {
       "id": "src_data_compendium_warlock_choices_isinvocationavailable",
@@ -1682,18 +1778,6 @@
       "norm_label": "appendbackgroundstocompendium()",
       "source_file": "scripts/add-background-batch.ts",
       "source_location": "L5"
-    },
-    {
-      "id": "src_components_dnd_icons_userheroicon",
-      "label": "UserHeroIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "userheroicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L174"
     },
     {
       "id": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodal",
@@ -1888,6 +1972,18 @@
       "source_location": "L2451"
     },
     {
+      "id": "src_lib_dnd_types_calcmodifier",
+      "label": "calcModifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "calcmodifier()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L193"
+    },
+    {
       "id": "scripts_generate_sheet_main",
       "label": "main()",
       "_callable": true,
@@ -2029,7 +2125,19 @@
       "file_type": "code",
       "norm_label": "dndcharactersheet()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1022"
+      "source_location": "L1023"
+    },
+    {
+      "id": "src_app_page_getthirdcasterspellslots",
+      "label": "getThirdCasterSpellSlots()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "getthirdcasterspellslots()",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L221"
     },
     {
       "id": "src_app_page_normalizecharacterdata",
@@ -2041,7 +2149,7 @@
       "file_type": "code",
       "norm_label": "normalizecharacterdata()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1000"
+      "source_location": "L1001"
     },
     {
       "id": "src_app_share_code_page_normalizecharacterdata",
@@ -2080,16 +2188,16 @@
       "source_location": "L103"
     },
     {
-      "id": "src_lib_dnd_types_applyclasstemplate",
-      "label": "applyClassTemplate()",
+      "id": "src_data_dnd_weapons_findweaponbyname",
+      "label": "findWeaponByName()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
       "community_name": "dnd-types.ts",
       "file_type": "code",
-      "norm_label": "applyclasstemplate()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L938"
+      "norm_label": "findweaponbyname()",
+      "source_file": "src/data/dnd-weapons.ts",
+      "source_location": "L37"
     },
     {
       "id": "src_lib_dnd_types_applyracetemplate",
@@ -2101,19 +2209,7 @@
       "file_type": "code",
       "norm_label": "applyracetemplate()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L365"
-    },
-    {
-      "id": "src_lib_dnd_types_calcmodifier",
-      "label": "calcModifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "calcmodifier()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L189"
+      "source_location": "L493"
     },
     {
       "id": "src_lib_dnd_types_calcproficiencybonus",
@@ -2125,7 +2221,7 @@
       "file_type": "code",
       "norm_label": "calcproficiencybonus()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L198"
+      "source_location": "L202"
     },
     {
       "id": "src_lib_dnd_types_createdefaultcharacter",
@@ -2137,19 +2233,19 @@
       "file_type": "code",
       "norm_label": "createdefaultcharacter()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L476"
+      "source_location": "L604"
     },
     {
-      "id": "src_lib_dnd_types_createexamplewarrior",
-      "label": "createExampleWarrior()",
+      "id": "src_lib_dnd_types_createemptylevelupentry",
+      "label": "createEmptyLevelUpEntry()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
       "community_name": "dnd-types.ts",
       "file_type": "code",
-      "norm_label": "createexamplewarrior()",
+      "norm_label": "createemptylevelupentry()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1017"
+      "source_location": "L585"
     },
     {
       "id": "src_lib_dnd_types_createexamplewizard",
@@ -2161,7 +2257,7 @@
       "file_type": "code",
       "norm_label": "createexamplewizard()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1070"
+      "source_location": "L1198"
     },
     {
       "id": "src_lib_dnd_types_formatmodifier",
@@ -2173,7 +2269,7 @@
       "file_type": "code",
       "norm_label": "formatmodifier()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L193"
+      "source_location": "L197"
     },
     {
       "id": "src_lib_dnd_types_getac",
@@ -2185,7 +2281,7 @@
       "file_type": "code",
       "norm_label": "getac()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L331"
+      "source_location": "L459"
     },
     {
       "id": "src_lib_dnd_types_gethpmax",
@@ -2197,7 +2293,7 @@
       "file_type": "code",
       "norm_label": "gethpmax()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L417"
+      "source_location": "L545"
     },
     {
       "id": "src_lib_dnd_types_getinitiative",
@@ -2209,7 +2305,19 @@
       "file_type": "code",
       "norm_label": "getinitiative()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L293"
+      "source_location": "L297"
+    },
+    {
+      "id": "src_lib_dnd_types_getmilestonesatlevel",
+      "label": "getMilestonesAtLevel()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "getmilestonesatlevel()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L250"
     },
     {
       "id": "src_lib_dnd_types_getmodifier",
@@ -2221,7 +2329,7 @@
       "file_type": "code",
       "norm_label": "getmodifier()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L270"
+      "source_location": "L274"
     },
     {
       "id": "src_lib_dnd_types_getpassiveperception",
@@ -2233,7 +2341,7 @@
       "file_type": "code",
       "norm_label": "getpassiveperception()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L298"
+      "source_location": "L302"
     },
     {
       "id": "src_lib_dnd_types_getsavingthrow",
@@ -2245,7 +2353,7 @@
       "file_type": "code",
       "norm_label": "getsavingthrow()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L274"
+      "source_location": "L278"
     },
     {
       "id": "src_lib_dnd_types_getskillbonus",
@@ -2257,7 +2365,7 @@
       "file_type": "code",
       "norm_label": "getskillbonus()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L282"
+      "source_location": "L286"
     },
     {
       "id": "src_lib_dnd_types_getspellabilitymod",
@@ -2269,7 +2377,7 @@
       "file_type": "code",
       "norm_label": "getspellabilitymod()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L432"
+      "source_location": "L560"
     },
     {
       "id": "src_lib_dnd_types_getspellattackbonus",
@@ -2281,7 +2389,7 @@
       "file_type": "code",
       "norm_label": "getspellattackbonus()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L427"
+      "source_location": "L555"
     },
     {
       "id": "src_lib_dnd_types_getspellsavedc",
@@ -2293,7 +2401,7 @@
       "file_type": "code",
       "norm_label": "getspellsavedc()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L422"
+      "source_location": "L550"
     },
     {
       "id": "src_lib_dnd_types_gettotalscore",
@@ -2305,7 +2413,43 @@
       "file_type": "code",
       "norm_label": "gettotalscore()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L266"
+      "source_location": "L270"
+    },
+    {
+      "id": "src_lib_dnd_types_recalculateattacksonstatschange",
+      "label": "recalculateAttacksOnStatsChange()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "recalculateattacksonstatschange()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L418"
+    },
+    {
+      "id": "src_lib_dnd_types_recalculatesingleattack",
+      "label": "recalculateSingleAttack()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "recalculatesingleattack()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L362"
+    },
+    {
+      "id": "src_lib_dnd_types_resolveattackability",
+      "label": "resolveAttackAbility()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "resolveattackability()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L309"
     },
     {
       "id": "src_lib_pdf_export_createparchmentpage",
@@ -2596,6 +2740,18 @@
       "source_location": "L4"
     },
     {
+      "id": "src_lib_dnd_types_createexamplewarrior",
+      "label": "createExampleWarrior()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "@supabase/ssr",
+      "file_type": "code",
+      "norm_label": "createexamplewarrior()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1145"
+    },
+    {
       "id": "src_lib_share_store_getlocalsharestore",
       "label": "getLocalShareStore()",
       "_callable": true,
@@ -2642,18 +2798,6 @@
       "norm_label": "middleware()",
       "source_file": "src/middleware.ts",
       "source_location": "L4"
-    },
-    {
-      "id": "src_components_dnd_icons_arcanelinkicon",
-      "label": "ArcaneLinkIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "CharacterGridModal.tsx",
-      "file_type": "code",
-      "norm_label": "arcanelinkicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L143"
     },
     {
       "id": "src_components_dnd_icons_mysticcloudicon",
@@ -2776,88 +2920,40 @@
       "source_location": "L55"
     },
     {
-      "id": "src_components_compendium_autocompleteinput_autocompleteinput",
-      "label": "AutocompleteInput()",
+      "id": "src_components_compendium_classselectormodal_classselectormodal",
+      "label": "ClassSelectorModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 63,
-      "community_name": "compendium/index.ts",
+      "community_name": "ClassSelectorModal.tsx",
       "file_type": "code",
-      "norm_label": "autocompleteinput()",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L23"
+      "norm_label": "classselectormodal()",
+      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L15"
     },
     {
-      "id": "src_components_compendium_autocompleteinput_autocompleteinput_handleclickoutside",
-      "label": "handleClickOutside()",
+      "id": "src_components_dnd_icons_engravedshieldicon",
+      "label": "EngravedShieldIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 63,
-      "community_name": "compendium/index.ts",
+      "community_name": "ClassSelectorModal.tsx",
       "file_type": "code",
-      "norm_label": "handleclickoutside()",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L43"
+      "norm_label": "engravedshieldicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L164"
     },
     {
-      "id": "src_data_compendium_feats_findfeatbyname",
-      "label": "findFeatByName()",
+      "id": "src_components_dnd_icons_scrollicon",
+      "label": "ScrollIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 63,
-      "community_name": "compendium/index.ts",
+      "community_name": "ClassSelectorModal.tsx",
       "file_type": "code",
-      "norm_label": "findfeatbyname()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L244"
-    },
-    {
-      "id": "src_data_compendium_feats_getfeats",
-      "label": "getFeats()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "getfeats()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L253"
-    },
-    {
-      "id": "src_data_compendium_feats_gettraits",
-      "label": "getTraits()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "gettraits()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L257"
-    },
-    {
-      "id": "src_data_compendium_index_getcompendiumautocompleteitems",
-      "label": "getCompendiumAutocompleteItems()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "getcompendiumautocompleteitems()",
-      "source_file": "src/data/compendium/index.ts",
+      "norm_label": "scrollicon()",
+      "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L25"
-    },
-    {
-      "id": "src_data_dnd_traits_findtraitbyname",
-      "label": "findTraitByName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "findtraitbyname()",
-      "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L20"
     },
     {
       "id": "src_components_levelup_level_up_choices_getlevelupchoicesconfig",
@@ -3148,6 +3244,18 @@
       "source_location": "L8418"
     },
     {
+      "id": "src_lib_dnd_types_applyclasstemplate",
+      "label": "applyClassTemplate()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "applyclasstemplate()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1066"
+    },
+    {
       "id": "src_lib_dnd_types_gethitdicenotation",
       "label": "getHitDiceNotation()",
       "_callable": true,
@@ -3157,7 +3265,7 @@
       "file_type": "code",
       "norm_label": "gethitdicenotation()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L445"
+      "source_location": "L573"
     },
     {
       "id": "src_lib_dnd_types_gethitdieaverage",
@@ -3169,7 +3277,7 @@
       "file_type": "code",
       "norm_label": "gethitdieaverage()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L451"
+      "source_location": "L579"
     },
     {
       "id": "src_lib_dnd_types_gethitdiesize",
@@ -3181,7 +3289,7 @@
       "file_type": "code",
       "norm_label": "gethitdiesize()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L439"
+      "source_location": "L567"
     },
     {
       "id": "src_lib_dnd_types_isstandardasilevel",
@@ -3193,7 +3301,7 @@
       "file_type": "code",
       "norm_label": "isstandardasilevel()",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L209"
+      "source_location": "L213"
     },
     {
       "id": "test_level_up_arcane_test_applyleveldown",
@@ -3280,18 +3388,6 @@
       "source_location": "L11"
     },
     {
-      "id": "src_components_compendium_classselectormodal_classselectormodal",
-      "label": "ClassSelectorModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "classselectormodal()",
-      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
-      "source_location": "L15"
-    },
-    {
       "id": "src_components_compendium_subclassselectormodal_subclassselectormodal",
       "label": "SubclassSelectorModal()",
       "_callable": true,
@@ -3304,18 +3400,6 @@
       "source_location": "L15"
     },
     {
-      "id": "src_components_dnd_icons_crossedswordsicon",
-      "label": "CrossedSwordsIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "crossedswordsicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L152"
-    },
-    {
       "id": "src_components_dnd_icons_d20icon",
       "label": "D20Icon()",
       "_callable": true,
@@ -3326,18 +3410,6 @@
       "norm_label": "d20icon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L9"
-    },
-    {
-      "id": "src_components_dnd_icons_scrollicon",
-      "label": "ScrollIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "scrollicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L25"
     },
     {
       "id": "src_components_dnd_icons_sparklesdndicon",
@@ -3385,19 +3457,7 @@
       "file_type": "code",
       "norm_label": "calcbadge()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L57"
-    },
-    {
-      "id": "src_app_page_getthirdcasterspellslots",
-      "label": "getThirdCasterSpellSlots()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "getthirdcasterspellslots()",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L220"
+      "source_location": "L58"
     },
     {
       "id": "src_app_page_nonclassspellconfirmmodal",
@@ -3409,7 +3469,7 @@
       "file_type": "code",
       "norm_label": "nonclassspellconfirmmodal()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L491"
+      "source_location": "L492"
     },
     {
       "id": "src_app_page_rolld20",
@@ -3421,7 +3481,7 @@
       "file_type": "code",
       "norm_label": "rolld20()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L67"
+      "source_location": "L68"
     },
     {
       "id": "src_app_page_statinput",
@@ -3433,7 +3493,7 @@
       "file_type": "code",
       "norm_label": "statinput()",
       "source_file": "src/app/page.tsx",
-      "source_location": "L197"
+      "source_location": "L198"
     },
     {
       "id": "src_components_compendium_compendiummodals_spelldetailmodal",
@@ -3496,6 +3556,18 @@
       "source_location": "L38"
     },
     {
+      "id": "src_data_dnd_traits_findtraitbyname",
+      "label": "findTraitByName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "findtraitbyname()",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L20"
+    },
+    {
       "id": "src_hooks_useescapekey_useescapekey",
       "label": "useEscapeKey()",
       "_callable": true,
@@ -3506,30 +3578,6 @@
       "norm_label": "useescapekey()",
       "source_file": "src/hooks/useEscapeKey.ts",
       "source_location": "L3"
-    },
-    {
-      "id": "src_lib_dnd_types_createemptylevelupentry",
-      "label": "createEmptyLevelUpEntry()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "createemptylevelupentry()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L457"
-    },
-    {
-      "id": "src_lib_dnd_types_getmilestonesatlevel",
-      "label": "getMilestonesAtLevel()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "getmilestonesatlevel()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L246"
     },
     {
       "id": "src_components_compendium_itemdetailmodal_itemdetailmodal",
@@ -3556,16 +3604,16 @@
       "source_location": "L217"
     },
     {
-      "id": "src_components_dnd_icons_engravedshieldicon",
-      "label": "EngravedShieldIcon()",
+      "id": "src_components_dnd_icons_crossedswordsicon",
+      "label": "CrossedSwordsIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 69,
       "community_name": "ItemDetailModal.tsx",
       "file_type": "code",
-      "norm_label": "engravedshieldicon()",
+      "norm_label": "crossedswordsicon()",
       "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L164"
+      "source_location": "L152"
     },
     {
       "id": "src_data_compendium_items_finditembyname",
@@ -3602,18 +3650,6 @@
       "norm_label": "getweaponitems()",
       "source_file": "src/data/compendium/items.ts",
       "source_location": "L951"
-    },
-    {
-      "id": "src_data_dnd_weapons_findweaponbyname",
-      "label": "findWeaponByName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 69,
-      "community_name": "ItemDetailModal.tsx",
-      "file_type": "code",
-      "norm_label": "findweaponbyname()",
-      "source_file": "src/data/dnd-weapons.ts",
-      "source_location": "L37"
     },
     {
       "id": "package",
@@ -3737,17 +3773,6 @@
       "source_location": "L21"
     },
     {
-      "id": "ref_docx",
-      "label": "docx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "package.json",
-      "file_type": "concept",
-      "norm_label": "docx",
-      "source_file": "package.json",
-      "source_location": "L63"
-    },
-    {
       "id": "ref_embla_carousel_react",
       "label": "embla-carousel-react",
       "_origin": "ast",
@@ -3867,17 +3892,6 @@
       "norm_label": "next-themes",
       "source_file": "package.json",
       "source_location": "L72"
-    },
-    {
-      "id": "ref_pdf_lib_fontkit",
-      "label": "@pdf-lib/fontkit",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "package.json",
-      "file_type": "concept",
-      "norm_label": "@pdf-lib/fontkit",
-      "source_file": "package.json",
-      "source_location": "L24"
     },
     {
       "id": "ref_prisma",
@@ -5288,17 +5302,6 @@
       "source_location": "L91"
     },
     {
-      "id": "src_components_tools_index",
-      "label": "tools/index.ts",
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "NameGeneratorModal.tsx",
-      "file_type": "code",
-      "norm_label": "tools/index.ts",
-      "source_file": "src/components/tools/index.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_tools_namegeneratormodal",
       "label": "NameGeneratorModal.tsx",
       "_origin": "ast",
@@ -6362,6 +6365,17 @@
       "source_location": "L102"
     },
     {
+      "id": "src_components_compendium_autocompleteinput",
+      "label": "AutocompleteInput.tsx",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "autocompleteinput.tsx",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "src_components_levelup_level_up_choices",
       "label": "level-up-choices.ts",
       "_origin": "ast",
@@ -6524,6 +6538,39 @@
       "file_type": "code",
       "norm_label": "levelupmodal.tsx",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_feats",
+      "label": "feats.ts",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "feats.ts",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_feats_dnd_compendium_feats",
+      "label": "DND_COMPENDIUM_FEATS",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "dnd_compendium_feats",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_data_compendium_index",
+      "label": "compendium/index.ts",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "compendium/index.ts",
+      "source_file": "src/data/compendium/index.ts",
       "source_location": "L1"
     },
     {
@@ -7108,6 +7155,28 @@
       "norm_label": "dnd_compendium_races",
       "source_file": "src/data/compendium/races.ts",
       "source_location": "L33"
+    },
+    {
+      "id": "src_lib_dnd_types_ability_names",
+      "label": "ABILITY_NAMES",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "ability_names",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_lib_dnd_types_all_skills",
+      "label": "ALL_SKILLS",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "all_skills",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L38"
     },
     {
       "id": "test_wizard_engine_adversarial_test",
@@ -7966,37 +8035,15 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_dnd_types_ability_full",
-      "label": "ABILITY_FULL",
+      "id": "src_lib_dnd_types_armor_ac_map",
+      "label": "ARMOR_AC_MAP",
       "_origin": "ast",
       "community": 4,
       "community_name": "dnd-types.ts",
       "file_type": "code",
-      "norm_label": "ability_full",
+      "norm_label": "armor_ac_map",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L6"
-    },
-    {
-      "id": "src_lib_dnd_types_ability_names",
-      "label": "ABILITY_NAMES",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "ability_names",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L3"
-    },
-    {
-      "id": "src_lib_dnd_types_all_skills",
-      "label": "ALL_SKILLS",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "all_skills",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L36"
+      "source_location": "L430"
     },
     {
       "id": "src_lib_dnd_types_skill_map",
@@ -8007,7 +8054,7 @@
       "file_type": "code",
       "norm_label": "skill_map",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L15"
+      "source_location": "L17"
     },
     {
       "id": "src_lib_dnd_types_standard_asi_levels",
@@ -8018,7 +8065,7 @@
       "file_type": "code",
       "norm_label": "standard_asi_levels",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L207"
+      "source_location": "L211"
     },
     {
       "id": "src_lib_dnd_types_universal_milestones",
@@ -8029,7 +8076,7 @@
       "file_type": "code",
       "norm_label": "universal_milestones",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L223"
+      "source_location": "L227"
     },
     {
       "id": "src_lib_pdf_export",
@@ -8065,6 +8112,17 @@
       "source_location": "L1"
     },
     {
+      "id": "test_attack_auto_scaling_test",
+      "label": "attack-auto-scaling.test.ts",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "attack-auto-scaling.test.ts",
+      "source_file": "test/attack-auto-scaling.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "test_export_pdf_test",
       "label": "export-pdf.test.ts",
       "_origin": "ast",
@@ -8087,6 +8145,17 @@
       "source_location": "L1"
     },
     {
+      "id": "ref_docx",
+      "label": "docx",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "concept",
+      "norm_label": "docx",
+      "source_file": "package.json",
+      "source_location": "L63"
+    },
+    {
       "id": "ref_pdf_lib",
       "label": "pdf-lib",
       "_origin": "ast",
@@ -8096,6 +8165,17 @@
       "norm_label": "pdf-lib",
       "source_file": "package.json",
       "source_location": "L73"
+    },
+    {
+      "id": "ref_pdf_lib_fontkit",
+      "label": "@pdf-lib/fontkit",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "concept",
+      "norm_label": "@pdf-lib/fontkit",
+      "source_file": "package.json",
+      "source_location": "L24"
     },
     {
       "id": "agents_agents_adversarial_fixer_agent",
@@ -9453,70 +9533,15 @@
       "source_location": "L31"
     },
     {
-      "id": "src_components_compendium_autocompleteinput",
-      "label": "AutocompleteInput.tsx",
+      "id": "src_components_compendium_classselectormodal",
+      "label": "ClassSelectorModal.tsx",
       "_origin": "ast",
       "community": 63,
-      "community_name": "compendium/index.ts",
+      "community_name": "ClassSelectorModal.tsx",
       "file_type": "code",
-      "norm_label": "autocompleteinput.tsx",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "norm_label": "classselectormodal.tsx",
+      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
       "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_feats",
-      "label": "feats.ts",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "feats.ts",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_feats_dnd_compendium_feats",
-      "label": "DND_COMPENDIUM_FEATS",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "dnd_compendium_feats",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_data_compendium_index",
-      "label": "compendium/index.ts",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "compendium/index.ts",
-      "source_file": "src/data/compendium/index.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_dnd_traits",
-      "label": "dnd-traits.ts",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "dnd-traits.ts",
-      "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_dnd_traits_dnd_traits",
-      "label": "DND_TRAITS",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "compendium/index.ts",
-      "file_type": "code",
-      "norm_label": "dnd_traits",
-      "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L12"
     },
     {
       "id": "src_components_levelup_levelupmodal_levelupmodal",
@@ -9846,7 +9871,7 @@
       "file_type": "code",
       "norm_label": "class_templates",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L580"
+      "source_location": "L708"
     },
     {
       "id": "test_artificer_subclasses_test",
@@ -10245,17 +10270,6 @@
       "source_location": "L9"
     },
     {
-      "id": "src_components_compendium_classselectormodal",
-      "label": "ClassSelectorModal.tsx",
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "classselectormodal.tsx",
-      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_compendium_subclassselectormodal",
       "label": "SubclassSelectorModal.tsx",
       "_origin": "ast",
@@ -10264,6 +10278,17 @@
       "file_type": "code",
       "norm_label": "subclassselectormodal.tsx",
       "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_tools_index",
+      "label": "tools/index.ts",
+      "_origin": "ast",
+      "community": 67,
+      "community_name": "StatsCalculatorModal.tsx",
+      "file_type": "code",
+      "norm_label": "tools/index.ts",
+      "source_file": "src/components/tools/index.ts",
       "source_location": "L1"
     },
     {
@@ -10311,6 +10336,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_lib_dnd_types_ability_full",
+      "label": "ABILITY_FULL",
+      "_origin": "ast",
+      "community": 67,
+      "community_name": "StatsCalculatorModal.tsx",
+      "file_type": "code",
+      "norm_label": "ability_full",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L8"
+    },
+    {
       "id": "ref_react",
       "label": "react",
       "_origin": "ast",
@@ -10341,7 +10377,7 @@
       "file_type": "code",
       "norm_label": "authmodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L729"
+      "source_location": "L730"
     },
     {
       "id": "src_app_page_createchoicemodal",
@@ -10352,7 +10388,7 @@
       "file_type": "code",
       "norm_label": "createchoicemodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L894"
+      "source_location": "L895"
     },
     {
       "id": "src_app_page_leveldownmodal",
@@ -10363,7 +10399,7 @@
       "file_type": "code",
       "norm_label": "leveldownmodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L240"
+      "source_location": "L241"
     },
     {
       "id": "src_app_page_levelhistorymodal",
@@ -10374,7 +10410,7 @@
       "file_type": "code",
       "norm_label": "levelhistorymodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L308"
+      "source_location": "L309"
     },
     {
       "id": "src_app_page_resetmodal",
@@ -10385,7 +10421,7 @@
       "file_type": "code",
       "norm_label": "resetmodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L871"
+      "source_location": "L872"
     },
     {
       "id": "src_app_page_rollbadge",
@@ -10396,7 +10432,7 @@
       "file_type": "code",
       "norm_label": "rollbadge",
       "source_file": "src/app/page.tsx",
-      "source_location": "L166"
+      "source_location": "L167"
     },
     {
       "id": "src_app_page_rollresultpopup",
@@ -10407,7 +10443,7 @@
       "file_type": "code",
       "norm_label": "rollresultpopup",
       "source_file": "src/app/page.tsx",
-      "source_location": "L88"
+      "source_location": "L89"
     },
     {
       "id": "src_app_page_signoutmodal",
@@ -10418,7 +10454,7 @@
       "file_type": "code",
       "norm_label": "signoutmodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L812"
+      "source_location": "L813"
     },
     {
       "id": "src_app_page_templatemodal",
@@ -10429,7 +10465,7 @@
       "file_type": "code",
       "norm_label": "templatemodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L573"
+      "source_location": "L574"
     },
     {
       "id": "src_components_compendium_compendiummodals",
@@ -10443,15 +10479,26 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_dnd_types_armor_ac_map",
-      "label": "ARMOR_AC_MAP",
+      "id": "src_data_dnd_traits",
+      "label": "dnd-traits.ts",
       "_origin": "ast",
       "community": 68,
       "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "armor_ac_map",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L302"
+      "norm_label": "dnd-traits.ts",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_dnd_traits_dnd_traits",
+      "label": "DND_TRAITS",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "dnd_traits",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L12"
     },
     {
       "id": "src_components_compendium_itemdetailmodal",
@@ -11687,7 +11734,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L738",
+      "source_location": "L739",
       "weight": 1.0
     },
     {
@@ -11699,7 +11746,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L899",
+      "source_location": "L900",
       "weight": 1.0
     },
     {
@@ -11711,7 +11758,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1025",
+      "source_location": "L1026",
       "weight": 1.0
     },
     {
@@ -11723,7 +11770,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1032",
+      "source_location": "L1033",
       "weight": 1.0
     },
     {
@@ -11735,7 +11782,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1079",
+      "source_location": "L1080",
       "weight": 1.0
     },
     {
@@ -11747,7 +11794,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1083",
+      "source_location": "L1084",
       "weight": 1.0
     },
     {
@@ -11759,139 +11806,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1157",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_lib_dnd_types_calcmodifier",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1429",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_lib_dnd_types_calcproficiencybonus",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1438",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_lib_dnd_types_formatmodifier",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1440",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_data_dnd_traits_findtraitbyname",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1462",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_data_dnd_spells_findspellbyname",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1480",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_lib_dnd_types_gettotalscore",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1672",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_lib_dnd_types_gethitdiesize",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1704",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_lib_dnd_types_gethitdicenotation",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1705",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_data_compendium_class_progression_normalizeclassname",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1730",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_components_wizard_wizard_helpers_calculatewizardac",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1821",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page_dndcharactersheet",
-      "target": "src_lib_dnd_types_gethitdieaverage",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1873",
+      "source_location": "L1158",
       "weight": 1.0
     },
     {
@@ -11903,7 +11818,151 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1873",
+      "source_location": "L1180",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_lib_dnd_types_calcproficiencybonus",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1187",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_lib_dnd_types_recalculateattacksonstatschange",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1227",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_lib_dnd_types_calcmodifier",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1505",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_lib_dnd_types_formatmodifier",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1524",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_data_dnd_traits_findtraitbyname",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1547",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_data_dnd_spells_findspellbyname",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1565",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_lib_dnd_types_gettotalscore",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1757",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_lib_dnd_types_gethitdiesize",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1789",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_lib_dnd_types_gethitdicenotation",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1790",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_data_compendium_class_progression_normalizeclassname",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1815",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_components_wizard_wizard_helpers_calculatewizardac",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1906",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_dndcharactersheet",
+      "target": "src_lib_dnd_types_gethitdieaverage",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1958",
       "weight": 1.0
     },
     {
@@ -11915,7 +11974,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1921",
+      "source_location": "L2006",
       "weight": 1.0
     },
     {
@@ -11927,7 +11986,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1921",
+      "source_location": "L2006",
       "weight": 1.0
     },
     {
@@ -11939,7 +11998,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2110",
+      "source_location": "L2195",
       "weight": 1.0
     },
     {
@@ -11951,7 +12010,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2110",
+      "source_location": "L2195",
       "weight": 1.0
     },
     {
@@ -11963,7 +12022,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2126",
+      "source_location": "L2211",
       "weight": 1.0
     },
     {
@@ -11975,7 +12034,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2161",
+      "source_location": "L2246",
       "weight": 1.0
     },
     {
@@ -11987,7 +12046,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L2172",
+      "source_location": "L2257",
       "weight": 1.0
     },
     {
@@ -11999,7 +12058,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3332",
+      "source_location": "L3417",
       "weight": 1.0
     },
     {
@@ -12011,7 +12070,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3440",
+      "source_location": "L3525",
       "weight": 1.0
     },
     {
@@ -12023,7 +12082,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3441",
+      "source_location": "L3526",
       "weight": 1.0
     },
     {
@@ -12035,7 +12094,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3452",
+      "source_location": "L3537",
       "weight": 1.0
     },
     {
@@ -12047,7 +12106,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3507",
+      "source_location": "L3592",
       "weight": 1.0
     },
     {
@@ -12059,7 +12118,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3544",
+      "source_location": "L3629",
       "weight": 1.0
     },
     {
@@ -12071,7 +12130,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3586",
+      "source_location": "L3671",
       "weight": 1.0
     },
     {
@@ -12083,7 +12142,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3880",
+      "source_location": "L3965",
       "weight": 1.0
     },
     {
@@ -12095,7 +12154,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3881",
+      "source_location": "L3966",
       "weight": 1.0
     },
     {
@@ -12107,7 +12166,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L3882",
+      "source_location": "L3967",
       "weight": 1.0
     },
     {
@@ -12119,7 +12178,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L241",
+      "source_location": "L242",
       "weight": 1.0
     },
     {
@@ -12131,7 +12190,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L309",
+      "source_location": "L310",
       "weight": 1.0
     },
     {
@@ -12143,7 +12202,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L492",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
@@ -12155,7 +12214,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1001",
+      "source_location": "L1002",
       "weight": 1.0
     },
     {
@@ -12167,7 +12226,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L872",
+      "source_location": "L873",
       "weight": 1.0
     },
     {
@@ -12179,7 +12238,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L174",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -12191,7 +12250,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L98",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -12203,7 +12262,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L818",
+      "source_location": "L819",
       "weight": 1.0
     },
     {
@@ -12215,7 +12274,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L574",
+      "source_location": "L575",
       "weight": 1.0
     },
     {
@@ -12227,7 +12286,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L668",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -12239,7 +12298,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/app/page.tsx",
-      "source_location": "L668",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -13019,7 +13078,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L1078",
+      "source_location": "L1080",
       "weight": 1.0
     },
     {
@@ -13031,7 +13090,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L1087",
+      "source_location": "L1090",
       "weight": 1.0
     },
     {
@@ -13547,7 +13606,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L940",
+      "source_location": "L1068",
       "weight": 1.0
     },
     {
@@ -13559,7 +13618,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L982",
+      "source_location": "L1110",
       "weight": 1.0
     },
     {
@@ -13571,7 +13630,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1018",
+      "source_location": "L1146",
       "weight": 1.0
     },
     {
@@ -13583,7 +13642,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1071",
+      "source_location": "L1199",
       "weight": 1.0
     },
     {
@@ -13595,7 +13654,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L334",
+      "source_location": "L462",
       "weight": 1.0
     },
     {
@@ -13607,7 +13666,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L452",
+      "source_location": "L580",
       "weight": 1.0
     },
     {
@@ -13619,7 +13678,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L295",
+      "source_location": "L299",
       "weight": 1.0
     },
     {
@@ -13631,7 +13690,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L271",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -13643,7 +13702,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L271",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -13655,7 +13714,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L299",
+      "source_location": "L303",
       "weight": 1.0
     },
     {
@@ -13667,7 +13726,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L275",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -13679,7 +13738,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L277",
+      "source_location": "L281",
       "weight": 1.0
     },
     {
@@ -13691,7 +13750,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L284",
+      "source_location": "L288",
       "weight": 1.0
     },
     {
@@ -13703,7 +13762,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L286",
+      "source_location": "L290",
       "weight": 1.0
     },
     {
@@ -13715,7 +13774,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L434",
+      "source_location": "L562",
       "weight": 1.0
     },
     {
@@ -13727,7 +13786,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L429",
+      "source_location": "L557",
       "weight": 1.0
     },
     {
@@ -13739,7 +13798,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L429",
+      "source_location": "L557",
       "weight": 1.0
     },
     {
@@ -13751,7 +13810,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L424",
+      "source_location": "L552",
       "weight": 1.0
     },
     {
@@ -13763,7 +13822,67 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L424",
+      "source_location": "L552",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types_recalculateattacksonstatschange",
+      "target": "src_lib_dnd_types_recalculatesingleattack",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L427",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types_recalculatesingleattack",
+      "target": "src_lib_dnd_types_resolveattackability",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L370",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types_recalculatesingleattack",
+      "target": "src_lib_dnd_types_formatmodifier",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L384",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types_resolveattackability",
+      "target": "src_lib_dnd_types_calcmodifier",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L319",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types_resolveattackability",
+      "target": "src_data_dnd_weapons_findweaponbyname",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L322",
       "weight": 1.0
     },
     {
@@ -14387,7 +14506,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/app/page.tsx",
-      "source_location": "L235",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -14399,7 +14518,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/app/page.tsx",
-      "source_location": "L302",
+      "source_location": "L303",
       "weight": 1.0
     },
     {
@@ -14411,7 +14530,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/app/page.tsx",
-      "source_location": "L485",
+      "source_location": "L486",
       "weight": 1.0
     },
     {
@@ -14423,7 +14542,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/app/page.tsx",
-      "source_location": "L486",
+      "source_location": "L487",
       "weight": 1.0
     },
     {
@@ -16103,7 +16222,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -16115,7 +16234,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -16127,7 +16246,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -16139,7 +16258,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -16151,7 +16270,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -16163,7 +16282,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -16175,7 +16294,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -16187,7 +16306,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -16199,7 +16318,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -16211,7 +16330,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -16223,7 +16342,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -16235,7 +16354,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -16247,7 +16366,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -16259,7 +16378,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -16271,7 +16390,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -16283,7 +16402,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -16295,7 +16414,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -16307,7 +16426,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -16319,7 +16438,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -16331,7 +16450,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -16343,7 +16462,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -16355,7 +16474,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -16367,7 +16486,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -16379,7 +16498,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -16391,7 +16510,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -16403,7 +16522,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -16415,7 +16534,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -16427,7 +16546,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -16439,7 +16558,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -16451,7 +16570,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -16463,7 +16582,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -16475,7 +16594,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -16487,7 +16606,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -16499,7 +16618,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -16511,7 +16630,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -16523,7 +16642,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -16535,7 +16654,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -16547,7 +16666,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -16559,7 +16678,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -16571,7 +16690,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -16583,7 +16702,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -16595,7 +16714,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -16607,7 +16726,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L44",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -16619,7 +16738,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -16631,7 +16750,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16643,7 +16762,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16655,7 +16774,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16667,7 +16786,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16679,7 +16798,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16691,7 +16810,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16703,7 +16822,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16715,7 +16834,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16727,7 +16846,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16739,7 +16858,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16751,7 +16870,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16763,7 +16882,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16775,7 +16894,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16787,7 +16906,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16799,7 +16918,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16811,7 +16930,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16823,7 +16942,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16835,7 +16954,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16847,7 +16966,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16859,7 +16978,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16871,7 +16990,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -16883,7 +17002,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -17297,6 +17416,18 @@
     {
       "source": "src_app_page",
       "target": "src_lib_dnd_types_levelupentry",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page",
+      "target": "src_lib_dnd_types_recalculateattacksonstatschange",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20475,6 +20606,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_dnd_types",
+      "target": "src_data_dnd_weapons_findweaponbyname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_pdf_export",
       "target": "src_lib_dnd_types_calcproficiencybonus",
       "relation": "imports",
@@ -20628,6 +20771,78 @@
       "context": "import",
       "source_file": "test/artificer-subclasses.test.ts",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "test_attack_auto_scaling_test",
+      "target": "src_lib_dnd_types_abilityname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/attack-auto-scaling.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_attack_auto_scaling_test",
+      "target": "src_lib_dnd_types_attack",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/attack-auto-scaling.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_attack_auto_scaling_test",
+      "target": "src_lib_dnd_types_formatmodifier",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/attack-auto-scaling.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_attack_auto_scaling_test",
+      "target": "src_lib_dnd_types_recalculateattacksonstatschange",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/attack-auto-scaling.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_attack_auto_scaling_test",
+      "target": "src_lib_dnd_types_recalculatesingleattack",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/attack-auto-scaling.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_attack_auto_scaling_test",
+      "target": "src_lib_dnd_types_resolveattackability",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/attack-auto-scaling.test.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -23713,7 +23928,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -23725,7 +23940,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "type_only": true,
       "weight": 1.0
     },
@@ -23738,7 +23953,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -23750,7 +23965,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -23762,7 +23977,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -23774,7 +23989,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -23786,7 +24001,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -23798,7 +24013,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -23810,7 +24025,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -23822,7 +24037,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -23834,7 +24049,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -23846,7 +24061,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -23858,24 +24073,12 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L27",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page",
-      "target": "src_components_compendium_raceselectormodal",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/app/page.tsx",
       "source_location": "L28",
       "weight": 1.0
     },
     {
       "source": "src_app_page",
-      "target": "src_components_compendium_subclassselectormodal",
+      "target": "src_components_compendium_raceselectormodal",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23899,7 +24102,7 @@
     },
     {
       "source": "src_app_page",
-      "target": "src_components_compendium_itemdetailmodal",
+      "target": "src_components_compendium_subclassselectormodal",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23911,7 +24114,7 @@
     },
     {
       "source": "src_app_page",
-      "target": "src_components_levelup_levelupmodal",
+      "target": "src_components_compendium_itemdetailmodal",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23923,7 +24126,7 @@
     },
     {
       "source": "src_app_page",
-      "target": "src_hooks_useescapekey",
+      "target": "src_components_levelup_levelupmodal",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23935,7 +24138,7 @@
     },
     {
       "source": "src_app_page",
-      "target": "src_components_wizard_wizard_helpers",
+      "target": "src_hooks_useescapekey",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23947,7 +24150,7 @@
     },
     {
       "source": "src_app_page",
-      "target": "src_data_compendium_items",
+      "target": "src_components_wizard_wizard_helpers",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23959,7 +24162,7 @@
     },
     {
       "source": "src_app_page",
-      "target": "src_data_compendium_races",
+      "target": "src_data_compendium_items",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23967,6 +24170,18 @@
       "context": "import",
       "source_file": "src/app/page.tsx",
       "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page",
+      "target": "src_data_compendium_races",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L36",
       "type_only": true,
       "weight": 1.0
     },
@@ -23979,7 +24194,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -23991,7 +24206,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -24015,7 +24230,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L44",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -24027,7 +24242,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L45",
+      "source_location": "L46",
       "type_only": true,
       "weight": 1.0
     },
@@ -24040,7 +24255,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/app/page.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -25050,6 +25265,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_lib_dnd_types",
+      "target": "src_data_dnd_weapons",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_lib_pdf_export",
       "target": "ref_pdf_lib",
       "relation": "imports_from",
@@ -25204,6 +25431,18 @@
       "context": "import",
       "source_file": "test/artificer-subclasses.test.ts",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "test_attack_auto_scaling_test",
+      "target": "src_lib_dnd_types",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/attack-auto-scaling.test.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -29962,7 +30201,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1000",
+      "source_location": "L1001",
       "weight": 1.0
     },
     {
@@ -29973,7 +30212,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L1022",
+      "source_location": "L1023",
       "weight": 1.0
     },
     {
@@ -29984,7 +30223,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L166",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -29995,7 +30234,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L197",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -30006,7 +30245,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L220",
+      "source_location": "L221",
       "weight": 1.0
     },
     {
@@ -30017,7 +30256,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L234",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -30028,7 +30267,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L240",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -30039,7 +30278,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L301",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -30050,7 +30289,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L308",
+      "source_location": "L309",
       "weight": 1.0
     },
     {
@@ -30061,7 +30300,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L484",
+      "source_location": "L485",
       "weight": 1.0
     },
     {
@@ -30072,7 +30311,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L491",
+      "source_location": "L492",
       "weight": 1.0
     },
     {
@@ -30083,18 +30322,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L568",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page",
-      "target": "src_app_page_calcbadge",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/app/page.tsx",
-      "source_location": "L57",
+      "source_location": "L569",
       "weight": 1.0
     },
     {
@@ -30105,7 +30333,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L573",
+      "source_location": "L574",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page",
+      "target": "src_app_page_calcbadge",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/page.tsx",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -30116,7 +30355,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L67",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -30127,18 +30366,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L729",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page",
-      "target": "src_app_page_rollresult",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/app/page.tsx",
-      "source_location": "L81",
+      "source_location": "L730",
       "weight": 1.0
     },
     {
@@ -30149,7 +30377,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L812",
+      "source_location": "L813",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page",
+      "target": "src_app_page_rollresult",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/page.tsx",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -30160,18 +30399,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L871",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_page",
-      "target": "src_app_page_rollresultpopup",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/app/page.tsx",
-      "source_location": "L88",
+      "source_location": "L872",
       "weight": 1.0
     },
     {
@@ -30182,7 +30410,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L888",
+      "source_location": "L889",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page",
+      "target": "src_app_page_rollresultpopup",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/page.tsx",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -30193,7 +30432,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/page.tsx",
-      "source_location": "L894",
+      "source_location": "L895",
       "weight": 1.0
     },
     {
@@ -32673,13 +32912,24 @@
     },
     {
       "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_applyclasstemplate",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1066",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
       "target": "src_lib_dnd_types_createexamplewarrior",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1017",
+      "source_location": "L1145",
       "weight": 1.0
     },
     {
@@ -32690,7 +32940,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1070",
+      "source_location": "L1198",
       "weight": 1.0
     },
     {
@@ -32701,7 +32951,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L15",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -32712,7 +32962,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L189",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -32723,7 +32973,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L193",
+      "source_location": "L197",
       "weight": 1.0
     },
     {
@@ -32734,7 +32984,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L198",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -32745,7 +32995,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L207",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -32756,7 +33006,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L209",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -32767,7 +33017,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L223",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -32778,7 +33028,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L246",
+      "source_location": "L250",
       "weight": 1.0
     },
     {
@@ -32789,7 +33039,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L266",
+      "source_location": "L270",
       "weight": 1.0
     },
     {
@@ -32800,7 +33050,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L270",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -32811,7 +33061,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L274",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -32822,7 +33072,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L282",
+      "source_location": "L286",
       "weight": 1.0
     },
     {
@@ -32833,7 +33083,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L293",
+      "source_location": "L297",
       "weight": 1.0
     },
     {
@@ -32844,40 +33094,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L298",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_ability_names",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_armor_ac_map",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
       "source_location": "L302",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_getac",
+      "target": "src_lib_dnd_types_resolveattackability",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L331",
+      "source_location": "L309",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_recalculatesingleattack",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L362",
       "weight": 1.0
     },
     {
@@ -32888,18 +33127,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L36",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_applyracetemplate",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L365",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -32910,73 +33138,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L38",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_abilityname",
+      "target": "src_lib_dnd_types_recalculateattacksonstatschange",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L4",
+      "source_location": "L418",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_gethpmax",
+      "target": "src_lib_dnd_types_armor_ac_map",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L417",
+      "source_location": "L430",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_getspellsavedc",
+      "target": "src_lib_dnd_types_getac",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L422",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_getspellattackbonus",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L427",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_getspellabilitymod",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L432",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_gethitdiesize",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L439",
+      "source_location": "L459",
       "weight": 1.0
     },
     {
@@ -32987,51 +33182,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L44",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_gethitdicenotation",
+      "target": "src_lib_dnd_types_applyracetemplate",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L445",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_gethitdieaverage",
+      "target": "src_lib_dnd_types_ability_names",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L451",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_createemptylevelupentry",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L457",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_createdefaultcharacter",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L476",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -33042,18 +33215,95 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L49",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_classtemplate",
+      "target": "src_lib_dnd_types_gethpmax",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L549",
+      "source_location": "L545",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_getspellsavedc",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L550",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_getspellattackbonus",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L555",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_getspellabilitymod",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L560",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_gethitdiesize",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L567",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_gethitdicenotation",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L573",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_gethitdieaverage",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L579",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_createemptylevelupentry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L585",
       "weight": 1.0
     },
     {
@@ -33064,23 +33314,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L55",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_class_templates",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L580",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_ability_full",
+      "target": "src_lib_dnd_types_abilityname",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -33091,24 +33330,57 @@
     },
     {
       "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_createdefaultcharacter",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L604",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
       "target": "src_lib_dnd_types_levelupentry",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L63",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
       "source": "src_lib_dnd_types",
-      "target": "src_lib_dnd_types_applyclasstemplate",
+      "target": "src_lib_dnd_types_classtemplate",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L938",
+      "source_location": "L677",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_class_templates",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L708",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_dnd_types",
+      "target": "src_lib_dnd_types_ability_full",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -33119,7 +33391,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L95",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -34084,5 +34356,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3e25fea362691d7b0cfb8944ce85c3b7666707dc"
+  "built_at_commit": "a292f1d6b69b79da8e704ba2a0b2528bd156f00e"
 }

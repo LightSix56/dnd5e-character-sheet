@@ -1,5 +1,7 @@
 // D&D 5e Character Sheet — Types, Calculation Engine & Universal Level-Up System
 
+import { findWeaponByName } from '@/data/dnd-weapons';
+
 export const ABILITY_NAMES = ['СИЛ', 'ЛОВ', 'ТЕЛ', 'ИНТ', 'МДР', 'ХАР'] as const;
 export type AbilityName = typeof ABILITY_NAMES[number];
 
@@ -39,6 +41,8 @@ export interface Attack {
   name: string;
   attackBonus: string;
   damageAndType: string;
+  ability?: AbilityName;
+  isProficient?: boolean;
 }
 
 export interface SpellSlotInfo {
@@ -297,6 +301,130 @@ export function getInitiative(char: CharacterData): number {
 
 export function getPassivePerception(char: CharacterData): number {
   return 10 + getSkillBonus(char, 'Внимательность');
+}
+
+/**
+ * Resolves the primary ability (СИЛ, ЛОВ, etc.) governing an attack roll and damage.
+ */
+export function resolveAttackAbility(
+  atk: Attack,
+  char?: Partial<Pick<CharacterData, 'abilityScores' | 'abilityBonuses' | 'asiBonuses' | 'level'>>
+): AbilityName {
+  if (atk.ability && (ABILITY_NAMES as readonly string[]).includes(atk.ability)) {
+    return atk.ability;
+  }
+
+  const strScore = char ? ((char.abilityScores?.['СИЛ'] || 10) + (char.abilityBonuses?.['СИЛ'] || 0) + (char.asiBonuses?.['СИЛ'] || 0)) : 10;
+  const dexScore = char ? ((char.abilityScores?.['ЛОВ'] || 10) + (char.abilityBonuses?.['ЛОВ'] || 0) + (char.asiBonuses?.['ЛОВ'] || 0)) : 10;
+  const strMod = calcModifier(strScore);
+  const dexMod = calcModifier(dexScore);
+
+  const weapon = findWeaponByName(atk.name);
+  if (weapon) {
+    if (weapon.category.includes('дальнобойное')) {
+      return 'ЛОВ';
+    }
+    if (weapon.finesse) {
+      return dexMod >= strMod ? 'ЛОВ' : 'СИЛ';
+    }
+    return 'СИЛ';
+  }
+
+  // Fallback heuristics based on common weapon keywords in Russian and English
+  const cleanName = (atk.name || '').toLowerCase();
+  if (/(дальнобойн|лук|арбалет|дротик|пращ|трубк|blowgun|bow|crossbow|dart|sling)/i.test(cleanName)) {
+    return 'ЛОВ';
+  }
+  if (/(рапир|кинжал|короткий меч|с[кк]имитар|кнут|rapier|dagger|shortsword|scimitar|whip)/i.test(cleanName)) {
+    return dexMod >= strMod ? 'ЛОВ' : 'СИЛ';
+  }
+  if (/(меч|топор|молот|булав|копь|палиц|алебард|глеф|пик|дубинк|кирка|трезубец|sword|axe|hammer|mace|spear|halberd|glaive|pike|club)/i.test(cleanName)) {
+    return 'СИЛ';
+  }
+
+  // If damage string matches dexMod or strMod specifically
+  const dmgMatch = (atk.damageAndType || '').match(/[+-]\d+/);
+  if (dmgMatch) {
+    const val = parseInt(dmgMatch[0], 10);
+    if (val === dexMod && val !== strMod) return 'ЛОВ';
+    if (val === strMod && val !== dexMod) return 'СИЛ';
+  }
+
+  return 'СИЛ';
+}
+
+/**
+ * Recalculates attack bonus and damage bonus for a single attack based on stat/BM delta.
+ * Follows D&D 5e rules:
+ * - Attack Roll = Mod + BM + MagicBonus
+ * - Damage Roll = Dice + Mod + MagicBonus (Proficiency bonus NEVER applies to weapon damage)
+ */
+export function recalculateSingleAttack(
+  atk: Attack,
+  oldMods: Record<AbilityName, number>,
+  newMods: Record<AbilityName, number>,
+  oldProf: number,
+  newProf: number,
+  char?: Partial<Pick<CharacterData, 'abilityScores' | 'abilityBonuses' | 'asiBonuses' | 'level'>>
+): Attack {
+  const ability = atk.ability || resolveAttackAbility(atk, char);
+  const deltaMod = (newMods[ability] ?? 0) - (oldMods[ability] ?? 0);
+  const deltaProf = newProf - oldProf;
+
+  if (deltaMod === 0 && deltaProf === 0) {
+    return { ...atk, ability };
+  }
+
+  let newAttackBonus = atk.attackBonus;
+  if (atk.attackBonus && atk.attackBonus.trim()) {
+    const bonusMatch = atk.attackBonus.trim().match(/^([+-]?\d+)$/);
+    if (bonusMatch) {
+      const currentBonus = parseInt(bonusMatch[1], 10);
+      const updatedBonus = currentBonus + deltaMod + deltaProf;
+      newAttackBonus = formatModifier(updatedBonus);
+    }
+  }
+
+  let newDamage = atk.damageAndType;
+  if (deltaMod !== 0 && atk.damageAndType && atk.damageAndType.trim()) {
+    const hasExistingMod = /[+-]\d+/.test(atk.damageAndType);
+    if (hasExistingMod) {
+      newDamage = atk.damageAndType.replace(/([+-])(\d+)/g, (_, sign, digits) => {
+        const currentMod = parseInt(`${sign}${digits}`, 10);
+        const nextMod = currentMod + deltaMod;
+        if (nextMod === 0) return '';
+        return nextMod > 0 ? `+${nextMod}` : `${nextMod}`;
+      });
+      newDamage = newDamage.replace(/\s{2,}/g, ' ').trim();
+    } else {
+      if (deltaMod !== 0) {
+        const modStr = deltaMod > 0 ? `+${deltaMod}` : `${deltaMod}`;
+        newDamage = atk.damageAndType.replace(/(\d+d\d+)/g, `$1${modStr}`);
+      }
+    }
+  }
+
+  return {
+    ...atk,
+    ability,
+    attackBonus: newAttackBonus,
+    damageAndType: newDamage
+  };
+}
+
+/**
+ * Batch recalculates all attacks when ability modifiers or proficiency bonus change.
+ */
+export function recalculateAttacksOnStatsChange(
+  attacks: Attack[],
+  oldMods: Record<AbilityName, number>,
+  newMods: Record<AbilityName, number>,
+  oldProf: number,
+  newProf: number,
+  char?: Partial<Pick<CharacterData, 'abilityScores' | 'abilityBonuses' | 'asiBonuses' | 'level'>>
+): Attack[] {
+  if (!Array.isArray(attacks) || attacks.length === 0) return [];
+  return attacks.map(atk => recalculateSingleAttack(atk, oldMods, newMods, oldProf, newProf, char));
 }
 
 export const ARMOR_AC_MAP: Record<string, { baseAC: number; type: 'light' | 'medium' | 'heavy' | 'shield'; maxDex?: number }> = {

@@ -1273,6 +1273,37 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       }
     }
 
+    const equippedSlots: Record<string, any> = {};
+    if (equippedArmor) {
+      equippedSlots.armor = { id: 'start-armor', name: equippedArmor, slot: 'armor' };
+    }
+    if (equippedShield) {
+      equippedSlots.offHand = { id: 'start-shield', name: 'Щит', slot: 'offHand', isShield: true, bonusAC: 2 };
+    }
+
+    if (startingWeaponsList.length > 0) {
+      const firstW = startingWeaponsList[0];
+      const is2H = firstW.properties.some(p => p.toLowerCase().includes('двуручное'));
+      equippedSlots.mainHand = {
+        id: 'start-main',
+        name: firstW.name,
+        slot: 'mainHand',
+        twoHanded: is2H,
+      };
+
+      if (!is2H && !equippedShield && startingWeaponsList.length > 1) {
+        const secondW = startingWeaponsList[1];
+        const isOff2H = secondW.properties.some(p => p.toLowerCase().includes('двуручное'));
+        if (!isOff2H) {
+          equippedSlots.offHand = {
+            id: 'start-off',
+            name: secondW.name,
+            slot: 'offHand',
+          };
+        }
+      }
+    }
+
     const newChar: CharacterData = {
       name: charName.trim() || 'Герой',
       className: selectedClass.name,
@@ -1297,6 +1328,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       armorClass: null,
       equippedArmor,
       equippedShield,
+      equippedSlots,
       initiativeOverride: null,
       speed: selectedSubrace?.speed || selectedRace?.speed || 30,
       hpMax,

@@ -126,9 +126,9 @@
     "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
   },
   "src/app/page.tsx": {
-    "mtime": 1789230632.6298022,
-    "seen": 1789230709.379281,
-    "ast_hash": "4d6f783d90a22a584a68f75dbfa42045",
+    "mtime": 1789233938.1759744,
+    "seen": 1789234238.2180674,
+    "ast_hash": "893021c574861f0a28f172ab8ae0301f",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -216,9 +216,9 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1789228916.906575,
-    "seen": 1789229226.1032262,
-    "ast_hash": "32822900308551fd19542419fe52fe57",
+    "mtime": 1789233548.322346,
+    "seen": 1789234238.223617,
+    "ast_hash": "40827b2450eb7993ecbf6f66da6a2379",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1789230276.5564225,
-    "seen": 1789230709.4006236,
-    "ast_hash": "71a130b81249c908f17e2805bd99ae92",
+    "mtime": 1789233298.6504261,
+    "seen": 1789234238.2344651,
+    "ast_hash": "082f8d6aaf21428984268e9cdf1a58f2",
     "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
@@ -1134,9 +1134,9 @@
     "semantic_hash": ""
   },
   "src/lib/equipment-types.ts": {
-    "mtime": 1789230108.4134254,
-    "seen": 1789230709.400629,
-    "ast_hash": "871831264611aaea9599289489588614",
+    "mtime": 1789233167.8227203,
+    "seen": 1789234238.2344697,
+    "ast_hash": "e8e11e1caa6d93b353cf68afe6884791",
     "semantic_hash": ""
   },
   "test/equipment-slots.test.ts": {
@@ -1155,6 +1155,18 @@
     "mtime": 1789229607.4817774,
     "seen": 1789230709.434819,
     "ast_hash": "8980a7abab5a0167c2d1aafecbb0fb39",
+    "semantic_hash": ""
+  },
+  "test/dual-wield-attacks.test.ts": {
+    "mtime": 1789233323.6290638,
+    "seen": 1789234238.2407644,
+    "ast_hash": "067d847fb47e931549748f978914fab1",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-12-dual-wield-and-equipment-sync.md": {
+    "mtime": 1789232950.0866203,
+    "seen": 1789234238.25712,
+    "ast_hash": "67702c8889581a1c96241769491a38cb",
     "semantic_hash": ""
   }
 }

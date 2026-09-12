@@ -1612,6 +1612,60 @@ export function applyClassTemplate(templateId: string): CharacterData {
     }
   }
 
+  // Auto-equip starting armor, shield, and weapons into equippedSlots
+  const slots: Record<string, any> = {};
+  const eqLower = template.equipment.toLowerCase();
+
+  if (eqLower.includes('кольчуга') || eqLower.includes('кольчугу')) {
+    slots.armor = { id: 'tpl-armor', name: 'Кольчуга', slot: 'armor' };
+    char.equippedArmor = 'Кольчуга';
+  } else if (eqLower.includes('чешуйчатый доспех')) {
+    slots.armor = { id: 'tpl-armor', name: 'Чешуйчатый доспех', slot: 'armor' };
+    char.equippedArmor = 'Чешуйчатый доспех';
+  } else if (eqLower.includes('кожаный доспех')) {
+    slots.armor = { id: 'tpl-armor', name: 'Кожаный доспех', slot: 'armor' };
+    char.equippedArmor = 'Кожаный доспех';
+  } else if (eqLower.includes('кольчужная рубаха')) {
+    slots.armor = { id: 'tpl-armor', name: 'Кольчужная рубаха', slot: 'armor' };
+    char.equippedArmor = 'Кольчужная рубаха';
+  }
+
+  if (eqLower.includes('щит')) {
+    slots.offHand = { id: 'tpl-shield', name: 'Щит', slot: 'offHand', isShield: true, bonusAC: 2 };
+    char.equippedShield = true;
+  }
+
+  if (templateId === 'barbarian') {
+    slots.mainHand = { id: 'tpl-main', name: 'Секира', slot: 'mainHand', twoHanded: true };
+  } else if (templateId === 'fighter') {
+    slots.mainHand = { id: 'tpl-main', name: 'Длинный меч', slot: 'mainHand' };
+  } else if (templateId === 'paladin') {
+    slots.mainHand = { id: 'tpl-main', name: 'Длинный меч', slot: 'mainHand' };
+  } else if (templateId === 'ranger') {
+    slots.mainHand = { id: 'tpl-main', name: 'Короткий меч', slot: 'mainHand' };
+    slots.offHand = { id: 'tpl-off', name: 'Короткий меч', slot: 'offHand' };
+  } else if (templateId === 'rogue') {
+    slots.mainHand = { id: 'tpl-main', name: 'Рапира', slot: 'mainHand' };
+  } else if (templateId === 'monk') {
+    slots.mainHand = { id: 'tpl-main', name: 'Короткий меч', slot: 'mainHand' };
+  } else if (templateId === 'cleric') {
+    slots.mainHand = { id: 'tpl-main', name: 'Булава', slot: 'mainHand' };
+  } else if (templateId === 'druid') {
+    slots.mainHand = { id: 'tpl-main', name: 'Скимитар', slot: 'mainHand' };
+  } else if (templateId === 'bard') {
+    slots.mainHand = { id: 'tpl-main', name: 'Рапира', slot: 'mainHand' };
+  } else if (templateId === 'artificer') {
+    slots.mainHand = { id: 'tpl-main', name: 'Булава', slot: 'mainHand' };
+  } else if (templateId === 'wizard') {
+    slots.mainHand = { id: 'tpl-main', name: 'Боевой посох', slot: 'mainHand' };
+  } else if (templateId === 'warlock') {
+    slots.mainHand = { id: 'tpl-main', name: 'Кинжал', slot: 'mainHand' };
+  } else if (templateId === 'sorcerer') {
+    slots.mainHand = { id: 'tpl-main', name: 'Кинжал', slot: 'mainHand' };
+  }
+
+  char.equippedSlots = slots;
+
   return char;
 }
 
@@ -1657,6 +1711,13 @@ export function createExampleWarrior(): CharacterData {
   char.otherProficienciesLanguages = 'Владение: Все доспехи, щиты, простое и воинское оружие\nИнструменты: Набор кузнеца\nЯзыки: Общий, Дворфийский';
   char.featuresTraits = 'Боевой стиль (Оборона)\nВторое дыхание\nДейственный удар\nУлучшение характеристики: СИЛ +2\nДополнительная атака\nДворфья выносливость\nЗнание камня';
   char.equipment = 'Кольчуга, Щит, Боевой топор +1, Ручной арбалет (20 болтов), Набор путешественника';
+  char.equippedArmor = 'Кольчуга';
+  char.equippedShield = true;
+  char.equippedSlots = {
+    armor: { id: 'war-armor', name: 'Кольчуга', slot: 'armor' },
+    mainHand: { id: 'war-weapon', name: 'Боевой топор', slot: 'mainHand', bonusAttack: 1, bonusDamage: 1 },
+    offHand: { id: 'war-shield', name: 'Щит', slot: 'offHand', isShield: true, bonusAC: 2 },
+  };
   char.age = '62'; char.height = '135 см'; char.weight = '77 кг';
   char.eyes = 'Карие'; char.skin = 'Загорелая'; char.hair = 'Рыжая';
   char.appearance = 'Коренастый дворф с широкой грудью и мощными руками кузнеца. Рыжая борода заплетена в косы.';
@@ -1697,6 +1758,9 @@ export function createExampleWizard(): CharacterData {
   char.hpCurrent = 28;
   char.hitDice = '5d6';
   char.attacks = [{ name: 'Огненный снаряд', attackBonus: '+7', damageAndType: '1d10+4 огонь' }];
+  char.equippedSlots = {
+    mainHand: { id: 'wiz-staff', name: 'Боевой посох', slot: 'mainHand' },
+  };
   char.sp = 8; char.gp = 42;
   char.personalityTraits = 'Я одержима знаниями и всегда ищу новые заклинания.';
   char.ideals = 'Знание должно быть свободным.';

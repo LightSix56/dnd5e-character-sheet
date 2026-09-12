@@ -34,6 +34,7 @@ import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { LevelUpModal } from '@/components/levelup/LevelUpModal';
 import { RestModal } from '@/components/gameplay/RestModal';
 import { EquipmentPaperDoll } from '@/components/equipment/EquipmentPaperDoll';
+import { getActiveCharacterAttacks, type ActiveAttackOption, hasTwoWeaponFightingStyle } from '@/lib/equipment-types';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { calculateWizardAC } from '@/components/wizard/wizard-helpers';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
@@ -89,13 +90,14 @@ interface RollResult {
   total: number;       // dieResult + modifier
   label: string;       // what was rolled, e.g. "Проверка Силы" or "Спасбросок Лов"
   breakdown?: string;  // optional formula breakdown, e.g. "1d8 [6] + 3"
+  customTotal?: string; // optional formatted display, e.g. "19 / 23"
 }
 
 const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }: { result: RollResult; onClose: () => void }) {
   const [closing, setClosing] = useState(false);
   const isCustomBreakdown = !!result.breakdown;
-  const isNat20 = !isCustomBreakdown && result.dieResult === 20;
-  const isNat1 = !isCustomBreakdown && result.dieResult === 1;
+  const isNat20 = !isCustomBreakdown && !result.customTotal && result.dieResult === 20;
+  const isNat1 = !isCustomBreakdown && !result.customTotal && result.dieResult === 1;
 
   const handleClose = useCallback(() => {
     setClosing(true);
@@ -136,14 +138,14 @@ const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }:
           transition={{ duration: 0.35, ease: "easeOut" }}
           className={`roll-result-die ${isNat20 ? 'nat20' : ''} ${isNat1 ? 'nat1' : ''}`}
         >
-          {isCustomBreakdown ? result.total : result.dieResult}
+          {result.customTotal || (isCustomBreakdown ? result.total : result.dieResult)}
         </motion.div>
 
         <div className="roll-result-breakdown">
           {result.breakdown || `d20 (${result.dieResult}) ${result.modifier >= 0 ? '+' : ''}${result.modifier}`}
         </div>
         <div className="roll-result-total">
-          = {result.total}
+          = {result.customTotal || result.total}
         </div>
         {isNat20 && (
           <motion.div
@@ -1134,6 +1136,7 @@ export default function DnDCharacterSheet() {
   const [activeItemModal, setActiveItemModal] = useState<CompendiumItem | null>(null);
   const [showRestModal, setShowRestModal] = useState(false);
   const [showEquipmentModal, setShowEquipmentModal] = useState(false);
+  const [attackSearchQuery, setAttackSearchQuery] = useState('');
 
   const [rollResult, setRollResult] = useState<RollResult | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -1485,15 +1488,35 @@ export default function DnDCharacterSheet() {
     });
   }, [handleRoll]);
 
-  const handleRollDamage = useCallback((atk: Attack) => {
-    const text = (atk.damageAndType || '').trim();
-    if (!text) return;
+  const parseAndRollDamageFormula = useCallback((text: string): {
+    success: boolean;
+    total: number;
+    sumDice: number;
+    modifier: number;
+    typeLabel: string;
+    breakdown: string;
+  } => {
+    const trimmed = (text || '').trim();
+    if (!trimmed) return { success: false, total: 0, sumDice: 0, modifier: 0, typeLabel: '', breakdown: '' };
 
-    // Matches dice formula like "1d8+3", "2d6 + 4", "1к10", "1d4-1 колющий", "2d6"
-    const diceMatch = text.match(/(\d+)\s*[dкDК]\s*(\d+)(?:\s*([+-])\s*(\d+))?/i);
+    // Flat damage (e.g. "3 дроб." or "1 дроб.")
+    const flatMatch = trimmed.match(/^(\d+)(?:\s+([а-яёa-z\.]+))?$/i);
+    if (flatMatch) {
+      const val = parseInt(flatMatch[1], 10);
+      const type = flatMatch[2] ? ` (${flatMatch[2]})` : '';
+      return {
+        success: true,
+        total: val,
+        sumDice: val,
+        modifier: 0,
+        typeLabel: type,
+        breakdown: `${val}`,
+      };
+    }
+
+    const diceMatch = trimmed.match(/(\d+)\s*[dкDК]\s*(\d+)(?:\s*([+-])\s*(\d+))?/i);
     if (!diceMatch) {
-      showToast('Бросок урона', 'Не удалось распознать формулу урона (например, 1d8+3)');
-      return;
+      return { success: false, total: 0, sumDice: 0, modifier: 0, typeLabel: '', breakdown: '' };
     }
 
     const numDice = Math.min(50, Math.max(1, parseInt(diceMatch[1], 10)));
@@ -1518,18 +1541,109 @@ export default function DnDCharacterSheet() {
     }
 
     const total = Math.max(0, sumDice + modifier);
-    const remaining = text.replace(diceMatch[0], '').replace(/[,\.]/g, '').trim();
+    const remaining = trimmed.replace(diceMatch[0], '').replace(/[,\.]/g, '').trim();
     const typeLabel = remaining ? ` (${remaining})` : '';
     const breakdown = `${numDice}d${dieSides} [${rolls.join(', ')}]${modifier !== 0 ? ` ${modifier > 0 ? '+' : ''}${modifier}` : ''}`;
 
+    return {
+      success: true,
+      total,
+      sumDice,
+      modifier,
+      typeLabel,
+      breakdown,
+    };
+  }, []);
+
+  const handleRollActiveAttack = useCallback((atk: ActiveAttackOption) => {
+    if (atk.source === 'dual') {
+      const mainBonusStr = atk.dualDetails?.mainAtkBonus || atk.attackBonus.split('/')[0] || '+0';
+      const offBonusStr = atk.dualDetails?.offAtkBonus || atk.attackBonus.split('/')[1] || '+0';
+      const mainMod = parseInt(mainBonusStr.trim(), 10) || 0;
+      const offMod = parseInt(offBonusStr.trim(), 10) || 0;
+
+      const dieMain = rollD20();
+      const dieOff = rollD20();
+      const totalMain = dieMain + mainMod;
+      const totalOff = dieOff + offMod;
+
+      handleRoll({
+        dieResult: Math.max(dieMain, dieOff),
+        modifier: 0,
+        total: totalMain,
+        customTotal: `${totalMain} / ${totalOff}`,
+        label: `⚔️ Парная атака`,
+        breakdown: `[${atk.dualDetails?.mainWeapon || 'Осн. рука'}]: d20 (${dieMain}) ${formatModifier(mainMod)} = ${totalMain} | [${atk.dualDetails?.offWeapon || 'Доп. рука'}]: d20 (${dieOff}) ${formatModifier(offMod)} = ${totalOff}`,
+      });
+      return;
+    }
+
+    const match = (atk.attackBonus || '').trim().match(/^([+-]?\d+)$/);
+    const modifier = match ? parseInt(match[1], 10) : 0;
+    const dieResult = rollD20();
+    const total = dieResult + modifier;
     handleRoll({
-      dieResult: sumDice,
+      dieResult,
       modifier,
       total,
-      label: `Урон: ${atk.name || 'Оружие'}${typeLabel}`,
-      breakdown,
+      label: `Атака: ${atk.weaponName || 'Оружие'}`,
     });
-  }, [handleRoll, showToast]);
+  }, [handleRoll]);
+
+  const handleRollActiveDamage = useCallback((atk: ActiveAttackOption) => {
+    if (atk.source === 'dual') {
+      const mainFormula = atk.dualDetails?.mainDmg || '';
+      const offFormula = atk.dualDetails?.offDmg || '';
+
+      const mainRes = parseAndRollDamageFormula(mainFormula);
+      const offRes = parseAndRollDamageFormula(offFormula);
+
+      if (!mainRes.success || !offRes.success) {
+        showToast('Бросок урона', 'Не удалось рассчитать урон для парной атаки');
+        return;
+      }
+
+      const totalCombined = mainRes.total + offRes.total;
+      handleRoll({
+        dieResult: totalCombined,
+        modifier: 0,
+        total: totalCombined,
+        label: `🎲 Парный урон: ${atk.dualDetails?.mainWeapon || 'Осн.'} + ${atk.dualDetails?.offWeapon || 'Доп.'}`,
+        breakdown: `[${atk.dualDetails?.mainWeapon || 'Осн.'}]: ${mainRes.breakdown}${mainRes.typeLabel} = ${mainRes.total} | [${atk.dualDetails?.offWeapon || 'Доп.'}]: ${offRes.breakdown}${offRes.typeLabel} = ${offRes.total} ➔ Всего: ${totalCombined}`,
+      });
+      return;
+    }
+
+    const res = parseAndRollDamageFormula(atk.damageAndType);
+    if (!res.success) {
+      showToast('Бросок урона', 'Не удалось распознать формулу урона');
+      return;
+    }
+
+    handleRoll({
+      dieResult: res.sumDice,
+      modifier: res.modifier,
+      total: res.total,
+      label: `Урон: ${atk.weaponName || 'Оружие'}${res.typeLabel}`,
+      breakdown: res.breakdown,
+    });
+  }, [handleRoll, parseAndRollDamageFormula, showToast]);
+
+  const handleRollDamage = useCallback((atk: Attack) => {
+    const res = parseAndRollDamageFormula(atk.damageAndType || '');
+    if (!res.success) {
+      showToast('Бросок урона', 'Не удалось распознать формулу урона (например, 1d8+3)');
+      return;
+    }
+
+    handleRoll({
+      dieResult: res.sumDice,
+      modifier: res.modifier,
+      total: res.total,
+      label: `Урон: ${atk.name || 'Оружие'}${res.typeLabel}`,
+      breakdown: res.breakdown,
+    });
+  }, [handleRoll, parseAndRollDamageFormula, showToast]);
 
   const handleApplyRest = useCallback((updatedChar: CharacterData, toastTitle: string, toastDesc: string) => {
     setChar(updatedChar);
@@ -1817,6 +1931,15 @@ export default function DnDCharacterSheet() {
   const availableArmorModes = useMemo(() => getAvailableArmorModes(char), [char]);
   const calculatedAC = useMemo(() => getCalculatedAC(char), [char]);
   const activeAC = useMemo(() => getAC(char), [char]);
+  const activeAttacks = useMemo(() => getActiveCharacterAttacks(char), [char]);
+  const displayedAttacks = useMemo(() => {
+    if (!attackSearchQuery.trim()) return activeAttacks;
+    const q = attackSearchQuery.toLowerCase().trim();
+    return activeAttacks.filter(a =>
+      a.weaponName.toLowerCase().includes(q) ||
+      (a.notes && a.notes.toLowerCase().includes(q))
+    );
+  }, [activeAttacks, attackSearchQuery]);
 
   const compClass = useMemo(() => {
     if (!char.className) return undefined;
@@ -3728,72 +3851,53 @@ export default function DnDCharacterSheet() {
                     <div className="space-y-1"><label className="parchment-label text-xs">Инициатива</label><div className="flex items-center gap-1"><RollBadge value={formatModifier(getInitiative(char))} label="Инициатива" modifier={getInitiative(char)} onRoll={handleRoll} /><input type="number" value={char.initiativeOverride ?? ''} onChange={e => update('initiativeOverride', e.target.value === '' ? null : Number(e.target.value))} placeholder="Авто" className={inputClass + " flex-1"} /></div></div>
                     <div className="space-y-1"><label className="parchment-label text-xs">Скорость</label><input type="number" value={char.speed} onChange={e => update('speed', Number(e.target.value) || 30)} className={inputClass} /></div>
                   </div>
-                  {/* Armor & Shield Selector */}
-                  <div className="p-2.5 rounded space-y-2" style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                  {/* Defense & Armor Display (Managed in Equipment) */}
+                  <div className="p-2.5 rounded space-y-1.5" style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <label className="parchment-label text-[11px] font-bold">Защита и Доспехи</label>
+                        <label className="parchment-label text-[11px] font-bold">Защита и Доспех</label>
                         <span className="text-[10px] px-1.5 py-0.2 rounded font-semibold" style={{ background: 'rgba(201, 168, 76, 0.25)', color: '#5C341F', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                           КД {calculatedAC}
                         </span>
                       </div>
-                      {char.equippedArmor && !char.equippedArmor.startsWith('unarmored:') && (
+                      <button
+                        type="button"
+                        onClick={() => setShowEquipmentModal(true)}
+                        className="text-[11px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-1"
+                        style={{ color: '#8B6914' }}
+                        title="Надеть броню, щит или аксессуары в окне Экипировки"
+                      >
+                        <EngravedShieldIcon size={13} />
+                        <span>🛡️ Экипировка</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-xs pt-0.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="font-semibold" style={{ color: '#3D2012' }}>
+                          {char.equippedSlots?.armor?.name
+                            ? `🛡️ ${char.equippedSlots.armor.name}`
+                            : (char.equippedArmor ? `🛡️ ${char.equippedArmor}` : '🥋 Без доспехов')}
+                        </span>
+                        {(char.equippedSlots?.offHand?.isShield || char.equippedShield) && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ background: 'rgba(201, 168, 76, 0.25)', color: '#5C341F', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                            + Щит (+2 КД)
+                          </span>
+                        )}
+                      </div>
+                      {(char.equippedSlots?.armor?.name || char.equippedArmor) && !char.equippedArmor?.startsWith('unarmored:') && (
                         <button
                           type="button"
                           onClick={() => {
-                            const item = findItemByName(char.equippedArmor || '');
+                            const armorName = char.equippedSlots?.armor?.name || char.equippedArmor || '';
+                            const item = findItemByName(armorName);
                             if (item) setActiveItemModal(item);
                           }}
-                          className="text-[10px] underline font-bold cursor-pointer"
+                          className="text-[10px] underline font-medium cursor-pointer"
                           style={{ color: '#8B6914' }}
-                          title="Свойства доспеха"
                         >
-                          Свойства доспеха
+                          Свойства
                         </button>
                       )}
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
-                      <select
-                        value={char.equippedArmor || ''}
-                        onChange={e => handleEquipArmor(e.target.value)}
-                        className="parchment-select text-xs sm:col-span-2 py-1"
-                      >
-                        <option value="">Авто: по классу и расе (КД {calculatedAC})</option>
-                        <optgroup label="Особая защита и Без доспехов">
-                          {availableArmorModes.map(mode => (
-                            <option key={mode.key} value={mode.key}>
-                              {mode.name} — КД {mode.ac} ({mode.description})
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label="Лёгкие доспехи (+ ЛОВ)">
-                          <option value="Стеганый доспех">Стеганый доспех (11 + ЛОВ)</option>
-                          <option value="Кожаный доспех">Кожаный доспех (11 + ЛОВ)</option>
-                          <option value="Проклепанный кожаный доспех">Проклепанный кожаный (12 + ЛОВ)</option>
-                        </optgroup>
-                        <optgroup label="Средние доспехи (+ ЛОВ макс. +2)">
-                          <option value="Шкурный доспех">Шкурный доспех (12 + ЛОВ макс. 2)</option>
-                          <option value="Кольчужная рубаха">Кольчужная рубаха (13 + ЛОВ макс. 2)</option>
-                          <option value="Чешуйчатый доспех">Чешуйчатый доспех (14 + ЛОВ макс. 2)</option>
-                          <option value="Кираса">Кираса (14 + ЛОВ макс. 2)</option>
-                          <option value="Полулаты">Полулаты (15 + ЛОВ макс. 2)</option>
-                        </optgroup>
-                        <optgroup label="Тяжёлые доспехи (без ЛОВ)">
-                          <option value="Колечный доспех">Колечный доспех (14)</option>
-                          <option value="Кольчуга">Кольчуга (16, СИЛ 13)</option>
-                          <option value="Наборный доспех">Наборный доспех (17, СИЛ 15)</option>
-                          <option value="Латы">Латы (18, СИЛ 15)</option>
-                        </optgroup>
-                      </select>
-                      <label className="flex items-center gap-2 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          checked={!!char.equippedShield}
-                          onChange={e => handleToggleShield(e.target.checked)}
-                          className="accent-[#8B6914] w-4 h-4 cursor-pointer"
-                        />
-                        <span className="text-xs font-bold whitespace-nowrap" style={{ color: '#3D2012' }}>🛡️ Щит (+2 КД)</span>
-                      </label>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -3910,138 +4014,235 @@ export default function DnDCharacterSheet() {
                 </div>
               </div>
 
-              {/* Attacks */}
+              {/* Attacks and Weapons Card */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><CrossedSwordsIcon size={20} /><span>Атаки и оружие</span></h3></div>
+                <div className="px-4 pt-4 pb-3 flex items-center justify-between flex-wrap gap-2">
+                  <h3 className="parchment-heading flex items-center gap-2 mb-0">
+                    <CrossedSwordsIcon size={20} />
+                    <span>Атаки и оружие</span>
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowEquipmentModal(true)}
+                    className="parchment-btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1.5 font-bold shadow-xs hover:brightness-110 active:scale-95 cursor-pointer"
+                    style={{
+                      background: 'linear-gradient(180deg, rgba(201, 168, 76, 0.25) 0%, rgba(139, 105, 20, 0.15) 100%)',
+                      border: '1px solid #C9A84C',
+                      color: '#3D2012',
+                    }}
+                    title="Экипировать, сменить оружие или щит в окне Экипировки"
+                  >
+                    <CrossedSwordsIcon size={14} />
+                    <span>⚔️ Настроить в Экипировке</span>
+                  </button>
+                </div>
+
                 <div className="px-3 sm:px-4 pb-4 space-y-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={attackSearchQuery}
+                      onChange={e => setAttackSearchQuery(e.target.value)}
+                      placeholder="Оружие или атака…"
+                      className="parchment-input text-xs w-full py-1 px-2 mb-1"
+                    />
+                  </div>
+
                   <div className="overflow-x-auto custom-scrollbar pb-1">
-                    <div className="min-w-[440px] space-y-2">
-                      <div className="grid grid-cols-[24px_1fr_75px_1fr_32px_32px] gap-1.5 text-xs font-medium px-1" style={{ color: '#8B6914' }}>
-                        <span className="text-center" title="Владение оружием (добавляет бонус мастерства к попаданию)">Вл.</span>
-                        <span>Оружие (автопоиск)</span>
-                        <span className="text-center">Бонус</span>
+                    <div className="min-w-[480px] space-y-2">
+                      <div className="grid grid-cols-[105px_1fr_80px_1fr_36px] gap-1.5 text-xs font-medium px-1" style={{ color: '#8B6914' }}>
+                        <span>Тип действия</span>
+                        <span>Оружие и хват</span>
+                        <span className="text-center">Попадание</span>
                         <span>Урон / Вид</span>
-                        <span className="text-center" title="Свойства и правила">Инфо</span>
-                        <span />
+                        <span className="text-center" title="Свойства и описание">Инфо</span>
                       </div>
-                      {char.attacks.length === 0 ? (
+
+                      {displayedAttacks.length === 0 ? (
                         <div className="parchment-empty-state my-2">
                           <CrossedSwordsIcon size={26} />
                           <p className="text-xs text-[#5C341F] font-semibold">Оружие не экипировано</p>
-                          <p className="text-[11px] text-[#8B6914]">Оружие не выбрано. Добавьте атаку или воспользуйтесь шаблоном снаряжения.</p>
+                          <p className="text-[11px] text-[#8B6914]">Оружие не выбрано. Нажмите «Настроить в Экипировке», чтобы вооружить персонажа.</p>
                         </div>
                       ) : (
-                        char.attacks.map((atk, i) => {
-                          const weaponDef = findWeaponByName(atk.name);
-                          const isProf = atk.proficient !== false && atk.isProficient !== false;
+                        displayedAttacks.map((atk, i) => {
+                          const weaponDef = atk.weaponDef || findWeaponByName(atk.weaponName);
+                          const isDual = atk.source === 'dual';
+                          const isOff = atk.source === 'offHand';
+                          const isThrown = atk.source === 'thrown';
+                          const isUnarmed = atk.source === 'unarmed';
+
                           return (
-                            <div key={i} className="grid grid-cols-[24px_1fr_75px_1fr_32px_32px] gap-1.5 items-center">
-                              {/* Proficiency Checkbox */}
-                              <div className="flex items-center justify-center">
-                                <label
-                                  className="parchment-checkbox parchment-checkbox-sm"
-                                  title={isProf ? `Владение активно (+${profBonus} к атаке). Нажмите, чтобы снять.` : 'Без владения (бонус мастерства не добавляется). Нажмите, чтобы включить.'}
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={isProf}
-                                    onChange={e => {
-                                      const updated = setAttackProficiency(atk, e.target.checked, profBonus);
-                                      setChar(prev => {
-                                        const newAttacks = [...prev.attacks];
-                                        newAttacks[i] = updated;
-                                        return { ...prev, attacks: newAttacks };
-                                      });
-                                    }}
-                                  />
-                                  <span className="checkmark"></span>
-                                </label>
-                              </div>
-
-                              <AutocompleteInput
-                                value={atk.name}
-                                onChange={val => updateAttack(i, 'name', val)}
-                                onSelect={item => handleSelectWeapon(i, item)}
-                                items={weaponAutocompleteItems}
-                                placeholder="Оружие или атака…"
-                                className={inputClass}
-                              />
-
-                              {/* Attack bonus with quick d20 roll button */}
-                              <div className="flex items-center gap-1">
-                                <input
-                                  value={atk.attackBonus}
-                                  onChange={e => updateAttack(i, 'attackBonus', e.target.value)}
-                                  placeholder="+5"
-                                  className={inputClassCenter + " w-full min-w-0 px-1"}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => handleRollAttack(atk)}
-                                  className="w-7 h-7 flex items-center justify-center rounded text-[11px] font-bold cursor-pointer hover:brightness-110 active:scale-95 shrink-0"
+                            <div
+                              key={`${atk.source}-${atk.weaponName}-${i}`}
+                            className={`grid grid-cols-[105px_1fr_80px_1fr_36px] gap-1.5 items-center p-1.5 rounded transition-colors ${
+                              isDual
+                                ? 'bg-[#C9A84C]/15 border border-[#C9A84C]/60 shadow-xs'
+                                : isOff
+                                ? 'bg-[#8B6914]/10 border border-[#8B6914]/30'
+                                : 'bg-[rgba(232,211,162,0.25)] border border-[rgba(201,168,76,0.3)]'
+                            }`}
+                          >
+                            {/* Action Type Badge */}
+                            <div>
+                              {atk.actionType === 'dualAction' ? (
+                                <span
+                                  className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-xs select-none"
                                   style={{
-                                    background: 'linear-gradient(180deg, #8B4513, #6B3A2A)',
+                                    background: 'linear-gradient(135deg, #8B4513, #5C341F)',
                                     color: '#FFE58F',
                                     border: '1px solid #C9A84C',
-                                    boxShadow: '0 1px 2px rgba(61, 32, 18, 0.2)'
                                   }}
-                                  title="Бросить d20 на попадание"
+                                  title="Требует Основное действие + Бонусное действие"
                                 >
-                                  <D20Icon size={14} />
-                                </button>
-                              </div>
+                                  <span>⚔️</span>
+                                  <span>Действие + Бонус</span>
+                                </span>
+                              ) : atk.actionType === 'bonus' ? (
+                                <span
+                                  className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded select-none"
+                                  style={{
+                                    background: 'rgba(139, 105, 20, 0.2)',
+                                    color: '#6B3A2A',
+                                    border: '1px solid rgba(139, 105, 20, 0.4)',
+                                  }}
+                                  title="Бонусное действие (вторая рука)"
+                                >
+                                  <span>⚡</span>
+                                  <span>Бонусное</span>
+                                </span>
+                              ) : (
+                                <span
+                                  className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded select-none"
+                                  style={{
+                                    background: 'rgba(92, 52, 31, 0.12)',
+                                    color: '#5C341F',
+                                    border: '1px solid rgba(92, 52, 31, 0.3)',
+                                  }}
+                                  title="Основное действие"
+                                >
+                                  <span>🎯</span>
+                                  <span>Действие</span>
+                                </span>
+                              )}
+                            </div>
 
-                              {/* Damage & Type with damage roll button */}
+                            {/* Weapon Name and Subtext */}
+                            <div className="min-w-0 pr-1">
                               <div className="flex items-center gap-1">
-                                <input
-                                  value={atk.damageAndType}
-                                  onChange={e => updateAttack(i, 'damageAndType', e.target.value)}
-                                  placeholder="1d8+3 рубящий"
-                                  className={inputClass + " flex-1 min-w-0"}
-                                />
-                                {atk.damageAndType?.trim() && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRollDamage(atk)}
-                                    className="w-7 h-7 flex items-center justify-center rounded text-xs cursor-pointer hover:brightness-110 active:scale-95 shrink-0"
-                                    style={{
-                                      background: 'rgba(237, 224, 200, 0.85)',
-                                      border: '1px solid rgba(139, 105, 20, 0.45)',
-                                      color: '#5C341F'
-                                    }}
-                                    title="Бросить урон оружия"
-                                  >
-                                    🎲
-                                  </button>
-                                )}
+                                <span className="font-bold text-xs truncate" style={{ color: '#3D2012' }}>
+                                  {isDual ? '⚔️ ' : isThrown ? '🎯 ' : isUnarmed ? '👊 ' : isOff ? '🗡️ ' : '🗡️ '}
+                                  {atk.weaponName}
+                                </span>
                               </div>
+                              <div className="text-[10px] truncate" style={{ color: isDual ? '#8B4513' : '#8B6914' }}>
+                                {isDual
+                                  ? 'Парная атака двумя руками'
+                                  : isOff
+                                  ? 'Вторая рука (бонусное действие)'
+                                  : isThrown
+                                  ? 'Метательное (снаряжение / пояс)'
+                                  : isUnarmed
+                                  ? 'Безоружная атака'
+                                  : 'Основная рука'}
+                              </div>
+                            </div>
 
+                            {/* Attack Bonus + D20 Roll */}
+                            <div className="flex items-center justify-center gap-1">
+                              <span
+                                className="text-xs font-bold px-1.5 py-0.5 rounded"
+                                style={{
+                                  background: 'rgba(251, 240, 220, 0.9)',
+                                  border: '1px solid rgba(201, 168, 76, 0.4)',
+                                  color: '#3D2012',
+                                }}
+                              >
+                                {atk.attackBonus}
+                              </span>
                               <button
                                 type="button"
-                                onClick={() => setActiveWeaponModal({
-                                  weapon: weaponDef || null,
-                                  customName: atk.name || 'Атака',
-                                  customBonus: atk.attackBonus,
-                                  customDamage: atk.damageAndType
-                                })}
-                                title="Посмотреть свойства оружия"
-                                className="w-8 h-8 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110 shrink-0"
+                                onClick={() => handleRollActiveAttack(atk)}
+                                className="w-7 h-7 flex items-center justify-center rounded text-[11px] font-bold cursor-pointer hover:brightness-110 active:scale-95 shrink-0"
+                                style={{
+                                  background: isDual
+                                    ? 'linear-gradient(180deg, #A0522D, #7A4529)'
+                                    : 'linear-gradient(180deg, #8B4513, #6B3A2A)',
+                                  color: '#FFE58F',
+                                  border: '1px solid #C9A84C',
+                                  boxShadow: '0 1px 2px rgba(61, 32, 18, 0.2)'
+                                }}
+                                title={isDual ? 'Бросить два d20 на попадание обеими руками' : 'Бросить d20 на попадание'}
+                              >
+                                <D20Icon size={14} />
+                              </button>
+                            </div>
+
+                            {/* Damage & Type + Roll Button */}
+                            <div className="flex items-center gap-1 min-w-0">
+                              <span
+                                className="text-xs truncate flex-1 font-medium px-1.5 py-0.5 rounded"
+                                style={{
+                                  background: 'rgba(251, 240, 220, 0.9)',
+                                  border: '1px solid rgba(201, 168, 76, 0.4)',
+                                  color: '#3D2012',
+                                }}
+                                title={atk.damageAndType}
+                              >
+                                {atk.damageAndType}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleRollActiveDamage(atk)}
+                                className="w-7 h-7 flex items-center justify-center rounded text-xs cursor-pointer hover:brightness-110 active:scale-95 shrink-0"
+                                style={{
+                                  background: 'rgba(237, 224, 200, 0.95)',
+                                  border: '1px solid rgba(139, 105, 20, 0.45)',
+                                  color: '#5C341F'
+                                }}
+                                title={isDual ? 'Бросить урон обеих атак суммарно' : 'Бросить урон оружия'}
+                              >
+                                🎲
+                              </button>
+                            </div>
+
+                            {/* Info Button */}
+                            <div className="flex items-center justify-center">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (weaponDef) {
+                                    setActiveWeaponModal({
+                                      weapon: weaponDef,
+                                      customName: atk.weaponName,
+                                      customBonus: atk.attackBonus,
+                                      customDamage: atk.damageAndType,
+                                    });
+                                  } else {
+                                    showToast(atk.weaponName, atk.damageAndType);
+                                  }
+                                }}
+                                title="Посмотреть свойства оружия и правила"
+                                className="w-7 h-7 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110 shrink-0 cursor-pointer"
                                 style={{
                                   background: 'rgba(237, 224, 200, 0.6)',
                                   border: '1px solid rgba(139, 105, 20, 0.35)',
                                   boxShadow: '0 1px 3px rgba(61, 32, 18, 0.15)'
                                 }}
                               >
-                                <InfoSealIcon size={18} />
+                                <InfoSealIcon size={16} />
                               </button>
-                              <button onClick={() => removeAttack(i)} className="parchment-remove-btn w-8 h-8 flex items-center justify-center shrink-0">✕</button>
                             </div>
-                          );
-                        })
-                      )}
-                    </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
-                  <button onClick={addAttack} className="w-full parchment-btn-secondary text-xs py-2 min-h-[38px]">+ Добавить атаку</button>
+                  </div>
+
+                  <div className="pt-1 flex items-center justify-between text-[11px] px-1" style={{ color: '#8B6914' }}>
+                    <span>💡 Оружие в руках управляется в Экипировке. Метательное оружие из рюкзака всегда доступно для броска.</span>
+                  </div>
                 </div>
               </div>
 

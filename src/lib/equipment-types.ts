@@ -1,4 +1,6 @@
-import type { CharacterData } from './dnd-types';
+import type { CharacterData, AbilityName } from './dnd-types';
+import { calcModifier, calcProficiencyBonus, formatModifier, getTotalScore } from './dnd-types';
+import { findWeaponByName, DND_WEAPONS, type DndWeapon } from '../data/dnd-weapons';
 
 export type EquipmentSlotId =
   | 'head'
@@ -159,4 +161,278 @@ export function calculateEquipmentBonuses(char: CharacterData): { acBonus: numbe
   }
 
   return { acBonus, speedBonus };
+}
+
+export interface ActiveAttackOption {
+  source: 'mainHand' | 'offHand' | 'dual' | 'thrown' | 'unarmed';
+  weaponName: string;
+  attackBonus: string;
+  damageAndType: string;
+  actionType: 'action' | 'bonus' | 'dualAction';
+  dualDetails?: {
+    mainWeapon?: string;
+    offWeapon?: string;
+    mainAtkBonus?: string;
+    offAtkBonus?: string;
+    mainDmg: string;
+    offDmg: string;
+  };
+  weaponDef?: DndWeapon;
+  notes?: string;
+}
+
+export function hasTwoWeaponFightingStyle(char: CharacterData): boolean {
+  const queryRu = 'сражение двумя оружиями';
+  const queryEn = 'two-weapon fighting';
+  const queryDual = 'парным оружием';
+
+  if (char.featuresTraits) {
+    const lower = char.featuresTraits.toLowerCase();
+    if (lower.includes(queryRu) || lower.includes(queryEn) || lower.includes(queryDual)) {
+      return true;
+    }
+  }
+
+  if (char.traitsList) {
+    for (const t of char.traitsList) {
+      const tName = (t.name || '').toLowerCase();
+      const tDesc = (t.description || '').toLowerCase();
+      const tSumm = (t.summary || '').toLowerCase();
+      if (
+        tName.includes(queryRu) || tName.includes(queryEn) || tName.includes(queryDual) ||
+        tDesc.includes(queryRu) || tDesc.includes(queryEn) || tDesc.includes(queryDual) ||
+        tSumm.includes(queryRu) || tSumm.includes(queryEn) || tSumm.includes(queryDual)
+      ) {
+        return true;
+      }
+    }
+  }
+
+  if (char.levelHistory) {
+    for (const h of char.levelHistory) {
+      if (
+        h.selectedFightingStyle &&
+        (h.selectedFightingStyle.toLowerCase().includes('two_weapon') ||
+          h.selectedFightingStyle.toLowerCase().includes('двумя'))
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function getWeaponStats(
+  char: CharacterData,
+  weaponDef: DndWeapon | undefined,
+  itemBonusAtk = 0,
+  itemBonusDmg = 0
+) {
+  const strScore = getTotalScore(char, 'СИЛ');
+  const dexScore = getTotalScore(char, 'ЛОВ');
+  const strMod = calcModifier(strScore);
+  const dexMod = calcModifier(dexScore);
+
+  let usedMod = strMod;
+  if (weaponDef) {
+    const isRanged = weaponDef.category.includes('дальнобойное');
+    if (isRanged && !weaponDef.finesse) {
+      usedMod = dexMod;
+    } else if (weaponDef.finesse) {
+      usedMod = Math.max(strMod, dexMod);
+    }
+  }
+
+  const profBonus = calcProficiencyBonus(char.level || 1);
+  const atkBonusNum = profBonus + usedMod + itemBonusAtk;
+  const atkBonusStr = formatModifier(atkBonusNum);
+
+  const dice = weaponDef?.damageDice || '1d6';
+  const type = weaponDef?.damageType || 'дробящий';
+
+  // Full damage with ability modifier
+  const fullDmgMod = usedMod + itemBonusDmg;
+  let fullDmgStr = '';
+  if (fullDmgMod > 0) {
+    fullDmgStr = `${dice}+${fullDmgMod} ${type}`;
+  } else if (fullDmgMod < 0) {
+    fullDmgStr = `${dice}${fullDmgMod} ${type}`;
+  } else {
+    fullDmgStr = `${dice} ${type}`;
+  }
+
+  // Off-hand damage: negative ability modifier is subtracted, but positive is excluded unless fighting style applies
+  const offDmgMod = (usedMod < 0 ? usedMod : 0) + itemBonusDmg;
+  let offDmgStr = '';
+  if (offDmgMod > 0) {
+    offDmgStr = `${dice}+${offDmgMod} ${type}`;
+  } else if (offDmgMod < 0) {
+    offDmgStr = `${dice}${offDmgMod} ${type}`;
+  } else {
+    offDmgStr = `${dice} ${type}`;
+  }
+
+  return {
+    usedMod,
+    atkBonusStr,
+    fullDmgStr,
+    offDmgStr,
+    dice,
+    type,
+  };
+}
+
+const KNOWN_THROWN_CONFIGS = [
+  { name: 'Метательное копьё', test: (s: string) => /метательн.*копь|копь.*метательн/i.test(s) },
+  { name: 'Лёгкий молот', test: (s: string) => /л[её]гк.*молот|молот.*л[её]гк/i.test(s) },
+  { name: 'Ручной топор', test: (s: string) => /ручн.*топор|топор.*ручн/i.test(s) },
+  { name: 'Кинжал', test: (s: string) => /кинжал/i.test(s) },
+  { name: 'Дротик', test: (s: string) => /дротик/i.test(s) },
+  { name: 'Копьё', test: (s: string) => /(^|[^\wа-яё])копь[её]/i.test(s) },
+  { name: 'Трезубец', test: (s: string) => /трезубец/i.test(s) },
+  { name: 'Сеть', test: (s: string) => /(^|[^\wа-яё])сеть([^\wа-яё]|$)/i.test(s) },
+];
+
+export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOption[] {
+  const attacks: ActiveAttackOption[] = [];
+  const equipped = char.equippedSlots || {};
+
+  const mainHandItem = equipped.mainHand;
+  const offHandItem = equipped.offHand;
+
+  const isDualWield = Boolean(mainHandItem && offHandItem && !offHandItem.isShield);
+
+  if (isDualWield && mainHandItem && offHandItem) {
+    const mainDef = findWeaponByName(mainHandItem.name);
+    const offDef = findWeaponByName(offHandItem.name);
+
+    const mainStats = getWeaponStats(char, mainDef, mainHandItem.bonusAttack, mainHandItem.bonusDamage);
+    const offStats = getWeaponStats(char, offDef, offHandItem.bonusAttack, offHandItem.bonusDamage);
+
+    const hasStyle = hasTwoWeaponFightingStyle(char);
+
+    // 1. Main Hand Attack (Action)
+    const mainAtk: ActiveAttackOption = {
+      source: 'mainHand',
+      weaponName: mainHandItem.name,
+      attackBonus: mainStats.atkBonusStr,
+      damageAndType: mainStats.fullDmgStr,
+      actionType: 'action',
+      weaponDef: mainDef,
+    };
+    attacks.push(mainAtk);
+
+    // 2. Off-Hand Attack (Bonus Action)
+    const offAtk: ActiveAttackOption = {
+      source: 'offHand',
+      weaponName: offHandItem.name,
+      attackBonus: offStats.atkBonusStr,
+      damageAndType: hasStyle ? offStats.fullDmgStr : offStats.offDmgStr,
+      actionType: 'bonus',
+      weaponDef: offDef,
+    };
+    attacks.push(offAtk);
+
+    // 3. Dual Strike (Combined Action + Bonus Action)
+    const dualAtk: ActiveAttackOption = {
+      source: 'dual',
+      weaponName: `${mainHandItem.name} + ${offHandItem.name} (Парная атака)`,
+      attackBonus: `${mainStats.atkBonusStr} / ${offStats.atkBonusStr}`,
+      damageAndType: `${mainAtk.damageAndType} + ${offAtk.damageAndType}`,
+      actionType: 'dualAction',
+      dualDetails: {
+        mainWeapon: mainHandItem.name,
+        offWeapon: offHandItem.name,
+        mainAtkBonus: mainStats.atkBonusStr,
+        offAtkBonus: offStats.atkBonusStr,
+        mainDmg: mainAtk.damageAndType,
+        offDmg: offAtk.damageAndType,
+      },
+    };
+    attacks.push(dualAtk);
+  } else {
+    // Single weapon or 2-handed weapon in main hand
+    if (mainHandItem) {
+      const mainDef = findWeaponByName(mainHandItem.name);
+      const mainStats = getWeaponStats(char, mainDef, mainHandItem.bonusAttack, mainHandItem.bonusDamage);
+
+      attacks.push({
+        source: 'mainHand',
+        weaponName: mainHandItem.name,
+        attackBonus: mainStats.atkBonusStr,
+        damageAndType: mainStats.fullDmgStr,
+        actionType: 'action',
+        weaponDef: mainDef,
+      });
+    }
+
+    // Only offHand equipped (e.g. single dagger in off-hand)
+    if (offHandItem && !offHandItem.isShield && !mainHandItem) {
+      const offDef = findWeaponByName(offHandItem.name);
+      const offStats = getWeaponStats(char, offDef, offHandItem.bonusAttack, offHandItem.bonusDamage);
+
+      attacks.push({
+        source: 'offHand',
+        weaponName: offHandItem.name,
+        attackBonus: offStats.atkBonusStr,
+        damageAndType: offStats.fullDmgStr,
+        actionType: 'action',
+        weaponDef: offDef,
+      });
+    }
+  }
+
+  // 4. Thrown weapons from equipment text or belt/pouch
+  const inventorySources: string[] = [];
+  if (char.equipment) {
+    inventorySources.push(char.equipment);
+  }
+  if (equipped.belt?.name) inventorySources.push(equipped.belt.name);
+  if (equipped.pouch?.name) inventorySources.push(equipped.pouch.name);
+
+  const inventoryCombined = inventorySources.join(' \n ');
+  const alreadyEquippedNames = new Set(
+    [mainHandItem?.name, offHandItem?.name].filter(Boolean).map(n => n!.toLowerCase().trim())
+  );
+
+  for (const tw of KNOWN_THROWN_CONFIGS) {
+    if (tw.test(inventoryCombined)) {
+      // If not already the active main-hand or off-hand item
+      const isAlreadyInHand = Array.from(alreadyEquippedNames).some(n => tw.test(n));
+      if (!isAlreadyInHand) {
+        const weaponDef = findWeaponByName(tw.name);
+        if (weaponDef) {
+          const stats = getWeaponStats(char, weaponDef);
+          attacks.push({
+            source: 'thrown',
+            weaponName: weaponDef.name,
+            attackBonus: stats.atkBonusStr,
+            damageAndType: stats.fullDmgStr,
+            actionType: 'action',
+            weaponDef,
+            notes: 'Метательное из снаряжения / пояса',
+          });
+        }
+      }
+    }
+  }
+
+  // 5. Unarmed Strike (always available per PHB)
+  const strScore = getTotalScore(char, 'СИЛ');
+  const strMod = calcModifier(strScore);
+  const profBonus = calcProficiencyBonus(char.level || 1);
+  const unarmedAtkBonus = formatModifier(profBonus + strMod);
+  const unarmedDmgVal = Math.max(1, 1 + strMod);
+
+  attacks.push({
+    source: 'unarmed',
+    weaponName: 'Безоружный удар',
+    attackBonus: unarmedAtkBonus,
+    damageAndType: `${unarmedDmgVal} дроб.`,
+    actionType: 'action',
+    notes: '1 + мод. СИЛ урона',
+  });
+
+  return attacks;
 }

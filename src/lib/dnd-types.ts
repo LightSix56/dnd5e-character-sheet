@@ -129,6 +129,7 @@ export interface CharacterData {
   armorClass: number | null;
   equippedArmor?: string;
   equippedShield?: boolean;
+  equippedSlots?: Partial<Record<string, any>>;
   initiativeOverride: number | null;
   speed: number;
   hpMax: number | null;
@@ -639,6 +640,15 @@ export function getCalculatedAC(char: CharacterData): number {
   const conMod = getModifier(char, 'ТЕЛ');
   const wisMod = getModifier(char, 'МДР');
 
+  let accessoryAcBonus = 0;
+  if (char.equippedSlots) {
+    for (const [slotId, item] of Object.entries(char.equippedSlots)) {
+      if (item && slotId !== 'armor' && slotId !== 'offHand' && typeof item.bonusAC === 'number') {
+        accessoryAcBonus += item.bonusAC;
+      }
+    }
+  }
+
   const normRace = (char.race || '').toLowerCase();
   const normSubrace = (char.subrace || '').toLowerCase();
   const normClass = (char.className || '').toLowerCase();
@@ -678,7 +688,7 @@ export function getCalculatedAC(char: CharacterData): number {
     if (hasSimicCarapace && armor.type !== 'heavy') {
       total += 1;
     }
-    return total;
+    return total + accessoryAcBonus;
   }
 
   // Handle explicit unarmored modes
@@ -696,37 +706,37 @@ export function getCalculatedAC(char: CharacterData): number {
 
   if (isTortleMode) {
     const shieldBonus = char.equippedShield ? 2 : 0;
-    return 17 + shieldBonus + warforgedBonus;
+    return 17 + shieldBonus + warforgedBonus + accessoryAcBonus;
   }
   if (isThrikreenMode || isLizardfolkMode || isAutognomeMode) {
     const shieldBonus = char.equippedShield ? 2 : 0;
-    return 13 + dexMod + shieldBonus + warforgedBonus;
+    return 13 + dexMod + shieldBonus + warforgedBonus + accessoryAcBonus;
   }
   if (isLoxodonMode) {
     const shieldBonus = char.equippedShield ? 2 : 0;
-    return 12 + conMod + shieldBonus + warforgedBonus;
+    return 12 + conMod + shieldBonus + warforgedBonus + accessoryAcBonus;
   }
   if (isLocathahMode) {
     const shieldBonus = char.equippedShield ? 2 : 0;
-    return 12 + dexMod + shieldBonus + warforgedBonus;
+    return 12 + dexMod + shieldBonus + warforgedBonus + accessoryAcBonus;
   }
   if (isDraconicMode || isMageArmorMode) {
     const shieldBonus = char.equippedShield ? 2 : 0;
-    return 13 + dexMod + shieldBonus + warforgedBonus;
+    return 13 + dexMod + shieldBonus + warforgedBonus + accessoryAcBonus;
   }
   if (isBarbarianMode) {
     const shieldBonus = char.equippedShield ? 2 : 0;
-    return 10 + dexMod + conMod + shieldBonus + warforgedBonus;
+    return 10 + dexMod + conMod + shieldBonus + warforgedBonus + accessoryAcBonus;
   }
   if (isMonkMode) {
     if (char.equippedShield) {
-      return 10 + dexMod + 2 + warforgedBonus;
+      return 10 + dexMod + 2 + warforgedBonus + accessoryAcBonus;
     }
-    return 10 + dexMod + wisMod + warforgedBonus;
+    return 10 + dexMod + wisMod + warforgedBonus + accessoryAcBonus;
   }
   if (isStandardUnarmoredMode) {
     const shieldBonus = char.equippedShield ? 2 : 0;
-    return 10 + dexMod + shieldBonus + warforgedBonus;
+    return 10 + dexMod + shieldBonus + warforgedBonus + accessoryAcBonus;
   }
 
   // Automatic calculation when equippedArmor is empty or default
@@ -783,7 +793,7 @@ export function getCalculatedAC(char: CharacterData): number {
   if (hasSimicCarapace) {
     total += 1;
   }
-  return total;
+  return total + accessoryAcBonus;
 }
 
 export function getAC(char: CharacterData): number {
@@ -791,6 +801,18 @@ export function getAC(char: CharacterData): number {
     return char.armorClass;
   }
   return getCalculatedAC(char);
+}
+
+export function getEffectiveSpeed(char: CharacterData): number {
+  let speedBonus = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && typeof item.bonusSpeed === 'number') {
+        speedBonus += item.bonusSpeed;
+      }
+    }
+  }
+  return (char.speed || 30) + speedBonus;
 }
 
 export function getAvailableArmorModes(char: CharacterData): ArmorModeOption[] {
@@ -1086,6 +1108,7 @@ export function createDefaultCharacter(): CharacterData {
     armorClass: null,
     equippedArmor: '',
     equippedShield: false,
+    equippedSlots: {},
     initiativeOverride: null,
     speed: 30,
     hpMax: null,

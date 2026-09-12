@@ -33,6 +33,7 @@ import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorM
 import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { LevelUpModal } from '@/components/levelup/LevelUpModal';
 import { RestModal } from '@/components/gameplay/RestModal';
+import { EquipmentPaperDoll } from '@/components/equipment/EquipmentPaperDoll';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { calculateWizardAC } from '@/components/wizard/wizard-helpers';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
@@ -1132,6 +1133,7 @@ export default function DnDCharacterSheet() {
   const [showStatsCalcModal, setShowStatsCalcModal] = useState(false);
   const [activeItemModal, setActiveItemModal] = useState<CompendiumItem | null>(null);
   const [showRestModal, setShowRestModal] = useState(false);
+  const [showEquipmentModal, setShowEquipmentModal] = useState(false);
 
   const [rollResult, setRollResult] = useState<RollResult | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -1535,6 +1537,7 @@ export default function DnDCharacterSheet() {
   }, [showToast]);
 
   const closeRestModal = useCallback(() => setShowRestModal(false), []);
+  const closeEquipmentModal = useCallback(() => setShowEquipmentModal(false), []);
 
   const handleClearHistory = useCallback(() => {
     setChar(prev => ({ ...prev, levelHistory: [] }));
@@ -2745,6 +2748,22 @@ export default function DnDCharacterSheet() {
           onClose={closeRestModal}
         />
       )}
+      {showEquipmentModal && (
+        <div
+          className="fixed inset-0 z-[300] flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm overflow-y-auto animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeEquipmentModal();
+          }}
+        >
+          <div className="w-full max-w-4xl my-auto">
+            <EquipmentPaperDoll
+              char={char}
+              onChange={(updated) => setChar(updated)}
+              onClose={closeEquipmentModal}
+            />
+          </div>
+        </div>
+      )}
       {rollResult && <RollResultPopup result={rollResult} onClose={closeRollResult} />}
       {showAuth && <AuthModal onClose={closeAuth} onAuth={handleAuth} onGoogleAuth={handleGoogleAuth} email={authEmail} setEmail={setAuthEmail} password={authPassword} setPassword={setAuthPassword} isSignUp={isSignUp} setIsSignUp={setIsSignUp} loading={authLoading} error={authError} />}
       {showCloudSaves && (
@@ -2955,6 +2974,15 @@ export default function DnDCharacterSheet() {
                     className="absolute left-0 top-full mt-1.5 w-52 parchment-menu-dropdown z-[120] py-1.5 rounded shadow-xl"
                     role="menu"
                   >
+                    <button
+                      type="button"
+                      onClick={() => { setShowSheetMenu(false); setShowEquipmentModal(true); }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                      role="menuitem"
+                    >
+                      <CrossedSwordsIcon size={14} />
+                      <span>Экипировка (кукла)</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => { setShowSheetMenu(false); handleExportPdf(); }}
@@ -3202,6 +3230,19 @@ export default function DnDCharacterSheet() {
                 >
                   {isExportingPdf ? <MysticSpinnerIcon size={15} /> : <ScrollIcon size={15} />}
                   <span>{isExportingPdf ? 'Создание PDF…' : 'Печать официального PDF (5 стр.)'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setShowMobileMenu(false); setShowEquipmentModal(true); }}
+                  className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start col-span-2 font-bold"
+                  style={{
+                    background: 'linear-gradient(180deg, rgba(201, 168, 76, 0.3) 0%, rgba(139, 105, 20, 0.2) 100%)',
+                    border: '1px solid #C9A84C',
+                  }}
+                >
+                  <CrossedSwordsIcon size={15} />
+                  <span>Экипировка (кукла снаряжения)</span>
                 </button>
 
                 <button
@@ -3615,20 +3656,36 @@ export default function DnDCharacterSheet() {
                     <EngravedShieldIcon size={20} />
                     <span>Боевые параметры</span>
                   </h3>
-                  <button
-                    type="button"
-                    onClick={() => setShowRestModal(true)}
-                    className="text-xs px-2.5 py-1 rounded font-bold flex items-center gap-1.5 cursor-pointer transition-all hover:brightness-110 active:scale-95 shadow-sm"
-                    style={{
-                      background: 'linear-gradient(180deg, #8B4513, #6B3A2A)',
-                      color: '#FFE58F',
-                      border: '1px solid #C9A84C',
-                    }}
-                    title="Короткий (1 ч.) или продолжительный (8 ч.) отдых"
-                  >
-                    <HourglassIcon size={14} />
-                    <span>Отдых</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowEquipmentModal(true)}
+                      className="text-xs px-2.5 py-1 rounded font-bold flex items-center gap-1.5 cursor-pointer transition-all hover:brightness-110 active:scale-95 shadow-sm"
+                      style={{
+                        background: 'linear-gradient(180deg, #8B4513, #6B3A2A)',
+                        color: '#FFE58F',
+                        border: '1px solid #C9A84C',
+                      }}
+                      title="Интерактивная кукла экипировки (13 слотов)"
+                    >
+                      <CrossedSwordsIcon size={14} />
+                      <span>Экипировка</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowRestModal(true)}
+                      className="text-xs px-2.5 py-1 rounded font-bold flex items-center gap-1.5 cursor-pointer transition-all hover:brightness-110 active:scale-95 shadow-sm"
+                      style={{
+                        background: 'linear-gradient(180deg, #8B4513, #6B3A2A)',
+                        color: '#FFE58F',
+                        border: '1px solid #C9A84C',
+                      }}
+                      title="Короткий (1 ч.) или продолжительный (8 ч.) отдых"
+                    >
+                      <HourglassIcon size={14} />
+                      <span>Отдых</span>
+                    </button>
+                  </div>
                 </div>
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -4006,7 +4063,26 @@ export default function DnDCharacterSheet() {
 
               {/* Equipment */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><BackpackPackIcon size={18} /><span>Снаряжение</span></h3></div>
+                <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                  <h3 className="parchment-heading flex items-center gap-2">
+                    <BackpackPackIcon size={18} />
+                    <span>Снаряжение</span>
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowEquipmentModal(true)}
+                    className="text-xs px-2.5 py-1 rounded font-bold flex items-center gap-1.5 cursor-pointer transition-all hover:brightness-110 active:scale-95 shadow-sm"
+                    style={{
+                      background: 'linear-gradient(180deg, #8B4513, #6B3A2A)',
+                      color: '#FFE58F',
+                      border: '1px solid #C9A84C',
+                    }}
+                    title="Интерактивная кукла экипировки (13 слотов)"
+                  >
+                    <CrossedSwordsIcon size={14} />
+                    <span>Экипировка</span>
+                  </button>
+                </div>
                 <div className="px-4 pb-4 space-y-2">
                   {!char.equipment?.trim() && (
                     <div className="parchment-empty-state">

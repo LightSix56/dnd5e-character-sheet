@@ -126,9 +126,9 @@
     "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
   },
   "src/app/page.tsx": {
-    "mtime": 1789229034.6409519,
-    "seen": 1789229226.0982554,
-    "ast_hash": "d9adeeba1ac6f9e8e28b6b00b796f980",
+    "mtime": 1789230632.6298022,
+    "seen": 1789230709.379281,
+    "ast_hash": "4d6f783d90a22a584a68f75dbfa42045",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1789228872.9151468,
-    "seen": 1789229226.1135705,
-    "ast_hash": "52fb4bd3f9c37412fc31707a359d3bb5",
+    "mtime": 1789230276.5564225,
+    "seen": 1789230709.4006236,
+    "ast_hash": "71a130b81249c908f17e2805bd99ae92",
     "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
@@ -1119,6 +1119,42 @@
     "mtime": 1789228809.504323,
     "seen": 1789229226.115818,
     "ast_hash": "358406fe423d0ca63b5e7d6d637bf26e",
+    "semantic_hash": ""
+  },
+  "src/components/equipment/EquipmentPaperDoll.tsx": {
+    "mtime": 1789230552.469699,
+    "seen": 1789230709.3829467,
+    "ast_hash": "fdf2c64575f9f0eb6e84ab911483d0f7",
+    "semantic_hash": ""
+  },
+  "src/components/equipment/EquipmentSlotModal.tsx": {
+    "mtime": 1789230486.469491,
+    "seen": 1789230709.3829513,
+    "ast_hash": "ba9a5ce53881eb7233c8024483a51f5c",
+    "semantic_hash": ""
+  },
+  "src/lib/equipment-types.ts": {
+    "mtime": 1789230108.4134254,
+    "seen": 1789230709.400629,
+    "ast_hash": "871831264611aaea9599289489588614",
+    "semantic_hash": ""
+  },
+  "test/equipment-slots.test.ts": {
+    "mtime": 1789230683.6183872,
+    "seen": 1789230709.407279,
+    "ast_hash": "68e65d444b8eb16d5cdd346c95bf20b5",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-12-equipment-system.md": {
+    "mtime": 1789230053.0268147,
+    "seen": 1789230709.42936,
+    "ast_hash": "4332bff008b226892850f96745278dc5",
+    "semantic_hash": ""
+  },
+  "public/mannequin.png": {
+    "mtime": 1789229607.4817774,
+    "seen": 1789230709.434819,
+    "ast_hash": "8980a7abab5a0167c2d1aafecbb0fb39",
     "semantic_hash": ""
   }
 }

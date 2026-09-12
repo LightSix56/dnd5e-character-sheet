@@ -125,7 +125,6 @@ export function ShareModal({
   return (
     <div
       className="parchment-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
-      onClick={onClose}
     >
       <div
         className="parchment-modal w-full max-w-lg p-5 sm:p-6 my-auto text-[#3C2415] relative animate-in fade-in zoom-in-95 duration-150"

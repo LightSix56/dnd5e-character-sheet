@@ -231,4 +231,130 @@ describe('Task 3: Escape Key Modal Dismissal & Keyboard Dice Rolls (TDD)', () =>
       );
     });
   });
+
+  describe('4. Backdrop Click Prevention for Complex Modals', () => {
+    it('CharacterCreationWizardModal does not dismiss on backdrop click', () => {
+      const content = readFile('src/components/wizard/CharacterCreationWizardModal.tsx');
+      assert.doesNotMatch(
+        content,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'CharacterCreationWizardModal backdrop must not have onClick={onClose}'
+      );
+    });
+
+    it('LevelUpModal does not dismiss on backdrop click', () => {
+      const content = readFile('src/components/levelup/LevelUpModal.tsx');
+      assert.doesNotMatch(
+        content,
+        /parchment-modal-overlay[^>]*onClick=\{onCancel\}/,
+        'LevelUpModal backdrop must not have onClick={onCancel}'
+      );
+    });
+
+    it('Tools and Calculator modals do not dismiss on backdrop click', () => {
+      const statsContent = readFile('src/components/tools/StatsCalculatorModal.tsx');
+      assert.doesNotMatch(
+        statsContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'StatsCalculatorModal backdrop must not have onClick={onClose}'
+      );
+
+      const nameContent = readFile('src/components/tools/NameGeneratorModal.tsx');
+      assert.doesNotMatch(
+        nameContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'NameGeneratorModal backdrop must not have onClick={onClose}'
+      );
+
+      const gridContent = readFile('src/components/tools/CharacterGridModal.tsx');
+      assert.doesNotMatch(
+        gridContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'CharacterGridModal backdrop must not have onClick={onClose}'
+      );
+
+      const shareContent = readFile('src/components/tools/ShareModal.tsx');
+      assert.doesNotMatch(
+        shareContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'ShareModal backdrop must not have onClick={onClose}'
+      );
+    });
+
+    it('Compendium modals do not dismiss on backdrop click', () => {
+      const classContent = readFile('src/components/compendium/ClassSelectorModal.tsx');
+      assert.doesNotMatch(
+        classContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'ClassSelectorModal backdrop must not have onClick={onClose}'
+      );
+
+      const raceContent = readFile('src/components/compendium/RaceSelectorModal.tsx');
+      assert.doesNotMatch(
+        raceContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'RaceSelectorModal backdrop must not have onClick={onClose}'
+      );
+
+      const subclassContent = readFile('src/components/compendium/SubclassSelectorModal.tsx');
+      assert.doesNotMatch(
+        subclassContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'SubclassSelectorModal backdrop must not have onClick={onClose}'
+      );
+
+      const itemContent = readFile('src/components/compendium/ItemDetailModal.tsx');
+      assert.doesNotMatch(
+        itemContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'ItemDetailModal backdrop must not have onClick={onClose}'
+      );
+
+      const compendiumModalsContent = readFile('src/components/compendium/CompendiumModals.tsx');
+      assert.doesNotMatch(
+        compendiumModalsContent,
+        /parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'CompendiumModals backdrops must not have onClick={onClose}'
+      );
+    });
+
+    it('page.tsx confirmation and management modals do not dismiss on backdrop click', () => {
+      const pageContent = readFile('src/app/page.tsx');
+
+      // CreateChoiceModal
+      assert.doesNotMatch(
+        pageContent,
+        /function CreateChoiceModal[\s\S]*?parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'CreateChoiceModal backdrop must not have onClick={onClose}'
+      );
+
+      // LevelDownModal
+      assert.doesNotMatch(
+        pageContent,
+        /function LevelDownModal[\s\S]*?parchment-modal-overlay[^>]*onClick=\{onCancel\}/,
+        'LevelDownModal backdrop must not have onClick={onCancel}'
+      );
+
+      // LevelHistoryModal
+      assert.doesNotMatch(
+        pageContent,
+        /function LevelHistoryModal[\s\S]*?parchment-modal-overlay[^>]*onClick=\{onClose\}/,
+        'LevelHistoryModal backdrop must not have onClick={onClose}'
+      );
+
+      // ResetModal
+      assert.doesNotMatch(
+        pageContent,
+        /function ResetModal[\s\S]*?parchment-modal-overlay[^>]*onClick=\{onCancel\}/,
+        'ResetModal backdrop must not have onClick={onCancel}'
+      );
+
+      // TemplateModal (ClassTemplatesModal)
+      assert.doesNotMatch(
+        pageContent,
+        /function TemplateModal[\s\S]*?parchment-modal-overlay[^>]*onClick=\{onCancel\}/,
+        'TemplateModal backdrop must not have onClick={onCancel}'
+      );
+    });
+  });
 });

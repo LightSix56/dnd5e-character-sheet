@@ -19,7 +19,7 @@ export function SpellDetailModal({ spell, customName, onClose }: SpellModalProps
   if (!spell && !customName) return null;
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm">
       <div
         className="parchment-modal max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl relative rounded-lg"
         style={{
@@ -165,7 +165,7 @@ export function WeaponDetailModal({ weapon, customName, customBonus, customDamag
   if (!weapon && !customName) return null;
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm">
       <div
         className="parchment-modal max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl relative rounded-lg"
         style={{
@@ -319,7 +319,7 @@ export function TraitDetailModal({
   if (!trait && !customName) return null;
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm">
       <div
         className="parchment-modal max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl relative rounded-lg"
         style={{

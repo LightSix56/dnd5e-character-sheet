@@ -313,7 +313,6 @@ export function StatsCalculatorModal({
   return (
     <div
       className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-2 sm:p-4 bg-black/65 backdrop-blur-sm"
-      onClick={onClose}
     >
       <div
         className="parchment-modal max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl relative rounded-lg"

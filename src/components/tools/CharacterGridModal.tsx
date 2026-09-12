@@ -478,7 +478,6 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
   return (
     <div
       className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
-      onClick={onClose}
     >
       <div
         className="parchment-modal w-full max-w-5xl my-auto max-h-[90vh] flex flex-col overflow-hidden shadow-2xl animate-fade-in"

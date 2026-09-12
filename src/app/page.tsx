@@ -245,7 +245,7 @@ const LevelDownModal = React.memo(function LevelDownModal({ char, onConfirm, onC
   const targetLevel = Math.max(1, char.level - 1);
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4" onClick={onCancel}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
       <div className="parchment-modal max-w-md w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <h2 className="text-xl font-bold mb-2 flex items-center gap-2" style={{ color: '#8B2500' }}>
@@ -311,7 +311,7 @@ const LevelHistoryModal = React.memo(function LevelHistoryModal({ char, onClose,
   const history = Array.isArray(char.levelHistory) ? char.levelHistory : [];
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
       <div className="parchment-modal max-w-lg w-full max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
@@ -495,7 +495,7 @@ function NonClassSpellConfirmModal({ char, spell, onConfirm, onCancel }: NonClas
   const charClass = char.className || char.spellcastingClass || 'Без класса';
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[360] flex items-center justify-center p-3 bg-black/65 backdrop-blur-sm" onClick={onCancel}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[360] flex items-center justify-center p-3 bg-black/65 backdrop-blur-sm">
       <div
         className="parchment-modal max-w-md w-full p-5 space-y-4 shadow-2xl relative rounded-lg"
         style={{ background: '#F5E6C8', border: '3px solid #D9822B' }}
@@ -587,7 +587,7 @@ const TemplateModal = React.memo(function TemplateModal({ onSelect, onCancel }: 
   });
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4">
       <div className="parchment-modal max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
@@ -738,7 +738,7 @@ const AuthModal = React.memo(function AuthModal({ onClose, onAuth, onGoogleAuth,
 }) {
   useEscapeKey(onClose);
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4">
       <div className="parchment-modal max-w-sm w-full" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
@@ -818,7 +818,7 @@ const SignOutModal = React.memo(function SignOutModal({ userEmail, onConfirmSign
 }) {
   useEscapeKey(onCancel);
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4" onClick={onCancel}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4">
       <div className="parchment-modal max-w-sm w-full" onClick={e => e.stopPropagation()}>
         <div className="p-6">
           <h2 className="text-lg font-bold mb-3 flex items-center gap-2">
@@ -872,7 +872,7 @@ const SignOutModal = React.memo(function SignOutModal({ userEmail, onConfirmSign
 const ResetModal = React.memo(function ResetModal({ onConfirm, onCancel }: { onConfirm?: () => void; onCancel: () => void }) {
   useEscapeKey(onCancel);
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm" onClick={onCancel}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm">
       <div className="parchment-modal max-w-md w-full p-5 sm:p-6 space-y-4" onClick={e => e.stopPropagation()}>
         <h3 className="text-lg font-bold" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>Очистить лист персонажа?</h3>
         <p className="text-xs" style={{ color: '#5C341F' }}>Все введённые данные будут сброшены к начальным значениям 1-го уровня.</p>
@@ -900,7 +900,7 @@ const CreateChoiceModal = React.memo(function CreateChoiceModal({
   useEscapeKey(onClose);
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm">
       <div
         className="parchment-modal max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl relative rounded-xl"
         style={{ background: '#F5E6C8', border: '3px solid #C9A84C' }}

@@ -1429,7 +1429,6 @@ export const LevelUpModal = React.memo(function LevelUpModal({
   return (
     <div
       className="fixed inset-0 parchment-modal-overlay z-[350] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4"
-      onClick={onCancel}
     >
       <div
         className="parchment-modal max-w-4xl w-[96vw] max-h-[92vh] flex flex-col rounded-xl overflow-hidden shadow-2xl"

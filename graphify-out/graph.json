@@ -15398,7 +15398,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L1496",
+      "source_location": "L1495",
       "weight": 1.0
     },
     {
@@ -15506,7 +15506,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L3679",
+      "source_location": "L3678",
       "weight": 1.0
     },
     {
@@ -15674,7 +15674,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/tools/CharacterGridModal.tsx",
-      "source_location": "L629",
+      "source_location": "L628",
       "weight": 1.0
     },
     {
@@ -15686,7 +15686,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/tools/CharacterGridModal.tsx",
-      "source_location": "L630",
+      "source_location": "L629",
       "weight": 1.0
     },
     {
@@ -15698,7 +15698,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/tools/CharacterGridModal.tsx",
-      "source_location": "L631",
+      "source_location": "L630",
       "weight": 1.0
     },
     {
@@ -15710,7 +15710,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/tools/CharacterGridModal.tsx",
-      "source_location": "L632",
+      "source_location": "L631",
       "weight": 1.0
     },
     {
@@ -15794,7 +15794,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L478",
+      "source_location": "L477",
       "weight": 1.0
     },
     {
@@ -15806,7 +15806,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L551",
+      "source_location": "L550",
       "weight": 1.0
     },
     {
@@ -40174,5 +40174,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "04c0c42b0fd81694abb74aab90e28b9024c89a88"
+  "built_at_commit": "17837dfdda5d06f6e393bf18c786f0618d7819e2"
 }

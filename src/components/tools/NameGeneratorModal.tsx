@@ -83,7 +83,6 @@ export function NameGeneratorModal({ currentRace, onSelectName, onClose }: NameG
   return (
     <div
       className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-2 sm:p-4 bg-black/65 backdrop-blur-sm"
-      onClick={onClose}
     >
       <div
         className="parchment-modal max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl relative rounded-lg"

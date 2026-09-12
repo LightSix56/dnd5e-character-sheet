@@ -21,7 +21,7 @@ export function ItemDetailModal({ item, onEquipArmor, onToggleShield, onClose }:
   const isWeapon = item.category === 'Оружие';
 
   return (
-    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 parchment-modal-overlay z-[350] flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm">
       <div
         className="parchment-modal max-w-md w-full max-h-[85vh] flex flex-col shadow-2xl relative rounded-lg"
         style={{

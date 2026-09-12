@@ -42,6 +42,7 @@ export interface Attack {
   attackBonus: string;
   damageAndType: string;
   ability?: AbilityName;
+  proficient?: boolean;
   isProficient?: boolean;
 }
 
@@ -134,6 +135,7 @@ export interface CharacterData {
   hpCurrent: number;
   hpTemp: number;
   hitDice: string;
+  hitDiceSpent?: number;
 
   // Death saves
   deathSaveSuccesses: number;
@@ -304,6 +306,77 @@ export function getPassivePerception(char: CharacterData): number {
 }
 
 /**
+ * Checks if a character has the Powerful Build trait (counts as one size larger for carry/push/drag/lift).
+ */
+export function hasPowerfulBuild(char: CharacterData): boolean {
+  const race = (char.race || '').toLowerCase();
+  const subrace = (char.subrace || '').toLowerCase();
+  const features = (char.featuresTraits || '').toLowerCase();
+  const addFeatures = (char.additionalFeaturesTraits || '').toLowerCase();
+
+  const racePattern = /голиаф|goliath|фирболг|firbolg|багбир|bugbear|локсодон|loxodon|орк|orc/i;
+  if (racePattern.test(race) || racePattern.test(subrace)) {
+    return true;
+  }
+
+  const traitPattern = /мощное телосложение|powerful build/i;
+  if (traitPattern.test(features) || traitPattern.test(addFeatures)) {
+    return true;
+  }
+
+  if (Array.isArray(char.traitsList)) {
+    for (const t of char.traitsList) {
+      if (traitPattern.test(t.name || '') || traitPattern.test(t.description || '')) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+export interface CarryingCapacity {
+  maxCarry: number;     // STR * 15 (lbs) * multiplier
+  pushDragLift: number; // STR * 30 (lbs) * multiplier
+  isPowerfulBuild: boolean;
+}
+
+/**
+ * Calculates maximum carrying capacity and push/drag/lift capacity per D&D 5e PHB p. 176.
+ */
+export function getCarryingCapacity(char: CharacterData): CarryingCapacity {
+  const strScore = getTotalScore(char, 'СИЛ');
+  const powerful = hasPowerfulBuild(char);
+  const mult = powerful ? 2 : 1;
+  return {
+    maxCarry: strScore * 15 * mult,
+    pushDragLift: strScore * 30 * mult,
+    isPowerfulBuild: powerful,
+  };
+}
+
+export interface JumpDistances {
+  longRun: number;       // STR (ft)
+  longStanding: number;  // floor(STR / 2) (ft)
+  highRun: number;       // max(0, 3 + STR mod) (ft)
+  highStanding: number;  // max(0, floor((3 + STR mod) / 2)) (ft)
+}
+
+/**
+ * Calculates long and high jump distances per D&D 5e PHB p. 182.
+ */
+export function getJumpDistances(char: CharacterData): JumpDistances {
+  const strScore = getTotalScore(char, 'СИЛ');
+  const strMod = calcModifier(strScore);
+  return {
+    longRun: strScore,
+    longStanding: Math.floor(strScore / 2),
+    highRun: Math.max(0, 3 + strMod),
+    highStanding: Math.max(0, Math.floor((3 + strMod) / 2)),
+  };
+}
+
+/**
  * Resolves the primary ability (СИЛ, ЛОВ, etc.) governing an attack roll and damage.
  */
 export function resolveAttackAbility(
@@ -369,7 +442,8 @@ export function recalculateSingleAttack(
 ): Attack {
   const ability = atk.ability || resolveAttackAbility(atk, char);
   const deltaMod = (newMods[ability] ?? 0) - (oldMods[ability] ?? 0);
-  const deltaProf = newProf - oldProf;
+  const isProf = atk.proficient !== false && atk.isProficient !== false;
+  const deltaProf = isProf ? (newProf - oldProf) : 0;
 
   if (deltaMod === 0 && deltaProf === 0) {
     return { ...atk, ability };
@@ -413,6 +487,33 @@ export function recalculateSingleAttack(
 }
 
 /**
+ * Toggles or sets weapon proficiency on an attack and recalculates the attack bonus accordingly.
+ */
+export function setAttackProficiency(atk: Attack, proficient: boolean, prof: number): Attack {
+  const currentProficient = atk.proficient !== false && atk.isProficient !== false;
+  if (currentProficient === proficient) {
+    return { ...atk, proficient, isProficient: proficient };
+  }
+
+  let newAttackBonus = atk.attackBonus;
+  if (atk.attackBonus && atk.attackBonus.trim()) {
+    const bonusMatch = atk.attackBonus.trim().match(/^([+-]?\d+)$/);
+    if (bonusMatch) {
+      const currentBonus = parseInt(bonusMatch[1], 10);
+      const updatedBonus = proficient ? currentBonus + prof : currentBonus - prof;
+      newAttackBonus = formatModifier(updatedBonus);
+    }
+  }
+
+  return {
+    ...atk,
+    proficient,
+    isProficient: proficient,
+    attackBonus: newAttackBonus,
+  };
+}
+
+/**
  * Batch recalculates all attacks when ability modifiers or proficiency bonus change.
  */
 export function recalculateAttacksOnStatsChange(
@@ -425,6 +526,75 @@ export function recalculateAttacksOnStatsChange(
 ): Attack[] {
   if (!Array.isArray(attacks) || attacks.length === 0) return [];
   return attacks.map(atk => recalculateSingleAttack(atk, oldMods, newMods, oldProf, newProf, char));
+}
+
+export interface ShortRestOptions {
+  diceSpent: number;
+  hpHealed: number;
+  resetWarlockSlots?: boolean;
+}
+
+/**
+ * Applies the effects of a Short Rest per D&D 5e PHB p. 186.
+ */
+export function applyShortRest(char: CharacterData, options: ShortRestOptions): CharacterData {
+  const maxHP = char.hpMax ?? 10;
+  const newHpCurrent = Math.min(maxHP, char.hpCurrent + Math.max(0, options.hpHealed));
+  const newDiceSpent = Math.max(0, (char.hitDiceSpent || 0) + options.diceSpent);
+
+  let updatedSpellSlots = char.spellSlots;
+  if (options.resetWarlockSlots && char.spellSlots) {
+    const isWarlock = /колдун|warlock/i.test(char.className || '');
+    if (isWarlock) {
+      updatedSpellSlots = { ...char.spellSlots };
+      for (const [lvl, slot] of Object.entries(updatedSpellSlots)) {
+        if (slot && slot.expendedSlots > 0) {
+          updatedSpellSlots[Number(lvl)] = { ...slot, expendedSlots: 0 };
+        }
+      }
+    }
+  }
+
+  return {
+    ...char,
+    hpCurrent: newHpCurrent,
+    hitDiceSpent: newDiceSpent,
+    spellSlots: updatedSpellSlots,
+  };
+}
+
+/**
+ * Applies the effects of a Long Rest per D&D 5e PHB p. 186:
+ * - Regains all hit points up to hpMax.
+ * - Resets temporary hit points to 0.
+ * - Resets death saves.
+ * - Regains expended spell slots.
+ * - Regains spent hit dice up to floor(level / 2), minimum 1.
+ */
+export function applyLongRest(char: CharacterData): CharacterData {
+  const maxHP = char.hpMax ?? 10;
+  const totalHitDice = char.level || 1;
+  const diceToRecover = Math.max(1, Math.floor(totalHitDice / 2));
+  const newDiceSpent = Math.max(0, (char.hitDiceSpent || 0) - diceToRecover);
+
+  const updatedSpellSlots: Record<number, SpellSlotInfo> = {};
+  if (char.spellSlots) {
+    for (const [lvl, slot] of Object.entries(char.spellSlots)) {
+      if (slot) {
+        updatedSpellSlots[Number(lvl)] = { ...slot, expendedSlots: 0 };
+      }
+    }
+  }
+
+  return {
+    ...char,
+    hpCurrent: maxHP,
+    hpTemp: 0,
+    deathSaveSuccesses: 0,
+    deathSaveFailures: 0,
+    hitDiceSpent: newDiceSpent,
+    spellSlots: updatedSpellSlots,
+  };
 }
 
 export const ARMOR_AC_MAP: Record<string, { baseAC: number; type: 'light' | 'medium' | 'heavy' | 'shield'; maxDex?: number }> = {

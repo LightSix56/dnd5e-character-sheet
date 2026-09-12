@@ -67,7 +67,7 @@
   "65": "class-progression.ts",
   "66": "parse-dndsu-spells.ts",
   "67": "StatsCalculatorModal.tsx",
-  "68": "react",
+  "68": "ItemDetailModal.tsx",
   "69": "Глобальные ограничения",
   "70": "fetch-dndsu-backgrounds.ts",
   "71": "modularize-races.js",
@@ -75,6 +75,14 @@
   "73": "📜 Спецификация дизайна: Модульный компендиум рас D&D 5e и автогенерация choices",
   "74": "spells/index.ts",
   "75": "build-spells-compendium.ts",
-  "76": "RaceSelectorModal.tsx",
-  "77": "compendium/index.ts"
+  "76": "CharacterData",
+  "77": "feats.ts",
+  "78": "level-up-arcane.test.ts",
+  "79": "races/types.ts",
+  "80": "wizard-helpers.ts",
+  "81": "merge-races-compendium.ts",
+  "82": "compendium/index.ts",
+  "83": "backgrounds.ts",
+  "84": "ClassSelectorModal.tsx",
+  "85": "SubclassSelectorModal.tsx"
 }

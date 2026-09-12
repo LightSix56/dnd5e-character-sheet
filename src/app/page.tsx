@@ -12,6 +12,7 @@ import {
   getHitDieSize, getHitDieAverage, getHitDiceNotation, isStandardASILevel, getMilestonesAtLevel, createEmptyLevelUpEntry,
   CLASS_TEMPLATES, ClassTemplate, applyClassTemplate, applyRaceTemplate, ARMOR_AC_MAP,
   recalculateAttacksOnStatsChange,
+  getCarryingCapacity, getJumpDistances, setAttackProficiency,
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -30,6 +31,7 @@ import { RaceSelectorModal } from '@/components/compendium/RaceSelectorModal';
 import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorModal';
 import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { LevelUpModal } from '@/components/levelup/LevelUpModal';
+import { RestModal } from '@/components/gameplay/RestModal';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { calculateWizardAC } from '@/components/wizard/wizard-helpers';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
@@ -80,16 +82,18 @@ function rollD20(): number {
 // ── Roll Result Popup ──
 
 interface RollResult {
-  dieResult: number;   // the d20 roll (1-20)
+  dieResult: number;   // the d20 roll (1-20) or sum of dice
   modifier: number;    // the modifier value (can be negative)
   total: number;       // dieResult + modifier
   label: string;       // what was rolled, e.g. "Проверка Силы" or "Спасбросок Лов"
+  breakdown?: string;  // optional formula breakdown, e.g. "1d8 [6] + 3"
 }
 
 const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }: { result: RollResult; onClose: () => void }) {
   const [closing, setClosing] = useState(false);
-  const isNat20 = result.dieResult === 20;
-  const isNat1 = result.dieResult === 1;
+  const isCustomBreakdown = !!result.breakdown;
+  const isNat20 = !isCustomBreakdown && result.dieResult === 20;
+  const isNat1 = !isCustomBreakdown && result.dieResult === 1;
 
   const handleClose = useCallback(() => {
     setClosing(true);
@@ -130,11 +134,11 @@ const RollResultPopup = React.memo(function RollResultPopup({ result, onClose }:
           transition={{ duration: 0.35, ease: "easeOut" }}
           className={`roll-result-die ${isNat20 ? 'nat20' : ''} ${isNat1 ? 'nat1' : ''}`}
         >
-          {result.dieResult}
+          {isCustomBreakdown ? result.total : result.dieResult}
         </motion.div>
 
         <div className="roll-result-breakdown">
-          d20 ({result.dieResult}) {result.modifier >= 0 ? '+' : ''}{result.modifier}
+          {result.breakdown || `d20 (${result.dieResult}) ${result.modifier >= 0 ? '+' : ''}${result.modifier}`}
         </div>
         <div className="roll-result-total">
           = {result.total}
@@ -1126,6 +1130,7 @@ export default function DnDCharacterSheet() {
   const [showNameGenModal, setShowNameGenModal] = useState(false);
   const [showStatsCalcModal, setShowStatsCalcModal] = useState(false);
   const [activeItemModal, setActiveItemModal] = useState<CompendiumItem | null>(null);
+  const [showRestModal, setShowRestModal] = useState(false);
 
   const [rollResult, setRollResult] = useState<RollResult | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -1464,6 +1469,72 @@ export default function DnDCharacterSheet() {
     setRollResult(result);
   }, []);
 
+  const handleRollAttack = useCallback((atk: Attack) => {
+    const match = (atk.attackBonus || '').trim().match(/^([+-]?\d+)$/);
+    const modifier = match ? parseInt(match[1], 10) : 0;
+    const dieResult = rollD20();
+    const total = dieResult + modifier;
+    handleRoll({
+      dieResult,
+      modifier,
+      total,
+      label: `Атака: ${atk.name || 'Оружие'}`,
+    });
+  }, [handleRoll]);
+
+  const handleRollDamage = useCallback((atk: Attack) => {
+    const text = (atk.damageAndType || '').trim();
+    if (!text) return;
+
+    // Matches dice formula like "1d8+3", "2d6 + 4", "1к10", "1d4-1 колющий", "2d6"
+    const diceMatch = text.match(/(\d+)\s*[dкDК]\s*(\d+)(?:\s*([+-])\s*(\d+))?/i);
+    if (!diceMatch) {
+      showToast('Бросок урона', 'Не удалось распознать формулу урона (например, 1d8+3)');
+      return;
+    }
+
+    const numDice = Math.min(50, Math.max(1, parseInt(diceMatch[1], 10)));
+    const dieSides = Math.min(100, Math.max(2, parseInt(diceMatch[2], 10)));
+    const sign = diceMatch[3] || '+';
+    const modVal = diceMatch[4] ? parseInt(diceMatch[4], 10) : 0;
+    const modifier = sign === '-' ? -modVal : modVal;
+
+    const rolls: number[] = [];
+    let sumDice = 0;
+    for (let d = 0; d < numDice; d++) {
+      const arr = new Uint32Array(1);
+      const maxSafe = Math.floor(0xffffffff / dieSides) * dieSides;
+      let val: number;
+      do {
+        crypto.getRandomValues(arr);
+        val = arr[0];
+      } while (val >= maxSafe);
+      const r = (val % dieSides) + 1;
+      rolls.push(r);
+      sumDice += r;
+    }
+
+    const total = Math.max(0, sumDice + modifier);
+    const remaining = text.replace(diceMatch[0], '').replace(/[,\.]/g, '').trim();
+    const typeLabel = remaining ? ` (${remaining})` : '';
+    const breakdown = `${numDice}d${dieSides} [${rolls.join(', ')}]${modifier !== 0 ? ` ${modifier > 0 ? '+' : ''}${modifier}` : ''}`;
+
+    handleRoll({
+      dieResult: sumDice,
+      modifier,
+      total,
+      label: `Урон: ${atk.name || 'Оружие'}${typeLabel}`,
+      breakdown,
+    });
+  }, [handleRoll, showToast]);
+
+  const handleApplyRest = useCallback((updatedChar: CharacterData, toastTitle: string, toastDesc: string) => {
+    setChar(updatedChar);
+    showToast(toastTitle, toastDesc);
+  }, [showToast]);
+
+  const closeRestModal = useCallback(() => setShowRestModal(false), []);
+
   const handleClearHistory = useCallback(() => {
     setChar(prev => ({ ...prev, levelHistory: [] }));
     showToast('История уровней', 'История прокачки очищена');
@@ -1737,6 +1808,8 @@ export default function DnDCharacterSheet() {
   }, []);
 
   const profBonus = useMemo(() => calcProficiencyBonus(char.level), [char.level]);
+  const carryCap = useMemo(() => getCarryingCapacity(char), [char]);
+  const jumpDist = useMemo(() => getJumpDistances(char), [char]);
 
   const compClass = useMemo(() => {
     if (!char.className) return undefined;
@@ -2654,6 +2727,13 @@ export default function DnDCharacterSheet() {
         />
       )}
       {showTemplates && <TemplateModal onSelect={handleApplyTemplate} onCancel={closeTemplates} />}
+      {showRestModal && (
+        <RestModal
+          char={char}
+          onApplyRest={handleApplyRest}
+          onClose={closeRestModal}
+        />
+      )}
       {rollResult && <RollResultPopup result={rollResult} onClose={closeRollResult} />}
       {showAuth && <AuthModal onClose={closeAuth} onAuth={handleAuth} onGoogleAuth={handleGoogleAuth} email={authEmail} setEmail={setAuthEmail} password={authPassword} setPassword={setAuthPassword} isSignUp={isSignUp} setIsSignUp={setIsSignUp} loading={authLoading} error={authError} />}
       {showCloudSaves && (
@@ -3519,7 +3599,26 @@ export default function DnDCharacterSheet() {
 
               {/* Combat */}
               <div className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><EngravedShieldIcon size={20} /><span>Боевые параметры</span></h3></div>
+                <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                  <h3 className="parchment-heading flex items-center gap-2">
+                    <EngravedShieldIcon size={20} />
+                    <span>Боевые параметры</span>
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowRestModal(true)}
+                    className="text-xs px-2.5 py-1 rounded font-bold flex items-center gap-1.5 cursor-pointer transition-all hover:brightness-110 active:scale-95 shadow-sm"
+                    style={{
+                      background: 'linear-gradient(180deg, #8B4513, #6B3A2A)',
+                      color: '#FFE58F',
+                      border: '1px solid #C9A84C',
+                    }}
+                    title="Короткий (1 ч.) или продолжительный (8 ч.) отдых"
+                  >
+                    <HourglassIcon size={14} />
+                    <span>Отдых</span>
+                  </button>
+                </div>
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     <div className="space-y-1"><label className="parchment-label text-xs">КД</label><input type="number" value={char.armorClass ?? ''} onChange={e => update('armorClass', e.target.value === '' ? null : Number(e.target.value))} placeholder={String(getAC(char))} className={inputClass} /></div>
@@ -3598,6 +3697,55 @@ export default function DnDCharacterSheet() {
                       <div className="flex items-center gap-1"><span className="text-xs" style={{ color: '#8B6914' }}>Провалы:</span>{[0,1,2].map(i => (<button key={`f${i}`} onClick={() => updateDeathSave('deathSaveFailures', i < char.deathSaveFailures ? -1 : 1)} className={i < char.deathSaveFailures ? 'death-save-failure' : 'death-save-empty'} />))}</div>
                     </div>
                   </div>
+
+                  {/* Jump & Carrying Capacity Widget */}
+                  <div className="pt-2.5 space-y-2" style={{ borderTop: '1px solid rgba(201, 168, 76, 0.3)' }}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      {/* Carrying capacity */}
+                      <div
+                        className="p-2 rounded flex flex-col justify-between"
+                        style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.35)' }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold flex items-center gap-1" style={{ color: '#5C341F' }}>
+                            <span>🏋️</span> <span>Грузоподъёмность:</span>
+                          </span>
+                          {carryCap.isPowerfulBuild && (
+                            <span
+                              className="text-[10px] font-bold px-1.5 py-0.2 rounded"
+                              style={{ background: '#5C341F', color: '#FFE58F' }}
+                              title="Мощное телосложение: грузоподъёмность удвоена (×2)"
+                            >
+                              ×2
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-1 flex items-baseline justify-between text-[11px]">
+                          <span>Макс.: <strong style={{ color: '#3D2012' }}>{carryCap.maxCarry} фнт.</strong></span>
+                          <span className="opacity-80">Толчок: <strong style={{ color: '#3D2012' }}>{carryCap.pushDragLift} фнт.</strong></span>
+                        </div>
+                      </div>
+
+                      {/* Jump distances */}
+                      <div
+                        className="p-2 rounded flex flex-col justify-between"
+                        style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.35)' }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold flex items-center gap-1" style={{ color: '#5C341F' }}>
+                            <span>🦘</span> <span>Прыжки:</span>
+                          </span>
+                          <span className="text-[10px] opacity-75" style={{ color: '#8B6914' }}>
+                            разбег / с места
+                          </span>
+                        </div>
+                        <div className="mt-1 flex items-baseline justify-between text-[11px]">
+                          <span>В длину: <strong style={{ color: '#3D2012' }}>{jumpDist.longRun} / {jumpDist.longStanding} фт.</strong></span>
+                          <span>В высоту: <strong style={{ color: '#3D2012' }}>{jumpDist.highRun} / {jumpDist.highStanding} фт.</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -3652,8 +3800,9 @@ export default function DnDCharacterSheet() {
                 <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><CrossedSwordsIcon size={20} /><span>Атаки и оружие</span></h3></div>
                 <div className="px-3 sm:px-4 pb-4 space-y-2">
                   <div className="overflow-x-auto custom-scrollbar pb-1">
-                    <div className="min-w-[330px] space-y-2">
-                      <div className="grid grid-cols-[1fr_60px_1fr_32px_32px] gap-1.5 text-xs font-medium px-1" style={{ color: '#8B6914' }}>
+                    <div className="min-w-[440px] space-y-2">
+                      <div className="grid grid-cols-[24px_1fr_75px_1fr_32px_32px] gap-1.5 text-xs font-medium px-1" style={{ color: '#8B6914' }}>
+                        <span className="text-center" title="Владение оружием (добавляет бонус мастерства к попаданию)">Вл.</span>
                         <span>Оружие (автопоиск)</span>
                         <span className="text-center">Бонус</span>
                         <span>Урон / Вид</span>
@@ -3669,8 +3818,31 @@ export default function DnDCharacterSheet() {
                       ) : (
                         char.attacks.map((atk, i) => {
                           const weaponDef = findWeaponByName(atk.name);
+                          const isProf = atk.proficient !== false && atk.isProficient !== false;
                           return (
-                            <div key={i} className="grid grid-cols-[1fr_60px_1fr_32px_32px] gap-1.5 items-center">
+                            <div key={i} className="grid grid-cols-[24px_1fr_75px_1fr_32px_32px] gap-1.5 items-center">
+                              {/* Proficiency Checkbox */}
+                              <div className="flex items-center justify-center">
+                                <label
+                                  className="parchment-checkbox parchment-checkbox-sm"
+                                  title={isProf ? `Владение активно (+${profBonus} к атаке). Нажмите, чтобы снять.` : 'Без владения (бонус мастерства не добавляется). Нажмите, чтобы включить.'}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isProf}
+                                    onChange={e => {
+                                      const updated = setAttackProficiency(atk, e.target.checked, profBonus);
+                                      setChar(prev => {
+                                        const newAttacks = [...prev.attacks];
+                                        newAttacks[i] = updated;
+                                        return { ...prev, attacks: newAttacks };
+                                      });
+                                    }}
+                                  />
+                                  <span className="checkmark"></span>
+                                </label>
+                              </div>
+
                               <AutocompleteInput
                                 value={atk.name}
                                 onChange={val => updateAttack(i, 'name', val)}
@@ -3679,18 +3851,56 @@ export default function DnDCharacterSheet() {
                                 placeholder="Оружие или атака…"
                                 className={inputClass}
                               />
-                              <input
-                                value={atk.attackBonus}
-                                onChange={e => updateAttack(i, 'attackBonus', e.target.value)}
-                                placeholder="+5"
-                                className={inputClassCenter + " w-full"}
-                              />
-                              <input
-                                value={atk.damageAndType}
-                                onChange={e => updateAttack(i, 'damageAndType', e.target.value)}
-                                placeholder="1d8+3 рубящий"
-                                className={inputClass}
-                              />
+
+                              {/* Attack bonus with quick d20 roll button */}
+                              <div className="flex items-center gap-1">
+                                <input
+                                  value={atk.attackBonus}
+                                  onChange={e => updateAttack(i, 'attackBonus', e.target.value)}
+                                  placeholder="+5"
+                                  className={inputClassCenter + " w-full min-w-0 px-1"}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRollAttack(atk)}
+                                  className="w-7 h-7 flex items-center justify-center rounded text-[11px] font-bold cursor-pointer hover:brightness-110 active:scale-95 shrink-0"
+                                  style={{
+                                    background: 'linear-gradient(180deg, #8B4513, #6B3A2A)',
+                                    color: '#FFE58F',
+                                    border: '1px solid #C9A84C',
+                                    boxShadow: '0 1px 2px rgba(61, 32, 18, 0.2)'
+                                  }}
+                                  title="Бросить d20 на попадание"
+                                >
+                                  <D20Icon size={14} />
+                                </button>
+                              </div>
+
+                              {/* Damage & Type with damage roll button */}
+                              <div className="flex items-center gap-1">
+                                <input
+                                  value={atk.damageAndType}
+                                  onChange={e => updateAttack(i, 'damageAndType', e.target.value)}
+                                  placeholder="1d8+3 рубящий"
+                                  className={inputClass + " flex-1 min-w-0"}
+                                />
+                                {atk.damageAndType?.trim() && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRollDamage(atk)}
+                                    className="w-7 h-7 flex items-center justify-center rounded text-xs cursor-pointer hover:brightness-110 active:scale-95 shrink-0"
+                                    style={{
+                                      background: 'rgba(237, 224, 200, 0.85)',
+                                      border: '1px solid rgba(139, 105, 20, 0.45)',
+                                      color: '#5C341F'
+                                    }}
+                                    title="Бросить урон оружия"
+                                  >
+                                    🎲
+                                  </button>
+                                )}
+                              </div>
+
                               <button
                                 type="button"
                                 onClick={() => setActiveWeaponModal({

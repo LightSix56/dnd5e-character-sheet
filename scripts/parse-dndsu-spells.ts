@@ -202,19 +202,31 @@ export async function fetchSpellHtml(link: string): Promise<string> {
   }
 
   const url = `https://dnd.su${link}`;
-  const res = await fetch(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
-    },
-  });
+  let lastError: any = null;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
+        },
+      });
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch spell page ${url}: HTTP ${res.status}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const html = await res.text();
+      fs.writeFileSync(cachePath, html, 'utf-8');
+      return html;
+    } catch (err: any) {
+      lastError = err;
+      if (attempt < 3) {
+        await new Promise(r => setTimeout(r, 400 * attempt));
+      }
+    }
   }
 
-  const html = await res.text();
-  fs.writeFileSync(cachePath, html, 'utf-8');
-  return html;
+  throw new Error(`Failed to fetch spell page ${url} after 3 attempts: ${lastError?.message}`);
 }
 
 // ── Parse Single Spell ──
@@ -305,14 +317,15 @@ export function parseSpellPage(html: string, link: string, catalogEntry?: Catalo
       .trim();
   }
 
-  school = school.toLowerCase();
-  // Match English school name
+  // Match English school name and clean base school name
   if (catalogEntry?.filter_school?.[0]) {
     const sInfo = DND_SCHOOL_ID_MAP[catalogEntry.filter_school[0]];
     if (sInfo) {
+      school = sInfo.ru;
       schoolEn = sInfo.en;
-      if (!school) school = sInfo.ru;
     }
+  } else {
+    school = school.split('(')[0].trim().toLowerCase();
   }
 
   // 4. Params parsing
@@ -426,7 +439,7 @@ export function parseSpellPage(html: string, link: string, catalogEntry?: Catalo
     (Array.isArray(catalogEntry?.filter_concentration) && catalogEntry?.filter_concentration.includes('2'));
 
   const isConsumed = m.toLowerCase().includes('расходуем') || m.toLowerCase().includes('тратит');
-  const hasCost = /\b(\d+)\s*(?:зм|мм|см|зм|эм|sp|gp|cp|ep|pp)\b/i.test(m);
+  const hasCost = /(?:\d[\d\s]*)\s*(?:зм|мм|см|эм|sp|gp|cp|ep|pp)(?![а-яё])/i.test(m);
 
   // 7. Description & Higher levels
   const descEl = $('[itemprop="description"]');

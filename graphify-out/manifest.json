@@ -996,9 +996,9 @@
     "semantic_hash": ""
   },
   "scripts/parse-dndsu-spells.ts": {
-    "mtime": 1789193603.1422338,
-    "seen": 1789193724.1585004,
-    "ast_hash": "ef70f8ad476ab719ee14f629fdcb0a3b",
+    "mtime": 1789194318.5692408,
+    "seen": 1789194431.6439507,
+    "ast_hash": "9155bc11d685649dfc84023db6f0014c",
     "semantic_hash": ""
   }
 }

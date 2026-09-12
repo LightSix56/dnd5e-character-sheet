@@ -3876,7 +3876,7 @@
       "file_type": "code",
       "norm_label": "crawlallspells()",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L485"
+      "source_location": "L498"
     },
     {
       "id": "scripts_parse_dndsu_spells_ensuredirs",
@@ -3924,7 +3924,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L521"
+      "source_location": "L534"
     },
     {
       "id": "scripts_parse_dndsu_spells_parsespellpage",
@@ -3936,7 +3936,7 @@
       "file_type": "code",
       "norm_label": "parsespellpage()",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L222"
+      "source_location": "L234"
     },
     {
       "id": "src_components_dnd_icons_d20icon",
@@ -12847,7 +12847,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L486",
+      "source_location": "L499",
       "weight": 1.0
     },
     {
@@ -12859,7 +12859,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L495",
+      "source_location": "L508",
       "weight": 1.0
     },
     {
@@ -12871,7 +12871,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L496",
+      "source_location": "L509",
       "weight": 1.0
     },
     {
@@ -12907,7 +12907,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L540",
+      "source_location": "L553",
       "weight": 1.0
     },
     {
@@ -12919,7 +12919,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L541",
+      "source_location": "L554",
       "weight": 1.0
     },
     {
@@ -12931,7 +12931,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L562",
+      "source_location": "L575",
       "weight": 1.0
     },
     {
@@ -12943,7 +12943,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L572",
+      "source_location": "L585",
       "weight": 1.0
     },
     {
@@ -12955,7 +12955,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L234",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
@@ -33015,7 +33015,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L222",
+      "source_location": "L234",
       "weight": 1.0
     },
     {
@@ -33048,7 +33048,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L485",
+      "source_location": "L498",
       "weight": 1.0
     },
     {
@@ -33059,7 +33059,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/parse-dndsu-spells.ts",
-      "source_location": "L521",
+      "source_location": "L534",
       "weight": 1.0
     },
     {
@@ -37839,5 +37839,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "03f27077a447e30dfccab4c9c57373a13e91c6fb"
+  "built_at_commit": "65c584fe9cbc6315a169c083a01325abccc9dbe7"
 }

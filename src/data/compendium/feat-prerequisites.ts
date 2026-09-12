@@ -128,8 +128,8 @@ export function checkFeatPrerequisites(
   // 4. Armor Proficiencies
   if (lowerPrereq.includes('владение тяжёлыми доспехами')) {
     const profs = context.armorProficiencies || [];
-    const hasHeavy = profs.some(p => p.toLowerCase().includes('тяж') || p.toLowerCase().includes('heavy'));
-    if (!hasHeavy && profs.length > 0) {
+    const hasHeavy = profs.some(p => /(тяж[её]л|все).*доспех|heavy\s*armor|all\s*armor/i.test(p));
+    if (!hasHeavy) {
       return {
         satisfied: false,
         unmetReason: 'Требуется: Владение тяжёлыми доспехами',
@@ -138,11 +138,8 @@ export function checkFeatPrerequisites(
     }
   } else if (lowerPrereq.includes('владение средними доспехами')) {
     const profs = context.armorProficiencies || [];
-    const hasMedium = profs.some(
-      p => p.toLowerCase().includes('средн') || p.toLowerCase().includes('тяж') ||
-           p.toLowerCase().includes('medium') || p.toLowerCase().includes('heavy')
-    );
-    if (!hasMedium && profs.length > 0) {
+    const hasMedium = profs.some(p => /(средн|тяж[её]л|все).*доспех|medium\s*armor|heavy\s*armor|all\s*armor/i.test(p));
+    if (!hasMedium) {
       return {
         satisfied: false,
         unmetReason: 'Требуется: Владение средними доспехами',
@@ -151,15 +148,59 @@ export function checkFeatPrerequisites(
     }
   } else if (lowerPrereq.includes('владение лёгкими доспехами')) {
     const profs = context.armorProficiencies || [];
-    const hasLight = profs.some(
-      p => p.toLowerCase().includes('легк') || p.toLowerCase().includes('лёгк') ||
-           p.toLowerCase().includes('средн') || p.toLowerCase().includes('тяж') ||
-           p.toLowerCase().includes('light') || p.toLowerCase().includes('medium') || p.toLowerCase().includes('heavy')
-    );
-    if (!hasLight && profs.length > 0) {
+    const hasLight = profs.some(p => /(л[её]гк|средн|тяж[её]л|все).*доспех|light\s*armor|medium\s*armor|heavy\s*armor|all\s*armor/i.test(p));
+    if (!hasLight) {
       return {
         satisfied: false,
         unmetReason: 'Требуется: Владение лёгкими доспехами',
+        requirementText: prereq,
+      };
+    }
+  }
+
+  // 4.1. Martial Weapon Proficiency
+  if (lowerPrereq.includes('воинским оружием') || lowerPrereq.includes('воинское оружие')) {
+    const profs = context.armorProficiencies || [];
+    const martialClasses = ['воин', 'паладин', 'следопыт', 'варвар', 'fighter', 'paladin', 'ranger', 'barbarian'];
+    const isMartialClass = context.className && martialClasses.some(c => context.className!.toLowerCase().includes(c));
+    const hasMartialInProfs = profs.some(p => /воинск|martial/i.test(p));
+    const hasBg = context.background && /великаний подкидыш/i.test(context.background);
+
+    if (!isMartialClass && !hasMartialInProfs && !hasBg) {
+      return {
+        satisfied: false,
+        unmetReason: 'Требуется: Владение воинским оружием',
+        requirementText: prereq,
+      };
+    }
+  }
+
+  // 4.2. Campaign / Background / Specific Class Feats
+  if (lowerPrereq.includes('посвящённый в высшее волшебство') || lowerPrereq.includes('посвящение в высшее волшебство')) {
+    // Already checked under chained feats or level if chained
+  }
+  if (lowerPrereq.includes('чародей, волшебник или предыстория «маг высшего волшебства»')) {
+    const cls = (context.className || '').toLowerCase();
+    const isMage = cls.includes('чародей') || cls.includes('волшебник') || cls.includes('sorcerer') || cls.includes('wizard');
+    const bg = (context.background || '').toLowerCase();
+    const hasBg = bg.includes('маг высшего волшебства') || bg.includes('mage of high sorcery');
+    if (!isMage && !hasBg) {
+      return {
+        satisfied: false,
+        unmetReason: 'Требуется: Чародей, Волшебник или предыстория «Маг Высшего Волшебства»',
+        requirementText: prereq,
+      };
+    }
+  }
+  if (lowerPrereq.includes('воин или паладин или предыстория «соламнийский рыцарь»')) {
+    const cls = (context.className || '').toLowerCase();
+    const isWarrior = cls.includes('воин') || cls.includes('паладин') || cls.includes('fighter') || cls.includes('paladin');
+    const bg = (context.background || '').toLowerCase();
+    const hasBg = bg.includes('соламнийский рыцарь') || bg.includes('knight of solamnia');
+    if (!isWarrior && !hasBg) {
+      return {
+        satisfied: false,
+        unmetReason: 'Требуется: Воин, Паладин или предыстория «Соламнийский Рыцарь»',
         requirementText: prereq,
       };
     }
@@ -268,20 +309,20 @@ export function checkFeatPrerequisites(
           requirementText: prereq,
         };
       }
-    } else if (lowerPrereq.includes('полуорк')) {
-      if (!fullRaceStr.includes('полуорк') && !fullRaceStr.includes('half-orc')) {
-        return {
-          satisfied: false,
-          unmetReason: 'Требуется раса: Полуорк',
-          requirementText: prereq,
-        };
-      }
     } else if (lowerPrereq.includes('полуэльф, полуорк или человек')) {
       const ok = fullRaceStr.includes('полуэльф') || fullRaceStr.includes('полуорк') || fullRaceStr.includes('человек') || fullRaceStr.includes('human');
       if (!ok) {
         return {
           satisfied: false,
           unmetReason: 'Требуется: Полуэльф, Полуорк или Человек',
+          requirementText: prereq,
+        };
+      }
+    } else if (lowerPrereq.includes('полуорк')) {
+      if (!fullRaceStr.includes('полуорк') && !fullRaceStr.includes('half-orc')) {
+        return {
+          satisfied: false,
+          unmetReason: 'Требуется раса: Полуорк',
           requirementText: prereq,
         };
       }

@@ -151,7 +151,7 @@ describe('Feat Prerequisites Engine: Adversarial Verification', () => {
     assert.strictEqual(checkFeatPrerequisites(warCaster!, wizardCaster).satisfied, true);
   });
 
-  it('validates armor proficiencies (Heavy Armor Master, Moderately Armored)', () => {
+  it('validates armor proficiencies accurately without confusing light crossbows with light armor', () => {
     const heavyArmorMaster = findFeatByName('Heavy Armor Master');
     assert.ok(heavyArmorMaster);
 
@@ -167,5 +167,71 @@ describe('Feat Prerequisites Engine: Adversarial Verification', () => {
     assert.strictEqual(checkFeatPrerequisites(heavyArmorMaster!, unarmored).satisfied, false);
     assert.match(checkFeatPrerequisites(heavyArmorMaster!, unarmored).unmetReason || '', /тяж[её]л/i);
     assert.strictEqual(checkFeatPrerequisites(heavyArmorMaster!, heavyArmored).satisfied, true);
+
+    // Moderately Armored (Знаток средних доспехов) requires Light Armor
+    const moderatelyArmored = findFeatByName('Moderately Armored') || findFeatByName('Знаток средних доспехов');
+    assert.ok(moderatelyArmored);
+
+    // Wizard with light crossbows in string must NOT satisfy light armor requirement
+    const wizardArmorText = 'Кинжалы, дротики, пращи, боевые посохи, лёгкие арбалеты';
+    const wizardContext: CharacterPrereqContext = {
+      className: 'Волшебник',
+      armorProficiencies: [wizardArmorText],
+    };
+    const resWizard = checkFeatPrerequisites(moderatelyArmored!, wizardContext);
+    assert.strictEqual(resWizard.satisfied, false, 'Wizard with light crossbows must NOT have light armor proficiency');
+
+    // Rogue with light armor
+    const rogueArmorText = 'Лёгкие доспехи, простое оружие, ручные арбалеты, длинные мечи';
+    const rogueContext: CharacterPrereqContext = {
+      className: 'Плут',
+      armorProficiencies: [rogueArmorText],
+    };
+    const resRogue = checkFeatPrerequisites(moderatelyArmored!, rogueContext);
+    assert.strictEqual(resRogue.satisfied, true, 'Rogue with light armor must satisfy moderately armored');
+  });
+
+  it('validates Prodigy (Вундеркинд) for Human, Half-Elf, Half-Orc without false failure for Humans', () => {
+    const prodigy = findFeatByName('Вундеркинд') || findFeatByName('Prodigy');
+    assert.ok(prodigy);
+
+    const humanCtx: CharacterPrereqContext = { race: 'Человек' };
+    const halfElfCtx: CharacterPrereqContext = { race: 'Полуэльф' };
+    const halfOrcCtx: CharacterPrereqContext = { race: 'Полуорк' };
+    const dwarfCtx: CharacterPrereqContext = { race: 'Дварф' };
+
+    assert.strictEqual(checkFeatPrerequisites(prodigy!, humanCtx).satisfied, true, 'Human must satisfy Prodigy');
+    assert.strictEqual(checkFeatPrerequisites(prodigy!, halfElfCtx).satisfied, true, 'Half-Elf must satisfy Prodigy');
+    assert.strictEqual(checkFeatPrerequisites(prodigy!, halfOrcCtx).satisfied, true, 'Half-Orc must satisfy Prodigy');
+    assert.strictEqual(checkFeatPrerequisites(prodigy!, dwarfCtx).satisfied, false, 'Dwarf must not satisfy Prodigy');
+  });
+
+  it('validates martial weapon proficiencies and class/background specific feats', () => {
+    const weaponMaster = findFeatByName('Посвящённый в боевое искусство');
+    assert.ok(weaponMaster);
+
+    const fighterCtx: CharacterPrereqContext = {
+      className: 'Воин',
+      armorProficiencies: ['Все доспехи, щиты, простое и воинское оружие'],
+    };
+    const wizardCtx: CharacterPrereqContext = {
+      className: 'Волшебник',
+      armorProficiencies: ['Кинжалы, дротики, пращи, боевые посохи, лёгкие арбалеты'],
+    };
+
+    assert.strictEqual(checkFeatPrerequisites(weaponMaster!, fighterCtx).satisfied, true);
+    assert.strictEqual(checkFeatPrerequisites(weaponMaster!, wizardCtx).satisfied, false);
+
+    // Initiate of High Sorcery (Посвящённый в Высшее волшебство)
+    const highSorcery = findFeatByName('Посвящённый в Высшее волшебство');
+    if (highSorcery) {
+      assert.strictEqual(checkFeatPrerequisites(highSorcery, wizardCtx).satisfied, true);
+      assert.strictEqual(checkFeatPrerequisites(highSorcery, fighterCtx).satisfied, false);
+      const fighterWithBg: CharacterPrereqContext = {
+        ...fighterCtx,
+        background: 'Маг Высшего Волшебства',
+      };
+      assert.strictEqual(checkFeatPrerequisites(highSorcery, fighterWithBg).satisfied, true);
+    }
   });
 });

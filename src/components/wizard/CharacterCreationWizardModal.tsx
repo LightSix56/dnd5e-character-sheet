@@ -1773,6 +1773,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                   className: selectedClass?.name,
                                   armorProficiencies: [selectedClass?.armorWeaponProfs || ''],
                                   canCastSpells: selectedClass?.spellcasting?.isCaster ?? false,
+                                  background: selectedBackground?.name,
                                 });
                                 const isUnmet = !prereqStatus.satisfied;
 
@@ -1833,37 +1834,71 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                           )}
 
                           {/* Selected Feat Details Banner */}
-                          {selectedRacialFeat && (
-                            <div
-                              className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm mt-2"
-                              style={{
-                                background: 'rgba(251, 240, 220, 0.95)',
-                                border: '1.5px solid rgba(201, 168, 76, 0.6)'
-                              }}
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="font-bold text-xs text-[#3D2012]">
-                                  {selectedRacialFeat.name} <span className="text-[11px] font-normal text-[#8B6914]">({selectedRacialFeat.nameEn})</span>
-                                </span>
-                                {selectedRacialFeat.abilityBonus && (
-                                  <span className="text-[11px] font-bold text-[#5C341F] px-2 py-0.5 rounded bg-[#E8D3A2] border border-[#C9A84C]">
-                                    Бонус: {selectedRacialFeat.abilityBonus}
+                          {selectedRacialFeat && (() => {
+                            const selectedFeatPrereq = checkFeatPrerequisites(selectedRacialFeat, {
+                              stats: finalAbilityScores.totals,
+                              level: 1,
+                              race: selectedRace?.name,
+                              subrace: selectedSubrace?.name,
+                              className: selectedClass?.name,
+                              armorProficiencies: [selectedClass?.armorWeaponProfs || ''],
+                              canCastSpells: selectedClass?.spellcasting?.isCaster ?? false,
+                              background: selectedBackground?.name,
+                            });
+
+                            return (
+                              <div
+                                className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm mt-2"
+                                style={{
+                                  background: 'rgba(251, 240, 220, 0.95)',
+                                  border: '1.5px solid rgba(201, 168, 76, 0.6)'
+                                }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="font-bold text-xs text-[#3D2012]">
+                                    {selectedRacialFeat.name} <span className="text-[11px] font-normal text-[#8B6914]">({selectedRacialFeat.nameEn})</span>
                                   </span>
-                                )}
-                              </div>
-                              {selectedRacialFeat.prerequisite && (
-                                <div className="text-[11px] text-[#B45309] font-medium">
-                                  Требование: {selectedRacialFeat.prerequisite}
+                                  {selectedRacialFeat.abilityBonus && (
+                                    <span className="text-[11px] font-bold text-[#5C341F] px-2 py-0.5 rounded bg-[#E8D3A2] border border-[#C9A84C]">
+                                      Бонус: {selectedRacialFeat.abilityBonus}
+                                    </span>
+                                  )}
                                 </div>
-                              )}
-                              <div className="text-[11px] font-medium text-[#8B4513]">
-                                {selectedRacialFeat.summary}
+                                {selectedRacialFeat.prerequisite && (
+                                  <div
+                                    className={`text-[11px] font-medium rounded-md px-2.5 py-1.5 flex items-start gap-1.5 ${
+                                      selectedFeatPrereq.satisfied
+                                        ? 'bg-[rgba(74,124,63,0.12)] text-[#2d5f24] border border-[rgba(74,124,63,0.3)]'
+                                        : 'bg-[rgba(180,83,9,0.12)] text-[#B45309] border border-[rgba(180,83,9,0.3)]'
+                                    }`}
+                                  >
+                                    <span className="shrink-0 mt-0.5 font-bold">
+                                      {selectedFeatPrereq.satisfied ? '✓' : '⚠️'}
+                                    </span>
+                                    <div className="leading-snug">
+                                      <span className="font-semibold">Требование: </span>
+                                      {selectedRacialFeat.prerequisite}
+                                      {selectedFeatPrereq.satisfied ? (
+                                        <span className="ml-1.5 text-[10px] uppercase font-bold text-[#2d5f24] tracking-wide bg-[rgba(74,124,63,0.2)] px-1.5 py-0.5 rounded border border-[rgba(74,124,63,0.4)]">
+                                          Выполнено
+                                        </span>
+                                      ) : (
+                                        <span className="ml-1.5 text-[10px] font-bold text-[#B45309]">
+                                          ({selectedFeatPrereq.unmetReason || 'не выполнено'})
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                                <div className="text-[11px] font-medium text-[#8B4513]">
+                                  {selectedRacialFeat.summary}
+                                </div>
+                                <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)] max-h-40 overflow-y-auto">
+                                  {selectedRacialFeat.description}
+                                </div>
                               </div>
-                              <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)] max-h-40 overflow-y-auto">
-                                {selectedRacialFeat.description}
-                              </div>
-                            </div>
-                          )}
+                            );
+                          })()}
                         </div>
                       )}
 

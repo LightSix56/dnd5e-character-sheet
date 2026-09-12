@@ -3691,6 +3691,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                           className: char.className,
                           armorProficiencies: [char.otherProficienciesLanguages || ''],
                           existingFeatNames: (char.traitsList || []).map(t => t.name),
+                          background: char.background,
                         });
                         const isUnmet = !prereqStatus.satisfied;
 
@@ -3751,37 +3752,78 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   )}
 
                   {/* Выбранная черта: детальный баннер */}
-                  {selectedFeat && (
-                    <div
-                      className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm mt-2"
-                      style={{
-                        background: 'rgba(251, 240, 220, 0.95)',
-                        border: '1.5px solid rgba(201, 168, 76, 0.6)',
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-[#3D2012]">
-                          {selectedFeat.name} <span className="text-[11px] font-normal text-[#8B6914]">({selectedFeat.nameEn})</span>
-                        </span>
-                        {selectedFeat.abilityBonus && (
-                          <span className="text-[11px] font-bold text-[#5C341F] px-2 py-0.5 rounded bg-[#E8D3A2] border border-[#C9A84C]">
-                            Бонус: {selectedFeat.abilityBonus}
+                  {selectedFeat && (() => {
+                    const selectedFeatPrereq = checkFeatPrerequisites(selectedFeat, {
+                      stats: {
+                        'СИЛ': getTotalScore(char, 'СИЛ'),
+                        'ЛОВ': getTotalScore(char, 'ЛОВ'),
+                        'ТЕЛ': getTotalScore(char, 'ТЕЛ'),
+                        'ИНТ': getTotalScore(char, 'ИНТ'),
+                        'МДР': getTotalScore(char, 'МДР'),
+                        'ХАР': getTotalScore(char, 'ХАР'),
+                      },
+                      level: newLevel,
+                      race: char.race,
+                      subrace: char.subrace,
+                      className: char.className,
+                      armorProficiencies: [char.otherProficienciesLanguages || ''],
+                      existingFeatNames: (char.traitsList || []).map(t => t.name),
+                      background: char.background,
+                    });
+
+                    return (
+                      <div
+                        className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm mt-2"
+                        style={{
+                          background: 'rgba(251, 240, 220, 0.95)',
+                          border: '1.5px solid rgba(201, 168, 76, 0.6)',
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-xs text-[#3D2012]">
+                            {selectedFeat.name} <span className="text-[11px] font-normal text-[#8B6914]">({selectedFeat.nameEn})</span>
                           </span>
-                        )}
-                      </div>
-                      {selectedFeat.prerequisite && (
-                        <div className="text-[11px] text-[#B45309] font-medium">
-                          Требование: {selectedFeat.prerequisite}
+                          {selectedFeat.abilityBonus && (
+                            <span className="text-[11px] font-bold text-[#5C341F] px-2 py-0.5 rounded bg-[#E8D3A2] border border-[#C9A84C]">
+                              Бонус: {selectedFeat.abilityBonus}
+                            </span>
+                          )}
                         </div>
-                      )}
-                      <div className="text-[11px] font-medium text-[#8B4513]">
-                        {selectedFeat.summary}
+                        {selectedFeat.prerequisite && (
+                          <div
+                            className={`text-[11px] font-medium rounded-md px-2.5 py-1.5 flex items-start gap-1.5 ${
+                              selectedFeatPrereq.satisfied
+                                ? 'bg-[rgba(74,124,63,0.12)] text-[#2d5f24] border border-[rgba(74,124,63,0.3)]'
+                                : 'bg-[rgba(180,83,9,0.12)] text-[#B45309] border border-[rgba(180,83,9,0.3)]'
+                            }`}
+                          >
+                            <span className="shrink-0 mt-0.5 font-bold">
+                              {selectedFeatPrereq.satisfied ? '✓' : '⚠️'}
+                            </span>
+                            <div className="leading-snug">
+                              <span className="font-semibold">Требование: </span>
+                              {selectedFeat.prerequisite}
+                              {selectedFeatPrereq.satisfied ? (
+                                <span className="ml-1.5 text-[10px] uppercase font-bold text-[#2d5f24] tracking-wide bg-[rgba(74,124,63,0.2)] px-1.5 py-0.5 rounded border border-[rgba(74,124,63,0.4)]">
+                                  Выполнено
+                                </span>
+                              ) : (
+                                <span className="ml-1.5 text-[10px] font-bold text-[#B45309]">
+                                  ({selectedFeatPrereq.unmetReason || 'не выполнено'})
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        <div className="text-[11px] font-medium text-[#8B4513]">
+                          {selectedFeat.summary}
+                        </div>
+                        <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)] max-h-40 overflow-y-auto">
+                          {selectedFeat.description}
+                        </div>
                       </div>
-                      <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)] max-h-40 overflow-y-auto">
-                        {selectedFeat.description}
-                      </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               )}
             </div>

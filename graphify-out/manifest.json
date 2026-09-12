@@ -168,9 +168,9 @@
     "semantic_hash": ""
   },
   "src/components/compendium/RaceSelectorModal.tsx": {
-    "mtime": 1788968050.446658,
-    "seen": 1788968151.5146065,
-    "ast_hash": "f96a5875376c57fcf65fb095ff5dfac1",
+    "mtime": 1789139192.2526057,
+    "seen": 1789139241.8150074,
+    "ast_hash": "67161f1bab5bae18371b082b911acac1",
     "semantic_hash": ""
   },
   "src/components/compendium/SubclassSelectorModal.tsx": {
@@ -993,6 +993,12 @@
     "mtime": 1789137545.2832396,
     "seen": 1789138524.8530278,
     "ast_hash": "3b21341de118f500bcdf01e42e055063",
+    "semantic_hash": ""
+  },
+  "scripts/parse-dndsu-spells.ts": {
+    "mtime": 1789193603.1422338,
+    "seen": 1789193724.1585004,
+    "ast_hash": "ef70f8ad476ab719ee14f629fdcb0a3b",
     "semantic_hash": ""
   }
 }

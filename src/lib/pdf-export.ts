@@ -10,7 +10,10 @@ import {
   getPassivePerception,
   calcProficiencyBonus,
   formatModifier,
+  getSpellSaveDC,
+  getSpellAttackBonus,
 } from './dnd-types';
+import { findSpellByName } from '../data/compendium/spells';
 
 export interface PdfExportOptions {
   templateBytes?: Uint8Array | ArrayBuffer;
@@ -18,6 +21,180 @@ export interface PdfExportOptions {
   boldFontBytes?: Uint8Array | ArrayBuffer;
   includeFullCodex?: boolean;
 }
+
+export interface SpellRowMapping {
+  nameField: string;
+  checkBoxName: string | null;
+}
+
+export interface SpellLevelMapping {
+  totalSlotField: string | null;
+  remainingSlotField: string | null;
+  rows: SpellRowMapping[];
+}
+
+export const SPELL_LEVEL_MAPPINGS: Record<number, SpellLevelMapping> = {
+  0: {
+    totalSlotField: null,
+    remainingSlotField: null,
+    rows: [
+      { nameField: 'Spells 1014', checkBoxName: null },
+      { nameField: 'Spells 1016', checkBoxName: null },
+      { nameField: 'Spells 1017', checkBoxName: null },
+      { nameField: 'Spells 1018', checkBoxName: null },
+      { nameField: 'Spells 1019', checkBoxName: null },
+      { nameField: 'Spells 1020', checkBoxName: null },
+      { nameField: 'Spells 1021', checkBoxName: null },
+      { nameField: 'Spells 1022', checkBoxName: null },
+    ],
+  },
+  1: {
+    totalSlotField: 'SlotsTotal 19',
+    remainingSlotField: 'SlotsRemaining 19',
+    rows: [
+      { nameField: 'Spells 1015', checkBoxName: 'Check Box 251' },
+      { nameField: 'Spells 1023', checkBoxName: 'Check Box 309' },
+      { nameField: 'Spells 1024', checkBoxName: 'Check Box 3010' },
+      { nameField: 'Spells 1025', checkBoxName: 'Check Box 3011' },
+      { nameField: 'Spells 1026', checkBoxName: 'Check Box 3012' },
+      { nameField: 'Spells 1027', checkBoxName: 'Check Box 3013' },
+      { nameField: 'Spells 1028', checkBoxName: 'Check Box 3014' },
+      { nameField: 'Spells 1029', checkBoxName: 'Check Box 3015' },
+      { nameField: 'Spells 1030', checkBoxName: 'Check Box 3016' },
+      { nameField: 'Spells 1031', checkBoxName: 'Check Box 3017' },
+      { nameField: 'Spells 1032', checkBoxName: 'Check Box 3018' },
+      { nameField: 'Spells 1033', checkBoxName: 'Check Box 3019' },
+    ],
+  },
+  2: {
+    totalSlotField: 'SlotsTotal 20',
+    remainingSlotField: 'SlotsRemaining 20',
+    rows: [
+      { nameField: 'Spells 1046', checkBoxName: 'Check Box 313' },
+      { nameField: 'Spells 1034', checkBoxName: 'Check Box 310' },
+      { nameField: 'Spells 1035', checkBoxName: 'Check Box 3020' },
+      { nameField: 'Spells 1036', checkBoxName: 'Check Box 3021' },
+      { nameField: 'Spells 1037', checkBoxName: 'Check Box 3022' },
+      { nameField: 'Spells 1038', checkBoxName: 'Check Box 3023' },
+      { nameField: 'Spells 1039', checkBoxName: 'Check Box 3024' },
+      { nameField: 'Spells 1040', checkBoxName: 'Check Box 3025' },
+      { nameField: 'Spells 1041', checkBoxName: 'Check Box 3026' },
+      { nameField: 'Spells 1042', checkBoxName: 'Check Box 3027' },
+      { nameField: 'Spells 1043', checkBoxName: 'Check Box 3028' },
+      { nameField: 'Spells 1044', checkBoxName: 'Check Box 3029' },
+      { nameField: 'Spells 1045', checkBoxName: 'Check Box 3030' },
+    ],
+  },
+  3: {
+    totalSlotField: 'SlotsTotal 21',
+    remainingSlotField: 'SlotsRemaining 21',
+    rows: [
+      { nameField: 'Spells 1048', checkBoxName: 'Check Box 315' },
+      { nameField: 'Spells 1047', checkBoxName: 'Check Box 314' },
+      { nameField: 'Spells 1049', checkBoxName: 'Check Box 3031' },
+      { nameField: 'Spells 1050', checkBoxName: 'Check Box 3032' },
+      { nameField: 'Spells 1051', checkBoxName: 'Check Box 3033' },
+      { nameField: 'Spells 1052', checkBoxName: 'Check Box 3034' },
+      { nameField: 'Spells 1053', checkBoxName: 'Check Box 3035' },
+      { nameField: 'Spells 1054', checkBoxName: 'Check Box 3036' },
+      { nameField: 'Spells 1055', checkBoxName: 'Check Box 3037' },
+      { nameField: 'Spells 1056', checkBoxName: 'Check Box 3038' },
+      { nameField: 'Spells 1057', checkBoxName: 'Check Box 3039' },
+      { nameField: 'Spells 1058', checkBoxName: 'Check Box 3040' },
+      { nameField: 'Spells 1059', checkBoxName: 'Check Box 3041' },
+    ],
+  },
+  4: {
+    totalSlotField: 'SlotsTotal 22',
+    remainingSlotField: 'SlotsRemaining 22',
+    rows: [
+      { nameField: 'Spells 1061', checkBoxName: 'Check Box 317' },
+      { nameField: 'Spells 1060', checkBoxName: 'Check Box 316' },
+      { nameField: 'Spells 1062', checkBoxName: 'Check Box 3042' },
+      { nameField: 'Spells 1063', checkBoxName: 'Check Box 3043' },
+      { nameField: 'Spells 1064', checkBoxName: 'Check Box 3044' },
+      { nameField: 'Spells 1065', checkBoxName: 'Check Box 3045' },
+      { nameField: 'Spells 1066', checkBoxName: 'Check Box 3046' },
+      { nameField: 'Spells 1067', checkBoxName: 'Check Box 3047' },
+      { nameField: 'Spells 1068', checkBoxName: 'Check Box 3048' },
+      { nameField: 'Spells 1069', checkBoxName: 'Check Box 3049' },
+      { nameField: 'Spells 1070', checkBoxName: 'Check Box 3050' },
+      { nameField: 'Spells 1071', checkBoxName: 'Check Box 3051' },
+      { nameField: 'Spells 1072', checkBoxName: 'Check Box 3052' },
+    ],
+  },
+  5: {
+    totalSlotField: 'SlotsTotal 23',
+    remainingSlotField: 'SlotsRemaining 23',
+    rows: [
+      { nameField: 'Spells 1074', checkBoxName: 'Check Box 319' },
+      { nameField: 'Spells 1073', checkBoxName: 'Check Box 318' },
+      { nameField: 'Spells 1075', checkBoxName: 'Check Box 3053' },
+      { nameField: 'Spells 1076', checkBoxName: 'Check Box 3054' },
+      { nameField: 'Spells 1077', checkBoxName: 'Check Box 3055' },
+      { nameField: 'Spells 1078', checkBoxName: 'Check Box 3056' },
+      { nameField: 'Spells 1079', checkBoxName: 'Check Box 3057' },
+      { nameField: 'Spells 1080', checkBoxName: 'Check Box 3058' },
+      { nameField: 'Spells 1081', checkBoxName: 'Check Box 3059' },
+    ],
+  },
+  6: {
+    totalSlotField: 'SlotsTotal 24',
+    remainingSlotField: 'SlotsRemaining 24',
+    rows: [
+      { nameField: 'Spells 1083', checkBoxName: 'Check Box 321' },
+      { nameField: 'Spells 1082', checkBoxName: 'Check Box 320' },
+      { nameField: 'Spells 1084', checkBoxName: 'Check Box 3060' },
+      { nameField: 'Spells 1085', checkBoxName: 'Check Box 3061' },
+      { nameField: 'Spells 1086', checkBoxName: 'Check Box 3062' },
+      { nameField: 'Spells 1087', checkBoxName: 'Check Box 3063' },
+      { nameField: 'Spells 1088', checkBoxName: 'Check Box 3064' },
+      { nameField: 'Spells 1089', checkBoxName: 'Check Box 3065' },
+      { nameField: 'Spells 1090', checkBoxName: 'Check Box 3066' },
+    ],
+  },
+  7: {
+    totalSlotField: 'SlotsTotal 25',
+    remainingSlotField: 'SlotsRemaining 25',
+    rows: [
+      { nameField: 'Spells 1092', checkBoxName: 'Check Box 323' },
+      { nameField: 'Spells 1091', checkBoxName: 'Check Box 322' },
+      { nameField: 'Spells 1093', checkBoxName: 'Check Box 3067' },
+      { nameField: 'Spells 1094', checkBoxName: 'Check Box 3068' },
+      { nameField: 'Spells 1095', checkBoxName: 'Check Box 3069' },
+      { nameField: 'Spells 1096', checkBoxName: 'Check Box 3070' },
+      { nameField: 'Spells 1097', checkBoxName: 'Check Box 3071' },
+      { nameField: 'Spells 1098', checkBoxName: 'Check Box 3072' },
+      { nameField: 'Spells 1099', checkBoxName: 'Check Box 3073' },
+    ],
+  },
+  8: {
+    totalSlotField: 'SlotsTotal 26',
+    remainingSlotField: 'SlotsRemaining 26',
+    rows: [
+      { nameField: 'Spells 10101', checkBoxName: 'Check Box 325' },
+      { nameField: 'Spells 10100', checkBoxName: 'Check Box 324' },
+      { nameField: 'Spells 10102', checkBoxName: 'Check Box 3074' },
+      { nameField: 'Spells 10103', checkBoxName: 'Check Box 3075' },
+      { nameField: 'Spells 10104', checkBoxName: 'Check Box 3076' },
+      { nameField: 'Spells 10105', checkBoxName: 'Check Box 3077' },
+      { nameField: 'Spells 10106', checkBoxName: 'Check Box 3078' },
+    ],
+  },
+  9: {
+    totalSlotField: 'SlotsTotal 27',
+    remainingSlotField: 'SlotsRemaining 27',
+    rows: [
+      { nameField: 'Spells 10108', checkBoxName: 'Check Box 327' },
+      { nameField: 'Spells 10107', checkBoxName: 'Check Box 326' },
+      { nameField: 'Spells 10109', checkBoxName: 'Check Box 3079' },
+      { nameField: 'Spells 101010', checkBoxName: 'Check Box 3080' },
+      { nameField: 'Spells 101011', checkBoxName: 'Check Box 3081' },
+      { nameField: 'Spells 101012', checkBoxName: 'Check Box 3082' },
+      { nameField: 'Spells 101013', checkBoxName: 'Check Box 3083' },
+    ],
+  },
+};
 
 export const SKILL_ROW_MAPPINGS: {
   skillName: string;
@@ -349,21 +526,95 @@ export async function exportCharacterToPdf(
   // 12. Page 3 Spellcasting
   const hasSpells = Boolean(
     (char.cantrips && char.cantrips.length > 0) ||
-    (char.spellsByLevel && Object.keys(char.spellsByLevel).length > 0) ||
-    char.spellcastingClass
+    (char.spellsByLevel && Object.values(char.spellsByLevel).some(arr => Array.isArray(arr) && arr.length > 0)) ||
+    char.spellcastingClass ||
+    char.spellcastingAbility
   );
 
-  if (hasSpells) {
-    setText('Spellcasting Class 2', char.spellcastingClass || char.className);
-    setText('SpellcastingAbility 2', char.spellcastingAbility || 'ИНТ');
-    const spellAbility = (char.spellcastingAbility as any) || 'ИНТ';
-    const spellMod = getModifier(char, spellAbility);
-    setText('SpellSaveDC  2', String(8 + pb + spellMod));
-    setText('SpellAtkBonus 2', formatModifier(pb + spellMod));
+  const overflowSpells: { level: number; name: string; prepared: boolean }[] = [];
 
-    if (char.cantrips) {
-      char.cantrips.slice(0, 8).forEach((cantrip, idx) => {
-        setText('Spells 101' + (4 + idx), cantrip);
+  if (hasSpells) {
+    const spellClass = char.spellcastingClass || char.className || '';
+    let spellAbility = char.spellcastingAbility || '';
+    if (!spellAbility) {
+      const c = (spellClass || '').toLowerCase();
+      if (c.includes('волшебник') || c.includes('изобретатель') || c.includes('wizard') || c.includes('artificer')) spellAbility = 'ИНТ';
+      else if (c.includes('жрец') || c.includes('друид') || c.includes('следопыт') || c.includes('cleric') || c.includes('druid') || c.includes('ranger')) spellAbility = 'МДР';
+      else if (c.includes('бард') || c.includes('колдун') || c.includes('чародей') || c.includes('паладин') || c.includes('bard') || c.includes('warlock') || c.includes('sorcerer') || c.includes('paladin')) spellAbility = 'ХАР';
+      else spellAbility = 'ИНТ';
+    }
+
+    setText('Spellcasting Class 2', spellClass);
+    setText('SpellcastingAbility 2', spellAbility);
+    const saveDC = getSpellSaveDC({ ...char, spellcastingAbility: spellAbility as any });
+    const atkBonus = getSpellAttackBonus({ ...char, spellcastingAbility: spellAbility as any });
+    setText('SpellSaveDC  2', String(saveDC || (8 + pb + getModifier(char, spellAbility as any))));
+    setText('SpellAtkBonus 2', formatModifier(atkBonus || (pb + getModifier(char, spellAbility as any))));
+
+    // Cantrips (Level 0)
+    const cantripsList: string[] = [];
+    if (Array.isArray(char.cantrips)) {
+      char.cantrips.forEach(c => {
+        if (typeof c === 'string' && c.trim() && !cantripsList.includes(c.trim())) {
+          cantripsList.push(c.trim());
+        }
+      });
+    }
+    if (Array.isArray(char.spellsByLevel?.[0])) {
+      char.spellsByLevel[0].forEach(entry => {
+        const entryAny = entry as any;
+        const name = (typeof entryAny === 'string' ? entryAny : entryAny?.name || '').trim();
+        if (name && !cantripsList.includes(name)) {
+          cantripsList.push(name);
+        }
+      });
+    }
+
+    const cantripRows = SPELL_LEVEL_MAPPINGS[0].rows;
+    cantripsList.slice(0, cantripRows.length).forEach((c, idx) => {
+      setText(cantripRows[idx].nameField, c);
+    });
+    cantripsList.slice(cantripRows.length).forEach(c => {
+      overflowSpells.push({ level: 0, name: c, prepared: true });
+    });
+
+    // Leveled Spells (Levels 1 to 9)
+    for (let lvl = 1; lvl <= 9; lvl++) {
+      const mapping = SPELL_LEVEL_MAPPINGS[lvl];
+      if (!mapping) continue;
+
+      // Spell Slots
+      const slotInfo = char.spellSlots?.[lvl];
+      if (slotInfo && slotInfo.totalSlots > 0) {
+        if (mapping.totalSlotField) {
+          setText(mapping.totalSlotField, String(slotInfo.totalSlots));
+        }
+        if (mapping.remainingSlotField && slotInfo.expendedSlots > 0) {
+          setText(mapping.remainingSlotField, String(slotInfo.expendedSlots));
+        }
+      }
+
+      // Spells for this level
+      const rawSpells = char.spellsByLevel?.[lvl] || [];
+      const levelSpells = rawSpells
+        .map(entry => {
+          const entryAny = entry as any;
+          const name = (typeof entryAny === 'string' ? entryAny : entryAny?.name || '').trim();
+          const prepared = typeof entryAny === 'object' && entryAny !== null ? Boolean(entryAny.prepared) : false;
+          return { name, prepared };
+        })
+        .filter(s => s.name.length > 0);
+
+      levelSpells.slice(0, mapping.rows.length).forEach((spell, idx) => {
+        const row = mapping.rows[idx];
+        setText(row.nameField, spell.name);
+        if (spell.prepared && row.checkBoxName) {
+          check(row.checkBoxName, true);
+        }
+      });
+
+      levelSpells.slice(mapping.rows.length).forEach(spell => {
+        overflowSpells.push({ level: lvl, name: spell.name, prepared: spell.prepared });
       });
     }
   } else {
@@ -380,18 +631,37 @@ export async function exportCharacterToPdf(
 
   form.updateFieldAppearances(customFont);
 
-  // 13. Pages 4 & 5: Codex of Features & Traits
+  // 13. Pages 4 & 5+: Codex of Features & Traits + Overflow Spells
   const includeCodex = options.includeFullCodex !== false;
-  if (includeCodex && char.traitsList && char.traitsList.length > 0) {
-    renderTraitsCodexPages(doc, char, customFont, boldFont);
+  const hasTraits = Boolean(char.traitsList && char.traitsList.length > 0);
+  const hasOverflow = overflowSpells.length > 0;
+
+  if (includeCodex && (hasTraits || hasOverflow)) {
+    renderCodexPages(doc, char, overflowSpells, customFont, boldFont);
   }
 
   return await doc.save();
 }
 
-function renderTraitsCodexPages(
+interface CodexItem {
+  title: string;
+  sourceTag?: string;
+  body: string;
+}
+
+export function renderTraitsCodexPages(
   doc: PDFDocument,
   char: CharacterData,
+  font: PDFFont,
+  boldFont: PDFFont
+) {
+  renderCodexPages(doc, char, [], font, boldFont);
+}
+
+function renderCodexPages(
+  doc: PDFDocument,
+  char: CharacterData,
+  overflowSpells: { level: number; name: string; prepared: boolean }[],
   font: PDFFont,
   boldFont: PDFFont
 ) {
@@ -413,14 +683,55 @@ function renderTraitsCodexPages(
   let currentY = maxY;
   let currentColumn = 1;
 
-  const traits = char.traitsList || [];
+  const items: CodexItem[] = [];
 
-  for (let i = 0; i < traits.length; i++) {
-    const trait = traits[i];
-    const sourceTag = trait.source ? '[' + trait.source + ']' : '';
-    const traitName = trait.name || (trait as any)?.title || 'Умение';
-    const titleText = (traitName + '  ' + sourceTag).trim();
-    const bodyText = trait.description || trait.summary || '';
+  // 1. Character Traits & Features
+  if (char.traitsList && char.traitsList.length > 0) {
+    for (const trait of char.traitsList) {
+      const sourceTag = trait.source ? '[' + trait.source + ']' : '';
+      const traitName = trait.name || (trait as any)?.title || 'Умение';
+      const bodyText = trait.description || trait.summary || '';
+      items.push({
+        title: traitName,
+        sourceTag,
+        body: bodyText,
+      });
+    }
+  }
+
+  // 2. Overflow Spells (Spells exceeding page 3 capacity)
+  if (overflowSpells && overflowSpells.length > 0) {
+    for (const s of overflowSpells) {
+      const lvlLabel = s.level === 0 ? 'Заговор' : `${s.level} круг`;
+      const prepLabel = s.prepared ? ' • Подготовлено' : '';
+      const spellDef = findSpellByName(s.name);
+      const sourceTag = `[Заклинание: ${lvlLabel}${prepLabel}]`;
+      let bodyText = '';
+      if (spellDef) {
+        const meta = [
+          spellDef.school ? `Школа: ${spellDef.school}` : '',
+          spellDef.castingTime ? `Время: ${spellDef.castingTime}` : '',
+          spellDef.range ? `Дистанция: ${spellDef.range}` : '',
+          spellDef.components ? `Компоненты: ${spellDef.components}` : '',
+          spellDef.duration ? `Длительность: ${spellDef.duration}` : '',
+        ].filter(Boolean).join(' | ');
+        bodyText = (meta ? meta + '\n' : '') + (spellDef.description || '');
+      } else {
+        bodyText = 'Заклинание из книги заклинаний персонажа (превысило вместимость листа страницы 3).';
+      }
+      items.push({
+        title: s.name,
+        sourceTag,
+        body: bodyText,
+      });
+    }
+  }
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    const sourceTag = item.sourceTag ? '  ' + item.sourceTag : '';
+    const titleText = (item.title + sourceTag).trim();
+    const bodyText = item.body;
 
     const titleLines = wrapText(titleText, columnWidth - 14, boldFont, 8.2);
     const bodyLines = wrapText(bodyText, columnWidth - 14, font, 7.2);

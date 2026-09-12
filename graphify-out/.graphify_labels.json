@@ -14,7 +14,7 @@
   "12": "2. Архитектурные разделы дизайна",
   "13": "dnd-icons.tsx",
   "14": "devDependencies",
-  "15": "fetch-dndsu-backgrounds.ts",
+  "15": "parse-dndsu-feats.ts",
   "16": "scripts",
   "17": "next",
   "18": "Proposed Changes",
@@ -69,13 +69,12 @@
   "67": "StatsCalculatorModal.tsx",
   "68": "react",
   "69": "Глобальные ограничения",
-  "70": "compendium/index.ts",
+  "70": "fetch-dndsu-backgrounds.ts",
   "71": "modularize-races.js",
   "72": "app/page.tsx",
   "73": "📜 Спецификация дизайна: Модульный компендиум рас D&D 5e и автогенерация choices",
   "74": "spells/index.ts",
   "75": "build-spells-compendium.ts",
-  "76": "parse-dndsu-feats.ts",
-  "77": "feats.ts",
-  "78": "CompendiumModals.tsx"
+  "76": "RaceSelectorModal.tsx",
+  "77": "compendium/index.ts"
 }

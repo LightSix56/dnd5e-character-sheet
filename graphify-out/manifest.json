@@ -816,9 +816,9 @@
     "semantic_hash": ""
   },
   "src/lib/pdf-export.ts": {
-    "mtime": 1789123088.8310094,
-    "seen": 1789123414.5383797,
-    "ast_hash": "cbb3c451f37a2ea03d4b72634b370cad",
+    "mtime": 1789208651.3028157,
+    "seen": 1789208928.3164687,
+    "ast_hash": "3906a384bd160199c233029e0bdd6006",
     "semantic_hash": ""
   },
   "public/templates/dnd5e_character_sheet_rus.pdf": {
@@ -834,9 +834,9 @@
     "semantic_hash": ""
   },
   "test/export-pdf.test.ts": {
-    "mtime": 1789123032.2284472,
-    "seen": 1789123414.542615,
-    "ast_hash": "eb208af19682b6522517bc7d53133239",
+    "mtime": 1789208464.32463,
+    "seen": 1789208928.3232908,
+    "ast_hash": "05caeaef2724135267d820ab9b10b8f7",
     "semantic_hash": ""
   },
   "test/fighter-subclasses.test.ts": {

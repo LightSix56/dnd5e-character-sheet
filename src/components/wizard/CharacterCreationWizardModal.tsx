@@ -885,7 +885,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     const hasDefenseFightingStyle = classChoicesConfig.needsFightingStyle && selectedFightingStyle === 'defense';
     const ac = calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod, {
       hasDefenseFightingStyle,
-      isDraconicSorcerer
+      isDraconicSorcerer,
+      raceName: selectedRace?.name,
     });
 
     // Saving throws map
@@ -1293,7 +1294,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       skillProficiencies,
       skillExpertise,
 
-      armorClass: ac,
+      armorClass: null,
       equippedArmor,
       equippedShield,
       initiativeOverride: null,
@@ -3926,7 +3927,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         const isDraconicSorcerer = classChoicesConfig.needsDraconicAncestor;
                         return calculateWizardAC(selectedClass.name, equippedArmor, equippedShield, dexMod, conMod, wisMod, {
                           hasDefenseFightingStyle,
-                          isDraconicSorcerer
+                          isDraconicSorcerer,
+                          raceName: selectedRace?.name,
                         });
                       })()}
                     </div>

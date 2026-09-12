@@ -626,38 +626,320 @@ export const ARMOR_AC_MAP: Record<string, { baseAC: number; type: 'light' | 'med
   'Shield': { baseAC: 2, type: 'shield' },
 };
 
-export function getAC(char: CharacterData): number {
-  if (char.armorClass !== null) return char.armorClass;
+export interface ArmorModeOption {
+  key: string;
+  name: string;
+  ac: number;
+  description: string;
+  category: 'unarmored' | 'light' | 'medium' | 'heavy';
+}
 
+export function getCalculatedAC(char: CharacterData): number {
   const dexMod = getModifier(char, 'ЛОВ');
-  const shieldBonus = char.equippedShield ? 2 : 0;
+  const conMod = getModifier(char, 'ТЕЛ');
+  const wisMod = getModifier(char, 'МДР');
 
-  if (char.equippedArmor && ARMOR_AC_MAP[char.equippedArmor]) {
-    const armor = ARMOR_AC_MAP[char.equippedArmor];
-    let ac = armor.baseAC + shieldBonus;
+  const normRace = (char.race || '').toLowerCase();
+  const normSubrace = (char.subrace || '').toLowerCase();
+  const normClass = (char.className || '').toLowerCase();
+  const normSubclass = (char.subclass || '').toLowerCase();
+
+  const traits = (char.traitsList || []).map(t => (t.name || '').toLowerCase());
+  const featsText = (char.featuresTraits || '').toLowerCase();
+  const hasTrait = (kw: string) => traits.some(t => t.includes(kw)) || featsText.includes(kw);
+
+  const isWarforged =
+    normRace.includes('кован') ||
+    normRace.includes('warforged') ||
+    normSubrace.includes('кован') ||
+    hasTrait('встроенная защита') ||
+    hasTrait('integrated protection');
+  const warforgedBonus = isWarforged ? 1 : 0;
+
+  const hasDefenseStyle = hasTrait('оборона') || hasTrait('defense');
+  const hasSimicCarapace = hasTrait('панцирь') && (normRace.includes('симик') || normRace.includes('simic'));
+
+  const equipped = (char.equippedArmor || '').trim();
+
+  // If a standard armor from ARMOR_AC_MAP is worn
+  if (equipped && ARMOR_AC_MAP[equipped]) {
+    const armor = ARMOR_AC_MAP[equipped];
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    let base = armor.baseAC;
     if (armor.type === 'light') {
-      ac += dexMod;
+      base += dexMod;
     } else if (armor.type === 'medium') {
-      ac += Math.min(armor.maxDex ?? 2, Math.max(0, dexMod));
+      base += Math.min(armor.maxDex ?? 2, Math.max(0, dexMod));
     }
-    const hasDefense = (char.traitsList || []).some(t =>
-      t.name.toLowerCase().includes('оборона') || t.name.toLowerCase().includes('defense')
-    );
-    if (hasDefense) {
-      ac += 1;
+    let total = base + shieldBonus + warforgedBonus;
+    if (hasDefenseStyle) {
+      total += 1;
     }
-    return ac;
+    if (hasSimicCarapace && armor.type !== 'heavy') {
+      total += 1;
+    }
+    return total;
   }
 
-  // Unarmored Defense for Barbarian and Monk
-  if (char.className === 'Варвар' || char.className === 'Barbarian') {
-    return 10 + dexMod + getModifier(char, 'ТЕЛ') + shieldBonus;
+  // Handle explicit unarmored modes
+  const isTortleMode = equipped === 'unarmored:tortle';
+  const isThrikreenMode = equipped === 'unarmored:thrikreen';
+  const isLizardfolkMode = equipped === 'unarmored:lizardfolk';
+  const isLoxodonMode = equipped === 'unarmored:loxodon';
+  const isAutognomeMode = equipped === 'unarmored:autognome';
+  const isLocathahMode = equipped === 'unarmored:locathah';
+  const isDraconicMode = equipped === 'unarmored:draconic';
+  const isMageArmorMode = equipped === 'unarmored:mage_armor';
+  const isBarbarianMode = equipped === 'unarmored:barbarian';
+  const isMonkMode = equipped === 'unarmored:monk';
+  const isStandardUnarmoredMode = equipped === 'unarmored:standard';
+
+  if (isTortleMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 17 + shieldBonus + warforgedBonus;
   }
-  if ((char.className === 'Монах' || char.className === 'Monk') && !char.equippedShield) {
-    return 10 + dexMod + getModifier(char, 'МДР');
+  if (isThrikreenMode || isLizardfolkMode || isAutognomeMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 13 + dexMod + shieldBonus + warforgedBonus;
+  }
+  if (isLoxodonMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 12 + conMod + shieldBonus + warforgedBonus;
+  }
+  if (isLocathahMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 12 + dexMod + shieldBonus + warforgedBonus;
+  }
+  if (isDraconicMode || isMageArmorMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 13 + dexMod + shieldBonus + warforgedBonus;
+  }
+  if (isBarbarianMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 10 + dexMod + conMod + shieldBonus + warforgedBonus;
+  }
+  if (isMonkMode) {
+    if (char.equippedShield) {
+      return 10 + dexMod + 2 + warforgedBonus;
+    }
+    return 10 + dexMod + wisMod + warforgedBonus;
+  }
+  if (isStandardUnarmoredMode) {
+    const shieldBonus = char.equippedShield ? 2 : 0;
+    return 10 + dexMod + shieldBonus + warforgedBonus;
   }
 
-  return 10 + dexMod + shieldBonus;
+  // Automatic calculation when equippedArmor is empty or default
+  const isBarbarian = normClass.includes('варвар') || normClass.includes('barbarian');
+  const isMonk = normClass.includes('монах') || normClass.includes('monk');
+  const isDraconicSorcerer =
+    (normClass.includes('чародей') || normClass.includes('sorcerer')) &&
+    (normSubclass.includes('дракон') || normSubclass.includes('draconic'));
+
+  const isTortle = normRace.includes('тортл') || normRace.includes('tortle') || hasTrait('природный панцирь');
+  const isThrikreen = normRace.includes('трикрин') || normRace.includes('thri-kreen') || normRace.includes('thrikreen');
+  const isLizardfolk = normRace.includes('людоящер') || normRace.includes('lizardfolk') || normRace.includes('lizard');
+  const isLoxodon = normRace.includes('локсодон') || normRace.includes('loxodon');
+  const isAutognome = normRace.includes('автогном') || normRace.includes('autognome');
+  const isLocathah = normRace.includes('локата') || normRace.includes('locathah');
+
+  const candidates: number[] = [];
+  candidates.push(10 + dexMod);
+
+  if (isTortle) {
+    candidates.push(17);
+  }
+  if (isLoxodon) {
+    candidates.push(12 + conMod);
+  }
+  if (isThrikreen || isLizardfolk || isAutognome) {
+    candidates.push(13 + dexMod);
+  }
+  if (isLocathah) {
+    candidates.push(12 + dexMod);
+  }
+  if (isDraconicSorcerer) {
+    candidates.push(13 + dexMod);
+  }
+  if (isBarbarian) {
+    candidates.push(10 + dexMod + conMod);
+  }
+  if (isMonk && !char.equippedShield) {
+    candidates.push(10 + dexMod + wisMod);
+  }
+
+  let bestBase = Math.max(...candidates);
+
+  let shieldBonus = 0;
+  if (char.equippedShield) {
+    if (isMonk && bestBase === 10 + dexMod + wisMod) {
+      const nonMonkCandidates = candidates.filter(c => c !== 10 + dexMod + wisMod);
+      bestBase = Math.max(10 + dexMod, ...nonMonkCandidates);
+    }
+    shieldBonus = 2;
+  }
+
+  let total = bestBase + shieldBonus + warforgedBonus;
+  if (hasSimicCarapace) {
+    total += 1;
+  }
+  return total;
+}
+
+export function getAC(char: CharacterData): number {
+  if (typeof char.armorClass === 'number' && char.armorClass > 0) {
+    return char.armorClass;
+  }
+  return getCalculatedAC(char);
+}
+
+export function getAvailableArmorModes(char: CharacterData): ArmorModeOption[] {
+  const dexMod = getModifier(char, 'ЛОВ');
+  const conMod = getModifier(char, 'ТЕЛ');
+  const wisMod = getModifier(char, 'МДР');
+
+  const normRace = (char.race || '').toLowerCase();
+  const normSubrace = (char.subrace || '').toLowerCase();
+  const normClass = (char.className || '').toLowerCase();
+  const normSubclass = (char.subclass || '').toLowerCase();
+  const traits = (char.traitsList || []).map(t => (t.name || '').toLowerCase());
+  const featsText = (char.featuresTraits || '').toLowerCase();
+  const hasTrait = (kw: string) => traits.some(t => t.includes(kw)) || featsText.includes(kw);
+
+  const isWarforged =
+    normRace.includes('кован') ||
+    normRace.includes('warforged') ||
+    normSubrace.includes('кован') ||
+    hasTrait('встроенная защита') ||
+    hasTrait('integrated protection');
+  const warforgedBonus = isWarforged ? 1 : 0;
+
+  const isBarbarian = normClass.includes('варвар') || normClass.includes('barbarian');
+  const isMonk = normClass.includes('монах') || normClass.includes('monk');
+  const isDraconicSorcerer =
+    (normClass.includes('чародей') || normClass.includes('sorcerer')) &&
+    (normSubclass.includes('дракон') || normSubclass.includes('draconic'));
+
+  const isTortle = normRace.includes('тортл') || normRace.includes('tortle') || hasTrait('природный панцирь');
+  const isThrikreen = normRace.includes('трикрин') || normRace.includes('thri-kreen') || normRace.includes('thrikreen');
+  const isLizardfolk = normRace.includes('людоящер') || normRace.includes('lizardfolk') || normRace.includes('lizard');
+  const isLoxodon = normRace.includes('локсодон') || normRace.includes('loxodon');
+  const isAutognome = normRace.includes('автогном') || normRace.includes('autognome');
+  const isLocathah = normRace.includes('локата') || normRace.includes('locathah');
+
+  const options: ArmorModeOption[] = [];
+
+  // 1. Standard Unarmored
+  options.push({
+    key: 'unarmored:standard',
+    name: 'Без доспехов (Стандартная)',
+    ac: 10 + dexMod + warforgedBonus,
+    description: `10 + ЛОВ (${formatModifier(dexMod)})`,
+    category: 'unarmored',
+  });
+
+  // 2. Class Unarmored
+  if (isBarbarian) {
+    options.push({
+      key: 'unarmored:barbarian',
+      name: 'Защита без доспехов (Варвар)',
+      ac: 10 + dexMod + conMod + warforgedBonus,
+      description: `10 + ЛОВ (${formatModifier(dexMod)}) + ТЕЛ (${formatModifier(conMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isMonk) {
+    options.push({
+      key: 'unarmored:monk',
+      name: 'Защита без доспехов (Монах)',
+      ac: 10 + dexMod + wisMod + warforgedBonus,
+      description: `10 + ЛОВ (${formatModifier(dexMod)}) + МДР (${formatModifier(wisMod)}) [без щита]`,
+      category: 'unarmored',
+    });
+  }
+
+  // 3. Racial Natural Armor
+  if (isTortle) {
+    options.push({
+      key: 'unarmored:tortle',
+      name: 'Природный панцирь (Тортл)',
+      ac: 17 + warforgedBonus,
+      description: '17 (фиксированный базовый КД, без ЛОВ)',
+      category: 'unarmored',
+    });
+  }
+
+  if (isThrikreen) {
+    options.push({
+      key: 'unarmored:thrikreen',
+      name: 'Панцирь хамелеона (Трикрин)',
+      ac: 13 + dexMod + warforgedBonus,
+      description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isLizardfolk) {
+    options.push({
+      key: 'unarmored:lizardfolk',
+      name: 'Чешуйчатая кожа (Людоящер)',
+      ac: 13 + dexMod + warforgedBonus,
+      description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isLoxodon) {
+    options.push({
+      key: 'unarmored:loxodon',
+      name: 'Толстая кожа (Локсодон)',
+      ac: 12 + conMod + warforgedBonus,
+      description: `12 + ТЕЛ (${formatModifier(conMod)}) [без ЛОВ]`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isAutognome) {
+    options.push({
+      key: 'unarmored:autognome',
+      name: 'Бронированный корпус (Автогном)',
+      ac: 13 + dexMod + warforgedBonus,
+      description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isLocathah) {
+    options.push({
+      key: 'unarmored:locathah',
+      name: 'Природная чешуя (Локата)',
+      ac: 12 + dexMod + warforgedBonus,
+      description: `12 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  if (isDraconicSorcerer) {
+    options.push({
+      key: 'unarmored:draconic',
+      name: 'Драконья устойчивость (Чародей)',
+      ac: 13 + dexMod + warforgedBonus,
+      description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+      category: 'unarmored',
+    });
+  }
+
+  // 4. Magic / Spells
+  options.push({
+    key: 'unarmored:mage_armor',
+    name: 'Доспехи мага (Mage Armor)',
+    ac: 13 + dexMod + warforgedBonus,
+    description: `13 + ЛОВ (${formatModifier(dexMod)})`,
+    category: 'unarmored',
+  });
+
+  return options;
 }
 
 export function applyRaceTemplate(

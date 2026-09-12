@@ -6,6 +6,7 @@ import {
   CharacterData, AbilityName, ABILITY_NAMES, ABILITY_FULL, ALL_SKILLS, SKILL_MAP,
   formatModifier, calcModifier, calcProficiencyBonus, getTotalScore, getModifier,
   getSavingThrow, getSkillBonus, getInitiative, getPassivePerception, getAC,
+  getCalculatedAC, getAvailableArmorModes, type ArmorModeOption,
   getHPMax, getSpellSaveDC, getSpellAttackBonus, getSpellAbilityMod,
   createDefaultCharacter, createExampleWarrior, createExampleWizard,
   Attack, SpellEntry, LevelUpEntry,
@@ -1810,6 +1811,9 @@ export default function DnDCharacterSheet() {
   const profBonus = useMemo(() => calcProficiencyBonus(char.level), [char.level]);
   const carryCap = useMemo(() => getCarryingCapacity(char), [char]);
   const jumpDist = useMemo(() => getJumpDistances(char), [char]);
+  const availableArmorModes = useMemo(() => getAvailableArmorModes(char), [char]);
+  const calculatedAC = useMemo(() => getCalculatedAC(char), [char]);
+  const activeAC = useMemo(() => getAC(char), [char]);
 
   const compClass = useMemo(() => {
     if (!char.className) return undefined;
@@ -2357,14 +2361,21 @@ export default function DnDCharacterSheet() {
     setChar(prev => ({
       ...prev,
       equippedArmor: armorName === prev.equippedArmor ? '' : armorName,
+      armorClass: null,
     }));
-    showToast('Доспех обновлен', armorName ? `Экипирован: ${armorName}` : 'Доспех снят');
+    const label = !armorName || armorName === ''
+      ? 'Доспех снят (Авторасчёт)'
+      : armorName.startsWith('unarmored:')
+      ? 'Режим защиты обновлён'
+      : `Экипирован: ${armorName}`;
+    showToast('Защита', label);
   }, [showToast]);
 
   const handleToggleShield = useCallback((hasShield: boolean) => {
     setChar(prev => ({
       ...prev,
       equippedShield: hasShield,
+      armorClass: null,
     }));
     showToast('Щит', hasShield ? 'Щит экипирован (+2 КД)' : 'Щит убран');
   }, [showToast]);
@@ -3621,15 +3632,55 @@ export default function DnDCharacterSheet() {
                 </div>
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                    <div className="space-y-1"><label className="parchment-label text-xs">КД</label><input type="number" value={char.armorClass ?? ''} onChange={e => update('armorClass', e.target.value === '' ? null : Number(e.target.value))} placeholder={String(getAC(char))} className={inputClass} /></div>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="parchment-label text-xs font-bold">КД</label>
+                        {char.armorClass !== null && (
+                          <button
+                            type="button"
+                            onClick={() => update('armorClass', null)}
+                            className="text-[10px] text-[#8B6914] underline hover:text-[#5C341F] cursor-pointer"
+                            title="Сбросить ручное переопределение и вернуть авторасчёт"
+                          >
+                            Авто
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div
+                          className="flex items-center justify-center font-bold rounded px-1.5 py-1 text-sm sm:text-base min-w-[34px] shadow-xs select-none"
+                          style={{
+                            background: char.armorClass !== null ? 'rgba(139, 69, 19, 0.15)' : 'rgba(201, 168, 76, 0.28)',
+                            border: '1px solid #C9A84C',
+                            color: '#3D2012',
+                          }}
+                          title={char.armorClass !== null ? `Текущий КД (ручной): ${char.armorClass}. Авторасчёт: ${calculatedAC}` : `Авторасчёт КД: ${calculatedAC}`}
+                        >
+                          {activeAC}
+                        </div>
+                        <input
+                          type="number"
+                          value={char.armorClass ?? ''}
+                          onChange={e => update('armorClass', e.target.value === '' ? null : Number(e.target.value))}
+                          placeholder="Ручн."
+                          className={inputClass + " flex-1 min-w-0 text-center text-xs px-1"}
+                          title="Оставьте пустым для авторасчёта или введите своё значение"
+                        />
+                      </div>
+                    </div>
                     <div className="space-y-1"><label className="parchment-label text-xs">Инициатива</label><div className="flex items-center gap-1"><RollBadge value={formatModifier(getInitiative(char))} label="Инициатива" modifier={getInitiative(char)} onRoll={handleRoll} /><input type="number" value={char.initiativeOverride ?? ''} onChange={e => update('initiativeOverride', e.target.value === '' ? null : Number(e.target.value))} placeholder="Авто" className={inputClass + " flex-1"} /></div></div>
                     <div className="space-y-1"><label className="parchment-label text-xs">Скорость</label><input type="number" value={char.speed} onChange={e => update('speed', Number(e.target.value) || 30)} className={inputClass} /></div>
                   </div>
                   {/* Armor & Shield Selector */}
                   <div className="p-2.5 rounded space-y-2" style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
                     <div className="flex items-center justify-between">
-                      <label className="parchment-label text-[11px]">Экипированный доспех</label>
-                      {char.equippedArmor && (
+                      <div className="flex items-center gap-1.5">
+                        <label className="parchment-label text-[11px] font-bold">Защита и Доспехи</label>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded font-semibold" style={{ background: 'rgba(201, 168, 76, 0.25)', color: '#5C341F', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                          КД {calculatedAC}
+                        </span>
+                      </div>
+                      {char.equippedArmor && !char.equippedArmor.startsWith('unarmored:') && (
                         <button
                           type="button"
                           onClick={() => {
@@ -3650,7 +3701,14 @@ export default function DnDCharacterSheet() {
                         onChange={e => handleEquipArmor(e.target.value)}
                         className="parchment-select text-xs sm:col-span-2 py-1"
                       >
-                        <option value="">Без доспехов (КД 10 + ЛОВ)</option>
+                        <option value="">Авто: по классу и расе (КД {calculatedAC})</option>
+                        <optgroup label="Особая защита и Без доспехов">
+                          {availableArmorModes.map(mode => (
+                            <option key={mode.key} value={mode.key}>
+                              {mode.name} — КД {mode.ac} ({mode.description})
+                            </option>
+                          ))}
+                        </optgroup>
                         <optgroup label="Лёгкие доспехи (+ ЛОВ)">
                           <option value="Стеганый доспех">Стеганый доспех (11 + ЛОВ)</option>
                           <option value="Кожаный доспех">Кожаный доспех (11 + ЛОВ)</option>

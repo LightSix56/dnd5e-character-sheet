@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/spells.ts": {
-    "mtime": 1789050529.3512838,
-    "seen": 1789051049.4476347,
-    "ast_hash": "138a5f0482b5bbc2849518d2728c5d6c",
+    "mtime": 1789199794.6121986,
+    "seen": 1789199874.5768392,
+    "ast_hash": "ba3c93bd7a4a0c791c137305eb50a477",
     "semantic_hash": ""
   },
   "src/data/dnd-spells.ts": {
@@ -999,6 +999,84 @@
     "mtime": 1789194318.5692408,
     "seen": 1789194431.6439507,
     "ast_hash": "9155bc11d685649dfc84023db6f0014c",
+    "semantic_hash": ""
+  },
+  "scripts/build-spells-compendium.ts": {
+    "mtime": 1789199788.3159125,
+    "seen": 1789199874.5582447,
+    "ast_hash": "0fe066abdfde064611f01992573a8f82",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/cantrips.ts": {
+    "mtime": 1789199794.5742795,
+    "seen": 1789199874.5768445,
+    "ast_hash": "8180c79c44ef921c3c978100dd1c0d50",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/index.ts": {
+    "mtime": 1789199794.6121986,
+    "seen": 1789199874.5768478,
+    "ast_hash": "2dd7916e24aa06d70a95d264be59e9d1",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-1.ts": {
+    "mtime": 1789199794.578359,
+    "seen": 1789199874.576851,
+    "ast_hash": "ebcf9966493e01bd3b821f279d06a6fa",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-2.ts": {
+    "mtime": 1789199794.58396,
+    "seen": 1789199874.576861,
+    "ast_hash": "a69f3ec57453d83e81d9059e91c673ca",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-3.ts": {
+    "mtime": 1789199794.5892313,
+    "seen": 1789199874.5768638,
+    "ast_hash": "008a32778b612cfb1d1ba2d73c7659bd",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-4.ts": {
+    "mtime": 1789199794.5926952,
+    "seen": 1789199874.5768676,
+    "ast_hash": "4ea3a3e60f70bf5369ad76f3d9f9f8af",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-5.ts": {
+    "mtime": 1789199794.5971732,
+    "seen": 1789199874.5768704,
+    "ast_hash": "aa798fc478a0671920a8ec1df1bbe7f6",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-6.ts": {
+    "mtime": 1789199794.601262,
+    "seen": 1789199874.576873,
+    "ast_hash": "22f7672412058d0b4d977ec612d756d1",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-7.ts": {
+    "mtime": 1789199794.6040254,
+    "seen": 1789199874.5768757,
+    "ast_hash": "10acef66d526734907752a2d275d688d",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-8.ts": {
+    "mtime": 1789199794.605632,
+    "seen": 1789199874.576878,
+    "ast_hash": "458cd2e9488a27fe61c64d05e3aefc46",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/level-9.ts": {
+    "mtime": 1789199794.6095002,
+    "seen": 1789199874.576881,
+    "ast_hash": "3794796e68c04f2c07aa9c113d0a3577",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/spells/types.ts": {
+    "mtime": 1789199794.571622,
+    "seen": 1789199874.5768836,
+    "ast_hash": "b66a0d095a4746379cb080a74fb2b0f4",
     "semantic_hash": ""
   }
 }

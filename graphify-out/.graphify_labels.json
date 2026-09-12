@@ -12,7 +12,7 @@
   "10": "NameGeneratorModal.tsx",
   "11": "Global Constraints",
   "12": "2. Архитектурные разделы дизайна",
-  "13": "app/page.tsx",
+  "13": "dnd-icons.tsx",
   "14": "devDependencies",
   "15": "fetch-dndsu-backgrounds.ts",
   "16": "scripts",
@@ -69,11 +69,13 @@
   "67": "StatsCalculatorModal.tsx",
   "68": "react",
   "69": "Глобальные ограничения",
-  "70": "ItemDetailModal.tsx",
+  "70": "compendium/index.ts",
   "71": "modularize-races.js",
-  "72": "useEscapeKey",
+  "72": "app/page.tsx",
   "73": "📜 Спецификация дизайна: Модульный компендиум рас D&D 5e и автогенерация choices",
   "74": "spells/index.ts",
   "75": "build-spells-compendium.ts",
-  "76": "parse-dndsu-feats.ts"
+  "76": "parse-dndsu-feats.ts",
+  "77": "feats.ts",
+  "78": "CompendiumModals.tsx"
 }

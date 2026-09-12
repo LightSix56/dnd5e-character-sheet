@@ -1,5 +1,6 @@
 // D&D 5e Full Feats and Traits Compendium
 // 105 Official Feats parsed from dnd.su + Core Class Traits
+export * from './feat-prerequisites';
 
 export interface CompendiumFeat {
   id: string;

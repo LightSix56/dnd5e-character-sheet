@@ -24,6 +24,8 @@ import {
   getNewSpellLevelUnlocked,
   isClassASILevel,
   DND_COMPENDIUM_FEATS,
+  getFeats,
+  checkFeatPrerequisites,
   getRacialFeaturesForLevel,
   getRacialHPBonusPerLevel,
   getAvailableSpellsForCharacter,
@@ -350,10 +352,22 @@ export const LevelUpModal = React.memo(function LevelUpModal({
   const [asiChoice, setAsiChoice] = useState<'stats' | 'feat'>('stats');
   const [asiAbility1, setAsiAbility1] = useState<AbilityName>('СИЛ');
   const [asiAbility2, setAsiAbility2] = useState<AbilityName>('ЛОВ');
+  const [featSearch, setFeatSearch] = useState<string>('');
   const allFeats = useMemo(
-    () => DND_COMPENDIUM_FEATS.filter(f => f.category === 'Черта'),
+    () => getFeats().sort((a, b) => a.name.localeCompare(b.name, 'ru')),
     []
   );
+  const filteredFeats = useMemo(() => {
+    const q = featSearch.trim().toLowerCase();
+    if (!q) return allFeats;
+    return allFeats.filter(f =>
+      f.name.toLowerCase().includes(q) ||
+      f.nameEn.toLowerCase().includes(q) ||
+      (f.prerequisite && f.prerequisite.toLowerCase().includes(q)) ||
+      (f.summary && f.summary.toLowerCase().includes(q)) ||
+      (f.abilityBonus && f.abilityBonus.toLowerCase().includes(q))
+    );
+  }, [allFeats, featSearch]);
   const [selectedFeatId, setSelectedFeatId] = useState<string>(
     allFeats[0]?.id || 'alert'
   );
@@ -3624,46 +3638,146 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   )}
                 </div>
               ) : (
-                <div className="space-y-2 pt-1">
-                  <label className="parchment-label text-xs">
-                    Выберите официальную черту D&D 5e:
-                  </label>
-                  <select
-                    value={selectedFeatId}
-                    onChange={e => setSelectedFeatId(e.target.value)}
-                    className="parchment-select text-xs w-full font-bold"
-                  >
-                    {allFeats.map(f => (
-                      <option key={f.id} value={f.id}>
-                        {f.name} ({f.nameEn}){' '}
-                        {f.abilityBonus ? `[+1 к ${f.abilityBonus}]` : ''}
-                      </option>
-                    ))}
-                  </select>
+                <div className="space-y-3 pt-1">
+                  <div className="flex items-center justify-between">
+                    <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                      Выберите официальную черту D&D 5e:
+                    </label>
+                    <span className="text-[11px] text-[#8B6914]">
+                      {featSearch.trim()
+                        ? `Найдено: ${filteredFeats.length} из ${allFeats.length}`
+                        : `${allFeats.length} вариантов черт`}
+                    </span>
+                  </div>
+
+                  {/* Поле поиска черт */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={featSearch}
+                      onChange={e => setFeatSearch(e.target.value)}
+                      placeholder="Поиск черты (по названию, требованиям или описанию)…"
+                      className="parchment-input-boxed text-xs w-full py-2 px-3 pr-8"
+                    />
+                    {featSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setFeatSearch('')}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#8B6914] hover:text-[#3D2012] font-bold p-1 cursor-pointer"
+                        title="Очистить поиск"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Сетка карточек черт */}
+                  {filteredFeats.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
+                      {filteredFeats.map(f => {
+                        const isSel = f.id === selectedFeatId;
+                        const prereqStatus = checkFeatPrerequisites(f, {
+                          stats: {
+                            'СИЛ': getTotalScore(char, 'СИЛ'),
+                            'ЛОВ': getTotalScore(char, 'ЛОВ'),
+                            'ТЕЛ': getTotalScore(char, 'ТЕЛ'),
+                            'ИНТ': getTotalScore(char, 'ИНТ'),
+                            'МДР': getTotalScore(char, 'МДР'),
+                            'ХАР': getTotalScore(char, 'ХАР'),
+                          },
+                          level: newLevel,
+                          race: char.race,
+                          subrace: char.subrace,
+                          className: char.className,
+                          armorProficiencies: [char.otherProficienciesLanguages || ''],
+                          existingFeatNames: (char.traitsList || []).map(t => t.name),
+                        });
+                        const isUnmet = !prereqStatus.satisfied;
+
+                        return (
+                          <button
+                            key={f.id}
+                            type="button"
+                            onClick={() => setSelectedFeatId(f.id)}
+                            className={`p-2.5 rounded-lg text-left text-xs cursor-pointer transition-all flex flex-col justify-between gap-1.5 ${
+                              isSel
+                                ? 'font-bold shadow-sm ring-2 ring-[#C9A84C]'
+                                : isUnmet
+                                  ? 'opacity-65 hover:opacity-95 bg-[rgba(232,211,162,0.15)] text-[#5C341F]'
+                                  : 'hover:bg-[rgba(201,168,76,0.2)] text-[#3D2012] bg-[rgba(251,240,220,0.7)]'
+                            }`}
+                            style={
+                              isSel
+                                ? { background: '#E8D3A2', border: '1.5px solid #C9A84C', color: '#3D2012' }
+                                : { border: isUnmet ? '1px dashed rgba(180, 83, 9, 0.45)' : '1px solid rgba(201, 168, 76, 0.35)' }
+                            }
+                          >
+                            <div className="flex items-start justify-between gap-1 w-full">
+                              <div className="min-w-0 flex-1">
+                                <div className="font-bold text-xs truncate" style={{ color: '#3D2012' }}>
+                                  {f.name}
+                                </div>
+                                <div className="text-[10px] text-[#8B6914] italic truncate">
+                                  {f.nameEn}
+                                </div>
+                              </div>
+                              {isSel ? (
+                                <GoldSealCheckIcon size={16} />
+                              ) : f.abilityBonus ? (
+                                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded font-bold shrink-0 bg-[#E8D3A2]/90 text-[#5C341F] border border-[#C9A84C]/40">
+                                  {f.abilityBonus}
+                                </span>
+                              ) : null}
+                            </div>
+
+                            <p className="text-[11px] leading-tight line-clamp-2 text-[#5C341F] opacity-90">
+                              {f.summary}
+                            </p>
+
+                            {isUnmet && (
+                              <div className="text-[10px] text-[#B45309] font-medium flex items-center gap-1 pt-1 border-t border-[rgba(201,168,76,0.25)] w-full">
+                                <span>⚠️</span>
+                                <span className="truncate">{prereqStatus.unmetReason}</span>
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="p-4 text-center text-xs text-[#8B6914] bg-[rgba(245,230,200,0.4)] rounded-lg border border-dashed border-[#C9A84C]">
+                      Черты по запросу «{featSearch}» не найдены
+                    </div>
+                  )}
+
+                  {/* Выбранная черта: детальный баннер */}
                   {selectedFeat && (
                     <div
-                      className="p-2.5 rounded text-xs space-y-1"
+                      className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm mt-2"
                       style={{
-                        background: 'rgba(232, 211, 162, 0.4)',
-                        border: '1px solid rgba(201, 168, 76, 0.4)',
+                        background: 'rgba(251, 240, 220, 0.95)',
+                        border: '1.5px solid rgba(201, 168, 76, 0.6)',
                       }}
                     >
-                      <div
-                        className="font-bold text-sm"
-                        style={{ color: '#3D2012' }}
-                      >
-                        {selectedFeat.name}
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-xs text-[#3D2012]">
+                          {selectedFeat.name} <span className="text-[11px] font-normal text-[#8B6914]">({selectedFeat.nameEn})</span>
+                        </span>
+                        {selectedFeat.abilityBonus && (
+                          <span className="text-[11px] font-bold text-[#5C341F] px-2 py-0.5 rounded bg-[#E8D3A2] border border-[#C9A84C]">
+                            Бонус: {selectedFeat.abilityBonus}
+                          </span>
+                        )}
                       </div>
-                      <div
-                        className="text-[11px] font-medium"
-                        style={{ color: '#8B6914' }}
-                      >
+                      {selectedFeat.prerequisite && (
+                        <div className="text-[11px] text-[#B45309] font-medium">
+                          Требование: {selectedFeat.prerequisite}
+                        </div>
+                      )}
+                      <div className="text-[11px] font-medium text-[#8B4513]">
                         {selectedFeat.summary}
                       </div>
-                      <div
-                        className="text-[11px] leading-relaxed whitespace-pre-line pt-1 border-t border-amber-900/10"
-                        style={{ color: '#5C341F' }}
-                      >
+                      <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)] max-h-40 overflow-y-auto">
                         {selectedFeat.description}
                       </div>
                     </div>

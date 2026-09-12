@@ -56,56 +56,30 @@
       "source_location": "L14"
     },
     {
-      "id": "src_app_page_createchoicemodalprops",
-      "label": "CreateChoiceModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "createchoicemodalprops",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L889"
-    },
-    {
-      "id": "src_app_page_rollresult",
-      "label": "RollResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "rollresult",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L82"
-    },
-    {
-      "id": "src_app_page_templatemodalprops",
-      "label": "TemplateModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "templatemodalprops",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L569"
-    },
-    {
       "id": "src_components_dnd_icons_iconprops",
       "label": "IconProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "iconprops",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L3"
+    },
+    {
+      "id": "src_components_tools_sharemodal_sharemodalprops",
+      "label": "ShareModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dnd-icons.tsx",
+      "file_type": "code",
+      "norm_label": "sharemodalprops",
+      "source_file": "src/components/tools/ShareModal.tsx",
+      "source_location": "L14"
     },
     {
       "id": "scripts_fetch_class_equipment_classequipmentchoice",
@@ -238,32 +212,6 @@
       "source_location": "L17"
     },
     {
-      "id": "src_components_compendium_autocompleteinput_autocompleteinputprops",
-      "label": "AutocompleteInputProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "autocompleteinputprops",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L12"
-    },
-    {
-      "id": "src_components_compendium_autocompleteinput_autocompleteitem",
-      "label": "AutocompleteItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "autocompleteitem",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L5"
-    },
-    {
       "id": "src_components_levelup_level_up_choices_divineaffinityoption",
       "label": "DivineAffinityOption",
       "_callable": true,
@@ -342,17 +290,17 @@
       "source_location": "L646"
     },
     {
-      "id": "src_data_compendium_feats_compendiumfeat",
-      "label": "CompendiumFeat",
+      "id": "src_data_compendium_auto_spells_engine_autograntedspell",
+      "label": "AutoGrantedSpell",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "LevelUpModal.tsx",
       "file_type": "code",
-      "norm_label": "compendiumfeat",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L4"
+      "norm_label": "autograntedspell",
+      "source_file": "src/data/compendium/auto-spells-engine.ts",
+      "source_location": "L12"
     },
     {
       "id": "src_data_compendium_warlock_choices_geniekinddefinition",
@@ -418,19 +366,6 @@
       "norm_label": "pactboontype",
       "source_file": "src/data/compendium/warlock-choices.ts",
       "source_location": "L4"
-    },
-    {
-      "id": "src_lib_dnd_types_traititem",
-      "label": "TraitItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "traititem",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L59"
     },
     {
       "id": "scripts_merge_races_compendium_parsedrace",
@@ -745,19 +680,6 @@
       "source_location": "L6"
     },
     {
-      "id": "src_data_dnd_weapons_weaponcategoryplaceholder",
-      "label": "WeaponCategoryPlaceholder",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "weaponcategoryplaceholder",
-      "source_file": "src/data/dnd-weapons.ts",
-      "source_location": "L481"
-    },
-    {
       "id": "src_lib_dnd_types_abilityname",
       "label": "AbilityName",
       "_callable": true,
@@ -784,19 +706,6 @@
       "source_location": "L677"
     },
     {
-      "id": "src_lib_dnd_types_spellentry",
-      "label": "SpellEntry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "spellentry",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L53"
-    },
-    {
       "id": "src_lib_dnd_types_attack",
       "label": "Attack",
       "_callable": true,
@@ -810,6 +719,19 @@
       "source_location": "L40"
     },
     {
+      "id": "src_lib_dnd_types_spellentry",
+      "label": "SpellEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "spellentry",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L53"
+    },
+    {
       "id": "src_lib_dnd_types_spellslotinfo",
       "label": "SpellSlotInfo",
       "_callable": true,
@@ -821,6 +743,19 @@
       "norm_label": "spellslotinfo",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L48"
+    },
+    {
+      "id": "src_lib_dnd_types_traititem",
+      "label": "TraitItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "traititem",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L59"
     },
     {
       "id": "src_lib_pdf_export_pdfexportoptions",
@@ -860,19 +795,6 @@
       "norm_label": "charactergridmodalprops",
       "source_file": "src/components/tools/CharacterGridModal.tsx",
       "source_location": "L19"
-    },
-    {
-      "id": "src_components_tools_charactergridmodal_savedcharacter",
-      "label": "SavedCharacter",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "CharacterGridModal.tsx",
-      "file_type": "code",
-      "norm_label": "savedcharacter",
-      "source_file": "src/components/tools/CharacterGridModal.tsx",
-      "source_location": "L9"
     },
     {
       "id": "src_components_tools_charactergridmodal_statpillinfo",
@@ -989,20 +911,20 @@
       "file_type": "code",
       "norm_label": "levelupmodalprops",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L79"
+      "source_location": "L81"
     },
     {
-      "id": "src_components_tools_sharemodal_sharemodalprops",
-      "label": "ShareModalProps",
+      "id": "src_components_tools_charactergridmodal_savedcharacter",
+      "label": "SavedCharacter",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 65,
       "community_name": "class-progression.ts",
       "file_type": "code",
-      "norm_label": "sharemodalprops",
-      "source_file": "src/components/tools/ShareModal.tsx",
-      "source_location": "L14"
+      "norm_label": "savedcharacter",
+      "source_file": "src/components/tools/CharacterGridModal.tsx",
+      "source_location": "L9"
     },
     {
       "id": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodalprops",
@@ -1016,19 +938,6 @@
       "norm_label": "charactercreationwizardmodalprops",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
       "source_location": "L53"
-    },
-    {
-      "id": "src_data_compendium_auto_spells_engine_autograntedspell",
-      "label": "AutoGrantedSpell",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "autograntedspell",
-      "source_file": "src/data/compendium/auto-spells-engine.ts",
-      "source_location": "L12"
     },
     {
       "id": "src_data_compendium_class_progression_classfeatureentry",
@@ -1239,6 +1148,19 @@
       "source_location": "L8"
     },
     {
+      "id": "src_components_compendium_itemdetailmodal_itemdetailmodalprops",
+      "label": "ItemDetailModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "itemdetailmodalprops",
+      "source_file": "src/components/compendium/ItemDetailModal.tsx",
+      "source_location": "L8"
+    },
+    {
       "id": "src_components_compendium_subclassselectormodal_subclassselectormodalprops",
       "label": "SubclassSelectorModalProps",
       "_callable": true,
@@ -1278,82 +1200,95 @@
       "source_location": "L3"
     },
     {
-      "id": "src_components_compendium_itemdetailmodal_itemdetailmodalprops",
-      "label": "ItemDetailModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 70,
-      "community_name": "ItemDetailModal.tsx",
-      "file_type": "code",
-      "norm_label": "itemdetailmodalprops",
-      "source_file": "src/components/compendium/ItemDetailModal.tsx",
-      "source_location": "L8"
-    },
-    {
       "id": "src_data_compendium_items_compendiumitem",
       "label": "CompendiumItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community": 68,
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "compendiumitem",
       "source_file": "src/data/compendium/items.ts",
       "source_location": "L3"
     },
     {
-      "id": "src_components_compendium_compendiummodals_traitmodalprops",
-      "label": "TraitModalProps",
+      "id": "src_components_compendium_autocompleteinput_autocompleteinputprops",
+      "label": "AutocompleteInputProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 72,
-      "community_name": "useEscapeKey",
+      "community": 70,
+      "community_name": "compendium/index.ts",
       "file_type": "code",
-      "norm_label": "traitmodalprops",
-      "source_file": "src/components/compendium/CompendiumModals.tsx",
-      "source_location": "L296"
+      "norm_label": "autocompleteinputprops",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L12"
     },
     {
-      "id": "src_components_compendium_compendiummodals_weaponmodalprops",
-      "label": "WeaponModalProps",
+      "id": "src_components_compendium_autocompleteinput_autocompleteitem",
+      "label": "AutocompleteItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 72,
-      "community_name": "useEscapeKey",
+      "community": 70,
+      "community_name": "compendium/index.ts",
       "file_type": "code",
-      "norm_label": "weaponmodalprops",
-      "source_file": "src/components/compendium/CompendiumModals.tsx",
-      "source_location": "L155"
+      "norm_label": "autocompleteitem",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L5"
     },
     {
-      "id": "src_data_dnd_traits_dndtrait",
-      "label": "DndTrait",
+      "id": "src_data_dnd_weapons_weaponcategoryplaceholder",
+      "label": "WeaponCategoryPlaceholder",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 72,
-      "community_name": "useEscapeKey",
+      "community": 70,
+      "community_name": "compendium/index.ts",
       "file_type": "code",
-      "norm_label": "dndtrait",
-      "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_data_dnd_weapons_dndweapon",
-      "label": "DndWeapon",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 72,
-      "community_name": "useEscapeKey",
-      "file_type": "code",
-      "norm_label": "dndweapon",
+      "norm_label": "weaponcategoryplaceholder",
       "source_file": "src/data/dnd-weapons.ts",
-      "source_location": "L4"
+      "source_location": "L481"
+    },
+    {
+      "id": "src_app_page_createchoicemodalprops",
+      "label": "CreateChoiceModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "createchoicemodalprops",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L889"
+    },
+    {
+      "id": "src_app_page_rollresult",
+      "label": "RollResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "rollresult",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L82"
+    },
+    {
+      "id": "src_app_page_templatemodalprops",
+      "label": "TemplateModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "templatemodalprops",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L569"
     },
     {
       "id": "src_app_page_nonclassspellconfirmmodalprops",
@@ -1473,6 +1408,121 @@
       "source_location": "L25"
     },
     {
+      "id": "src_data_compendium_feat_prerequisites_characterprereqcontext",
+      "label": "CharacterPrereqContext",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "characterprereqcontext",
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_data_compendium_feat_prerequisites_prerequisitecheckresult",
+      "label": "PrerequisiteCheckResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "prerequisitecheckresult",
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_data_compendium_feats_compendiumfeat",
+      "label": "CompendiumFeat",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "compendiumfeat",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_components_compendium_compendiummodals_traitmodalprops",
+      "label": "TraitModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "CompendiumModals.tsx",
+      "file_type": "code",
+      "norm_label": "traitmodalprops",
+      "source_file": "src/components/compendium/CompendiumModals.tsx",
+      "source_location": "L296"
+    },
+    {
+      "id": "src_components_compendium_compendiummodals_weaponmodalprops",
+      "label": "WeaponModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "CompendiumModals.tsx",
+      "file_type": "code",
+      "norm_label": "weaponmodalprops",
+      "source_file": "src/components/compendium/CompendiumModals.tsx",
+      "source_location": "L155"
+    },
+    {
+      "id": "src_data_dnd_traits_dndtrait",
+      "label": "DndTrait",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "CompendiumModals.tsx",
+      "file_type": "code",
+      "norm_label": "dndtrait",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_data_dnd_weapons_dndweapon",
+      "label": "DndWeapon",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "CompendiumModals.tsx",
+      "file_type": "code",
+      "norm_label": "dndweapon",
+      "source_file": "src/data/dnd-weapons.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_components_dnd_icons_quillicon",
+      "label": "QuillIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "NameGeneratorModal.tsx",
+      "file_type": "code",
+      "norm_label": "quillicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L117"
+    },
+    {
+      "id": "src_components_dnd_icons_sparklesdndicon",
+      "label": "SparklesDndIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "NameGeneratorModal.tsx",
+      "file_type": "code",
+      "norm_label": "sparklesdndicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L184"
+    },
+    {
       "id": "src_components_tools_namegeneratormodal_namegeneratormodal",
       "label": "NameGeneratorModal()",
       "_callable": true,
@@ -1545,48 +1595,12 @@
       "source_location": "L641"
     },
     {
-      "id": "src_app_page_calcbadge",
-      "label": "CalcBadge()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "calcbadge()",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L58"
-    },
-    {
-      "id": "src_app_page_rolld20",
-      "label": "rollD20()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "rolld20()",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L68"
-    },
-    {
-      "id": "src_app_page_statinput",
-      "label": "StatInput()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "statinput()",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L198"
-    },
-    {
       "id": "src_components_dnd_icons_arcanelinkicon",
       "label": "ArcaneLinkIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "arcanelinkicon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1598,7 +1612,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "cameraportraiticon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1610,7 +1624,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "chesticon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1622,7 +1636,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "coinschesticon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1634,7 +1648,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "crystalballdndicon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1646,7 +1660,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "goldsealcheckicon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1658,7 +1672,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "hourglassicon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1670,7 +1684,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "infosealicon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1682,7 +1696,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "masksdramaicon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1694,7 +1708,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "mysticspinnericon()",
       "source_file": "src/components/dnd-icons.tsx",
@@ -1706,23 +1720,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "portalicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L106"
-    },
-    {
-      "id": "src_components_dnd_icons_quillicon",
-      "label": "QuillIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "quillicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L117"
     },
     {
       "id": "src_components_dnd_icons_runedkeyicon",
@@ -1730,23 +1732,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "runedkeyicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L132"
-    },
-    {
-      "id": "src_components_tools_sharemodal_sharemodal",
-      "label": "ShareModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "sharemodal()",
-      "source_file": "src/components/tools/ShareModal.tsx",
-      "source_location": "L25"
     },
     {
       "id": "scripts_fetch_class_equipment_cleanequipmenttext",
@@ -2037,30 +2027,6 @@
       "source_location": "L15"
     },
     {
-      "id": "src_components_compendium_autocompleteinput_autocompleteinput",
-      "label": "AutocompleteInput()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "autocompleteinput()",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_components_compendium_autocompleteinput_autocompleteinput_handleclickoutside",
-      "label": "handleClickOutside()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "handleclickoutside()",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L43"
-    },
-    {
       "id": "src_components_levelup_level_up_choices_filteravailablespells",
       "label": "filterAvailableSpells()",
       "_callable": true,
@@ -2109,54 +2075,6 @@
       "source_location": "L864"
     },
     {
-      "id": "src_data_compendium_feats_findfeatbyname",
-      "label": "findFeatByName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "findfeatbyname()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1243"
-    },
-    {
-      "id": "src_data_compendium_feats_getfeats",
-      "label": "getFeats()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "getfeats()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1252"
-    },
-    {
-      "id": "src_data_compendium_feats_gettraits",
-      "label": "getTraits()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "gettraits()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1256"
-    },
-    {
-      "id": "src_data_compendium_index_getcompendiumautocompleteitems",
-      "label": "getCompendiumAutocompleteItems()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "getcompendiumautocompleteitems()",
-      "source_file": "src/data/compendium/index.ts",
-      "source_location": "L25"
-    },
-    {
       "id": "src_data_compendium_warlock_choices_isinvocationavailable",
       "label": "isInvocationAvailable()",
       "_callable": true,
@@ -2167,18 +2085,6 @@
       "norm_label": "isinvocationavailable()",
       "source_file": "src/data/compendium/warlock-choices.ts",
       "source_location": "L647"
-    },
-    {
-      "id": "src_data_dnd_traits_findtraitbyname",
-      "label": "findTraitByName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "findtraitbyname()",
-      "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L20"
     },
     {
       "id": "src_lib_utils_cn",
@@ -2311,6 +2217,18 @@
       "norm_label": "run()",
       "source_file": "scripts/merge-races-compendium.ts",
       "source_location": "L316"
+    },
+    {
+      "id": "src_components_dnd_icons_userheroicon",
+      "label": "UserHeroIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "userheroicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L174"
     },
     {
       "id": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodal",
@@ -2517,18 +2435,6 @@
       "source_location": "L488"
     },
     {
-      "id": "src_data_dnd_weapons_findweaponbyname",
-      "label": "findWeaponByName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "findweaponbyname()",
-      "source_file": "src/data/dnd-weapons.ts",
-      "source_location": "L441"
-    },
-    {
       "id": "src_data_dnd_weapons_getdefaultweaponforcategory",
       "label": "getDefaultWeaponForCategory()",
       "_callable": true,
@@ -2551,6 +2457,18 @@
       "norm_label": "getweaponsbycategory()",
       "source_file": "src/data/dnd-weapons.ts",
       "source_location": "L538"
+    },
+    {
+      "id": "src_lib_dnd_types_calcmodifier",
+      "label": "calcModifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "calcmodifier()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L193"
     },
     {
       "id": "scripts_generate_sheet_main",
@@ -2757,16 +2675,16 @@
       "source_location": "L103"
     },
     {
-      "id": "src_lib_dnd_types_applyclasstemplate",
-      "label": "applyClassTemplate()",
+      "id": "src_data_dnd_weapons_findweaponbyname",
+      "label": "findWeaponByName()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
       "community_name": "dnd-types.ts",
       "file_type": "code",
-      "norm_label": "applyclasstemplate()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1066"
+      "norm_label": "findweaponbyname()",
+      "source_file": "src/data/dnd-weapons.ts",
+      "source_location": "L441"
     },
     {
       "id": "src_lib_dnd_types_applyracetemplate",
@@ -2781,18 +2699,6 @@
       "source_location": "L493"
     },
     {
-      "id": "src_lib_dnd_types_calcmodifier",
-      "label": "calcModifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "calcmodifier()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L193"
-    },
-    {
       "id": "src_lib_dnd_types_calcproficiencybonus",
       "label": "calcProficiencyBonus()",
       "_callable": true,
@@ -2805,18 +2711,6 @@
       "source_location": "L202"
     },
     {
-      "id": "src_lib_dnd_types_createdefaultcharacter",
-      "label": "createDefaultCharacter()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "createdefaultcharacter()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L604"
-    },
-    {
       "id": "src_lib_dnd_types_createemptylevelupentry",
       "label": "createEmptyLevelUpEntry()",
       "_callable": true,
@@ -2827,18 +2721,6 @@
       "norm_label": "createemptylevelupentry()",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L585"
-    },
-    {
-      "id": "src_lib_dnd_types_createexamplewarrior",
-      "label": "createExampleWarrior()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "createexamplewarrior()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1145"
     },
     {
       "id": "src_lib_dnd_types_createexamplewizard",
@@ -3331,6 +3213,18 @@
       "norm_label": "post()",
       "source_file": "src/app/api/upload-portrait/route.ts",
       "source_location": "L4"
+    },
+    {
+      "id": "src_lib_dnd_types_createexamplewarrior",
+      "label": "createExampleWarrior()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "@supabase/ssr",
+      "file_type": "code",
+      "norm_label": "createexamplewarrior()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1145"
     },
     {
       "id": "src_lib_share_store_getlocalsharestore",
@@ -3909,16 +3803,28 @@
       "source_location": "L284"
     },
     {
-      "id": "src_data_compendium_spells_index_findspellbyname",
-      "label": "findSpellByName()",
+      "id": "src_lib_dnd_types_applyclasstemplate",
+      "label": "applyClassTemplate()",
       "_callable": true,
       "_origin": "ast",
       "community": 65,
       "community_name": "class-progression.ts",
       "file_type": "code",
-      "norm_label": "findspellbyname()",
-      "source_file": "src/data/compendium/spells/index.ts",
-      "source_location": "L97"
+      "norm_label": "applyclasstemplate()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1066"
+    },
+    {
+      "id": "src_lib_dnd_types_createdefaultcharacter",
+      "label": "createDefaultCharacter()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "createdefaultcharacter()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L604"
     },
     {
       "id": "src_lib_dnd_types_gethitdicenotation",
@@ -4149,52 +4055,16 @@
       "source_location": "L39"
     },
     {
-      "id": "src_components_tools_statscalculatormodal_statscalculatormodal",
-      "label": "StatsCalculatorModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "statscalculatormodal()",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L98"
-    },
-    {
-      "id": "src_components_compendium_classselectormodal_classselectormodal",
-      "label": "ClassSelectorModal()",
+      "id": "src_components_dnd_icons_backpackpackicon",
+      "label": "BackpackPackIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 68,
       "community_name": "react",
       "file_type": "code",
-      "norm_label": "classselectormodal()",
-      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_components_compendium_raceselectormodal_raceselectormodal",
-      "label": "RaceSelectorModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "react",
-      "file_type": "code",
-      "norm_label": "raceselectormodal()",
-      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_components_compendium_subclassselectormodal_subclassselectormodal",
-      "label": "SubclassSelectorModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "react",
-      "file_type": "code",
-      "norm_label": "subclassselectormodal()",
-      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
-      "source_location": "L15"
+      "norm_label": "backpackpackicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L217"
     },
     {
       "id": "src_components_dnd_icons_crossedswordsicon",
@@ -4209,6 +4079,18 @@
       "source_location": "L152"
     },
     {
+      "id": "src_components_dnd_icons_engravedshieldicon",
+      "label": "EngravedShieldIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "engravedshieldicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L164"
+    },
+    {
       "id": "src_components_dnd_icons_scrollicon",
       "label": "ScrollIcon()",
       "_callable": true,
@@ -4221,64 +4103,40 @@
       "source_location": "L25"
     },
     {
-      "id": "src_components_dnd_icons_sparklesdndicon",
-      "label": "SparklesDndIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "react",
-      "file_type": "code",
-      "norm_label": "sparklesdndicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L184"
-    },
-    {
-      "id": "src_components_dnd_icons_userheroicon",
-      "label": "UserHeroIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "react",
-      "file_type": "code",
-      "norm_label": "userheroicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L174"
-    },
-    {
-      "id": "src_components_compendium_itemdetailmodal_itemdetailmodal",
-      "label": "ItemDetailModal()",
+      "id": "src_components_compendium_autocompleteinput_autocompleteinput",
+      "label": "AutocompleteInput()",
       "_callable": true,
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
-      "norm_label": "itemdetailmodal()",
-      "source_file": "src/components/compendium/ItemDetailModal.tsx",
-      "source_location": "L15"
+      "norm_label": "autocompleteinput()",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L23"
     },
     {
-      "id": "src_components_dnd_icons_backpackpackicon",
-      "label": "BackpackPackIcon()",
+      "id": "src_components_compendium_autocompleteinput_autocompleteinput_handleclickoutside",
+      "label": "handleClickOutside()",
       "_callable": true,
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
-      "norm_label": "backpackpackicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L217"
+      "norm_label": "handleclickoutside()",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L43"
     },
     {
-      "id": "src_components_dnd_icons_engravedshieldicon",
-      "label": "EngravedShieldIcon()",
+      "id": "src_data_compendium_index_getcompendiumautocompleteitems",
+      "label": "getCompendiumAutocompleteItems()",
       "_callable": true,
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
-      "norm_label": "engravedshieldicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L164"
+      "norm_label": "getcompendiumautocompleteitems()",
+      "source_file": "src/data/compendium/index.ts",
+      "source_location": "L25"
     },
     {
       "id": "src_data_compendium_items_finditembyname",
@@ -4286,7 +4144,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
       "norm_label": "finditembyname()",
       "source_file": "src/data/compendium/items.ts",
@@ -4298,7 +4156,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
       "norm_label": "getarmoritems()",
       "source_file": "src/data/compendium/items.ts",
@@ -4310,7 +4168,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
       "norm_label": "getweaponitems()",
       "source_file": "src/data/compendium/items.ts",
@@ -4329,16 +4187,64 @@
       "source_location": "L22"
     },
     {
+      "id": "src_app_page_calcbadge",
+      "label": "CalcBadge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "calcbadge()",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L58"
+    },
+    {
       "id": "src_app_page_nonclassspellconfirmmodal",
       "label": "NonClassSpellConfirmModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "nonclassspellconfirmmodal()",
       "source_file": "src/app/page.tsx",
       "source_location": "L492"
+    },
+    {
+      "id": "src_app_page_rolld20",
+      "label": "rollD20()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "rolld20()",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L68"
+    },
+    {
+      "id": "src_app_page_statinput",
+      "label": "StatInput()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "statinput()",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L198"
+    },
+    {
+      "id": "src_components_compendium_classselectormodal_classselectormodal",
+      "label": "ClassSelectorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "classselectormodal()",
+      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L15"
     },
     {
       "id": "src_components_compendium_compendiummodals_spelldetailmodal",
@@ -4346,7 +4252,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "spelldetailmodal()",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
@@ -4358,7 +4264,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "traitdetailmodal()",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
@@ -4370,23 +4276,71 @@
       "_callable": true,
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "weapondetailmodal()",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
       "source_location": "L163"
     },
     {
-      "id": "src_components_dnd_icons_spellbookicon",
-      "label": "SpellbookIcon()",
+      "id": "src_components_compendium_itemdetailmodal_itemdetailmodal",
+      "label": "ItemDetailModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "spellbookicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L38"
+      "norm_label": "itemdetailmodal()",
+      "source_file": "src/components/compendium/ItemDetailModal.tsx",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_components_compendium_raceselectormodal_raceselectormodal",
+      "label": "RaceSelectorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "raceselectormodal()",
+      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "source_location": "L24"
+    },
+    {
+      "id": "src_components_compendium_subclassselectormodal_subclassselectormodal",
+      "label": "SubclassSelectorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "subclassselectormodal()",
+      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_components_tools_sharemodal_sharemodal",
+      "label": "ShareModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "sharemodal()",
+      "source_file": "src/components/tools/ShareModal.tsx",
+      "source_location": "L25"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal_statscalculatormodal",
+      "label": "StatsCalculatorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "statscalculatormodal()",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L98"
     },
     {
       "id": "src_hooks_useescapekey_useescapekey",
@@ -4394,11 +4348,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "useescapekey()",
       "source_file": "src/hooks/useEscapeKey.ts",
       "source_location": "L3"
+    },
+    {
+      "id": "src_data_compendium_spells_index_findspellbyname",
+      "label": "findSpellByName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 74,
+      "community_name": "spells/index.ts",
+      "file_type": "code",
+      "norm_label": "findspellbyname()",
+      "source_file": "src/data/compendium/spells/index.ts",
+      "source_location": "L97"
     },
     {
       "id": "scripts_build_spells_compendium_capitalize",
@@ -4615,6 +4581,78 @@
       "norm_label": "updatecompendiumfeats()",
       "source_file": "scripts/parse-dndsu-feats.ts",
       "source_location": "L377"
+    },
+    {
+      "id": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
+      "label": "checkFeatPrerequisites()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "checkfeatprerequisites()",
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_data_compendium_feats_findfeatbyname",
+      "label": "findFeatByName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "findfeatbyname()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L1244"
+    },
+    {
+      "id": "src_data_compendium_feats_getfeats",
+      "label": "getFeats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "getfeats()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L1253"
+    },
+    {
+      "id": "src_data_compendium_feats_gettraits",
+      "label": "getTraits()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "gettraits()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L1257"
+    },
+    {
+      "id": "src_data_dnd_traits_findtraitbyname",
+      "label": "findTraitByName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "findtraitbyname()",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "src_components_dnd_icons_spellbookicon",
+      "label": "SpellbookIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "CompendiumModals.tsx",
+      "file_type": "code",
+      "norm_label": "spellbookicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L38"
     },
     {
       "id": "package",
@@ -4868,17 +4906,6 @@
       "norm_label": "next-themes",
       "source_file": "package.json",
       "source_location": "L72"
-    },
-    {
-      "id": "ref_pdf_lib_fontkit",
-      "label": "@pdf-lib/fontkit",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "package.json",
-      "file_type": "concept",
-      "norm_label": "@pdf-lib/fontkit",
-      "source_file": "package.json",
-      "source_location": "L24"
     },
     {
       "id": "ref_prisma",
@@ -6549,33 +6576,11 @@
       "source_location": "L1"
     },
     {
-      "id": "src_app_page",
-      "label": "app/page.tsx",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "app/page.tsx",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_app_page_rollbadge",
-      "label": "RollBadge",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "rollbadge",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L167"
-    },
-    {
       "id": "src_components_dnd_icons",
       "label": "dnd-icons.tsx",
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "dnd-icons.tsx",
       "source_file": "src/components/dnd-icons.tsx",
@@ -6586,7 +6591,7 @@
       "label": "ShareModal.tsx",
       "_origin": "ast",
       "community": 13,
-      "community_name": "app/page.tsx",
+      "community_name": "dnd-icons.tsx",
       "file_type": "code",
       "norm_label": "sharemodal.tsx",
       "source_file": "src/components/tools/ShareModal.tsx",
@@ -7396,17 +7401,6 @@
       "source_location": "L102"
     },
     {
-      "id": "src_components_compendium_autocompleteinput",
-      "label": "AutocompleteInput.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "autocompleteinput.tsx",
-      "source_file": "src/components/compendium/AutocompleteInput.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_levelup_level_up_choices",
       "label": "level-up-choices.ts",
       "_origin": "ast",
@@ -7572,39 +7566,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_data_compendium_feats",
-      "label": "feats.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "feats.ts",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_feats_dnd_compendium_feats",
-      "label": "DND_COMPENDIUM_FEATS",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "dnd_compendium_feats",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_data_compendium_index",
-      "label": "compendium/index.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "compendium/index.ts",
-      "source_file": "src/data/compendium/index.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "src_data_compendium_warlock_choices",
       "label": "warlock-choices.ts",
       "_origin": "ast",
@@ -7680,39 +7641,6 @@
       "norm_label": "warlock_pact_boons_list",
       "source_file": "src/data/compendium/warlock-choices.ts",
       "source_location": "L602"
-    },
-    {
-      "id": "src_data_dnd_traits",
-      "label": "dnd-traits.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "dnd-traits.ts",
-      "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_dnd_traits_dnd_traits",
-      "label": "DND_TRAITS",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "dnd_traits",
-      "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L12"
-    },
-    {
-      "id": "test_feats_compendium_adversarial_test",
-      "label": "feats-compendium-adversarial.test.ts",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "feats-compendium-adversarial.test.ts",
-      "source_file": "test/feats-compendium-adversarial.test.ts",
-      "source_location": "L1"
     },
     {
       "id": "test_level_up_choices_test",
@@ -8034,6 +7962,28 @@
       "source_location": "L37"
     },
     {
+      "id": "src_components_compendium_raceselectormodal",
+      "label": "RaceSelectorModal.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "raceselectormodal.tsx",
+      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_compendium_raceselectormodal_categories",
+      "label": "CATEGORIES",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "categories",
+      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "source_location": "L15"
+    },
+    {
       "id": "src_components_wizard_charactercreationwizardmodal",
       "label": "CharacterCreationWizardModal.tsx",
       "_origin": "ast",
@@ -8353,26 +8303,15 @@
       "source_location": "L1"
     },
     {
-      "id": "src_data_dnd_weapons",
-      "label": "dnd-weapons.ts",
+      "id": "src_lib_dnd_types_all_skills",
+      "label": "ALL_SKILLS",
       "_origin": "ast",
       "community": 3,
       "community_name": "CharacterCreationWizardModal.tsx",
       "file_type": "code",
-      "norm_label": "dnd-weapons.ts",
-      "source_file": "src/data/dnd-weapons.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_dnd_weapons_dnd_weapons",
-      "label": "DND_WEAPONS",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "dnd_weapons",
-      "source_file": "src/data/dnd-weapons.ts",
-      "source_location": "L19"
+      "norm_label": "all_skills",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L38"
     },
     {
       "id": "test_races_compendium_adversarial_test",
@@ -9220,17 +9159,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_app_page_templatemodal",
-      "label": "TemplateModal",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "templatemodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L574"
-    },
-    {
       "id": "src_app_share_code_page",
       "label": "[code]/page.tsx",
       "_origin": "ast",
@@ -9273,17 +9201,6 @@
       "norm_label": "ability_names",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L5"
-    },
-    {
-      "id": "src_lib_dnd_types_all_skills",
-      "label": "ALL_SKILLS",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "all_skills",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L38"
     },
     {
       "id": "src_lib_dnd_types_armor_ac_map",
@@ -9385,17 +9302,6 @@
       "source_location": "L1"
     },
     {
-      "id": "test_warlock_level_up_flow_test",
-      "label": "warlock-level-up-flow.test.ts",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "warlock-level-up-flow.test.ts",
-      "source_file": "test/warlock-level-up-flow.test.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "ref_pdf_lib",
       "label": "pdf-lib",
       "_origin": "ast",
@@ -9405,6 +9311,17 @@
       "norm_label": "pdf-lib",
       "source_file": "package.json",
       "source_location": "L73"
+    },
+    {
+      "id": "ref_pdf_lib_fontkit",
+      "label": "@pdf-lib/fontkit",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "dnd-types.ts",
+      "file_type": "concept",
+      "norm_label": "@pdf-lib/fontkit",
+      "source_file": "package.json",
+      "source_location": "L24"
     },
     {
       "id": "agents_agents_adversarial_fixer_agent",
@@ -10847,7 +10764,7 @@
       "file_type": "code",
       "norm_label": "levelupmodal",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L85"
+      "source_location": "L87"
     },
     {
       "id": "src_data_compendium_auto_spells_engine",
@@ -11103,61 +11020,6 @@
       "source_location": "L13"
     },
     {
-      "id": "src_data_compendium_spells",
-      "label": "spells.ts",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "spells.ts",
-      "source_file": "src/data/compendium/spells.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_spells_index_dnd_compendium_spells",
-      "label": "DND_COMPENDIUM_SPELLS",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "dnd_compendium_spells",
-      "source_file": "src/data/compendium/spells/index.ts",
-      "source_location": "L28"
-    },
-    {
-      "id": "src_data_dnd_spells",
-      "label": "dnd-spells.ts",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "dnd-spells.ts",
-      "source_file": "src/data/dnd-spells.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_dnd_spells_dnd_spells",
-      "label": "DND_SPELLS",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "dnd_spells",
-      "source_file": "src/data/dnd-spells.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_data_dnd_spells_findspellbyname",
-      "label": "findSpellByName",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "findspellbyname",
-      "source_file": "src/data/dnd-spells.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "src_lib_dnd_types_class_templates",
       "label": "CLASS_TEMPLATES",
       "_origin": "ast",
@@ -11189,17 +11051,6 @@
       "norm_label": "expected_artificer_subclasses",
       "source_file": "test/artificer-subclasses.test.ts",
       "source_location": "L9"
-    },
-    {
-      "id": "test_auto_spells_engine_test",
-      "label": "auto-spells-engine.test.ts",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "auto-spells-engine.test.ts",
-      "source_file": "test/auto-spells-engine.test.ts",
-      "source_location": "L1"
     },
     {
       "id": "test_barbarian_subclasses_test",
@@ -11499,6 +11350,17 @@
       "source_location": "L1"
     },
     {
+      "id": "test_warlock_level_up_flow_test",
+      "label": "warlock-level-up-flow.test.ts",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "warlock-level-up-flow.test.ts",
+      "source_file": "test/warlock-level-up-flow.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "test_warlock_subclasses_test",
       "label": "warlock-subclasses.test.ts",
       "_origin": "ast",
@@ -11664,26 +11526,15 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_compendium_raceselectormodal",
-      "label": "RaceSelectorModal.tsx",
+      "id": "src_components_compendium_itemdetailmodal",
+      "label": "ItemDetailModal.tsx",
       "_origin": "ast",
       "community": 68,
       "community_name": "react",
       "file_type": "code",
-      "norm_label": "raceselectormodal.tsx",
-      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "norm_label": "itemdetailmodal.tsx",
+      "source_file": "src/components/compendium/ItemDetailModal.tsx",
       "source_location": "L1"
-    },
-    {
-      "id": "src_components_compendium_raceselectormodal_categories",
-      "label": "CATEGORIES",
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "react",
-      "file_type": "code",
-      "norm_label": "categories",
-      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
-      "source_location": "L15"
     },
     {
       "id": "src_components_compendium_subclassselectormodal",
@@ -12107,14 +11958,25 @@
       "source_location": "L32"
     },
     {
-      "id": "src_components_compendium_itemdetailmodal",
-      "label": "ItemDetailModal.tsx",
+      "id": "src_components_compendium_autocompleteinput",
+      "label": "AutocompleteInput.tsx",
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
-      "norm_label": "itemdetailmodal.tsx",
-      "source_file": "src/components/compendium/ItemDetailModal.tsx",
+      "norm_label": "autocompleteinput.tsx",
+      "source_file": "src/components/compendium/AutocompleteInput.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_index",
+      "label": "compendium/index.ts",
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "compendium/index.ts",
+      "file_type": "code",
+      "norm_label": "compendium/index.ts",
+      "source_file": "src/data/compendium/index.ts",
       "source_location": "L1"
     },
     {
@@ -12122,7 +11984,7 @@
       "label": "items.ts",
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
       "norm_label": "items.ts",
       "source_file": "src/data/compendium/items.ts",
@@ -12133,11 +11995,33 @@
       "label": "DND_COMPENDIUM_ITEMS",
       "_origin": "ast",
       "community": 70,
-      "community_name": "ItemDetailModal.tsx",
+      "community_name": "compendium/index.ts",
       "file_type": "code",
       "norm_label": "dnd_compendium_items",
       "source_file": "src/data/compendium/items.ts",
       "source_location": "L31"
+    },
+    {
+      "id": "src_data_dnd_weapons",
+      "label": "dnd-weapons.ts",
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "compendium/index.ts",
+      "file_type": "code",
+      "norm_label": "dnd-weapons.ts",
+      "source_file": "src/data/dnd-weapons.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_dnd_weapons_dnd_weapons",
+      "label": "DND_WEAPONS",
+      "_origin": "ast",
+      "community": 70,
+      "community_name": "compendium/index.ts",
+      "file_type": "code",
+      "norm_label": "dnd_weapons",
+      "source_file": "src/data/dnd-weapons.ts",
+      "source_location": "L19"
     },
     {
       "id": "scripts_modularize_races",
@@ -12250,11 +12134,22 @@
       "source_location": "L20"
     },
     {
+      "id": "src_app_page",
+      "label": "app/page.tsx",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "app/page.tsx",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "src_app_page_authmodal",
       "label": "AuthModal",
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "authmodal",
       "source_file": "src/app/page.tsx",
@@ -12265,7 +12160,7 @@
       "label": "CreateChoiceModal",
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "createchoicemodal",
       "source_file": "src/app/page.tsx",
@@ -12276,7 +12171,7 @@
       "label": "LevelDownModal",
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "leveldownmodal",
       "source_file": "src/app/page.tsx",
@@ -12287,7 +12182,7 @@
       "label": "LevelHistoryModal",
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "levelhistorymodal",
       "source_file": "src/app/page.tsx",
@@ -12298,18 +12193,29 @@
       "label": "ResetModal",
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "resetmodal",
       "source_file": "src/app/page.tsx",
       "source_location": "L872"
     },
     {
+      "id": "src_app_page_rollbadge",
+      "label": "RollBadge",
+      "_origin": "ast",
+      "community": 72,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "rollbadge",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L167"
+    },
+    {
       "id": "src_app_page_rollresultpopup",
       "label": "RollResultPopup",
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "rollresultpopup",
       "source_file": "src/app/page.tsx",
@@ -12320,22 +12226,22 @@
       "label": "SignOutModal",
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "signoutmodal",
       "source_file": "src/app/page.tsx",
       "source_location": "L813"
     },
     {
-      "id": "src_components_compendium_compendiummodals",
-      "label": "CompendiumModals.tsx",
+      "id": "src_app_page_templatemodal",
+      "label": "TemplateModal",
       "_origin": "ast",
       "community": 72,
-      "community_name": "useEscapeKey",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "compendiummodals.tsx",
-      "source_file": "src/components/compendium/CompendiumModals.tsx",
-      "source_location": "L1"
+      "norm_label": "templatemodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L574"
     },
     {
       "id": "docs_superpowers_specs_2026_09_11_races_compendium_merge_design",
@@ -12434,6 +12340,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_data_compendium_spells",
+      "label": "spells.ts",
+      "_origin": "ast",
+      "community": 74,
+      "community_name": "spells/index.ts",
+      "file_type": "code",
+      "norm_label": "spells.ts",
+      "source_file": "src/data/compendium/spells.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_data_compendium_spells_cantrips",
       "label": "cantrips.ts",
       "_origin": "ast",
@@ -12465,6 +12382,17 @@
       "norm_label": "spells/index.ts",
       "source_file": "src/data/compendium/spells/index.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_spells_index_dnd_compendium_spells",
+      "label": "DND_COMPENDIUM_SPELLS",
+      "_origin": "ast",
+      "community": 74,
+      "community_name": "spells/index.ts",
+      "file_type": "code",
+      "norm_label": "dnd_compendium_spells",
+      "source_file": "src/data/compendium/spells/index.ts",
+      "source_location": "L28"
     },
     {
       "id": "src_data_compendium_spells_index_spell_aliases",
@@ -12687,6 +12615,50 @@
       "source_location": "L1"
     },
     {
+      "id": "src_data_dnd_spells",
+      "label": "dnd-spells.ts",
+      "_origin": "ast",
+      "community": 74,
+      "community_name": "spells/index.ts",
+      "file_type": "code",
+      "norm_label": "dnd-spells.ts",
+      "source_file": "src/data/dnd-spells.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_dnd_spells_dnd_spells",
+      "label": "DND_SPELLS",
+      "_origin": "ast",
+      "community": 74,
+      "community_name": "spells/index.ts",
+      "file_type": "code",
+      "norm_label": "dnd_spells",
+      "source_file": "src/data/dnd-spells.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_data_dnd_spells_findspellbyname",
+      "label": "findSpellByName",
+      "_origin": "ast",
+      "community": 74,
+      "community_name": "spells/index.ts",
+      "file_type": "code",
+      "norm_label": "findspellbyname",
+      "source_file": "src/data/dnd-spells.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "test_auto_spells_engine_test",
+      "label": "auto-spells-engine.test.ts",
+      "_origin": "ast",
+      "community": 74,
+      "community_name": "spells/index.ts",
+      "file_type": "code",
+      "norm_label": "auto-spells-engine.test.ts",
+      "source_file": "test/auto-spells-engine.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "scripts_build_spells_compendium",
       "label": "build-spells-compendium.ts",
       "_origin": "ast",
@@ -12806,6 +12778,94 @@
       "norm_label": "output_file",
       "source_file": "scripts/parse-dndsu-feats.ts",
       "source_location": "L9"
+    },
+    {
+      "id": "src_data_compendium_feat_prerequisites",
+      "label": "feat-prerequisites.ts",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "feat-prerequisites.ts",
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_feats",
+      "label": "feats.ts",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "feats.ts",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_feats_dnd_compendium_feats",
+      "label": "DND_COMPENDIUM_FEATS",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "dnd_compendium_feats",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_data_dnd_traits",
+      "label": "dnd-traits.ts",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "dnd-traits.ts",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_dnd_traits_dnd_traits",
+      "label": "DND_TRAITS",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "dnd_traits",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "test_feat_prerequisites_test",
+      "label": "feat-prerequisites.test.ts",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "feat-prerequisites.test.ts",
+      "source_file": "test/feat-prerequisites.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_feats_compendium_adversarial_test",
+      "label": "feats-compendium-adversarial.test.ts",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "feats.ts",
+      "file_type": "code",
+      "norm_label": "feats-compendium-adversarial.test.ts",
+      "source_file": "test/feats-compendium-adversarial.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_compendium_compendiummodals",
+      "label": "CompendiumModals.tsx",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "CompendiumModals.tsx",
+      "file_type": "code",
+      "norm_label": "compendiummodals.tsx",
+      "source_file": "src/components/compendium/CompendiumModals.tsx",
+      "source_location": "L1"
     },
     {
       "id": "docs_superpowers_specs_2026_09_10_warlock_level_up_deepening_design",
@@ -15278,7 +15338,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L105",
+      "source_location": "L107",
       "weight": 1.0
     },
     {
@@ -15290,7 +15350,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L109",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
@@ -15302,7 +15362,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L113",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -15314,7 +15374,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L117",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -15326,7 +15386,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L122",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -15338,7 +15398,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L1482",
+      "source_location": "L1496",
       "weight": 1.0
     },
     {
@@ -15350,7 +15410,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L167",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
@@ -15362,7 +15422,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L169",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -15374,7 +15434,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L180",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
@@ -15386,7 +15446,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L184",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -15398,7 +15458,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L188",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -15410,7 +15470,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L194",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -15422,7 +15482,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L199",
+      "source_location": "L201",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal_levelupmodal",
+      "target": "src_data_compendium_feats_getfeats",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L357",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal_levelupmodal",
+      "target": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L3679",
       "weight": 1.0
     },
     {
@@ -15434,7 +15518,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L363",
+      "source_location": "L377",
       "weight": 1.0
     },
     {
@@ -15446,7 +15530,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L376",
+      "source_location": "L390",
       "weight": 1.0
     },
     {
@@ -15458,7 +15542,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L382",
+      "source_location": "L396",
       "weight": 1.0
     },
     {
@@ -15470,7 +15554,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L408",
+      "source_location": "L422",
       "weight": 1.0
     },
     {
@@ -15482,7 +15566,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L438",
+      "source_location": "L452",
       "weight": 1.0
     },
     {
@@ -15494,7 +15578,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L442",
+      "source_location": "L456",
       "weight": 1.0
     },
     {
@@ -15506,7 +15590,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L447",
+      "source_location": "L461",
       "weight": 1.0
     },
     {
@@ -15518,7 +15602,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L476",
+      "source_location": "L490",
       "weight": 1.0
     },
     {
@@ -15530,7 +15614,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L588",
+      "source_location": "L602",
       "weight": 1.0
     },
     {
@@ -15542,7 +15626,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L90",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -15554,7 +15638,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L92",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -15566,7 +15650,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L93",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -15578,7 +15662,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L94",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -15734,7 +15818,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L1160",
+      "source_location": "L1173",
       "weight": 1.0
     },
     {
@@ -15746,7 +15830,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L1242",
+      "source_location": "L1255",
       "weight": 1.0
     },
     {
@@ -15758,7 +15842,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L1252",
+      "source_location": "L1265",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodal",
+      "target": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
+      "source_location": "L1768",
       "weight": 1.0
     },
     {
@@ -15770,7 +15866,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L199",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -15782,7 +15878,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L230",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -15794,7 +15890,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L244",
+      "source_location": "L245",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodal",
+      "target": "src_data_compendium_feats_getfeats",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
+      "source_location": "L256",
       "weight": 1.0
     },
     {
@@ -15806,7 +15914,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L2860",
+      "source_location": "L2968",
       "weight": 1.0
     },
     {
@@ -15818,7 +15926,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L305",
+      "source_location": "L318",
       "weight": 1.0
     },
     {
@@ -15830,7 +15938,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L310",
+      "source_location": "L323",
       "weight": 1.0
     },
     {
@@ -15842,7 +15950,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L321",
+      "source_location": "L334",
       "weight": 1.0
     },
     {
@@ -15854,7 +15962,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L323",
+      "source_location": "L336",
       "weight": 1.0
     },
     {
@@ -15866,7 +15974,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L355",
+      "source_location": "L368",
       "weight": 1.0
     },
     {
@@ -15878,7 +15986,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L380",
+      "source_location": "L393",
       "weight": 1.0
     },
     {
@@ -15890,7 +15998,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L418",
+      "source_location": "L431",
       "weight": 1.0
     },
     {
@@ -15914,7 +16022,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L608",
+      "source_location": "L621",
       "weight": 1.0
     },
     {
@@ -15926,7 +16034,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L630",
+      "source_location": "L643",
       "weight": 1.0
     },
     {
@@ -15938,7 +16046,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L774",
+      "source_location": "L787",
       "weight": 1.0
     },
     {
@@ -15950,7 +16058,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
-      "source_location": "L873",
+      "source_location": "L886",
       "weight": 1.0
     },
     {
@@ -17046,6 +17154,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_data_compendium_feats",
+      "target": "src_data_compendium_feat_prerequisites",
+      "relation": "re_exports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "export",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_data_compendium_index",
       "target": "src_data_compendium_races",
       "relation": "re_exports",
@@ -17631,7 +17751,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L80",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -17643,7 +17763,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L81",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -21584,7 +21704,31 @@
     },
     {
       "source": "src_components_levelup_levelupmodal",
+      "target": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
       "target": "src_data_compendium_feats_dnd_compendium_feats",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_data_compendium_feats_getfeats",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -21627,7 +21771,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L35",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -21639,139 +21783,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L35",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_battle_master_maneuvers",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_bladesinging_weapons",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_divine_affinity_options",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_draconic_ancestry_options",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_eldritch_invocations",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_filteravailablespells",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_getknownspellnames",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_getlevelupchoicesconfig",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_getthirdcasterspellslots",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_metamagic_options",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices_normalizespellname",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -21932,6 +21944,138 @@
     },
     {
       "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_battle_master_maneuvers",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_bladesinging_weapons",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_divine_affinity_options",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_draconic_ancestry_options",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_eldritch_invocations",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_filteravailablespells",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_getknownspellnames",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_getlevelupchoicesconfig",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_getthirdcasterspellslots",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_metamagic_options",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices_normalizespellname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
       "target": "src_data_compendium_spells_index_dnd_compendium_spells",
       "relation": "imports",
       "_origin": "ast",
@@ -21939,7 +22083,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L52",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -21951,7 +22095,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -21963,7 +22107,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -21975,7 +22119,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -21987,7 +22131,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -21999,7 +22143,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -22011,7 +22155,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -22023,7 +22167,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L61",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -22035,7 +22179,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L62",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -22047,7 +22191,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L62",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -22059,7 +22203,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22071,7 +22215,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22083,7 +22227,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22095,7 +22239,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22107,7 +22251,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22119,7 +22263,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22131,7 +22275,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22143,7 +22287,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22155,7 +22299,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -22167,7 +22311,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L77",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -22556,7 +22700,43 @@
     },
     {
       "source": "src_components_wizard_charactercreationwizardmodal",
+      "target": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_wizard_charactercreationwizardmodal",
+      "target": "src_data_compendium_feats_compendiumfeat",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_wizard_charactercreationwizardmodal",
       "target": "src_data_compendium_feats_dnd_compendium_feats",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_wizard_charactercreationwizardmodal",
+      "target": "src_data_compendium_feats_getfeats",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23584,6 +23764,18 @@
       "context": "import",
       "source_file": "src/data/compendium/class-spells.ts",
       "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_data_compendium_feat_prerequisites",
+      "target": "src_data_compendium_feats_compendiumfeat",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L1",
       "weight": 1.0
     },
     {
@@ -24687,6 +24879,42 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "test/export-pdf.test.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "test_feat_prerequisites_test",
+      "target": "src_data_compendium_feat_prerequisites_characterprereqcontext",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/feat-prerequisites.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_feat_prerequisites_test",
+      "target": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/feat-prerequisites.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_feat_prerequisites_test",
+      "target": "src_data_compendium_feats_findfeatbyname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/feat-prerequisites.test.ts",
       "source_location": "L4",
       "weight": 1.0
     },
@@ -28428,19 +28656,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L35",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_levelup_levelupmodal",
-      "target": "src_components_levelup_level_up_choices",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L39",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -28457,6 +28673,18 @@
     },
     {
       "source": "src_components_levelup_levelupmodal",
+      "target": "src_components_levelup_level_up_choices",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_levelup_levelupmodal",
       "target": "src_data_compendium_spells",
       "relation": "imports_from",
       "_origin": "ast",
@@ -28464,7 +28692,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L52",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -28476,7 +28704,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -28488,7 +28716,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L61",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -28500,7 +28728,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L62",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -28512,7 +28740,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L66",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -28524,7 +28752,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L77",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -29563,6 +29791,30 @@
       "context": "import",
       "source_file": "test/export-pdf.test.ts",
       "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "test_feat_prerequisites_test",
+      "target": "src_data_compendium_feat_prerequisites",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/feat-prerequisites.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_feat_prerequisites_test",
+      "target": "src_data_compendium_feats",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/feat-prerequisites.test.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -36352,7 +36604,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L79",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -36363,7 +36615,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L85",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -37522,6 +37774,39 @@
       "weight": 1.0
     },
     {
+      "source": "src_data_compendium_feat_prerequisites",
+      "target": "src_data_compendium_feat_prerequisites_prerequisitecheckresult",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "src_data_compendium_feat_prerequisites",
+      "target": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "src_data_compendium_feat_prerequisites",
+      "target": "src_data_compendium_feat_prerequisites_characterprereqcontext",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_data_compendium_feats",
       "target": "src_data_compendium_feats_findfeatbyname",
       "relation": "contains",
@@ -37529,7 +37814,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1243",
+      "source_location": "L1244",
       "weight": 1.0
     },
     {
@@ -37540,7 +37825,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1252",
+      "source_location": "L1253",
       "weight": 1.0
     },
     {
@@ -37551,7 +37836,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1256",
+      "source_location": "L1257",
       "weight": 1.0
     },
     {
@@ -37562,7 +37847,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -37573,7 +37858,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -39884,10 +40169,10 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L585",
+      "source_location": "L599",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b9a587d66be5873b0d1a0a795e46895f8fe51ee7"
+  "built_at_commit": "c9aa236aa442d0400ec9bb97271b6cbb078e083d"
 }

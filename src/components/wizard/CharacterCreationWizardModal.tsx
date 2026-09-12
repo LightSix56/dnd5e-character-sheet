@@ -9,7 +9,7 @@ import { DND_COMPENDIUM_RACES, type CompendiumRace, type CompendiumSubrace } fro
 import { DND_COMPENDIUM_CLASSES, type CompendiumClass } from '@/data/compendium/classes';
 import { DND_COMPENDIUM_BACKGROUNDS, type CompendiumBackground } from '@/data/compendium/backgrounds';
 import { DND_COMPENDIUM_SPELLS, type DndSpell } from '@/data/compendium/spells';
-import { DND_COMPENDIUM_FEATS } from '@/data/compendium/feats';
+import { DND_COMPENDIUM_FEATS, getFeats, checkFeatPrerequisites, type CompendiumFeat } from '@/data/compendium/feats';
 import { GENIE_KINDS, GENIE_KINDS_LIST, type GenieKindId } from '@/data/compendium/warlock-choices';
 import {
   generateFantasyName,
@@ -75,6 +75,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [customRacialSkills, setCustomRacialSkills] = useState<string[]>([]);
   // Additional racial choices (Variant Human Feat, High Elf Cantrip, Dwarf Tool, Dragon Ancestry, Languages)
   const [selectedRacialFeatId, setSelectedRacialFeatId] = useState<string>('');
+  const [racialFeatSearch, setRacialFeatSearch] = useState<string>('');
   const [selectedRacialCantrip, setSelectedRacialCantrip] = useState<string>('');
   const [selectedRacialTool, setSelectedRacialTool] = useState<string>('Инструменты кузнеца');
   const [selectedDragonColor, setSelectedDragonColor] = useState<string>('Красный');
@@ -250,10 +251,22 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return selectedRace.languages.filter(l => !l.toLowerCase().includes('выбор'));
   }, [selectedRace]);
 
-  // Sorted feats from compendium
-  const sortedFeats = useMemo(() => {
-    return [...DND_COMPENDIUM_FEATS].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+  // All official feats from compendium (excluding class traits)
+  const allCompendiumFeats = useMemo(() => {
+    return getFeats().sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   }, []);
+
+  const filteredRacialFeats = useMemo(() => {
+    const q = racialFeatSearch.trim().toLowerCase();
+    if (!q) return allCompendiumFeats;
+    return allCompendiumFeats.filter(f =>
+      f.name.toLowerCase().includes(q) ||
+      f.nameEn.toLowerCase().includes(q) ||
+      (f.prerequisite && f.prerequisite.toLowerCase().includes(q)) ||
+      (f.summary && f.summary.toLowerCase().includes(q)) ||
+      (f.abilityBonus && f.abilityBonus.toLowerCase().includes(q))
+    );
+  }, [allCompendiumFeats, racialFeatSearch]);
 
   // Dynamic racial cantrips (High Elf -> wizard, Kobold -> sorcerer, Astral Elf -> fixed list, etc.)
   const availableRacialCantrips = useMemo(() => {
@@ -1702,7 +1715,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       {/* Feat Selector (Variant Human & Custom Lineage) */}
                       {racialChoicesConfig?.needsFeat && (
                         <div
-                          className="p-3.5 rounded-lg space-y-2.5"
+                          className="p-3.5 rounded-lg space-y-3"
                           style={{
                             background: 'rgba(232, 211, 162, 0.3)',
                             border: '1px solid rgba(201, 168, 76, 0.4)'
@@ -1712,46 +1725,141 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                             <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
                               📜 Стартовая черта (Feat):
                             </label>
-                            {selectedRacialFeatId ? (
-                              <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано</span>
-                            ) : (
-                              <span className="text-[11px] font-semibold text-[#B45309]">Обязательный выбор</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[11px] text-[#8B6914]">
+                                {racialFeatSearch.trim()
+                                  ? `Найдено: ${filteredRacialFeats.length} из ${allCompendiumFeats.length}`
+                                  : `${allCompendiumFeats.length} вариантов черт`}
+                              </span>
+                              {selectedRacialFeatId ? (
+                                <span className="text-[11px] font-semibold text-[#4a7c3f]">✓ Выбрано</span>
+                              ) : (
+                                <span className="text-[11px] font-semibold text-[#B45309]">Обязательный выбор</span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Поле поиска черт */}
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={racialFeatSearch}
+                              onChange={e => setRacialFeatSearch(e.target.value)}
+                              placeholder="Поиск черты (по названию, требованиям или описанию)…"
+                              className="parchment-input-boxed text-xs w-full py-2 px-3 pr-8"
+                            />
+                            {racialFeatSearch && (
+                              <button
+                                type="button"
+                                onClick={() => setRacialFeatSearch('')}
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[#8B6914] hover:text-[#3D2012] font-bold p-1 cursor-pointer"
+                                title="Очистить поиск"
+                              >
+                                ✕
+                              </button>
                             )}
                           </div>
-                          <select
-                            value={selectedRacialFeatId}
-                            onChange={e => setSelectedRacialFeatId(e.target.value)}
-                            className="parchment-select w-full text-xs py-1.5 px-2.5"
-                          >
-                            <option value="">-- Выберите стартовую черту (Feat) --</option>
-                            {sortedFeats.map(feat => (
-                              <option key={feat.id} value={feat.id}>
-                                {feat.name} ({feat.nameEn}){feat.prerequisite ? ` [Треб.: ${feat.prerequisite}]` : ''}
-                              </option>
-                            ))}
-                          </select>
+
+                          {/* Сетка карточек черт */}
+                          {filteredRacialFeats.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1">
+                              {filteredRacialFeats.map(feat => {
+                                const isSel = feat.id === selectedRacialFeatId;
+                                const prereqStatus = checkFeatPrerequisites(feat, {
+                                  stats: finalAbilityScores.totals,
+                                  level: 1,
+                                  race: selectedRace?.name,
+                                  subrace: selectedSubrace?.name,
+                                  className: selectedClass?.name,
+                                  armorProficiencies: [selectedClass?.armorWeaponProfs || ''],
+                                  canCastSpells: selectedClass?.spellcasting?.isCaster ?? false,
+                                });
+                                const isUnmet = !prereqStatus.satisfied;
+
+                                return (
+                                  <button
+                                    key={feat.id}
+                                    type="button"
+                                    onClick={() => setSelectedRacialFeatId(feat.id)}
+                                    className={`p-2.5 rounded-lg text-left text-xs cursor-pointer transition-all flex flex-col justify-between gap-1.5 ${
+                                      isSel
+                                        ? 'font-bold shadow-sm ring-2 ring-[#C9A84C]'
+                                        : isUnmet
+                                          ? 'opacity-65 hover:opacity-95 bg-[rgba(232,211,162,0.15)] text-[#5C341F]'
+                                          : 'hover:bg-[rgba(201,168,76,0.2)] text-[#3D2012] bg-[rgba(251,240,220,0.7)]'
+                                    }`}
+                                    style={
+                                      isSel
+                                        ? { background: '#E8D3A2', border: '1.5px solid #C9A84C', color: '#3D2012' }
+                                        : { border: isUnmet ? '1px dashed rgba(180, 83, 9, 0.45)' : '1px solid rgba(201, 168, 76, 0.35)' }
+                                    }
+                                  >
+                                    <div className="flex items-start justify-between gap-1 w-full">
+                                      <div className="min-w-0 flex-1">
+                                        <div className="font-bold text-xs truncate" style={{ color: '#3D2012' }}>
+                                          {feat.name}
+                                        </div>
+                                        <div className="text-[10px] text-[#8B6914] italic truncate">
+                                          {feat.nameEn}
+                                        </div>
+                                      </div>
+                                      {isSel ? (
+                                        <GoldSealCheckIcon size={16} />
+                                      ) : feat.abilityBonus ? (
+                                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded font-bold shrink-0 bg-[#E8D3A2]/90 text-[#5C341F] border border-[#C9A84C]/40">
+                                          {feat.abilityBonus}
+                                        </span>
+                                      ) : null}
+                                    </div>
+
+                                    <p className="text-[11px] leading-tight line-clamp-2 text-[#5C341F] opacity-90">
+                                      {feat.summary}
+                                    </p>
+
+                                    {isUnmet && (
+                                      <div className="text-[10px] text-[#B45309] font-medium flex items-center gap-1 pt-1 border-t border-[rgba(201,168,76,0.25)] w-full">
+                                        <span>⚠️</span>
+                                        <span className="truncate">{prereqStatus.unmetReason}</span>
+                                      </div>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="p-4 text-center text-xs text-[#8B6914] bg-[rgba(245,230,200,0.4)] rounded-lg border border-dashed border-[#C9A84C]">
+                              Черты по запросу «{racialFeatSearch}» не найдены
+                            </div>
+                          )}
+
+                          {/* Selected Feat Details Banner */}
                           {selectedRacialFeat && (
                             <div
-                              className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm"
+                              className="p-3 rounded-lg text-xs space-y-1.5 shadow-sm mt-2"
                               style={{
-                                background: 'rgba(251, 240, 220, 0.9)',
-                                border: '1px solid rgba(201, 168, 76, 0.5)'
+                                background: 'rgba(251, 240, 220, 0.95)',
+                                border: '1.5px solid rgba(201, 168, 76, 0.6)'
                               }}
                             >
                               <div className="flex items-center justify-between">
                                 <span className="font-bold text-xs text-[#3D2012]">
                                   {selectedRacialFeat.name} <span className="text-[11px] font-normal text-[#8B6914]">({selectedRacialFeat.nameEn})</span>
                                 </span>
-                                {selectedRacialFeat.prerequisite && (
-                                  <span className="text-[10px] text-[#B45309] font-medium">
-                                    Требование: {selectedRacialFeat.prerequisite}
+                                {selectedRacialFeat.abilityBonus && (
+                                  <span className="text-[11px] font-bold text-[#5C341F] px-2 py-0.5 rounded bg-[#E8D3A2] border border-[#C9A84C]">
+                                    Бонус: {selectedRacialFeat.abilityBonus}
                                   </span>
                                 )}
                               </div>
+                              {selectedRacialFeat.prerequisite && (
+                                <div className="text-[11px] text-[#B45309] font-medium">
+                                  Требование: {selectedRacialFeat.prerequisite}
+                                </div>
+                              )}
                               <div className="text-[11px] font-medium text-[#8B4513]">
                                 {selectedRacialFeat.summary}
                               </div>
-                              <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)]">
+                              <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)] max-h-40 overflow-y-auto">
                                 {selectedRacialFeat.description}
                               </div>
                             </div>

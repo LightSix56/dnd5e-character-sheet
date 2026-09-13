@@ -4,7 +4,11 @@ import {
   generateRaceFantasyName,
   lookupRaceNamingEntry
 } from '../src/data/compendium/names-data';
-import { createDefaultCharacter } from '../src/lib/dnd-types';
+import {
+  createDefaultCharacter,
+  resolveCharacterGender,
+  parseCharacterGender
+} from '../src/lib/dnd-types';
 
 test('CharacterData: createDefaultCharacter initializes default gender to "Мужской"', () => {
   const char = createDefaultCharacter();
@@ -117,4 +121,22 @@ test('generateRaceFantasyName: Handles unknown / empty race gracefully without t
   assert.ok(unknownRes.name.length > 0);
   assert.equal(unknownRes.isOfficial, false);
   assert.ok(unknownRes.warning);
+});
+
+test('Character Gender Helpers: resolveCharacterGender maps standard and custom genders', () => {
+  assert.equal(resolveCharacterGender('Мужской'), 'Мужской');
+  assert.equal(resolveCharacterGender('Женский'), 'Женский');
+  assert.equal(resolveCharacterGender('Другой', 'Бесполый'), 'Бесполый');
+  assert.equal(resolveCharacterGender('Другой', '  '), 'Другой');
+  assert.equal(resolveCharacterGender('Другой'), 'Другой');
+});
+
+test('Character Gender Helpers: parseCharacterGender parses stored character gender string', () => {
+  assert.deepEqual(parseCharacterGender('Мужской'), { baseChoice: 'Мужской', customText: '' });
+  assert.deepEqual(parseCharacterGender('Женский'), { baseChoice: 'Женский', customText: '' });
+  assert.deepEqual(parseCharacterGender('Другой'), { baseChoice: 'Другой', customText: '' });
+  assert.deepEqual(parseCharacterGender('Бесполый'), { baseChoice: 'Другой', customText: 'Бесполый' });
+  assert.deepEqual(parseCharacterGender('Конструкт'), { baseChoice: 'Другой', customText: 'Конструкт' });
+  assert.deepEqual(parseCharacterGender(undefined), { baseChoice: 'Мужской', customText: '' });
+  assert.deepEqual(parseCharacterGender(''), { baseChoice: 'Мужской', customText: '' });
 });

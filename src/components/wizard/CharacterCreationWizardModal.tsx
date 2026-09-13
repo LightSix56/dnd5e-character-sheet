@@ -3,7 +3,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
   CharacterData, AbilityName, ABILITY_NAMES, ABILITY_FULL, ALL_SKILLS, SKILL_MAP,
-  calcModifier, formatModifier, Attack, SpellEntry, createDefaultCharacter
+  calcModifier, formatModifier, Attack, SpellEntry, createDefaultCharacter,
+  BaseGenderChoice, resolveCharacterGender, parseCharacterGender
 } from '@/lib/dnd-types';
 import { DND_COMPENDIUM_RACES, type CompendiumRace, type CompendiumSubrace } from '@/data/compendium/races';
 import { DND_COMPENDIUM_CLASSES, type CompendiumClass } from '@/data/compendium/classes';
@@ -68,7 +69,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
   // ── Step 1: Character Concept & Race ──
   const [charName, setCharName] = useState<string>('');
-  const [gender, setGender] = useState<string>('Мужской');
+  const [genderChoice, setGenderChoice] = useState<BaseGenderChoice>('Мужской');
+  const [customGender, setCustomGender] = useState<string>('');
   const [nameLoreInfo, setNameLoreInfo] = useState<{ isOfficial: boolean; tradition?: string; warning?: string; culture?: string } | null>(null);
   const [selectedRaceId, setSelectedRaceId] = useState<string>('');
   const [selectedSubraceId, setSelectedSubraceId] = useState<string>('');
@@ -428,11 +430,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // Random name generator button
   const handleGenerateName = useCallback(() => {
     if (!selectedRaceId) return;
-    const result = generateRaceFantasyName(selectedRaceId, selectedSubraceId, gender);
+    const result = generateRaceFantasyName(selectedRaceId, selectedSubraceId, genderChoice);
     setCharName(result.name);
     setNameLoreInfo(result);
     setStepError(null);
-  }, [selectedRaceId, selectedSubraceId, gender]);
+  }, [selectedRaceId, selectedSubraceId, genderChoice]);
 
   // On selecting race
   const handleSelectRace = useCallback((race: CompendiumRace) => {
@@ -1352,7 +1354,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       traitsList,
       equipment: equipmentText,
 
-      gender,
+      gender: resolveCharacterGender(genderChoice, customGender),
       age,
       height,
       weight,
@@ -1548,16 +1550,16 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     Имя персонажа
                   </label>
                   {/* Gender Selector Pills */}
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[11px] font-semibold text-[#8B6914] mr-0.5">Пол:</span>
                     {(['Мужской', 'Женский', 'Другой'] as const).map(g => {
-                      const isSel = gender === g;
+                      const isSel = genderChoice === g;
                       const icon = g === 'Мужской' ? '♂' : g === 'Женский' ? '♀' : '⚧';
                       return (
                         <button
                           key={g}
                           type="button"
-                          onClick={() => setGender(g)}
+                          onClick={() => setGenderChoice(g)}
                           className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition-all flex items-center gap-1 ${
                             isSel
                               ? 'parchment-btn shadow-xs scale-100'
@@ -1569,6 +1571,15 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         </button>
                       );
                     })}
+                    {genderChoice === 'Другой' && (
+                      <input
+                        type="text"
+                        value={customGender}
+                        onChange={e => setCustomGender(e.target.value)}
+                        placeholder="Укажите пол (напр., Бесполый)…"
+                        className="parchment-input-boxed text-xs py-1 px-2.5 w-full sm:w-52"
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -4046,17 +4057,28 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   Внешность и данные персонажа:
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
-                  <div>
+                  <div className={genderChoice === 'Другой' ? 'col-span-2' : ''}>
                     <label className="parchment-label block mb-1">Пол:</label>
-                    <select
-                      value={gender}
-                      onChange={e => setGender(e.target.value)}
-                      className="parchment-select text-xs w-full py-1.5 px-2.5"
-                    >
-                      <option value="Мужской">♂ Мужской</option>
-                      <option value="Женский">♀ Женский</option>
-                      <option value="Другой">⚧ Другой</option>
-                    </select>
+                    <div className="flex gap-1.5">
+                      <select
+                        value={genderChoice}
+                        onChange={e => setGenderChoice(e.target.value as BaseGenderChoice)}
+                        className="parchment-select text-xs py-1.5 px-2.5"
+                      >
+                        <option value="Мужской">♂ Мужской</option>
+                        <option value="Женский">♀ Женский</option>
+                        <option value="Другой">⚧ Другой</option>
+                      </select>
+                      {genderChoice === 'Другой' && (
+                        <input
+                          type="text"
+                          value={customGender}
+                          onChange={e => setCustomGender(e.target.value)}
+                          placeholder="Свой вариант…"
+                          className="parchment-input-boxed text-xs py-1.5 px-2.5 flex-1"
+                        />
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label className="parchment-label block mb-1">Имя игрока:</label>

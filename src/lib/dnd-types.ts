@@ -1184,6 +1184,26 @@ export function createEmptyLevelUpEntry(level: number): LevelUpEntry {
   };
 }
 
+// ── Gender resolution helpers ──
+
+export type BaseGenderChoice = 'Мужской' | 'Женский' | 'Другой';
+
+export function resolveCharacterGender(baseChoice: BaseGenderChoice, customText?: string): string {
+  if (baseChoice === 'Мужской') return 'Мужской';
+  if (baseChoice === 'Женский') return 'Женский';
+  const trimmed = (customText || '').trim();
+  return trimmed || 'Другой';
+}
+
+export function parseCharacterGender(gender?: string): { baseChoice: BaseGenderChoice; customText: string } {
+  if (!gender) return { baseChoice: 'Мужской', customText: '' };
+  const trimmed = gender.trim();
+  if (trimmed === 'Мужской') return { baseChoice: 'Мужской', customText: '' };
+  if (trimmed === 'Женский') return { baseChoice: 'Женский', customText: '' };
+  if (trimmed === 'Другой') return { baseChoice: 'Другой', customText: '' };
+  return { baseChoice: 'Другой', customText: trimmed };
+}
+
 // ── Default Character ──
 
 export function createDefaultCharacter(): CharacterData {

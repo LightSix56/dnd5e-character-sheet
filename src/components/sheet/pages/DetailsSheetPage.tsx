@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import type { CharacterData } from '@/lib/dnd-types';
+import type { CharacterData, BaseGenderChoice } from '@/lib/dnd-types';
+import { resolveCharacterGender, parseCharacterGender } from '@/lib/dnd-types';
 import { StatInput, textareaClass } from '@/components/sheet/SheetUIPrimitives';
 import {
   UserHeroIcon,
@@ -109,12 +110,48 @@ export const DetailsSheetPage = React.memo(function DetailsSheetPage({
               </label>
             )}
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatInput label="Пол" value={char.gender || 'Мужской'} onChange={(v) => update('gender', v)} type="text" />
-            <StatInput label="Возраст" value={char.age} onChange={(v) => update('age', v)} type="text" />
-            <StatInput label="Рост" value={char.height} onChange={(v) => update('height', v)} type="text" />
-            <StatInput label="Вес" value={char.weight} onChange={(v) => update('weight', v)} type="text" />
-          </div>
+          {/* Physical Attributes */}
+          {(() => {
+            const { baseChoice, customText } = parseCharacterGender(char.gender);
+            return (
+              <div className="space-y-2.5">
+                <div className="space-y-1">
+                  <label className="parchment-label text-xs">Пол</label>
+                  <div className="flex gap-2">
+                    <select
+                      value={baseChoice}
+                      onChange={(e) => {
+                        const newBase = e.target.value as BaseGenderChoice;
+                        update('gender', resolveCharacterGender(newBase, customText));
+                      }}
+                      className="parchment-select text-xs py-1.5 px-2.5 min-w-[130px]"
+                    >
+                      <option value="Мужской">♂ Мужской</option>
+                      <option value="Женский">♀ Женский</option>
+                      <option value="Другой">⚧ Другой</option>
+                    </select>
+                    {baseChoice === 'Другой' && (
+                      <input
+                        type="text"
+                        value={customText}
+                        onChange={(e) => {
+                          update('gender', resolveCharacterGender('Другой', e.target.value));
+                        }}
+                        placeholder="Укажите пол (например, Бесполый, Конструкт)…"
+                        className="parchment-input-boxed text-xs py-1.5 px-2.5 flex-1"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <StatInput label="Возраст" value={char.age} onChange={(v) => update('age', v)} type="text" />
+                  <StatInput label="Рост" value={char.height} onChange={(v) => update('height', v)} type="text" />
+                  <StatInput label="Вес" value={char.weight} onChange={(v) => update('weight', v)} type="text" />
+                </div>
+              </div>
+            );
+          })()}
           <div className="grid grid-cols-3 gap-3">
             <StatInput label="Глаза" value={char.eyes} onChange={(v) => update('eyes', v)} type="text" />
             <StatInput label="Кожа" value={char.skin} onChange={(v) => update('skin', v)} type="text" />

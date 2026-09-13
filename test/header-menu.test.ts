@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 test('Header Toolbar Dropdown Menu', () => {
-  const code = fs.readFileSync(path.resolve('src/app/page.tsx'), 'utf-8');
+  let code = fs.readFileSync(path.resolve('src/app/page.tsx'), 'utf-8');
+  const headerPath = path.resolve('src/components/sheet/SheetHeader.tsx');
+  if (fs.existsSync(headerPath)) code += '\n' + fs.readFileSync(headerPath, 'utf-8');
   assert.ok(
     code.includes('showSheetMenu') || code.includes('sheetMenuOpen'),
     'header must manage sheet dropdown menu state (showSheetMenu or sheetMenuOpen)'

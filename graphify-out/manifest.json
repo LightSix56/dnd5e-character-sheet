@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentSlotModal.tsx": {
-    "mtime": 1789291501.2136793,
-    "seen": 1789291687.6838367,
-    "ast_hash": "8ef49d8e8c72d1f1fb771214d1df6783",
+    "mtime": 1789303706.7771854,
+    "seen": 1789303930.3040183,
+    "ast_hash": "9cf0d76fb1706317e5889ac5fec2170c",
     "semantic_hash": ""
   },
   "src/lib/equipment-types.ts": {
@@ -1140,9 +1140,9 @@
     "semantic_hash": ""
   },
   "test/equipment-slots.test.ts": {
-    "mtime": 1789230683.6183872,
-    "seen": 1789230709.407279,
-    "ast_hash": "68e65d444b8eb16d5cdd346c95bf20b5",
+    "mtime": 1789303686.8957992,
+    "seen": 1789303930.3396928,
+    "ast_hash": "5da015c8f6293c91c38c5ec42716d8ba",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-12-equipment-system.md": {

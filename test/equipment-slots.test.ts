@@ -263,3 +263,19 @@ test('Equipment Engine: Full 13-slot loadout and unequip lifecycle', () => {
   assert.equal(getEffectiveSpeed(char), 30);
 });
 
+test('EquipmentSlotModal Contract: Does not contain raw inventory parsing or "Из инвентаря персонажа"', async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const modalPath = path.resolve('src/components/equipment/EquipmentSlotModal.tsx');
+  const content = fs.readFileSync(modalPath, 'utf8');
+
+  assert.ok(
+    !content.includes('backpackItems'),
+    'EquipmentSlotModal must not parse or retain backpackItems'
+  );
+  assert.ok(
+    !content.includes('Из инвентаря персонажа'),
+    'EquipmentSlotModal must not render "Из инвентаря персонажа" suggestions'
+  );
+});
+

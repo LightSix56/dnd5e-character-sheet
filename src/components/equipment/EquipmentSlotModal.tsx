@@ -231,16 +231,6 @@ export function EquipmentSlotModal({
   const currentEquipped = char.equippedSlots?.[slotId];
   const isOffHandConflict = slotId === 'offHand' && isOffHandBlocked(char);
 
-  // Parse items from character backpack/inventory text (char.equipment)
-  const backpackItems = useMemo(() => {
-    if (!char.equipment) return [];
-    return char.equipment
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 1 && !line.startsWith('#'))
-      .map(line => line.replace(/^[-*•]\s*/, '').trim());
-  }, [char.equipment]);
-
   // Build candidate items based on slot
   const candidateItems = useMemo(() => {
     const list: EquippedItem[] = [];
@@ -586,33 +576,6 @@ export function EquipmentSlotModal({
               )}
             </div>
 
-            {/* Backpack suggestions if available */}
-            {backpackItems.length > 0 && searchQuery.trim() === '' && (
-              <div className="mb-2">
-                <span className="text-[11px] font-bold text-[#8B6914] uppercase tracking-wider block mb-1">
-                  📦 Из инвентаря персонажа:
-                </span>
-                <div className="flex flex-wrap gap-1.5 max-h-16 overflow-y-auto">
-                  {backpackItems.slice(0, 6).map((itemStr, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => {
-                        handleSelectEquip({
-                          id: `inv-${Date.now()}-${i}`,
-                          name: itemStr,
-                          slot: slotId,
-                          description: 'Экипировано из снаряжения персонажа',
-                        });
-                      }}
-                      className="text-xs px-2 py-0.5 rounded bg-[#F5E6C8] hover:bg-[#FFE58F]/60 border border-[#C9A84C]/50 text-[#3D2012] transition-colors truncate max-w-[200px]"
-                    >
-                      + {itemStr}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Saved custom items in character stash */}
             {savedCustomItems.length > 0 && searchQuery.trim() === '' && (

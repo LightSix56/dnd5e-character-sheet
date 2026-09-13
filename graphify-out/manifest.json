@@ -216,21 +216,21 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1789233548.322346,
-    "seen": 1789234238.223617,
-    "ast_hash": "40827b2450eb7993ecbf6f66da6a2379",
+    "mtime": 1789298225.1422558,
+    "seen": 1789298322.6324682,
+    "ast_hash": "caba1233e163caaa74b4fe3114f69263",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
-    "mtime": 1789228902.1862822,
-    "seen": 1789229226.1032314,
-    "ast_hash": "f638e66eaa4abd0656d74e63d26640b7",
+    "mtime": 1789298109.5894191,
+    "seen": 1789298322.632474,
+    "ast_hash": "e9684ad9a8e14690a2c7b163e19c20fd",
     "semantic_hash": ""
   },
   "src/data/compendium/backgrounds.ts": {
-    "mtime": 1789129116.493407,
-    "seen": 1789129232.7991252,
-    "ast_hash": "f73bc28a99655b74192ec7df31d4d9e1",
+    "mtime": 1789298086.153231,
+    "seen": 1789298322.6328347,
+    "ast_hash": "f3d8d7ff2a083395e8dc55d168de1feb",
     "semantic_hash": ""
   },
   "src/data/compendium/class-progression.ts": {
@@ -1287,6 +1287,12 @@
     "mtime": 1789293149.7428408,
     "seen": 1789295336.1068306,
     "ast_hash": "a5c7656a91a8833531db54492a57c0e1",
+    "semantic_hash": ""
+  },
+  "test/background-choices.test.ts": {
+    "mtime": 1789298246.2521217,
+    "seen": 1789298322.647948,
+    "ast_hash": "8b80536e512c7b3d766b6186daf49ac7",
     "semantic_hash": ""
   }
 }

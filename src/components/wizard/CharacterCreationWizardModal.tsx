@@ -33,7 +33,8 @@ import {
   getClassLevel1ChoicesConfig,
   FIGHTING_STYLES,
   RANGER_FAVORED_ENEMIES,
-  RANGER_FAVORED_TERRAINS
+  RANGER_FAVORED_TERRAINS,
+  resolveBackgroundSkills
 } from './wizard-helpers';
 import {
   D20Icon, ScrollIcon, SpellbookIcon, CrossedSwordsIcon,
@@ -111,6 +112,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   // ── Step 3: Background ──
   const [selectedBackgroundId, setSelectedBackgroundId] = useState<string>('soldier');
   const [backgroundSearch, setBackgroundSearch] = useState<string>('');
+  const [selectedBackgroundSkills, setSelectedBackgroundSkills] = useState<string[]>([]);
   // If background skills overlap with race/class, user picks replacements
   const [backgroundSkillReplacements, setBackgroundSkillReplacements] = useState<Record<string, string>>({});
 
@@ -395,24 +397,19 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return { totals, mods };
   }, [baseScores, racialBonuses]);
 
-  // Background skills calculation (with overlap detection and replacements)
+  // Background skills calculation (with choice options and overlap replacements)
+  const backgroundSkillResolution = useMemo(() => {
+    return resolveBackgroundSkills({
+      background: selectedBackground,
+      selectedChoices: selectedBackgroundSkills,
+      existingSkills: [...finalRacialSkills, ...selectedClassSkills],
+      replacements: backgroundSkillReplacements
+    });
+  }, [selectedBackground, selectedBackgroundSkills, finalRacialSkills, selectedClassSkills, backgroundSkillReplacements]);
+
   const backgroundSkills = useMemo(() => {
-    const list: string[] = [];
-    for (const s of selectedBackground.skillProficiencies) {
-      // Check if already obtained from race or class
-      const isFromRace = finalRacialSkills.includes(s);
-      const isFromClass = selectedClassSkills.includes(s);
-      if (isFromRace || isFromClass) {
-        // Overlap! Use replacement if selected, else mark as needed
-        const rep = backgroundSkillReplacements[s];
-        if (rep) list.push(rep);
-        else list.push(s);
-      } else {
-        list.push(s);
-      }
-    }
-    return list;
-  }, [selectedBackground, finalRacialSkills, selectedClassSkills, backgroundSkillReplacements]);
+    return backgroundSkillResolution.finalSkills;
+  }, [backgroundSkillResolution]);
 
   // All combined proficient skills
   const allProficientSkills = useMemo(() => {
@@ -757,17 +754,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       return { valid: true };
     }
     if (step === 3) {
-      // Check if any overlapping skill wasn't replaced
-      for (const s of selectedBackground.skillProficiencies) {
-        if (finalRacialSkills.includes(s) || selectedClassSkills.includes(s)) {
-          const rep = backgroundSkillReplacements[s];
-          if (!rep) {
-            return { valid: false, error: `Навык «${s}» уже выбран. Пожалуйста, укажите навык на замену.` };
-          }
-          if (finalRacialSkills.includes(rep) || selectedClassSkills.includes(rep)) {
-            return { valid: false, error: `Заменяющий навык «${rep}» уже имеется у персонажа. Выберите другой навык.` };
-          }
-        }
+      if (!backgroundSkillResolution.isValid) {
+        return { valid: false, error: backgroundSkillResolution.error || 'Пожалуйста, завершите настройку навыков предыстории.' };
       }
       return { valid: true };
     }
@@ -3202,7 +3190,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         <button
                           key={bg.id}
                           type="button"
-                          onClick={() => setSelectedBackgroundId(bg.id)}
+                          onClick={() => {
+                            setSelectedBackgroundId(bg.id);
+                            setSelectedBackgroundSkills([]);
+                            setBackgroundSkillReplacements({});
+                          }}
                           className={`p-2.5 rounded-lg text-left text-xs cursor-pointer transition-all ${
                             isSel ? 'font-bold shadow-sm' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
                           }`}
@@ -3215,7 +3207,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                           <div className="font-bold">{bg.name}</div>
                           <div className="text-[10px] opacity-75">{bg.nameEn}</div>
                           <div className="text-[10px] font-mono mt-1 text-[#5C3A6E]">
-                            {bg.skillProficiencies.join(', ')}
+                            {bg.skillProficiencies.length > 0
+                              ? bg.skillProficiencies.join(', ') + (bg.skillChoices ? ` + ${bg.skillChoices.choose} на выбор` : '')
+                              : bg.skillChoices
+                                ? `Выбор навыков (${bg.skillChoices.choose})`
+                                : 'Нет'}
                           </div>
                         </button>
                       );
@@ -3245,70 +3241,195 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                 </div>
 
                 {/* Skills granted by background & overlap handling */}
-                <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(232, 211, 162, 0.25)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
-                  <span className="text-xs font-bold text-[#3D2012] block">
-                    🎯 Навыки предыстории (2 фиксированных):
-                  </span>
-                  <div className="space-y-2">
-                    {selectedBackground.skillProficiencies.map(bgSkill => {
-                      const isFromRace = finalRacialSkills.includes(bgSkill);
-                      const isFromClass = selectedClassSkills.includes(bgSkill);
-                      const isOverlapping = isFromRace || isFromClass;
-                      const replacement = backgroundSkillReplacements[bgSkill] || '';
+                {selectedBackground.skillProficiencies.length > 0 && (
+                  <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(232, 211, 162, 0.25)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
+                    <span className="text-xs font-bold text-[#3D2012] block">
+                      🎯 Фиксированные навыки предыстории ({selectedBackground.skillProficiencies.length}):
+                    </span>
+                    <div className="space-y-2">
+                      {selectedBackground.skillProficiencies.map(bgSkill => {
+                        const isFromRace = finalRacialSkills.includes(bgSkill);
+                        const isFromClass = selectedClassSkills.includes(bgSkill);
+                        const isOverlapping = isFromRace || isFromClass;
+                        const replacement = backgroundSkillReplacements[bgSkill] || '';
 
-                      const otherReplacements = Object.entries(backgroundSkillReplacements)
-                        .filter(([k]) => k !== bgSkill)
-                        .map(([, v]) => v);
+                        const otherReplacements = Object.entries(backgroundSkillReplacements)
+                          .filter(([k]) => k !== bgSkill)
+                          .map(([, v]) => v);
 
-                      const availableReplacements = ALL_SKILLS.filter(s =>
-                        !finalRacialSkills.includes(s) &&
-                        !selectedClassSkills.includes(s) &&
-                        s !== bgSkill &&
-                        !otherReplacements.includes(s)
-                      );
+                        const availableReplacements = ALL_SKILLS.filter(s =>
+                          !finalRacialSkills.includes(s) &&
+                          !selectedClassSkills.includes(s) &&
+                          s !== bgSkill &&
+                          !otherReplacements.includes(s)
+                        );
 
-                      return (
-                        <div key={bgSkill} className="p-2.5 rounded text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2" style={{ background: 'rgba(245, 230, 200, 0.8)', border: '1px solid rgba(139, 105, 20, 0.3)' }}>
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-[#3D2012]">{bgSkill}</span>
-                            {isOverlapping && (
-                              replacement ? (
-                                <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#2b6cb0] bg-[rgba(43,108,176,0.1)] border border-[rgba(43,108,176,0.3)]">
-                                  ✓ Заменён на «{replacement}»
-                                </span>
-                              ) : (
+                        return (
+                          <div key={bgSkill} className="p-2.5 rounded text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2" style={{ background: 'rgba(245, 230, 200, 0.8)', border: '1px solid rgba(139, 105, 20, 0.3)' }}>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-[#3D2012]">{bgSkill}</span>
+                              {isOverlapping && (
+                                replacement ? (
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#2b6cb0] bg-[rgba(43,108,176,0.1)] border border-[rgba(43,108,176,0.3)]">
+                                    ✓ Заменён на «{replacement}»
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#8B2500] bg-[rgba(217,56,30,0.1)] border border-[rgba(217,56,30,0.3)]">
+                                    ⚠️ Уже получен от {isFromRace ? 'расы' : 'класса'}!
+                                  </span>
+                                )
+                              )}
+                            </div>
+
+                            {isOverlapping ? (
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] text-[#8B2500]">Выберите замену:</span>
+                                <select
+                                  value={replacement}
+                                  onChange={e => {
+                                    const val = e.target.value;
+                                    setBackgroundSkillReplacements(prev => ({ ...prev, [bgSkill]: val }));
+                                  }}
+                                  className="parchment-select text-xs py-1 px-2"
+                                >
+                                  <option value="">— Выберите другой навык —</option>
+                                  {availableReplacements.map(s => (
+                                    <option key={s} value={s}>{s} ({SKILL_MAP[s]})</option>
+                                  ))}
+                                </select>
+                              </div>
+                            ) : (
+                              <span className="text-[11px] text-[#4a7c3f] font-semibold">✓ Будет добавлен</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Skill Choices granted by background */}
+                {selectedBackground.skillChoices && (
+                  <div className="p-3 rounded-lg space-y-2.5" style={{ background: 'rgba(232, 211, 162, 0.25)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                      <span className="text-xs font-bold text-[#3D2012] block">
+                        🎯 Навыки на выбор ({selectedBackgroundSkills.length} из {selectedBackground.skillChoices.choose}):
+                      </span>
+                      <span className={`text-[11px] font-semibold ${selectedBackgroundSkills.length === selectedBackground.skillChoices.choose ? 'text-[#4a7c3f]' : 'text-[#8B2500]'}`}>
+                        {selectedBackgroundSkills.length === selectedBackground.skillChoices.choose
+                          ? '✓ Выбор сделан'
+                          : `Необходимо выбрать: ${selectedBackground.skillChoices.choose - selectedBackgroundSkills.length}`}
+                      </span>
+                    </div>
+
+                    {selectedBackground.skillChoices.description && (
+                      <p className="text-[11px] text-[#5C341F] italic">
+                        {selectedBackground.skillChoices.description}
+                      </p>
+                    )}
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {selectedBackground.skillChoices.options.map(opt => {
+                        const isFromRace = finalRacialSkills.includes(opt);
+                        const isFromClass = selectedClassSkills.includes(opt);
+                        const isFixedBg = selectedBackground.skillProficiencies.includes(opt);
+                        const isAlreadyKnown = isFromRace || isFromClass || isFixedBg;
+                        const isSelected = selectedBackgroundSkills.includes(opt);
+
+                        return (
+                          <button
+                            key={opt}
+                            type="button"
+                            disabled={isAlreadyKnown}
+                            onClick={() => {
+                              setSelectedBackgroundSkills(prev => {
+                                if (prev.includes(opt)) {
+                                  return prev.filter(s => s !== opt);
+                                }
+                                const max = selectedBackground.skillChoices!.choose;
+                                if (prev.length < max) {
+                                  return [...prev, opt];
+                                }
+                                if (max === 1) {
+                                  return [opt];
+                                }
+                                return [...prev.slice(1), opt];
+                              });
+                            }}
+                            className={`p-2 rounded text-xs text-center transition-all ${
+                              isAlreadyKnown
+                                ? 'opacity-40 cursor-not-allowed text-[#8C7A6B]'
+                                : isSelected
+                                  ? 'font-bold cursor-pointer shadow-xs'
+                                  : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F] cursor-pointer'
+                            }`}
+                            style={
+                              isSelected
+                                ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#5C341F' }
+                            }
+                          >
+                            <div className="flex items-center justify-center gap-1">
+                              <span>{isSelected ? '✓ ' : ''}{opt}</span>
+                            </div>
+                            <div className="text-[10px] opacity-75">
+                              {isAlreadyKnown ? '(Уже есть)' : SKILL_MAP[opt]}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Overlap replacements for choice skills (if any) */}
+                    {selectedBackgroundSkills.some(s => finalRacialSkills.includes(s) || selectedClassSkills.includes(s)) && (
+                      <div className="space-y-2 pt-2 border-t border-[rgba(201,168,76,0.3)]">
+                        {selectedBackgroundSkills.filter(s => finalRacialSkills.includes(s) || selectedClassSkills.includes(s)).map(chSkill => {
+                          const isFromRace = finalRacialSkills.includes(chSkill);
+                          const replacement = backgroundSkillReplacements[chSkill] || '';
+                          const otherReplacements = Object.entries(backgroundSkillReplacements)
+                            .filter(([k]) => k !== chSkill)
+                            .map(([, v]) => v);
+
+                          const availableReplacements = ALL_SKILLS.filter(s =>
+                            !finalRacialSkills.includes(s) &&
+                            !selectedClassSkills.includes(s) &&
+                            !selectedBackground.skillProficiencies.includes(s) &&
+                            !selectedBackgroundSkills.includes(s) &&
+                            s !== chSkill &&
+                            !otherReplacements.includes(s)
+                          );
+
+                          return (
+                            <div key={chSkill} className="p-2.5 rounded text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2" style={{ background: 'rgba(245, 230, 200, 0.8)', border: '1px solid rgba(139, 105, 20, 0.3)' }}>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-[#3D2012]">{chSkill}</span>
                                 <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#8B2500] bg-[rgba(217,56,30,0.1)] border border-[rgba(217,56,30,0.3)]">
                                   ⚠️ Уже получен от {isFromRace ? 'расы' : 'класса'}!
                                 </span>
-                              )
-                            )}
-                          </div>
-
-                          {isOverlapping ? (
-                            <div className="flex items-center gap-2">
-                              <span className="text-[11px] text-[#8B2500]">Выберите замену:</span>
-                              <select
-                                value={replacement}
-                                onChange={e => {
-                                  const val = e.target.value;
-                                  setBackgroundSkillReplacements(prev => ({ ...prev, [bgSkill]: val }));
-                                }}
-                                className="parchment-select text-xs py-1 px-2"
-                              >
-                                <option value="">— Выберите другой навык —</option>
-                                {availableReplacements.map(s => (
-                                  <option key={s} value={s}>{s} ({SKILL_MAP[s]})</option>
-                                ))}
-                              </select>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] text-[#8B2500]">Выберите замену:</span>
+                                <select
+                                  value={replacement}
+                                  onChange={e => {
+                                    const val = e.target.value;
+                                    setBackgroundSkillReplacements(prev => ({ ...prev, [chSkill]: val }));
+                                  }}
+                                  className="parchment-select text-xs py-1 px-2"
+                                >
+                                  <option value="">— Выберите другой навык —</option>
+                                  {availableReplacements.map(s => (
+                                    <option key={s} value={s}>{s} ({SKILL_MAP[s]})</option>
+                                  ))}
+                                </select>
+                              </div>
                             </div>
-                          ) : (
-                            <span className="text-[11px] text-[#4a7c3f] font-semibold">✓ Будет добавлен</span>
-                          )}
-                        </div>
-                      );
-                    })}
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
-                </div>
+                )}
 
                 {/* Background Feature */}
                 <div className="p-3 rounded-lg space-y-1" style={{ background: 'rgba(232, 211, 162, 0.25)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>

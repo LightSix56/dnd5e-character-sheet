@@ -12,6 +12,7 @@ import type {
   ToolCategory
 } from '@/data/compendium/races';
 import { DND_COMPENDIUM_RACES } from '@/data/compendium/races';
+import type { CompendiumBackground } from '@/data/compendium/backgrounds';
 
 // ── Fantasy Name Generator ──
 
@@ -1071,3 +1072,103 @@ export function getClassLevel1ChoicesConfig(
     needsGenieKind: isGenieWarlock
   };
 }
+
+// ── Background Skill Resolution Engine ──
+
+export interface BackgroundSkillResolutionParams {
+  background: CompendiumBackground;
+  selectedChoices: string[];
+  existingSkills: string[];
+  replacements: Record<string, string>;
+}
+
+export interface BackgroundSkillResolution {
+  isValid: boolean;
+  error?: string;
+  finalSkills: string[];
+  unresolvedOverlaps: string[];
+  fixedSkills: string[];
+  chosenSkills: string[];
+}
+
+export function resolveBackgroundSkills(params: BackgroundSkillResolutionParams): BackgroundSkillResolution {
+  const { background, selectedChoices, existingSkills, replacements } = params;
+  const fixedSkills = background.skillProficiencies || [];
+  const choiceConfig = background.skillChoices;
+  const requiredChoiceCount = choiceConfig?.choose || 0;
+
+  // Validate choice count
+  if (requiredChoiceCount > 0 && selectedChoices.length !== requiredChoiceCount) {
+    return {
+      isValid: false,
+      error: `Необходимо выбрать ровно ${requiredChoiceCount} ${requiredChoiceCount === 1 ? 'навык' : 'навыка'} от предыстории (выбрано: ${selectedChoices.length}).`,
+      finalSkills: [],
+      unresolvedOverlaps: [],
+      fixedSkills,
+      chosenSkills: selectedChoices
+    };
+  }
+
+  // Check that all selected choices are allowed by options
+  if (choiceConfig?.options) {
+    for (const ch of selectedChoices) {
+      if (!choiceConfig.options.includes(ch)) {
+        return {
+          isValid: false,
+          error: `Навык «${ch}» не входит в список доступных вариантов для предыстории.`,
+          finalSkills: [],
+          unresolvedOverlaps: [],
+          fixedSkills,
+          chosenSkills: selectedChoices
+        };
+      }
+    }
+  }
+
+  const combinedRaw = [...fixedSkills, ...selectedChoices];
+  const unresolvedOverlaps: string[] = [];
+  const finalSkills: string[] = [];
+
+  for (const s of combinedRaw) {
+    const isOverlapping = existingSkills.includes(s);
+    if (isOverlapping) {
+      const rep = replacements[s];
+      if (!rep) {
+        unresolvedOverlaps.push(s);
+      } else if (existingSkills.includes(rep)) {
+        return {
+          isValid: false,
+          error: `Заменяющий навык «${rep}» уже имеется у персонажа. Выберите другой навык.`,
+          finalSkills: [],
+          unresolvedOverlaps: [s],
+          fixedSkills,
+          chosenSkills: selectedChoices
+        };
+      } else {
+        finalSkills.push(rep);
+      }
+    } else {
+      finalSkills.push(s);
+    }
+  }
+
+  if (unresolvedOverlaps.length > 0) {
+    return {
+      isValid: false,
+      error: `Навык «${unresolvedOverlaps[0]}» уже получен от расы или класса. Пожалуйста, выберите навык на замену.`,
+      finalSkills,
+      unresolvedOverlaps,
+      fixedSkills,
+      chosenSkills: selectedChoices
+    };
+  }
+
+  return {
+    isValid: true,
+    finalSkills,
+    unresolvedOverlaps: [],
+    fixedSkills,
+    chosenSkills: selectedChoices
+  };
+}
+

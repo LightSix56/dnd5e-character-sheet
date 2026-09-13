@@ -46,6 +46,7 @@ export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose
     const q = search.toLowerCase().trim();
     return r.name.toLowerCase().includes(q) || 
       r.nameEn.toLowerCase().includes(q) || 
+      (r.aliases && r.aliases.some(a => a.toLowerCase().includes(q))) ||
       (r.source && r.source.toLowerCase().includes(q)) ||
       r.subraces.some(sr => sr.name.toLowerCase().includes(q) || sr.nameEn.toLowerCase().includes(q));
   });

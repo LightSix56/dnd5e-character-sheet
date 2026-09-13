@@ -20,6 +20,7 @@ export function findRaceByName(name: string): CompendiumRace | undefined {
   return DND_COMPENDIUM_RACES.find(r => 
     r.name.toLowerCase() === n || 
     r.nameEn.toLowerCase() === n ||
+    (r.aliases && r.aliases.some(a => a.toLowerCase() === n || n.includes(a.toLowerCase()))) ||
     n.startsWith(r.name.toLowerCase()) ||
     n.startsWith(r.nameEn.toLowerCase())
   );

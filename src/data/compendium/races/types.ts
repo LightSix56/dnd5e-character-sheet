@@ -69,10 +69,11 @@ export interface CompendiumRace {
   description: string;
   abilityBonuses: Partial<Record<'СИЛ' | 'ЛОВ' | 'ТЕЛ' | 'ИНТ' | 'МДР' | 'ХАР', number>>;
   speed: number;
-  size: 'Средний' | 'Маленький';
+  size: 'Средний' | 'Маленький' | 'Крошечный';
   darkvision: number;
   languages: string[];
   traits: { name: string; description: string }[];
   subraces: CompendiumSubrace[];
   choices?: RaceChoicesConfig;
+  aliases?: string[];
 }

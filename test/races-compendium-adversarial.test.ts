@@ -15,7 +15,7 @@ describe('Adversarial Quality Gate: D&D 5e Races Compendium Integrity', () => {
 
   it('all races satisfy strict schema constraints', () => {
     const validCategories = new Set(['core', 'multiverse', 'setting', 'spelljammer', 'lineage']);
-    const validSizes = new Set(['Средний', 'Маленький']);
+    const validSizes = new Set(['Средний', 'Маленький', 'Крошечный']);
 
     for (const r of DND_COMPENDIUM_RACES) {
       // Name & Identification

@@ -87,7 +87,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [selectedRacialTool, setSelectedRacialTool] = useState<string>('Инструменты кузнеца');
   const [selectedDragonColor, setSelectedDragonColor] = useState<string>('Красный');
   const [selectedExtraLanguages, setSelectedExtraLanguages] = useState<string[]>([]);
-  const [selectedRacialSize, setSelectedRacialSize] = useState<'Средний' | 'Маленький'>('Средний');
+  const [selectedRacialSize, setSelectedRacialSize] = useState<'Средний' | 'Маленький' | 'Крошечный'>('Средний');
   const [selectedRacialSpellAbility, setSelectedRacialSpellAbility] = useState<'ИНТ' | 'МДР' | 'ХАР'>('ИНТ');
   const [selectedCustomFeatureOptionId, setSelectedCustomFeatureOptionId] = useState<string>('');
 

@@ -168,9 +168,9 @@
     "semantic_hash": ""
   },
   "src/components/compendium/RaceSelectorModal.tsx": {
-    "mtime": 1789207617.8066196,
-    "seen": 1789207836.194707,
-    "ast_hash": "38b17309b8a520289ec38e89b11ec2f2",
+    "mtime": 1789310992.5284412,
+    "seen": 1789311405.2399347,
+    "ast_hash": "f1f65b523974fa47800a1619ccd249e6",
     "semantic_hash": ""
   },
   "src/components/compendium/SubclassSelectorModal.tsx": {
@@ -216,9 +216,9 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1789307240.589578,
-    "seen": 1789307565.7453294,
-    "ast_hash": "dfb5eeb68e28f81ddcc61ac887d7ca3c",
+    "mtime": 1789311064.1005187,
+    "seen": 1789311405.2470152,
+    "ast_hash": "8ecb570525cb4b298f65ff65dc12bbd2",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
@@ -954,9 +954,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/races/index.ts": {
-    "mtime": 1789137814.8603144,
-    "seen": 1789138524.822751,
-    "ast_hash": "de08ef384af10cece51a23aed2d7af36",
+    "mtime": 1789310987.5463836,
+    "seen": 1789311405.2512815,
+    "ast_hash": "258b9a12f9c0778caa61e7fa36a1e70c",
     "semantic_hash": ""
   },
   "src/data/compendium/races/multiverse.ts": {
@@ -966,21 +966,21 @@
     "semantic_hash": ""
   },
   "src/data/compendium/races/supplements.ts": {
-    "mtime": 1789138364.7962878,
-    "seen": 1789138524.822758,
-    "ast_hash": "afc0371547235753ae695f1715076889",
+    "mtime": 1789311014.8312588,
+    "seen": 1789311405.2515752,
+    "ast_hash": "44be42bc5f3f3e305e331ac884400f74",
     "semantic_hash": ""
   },
   "src/data/compendium/races/types.ts": {
-    "mtime": 1789137814.7319305,
-    "seen": 1789138524.8227613,
-    "ast_hash": "46a76f68d6e060f7535d907432c3fec8",
+    "mtime": 1789310981.1803598,
+    "seen": 1789311405.25158,
+    "ast_hash": "4aa1a361d1817db656623b2f262b0974",
     "semantic_hash": ""
   },
   "test/races-compendium-adversarial.test.ts": {
-    "mtime": 1789138483.4159222,
-    "seen": 1789138524.8376317,
-    "ast_hash": "7d4d7661e03b60c8c7f4747e03e341cb",
+    "mtime": 1789311221.5072453,
+    "seen": 1789311405.2752898,
+    "ast_hash": "9216616924fb211d8d401ffb26e59ceb",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-11-races-compendium-merge.md": {
@@ -1359,6 +1359,12 @@
     "mtime": 1789309958.1635983,
     "seen": 1789310521.9426193,
     "ast_hash": "584d4cd70daae20e9f385b211e83f97d",
+    "semantic_hash": ""
+  },
+  "test/races-mousefolk-ratfolk.test.ts": {
+    "mtime": 1789310949.3815587,
+    "seen": 1789311405.2752957,
+    "ast_hash": "40fd0c041340a26df726239678f915dd",
     "semantic_hash": ""
   }
 }

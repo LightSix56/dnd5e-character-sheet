@@ -120,11 +120,15 @@ const EFFECT_TYPES: { id: ItemEffectType; label: string; placeholder: string }[]
   { id: 'ac', label: 'Класс Доспеха (КД)', placeholder: '+1 или -1' },
   { id: 'speed', label: 'Скорость (фт.)', placeholder: '+10 или -10' },
   { id: 'hpMax', label: 'Максимум HP', placeholder: '+5 или -5' },
-  { id: 'attackDamage', label: 'Атака и урон оружия (+X)', placeholder: '+1 или -1' },
-  { id: 'spellDC', label: 'Сложность и атака заклинаний (+X)', placeholder: '+1 или -1' },
+  { id: 'attack', label: 'Бонус к попаданию оружием (+X)', placeholder: '+1 или -1' },
+  { id: 'damage', label: 'Бонусный урон оружия (+X)', placeholder: '+1 или -1' },
+  { id: 'spellDC', label: 'Сложность заклинаний (Сл)', placeholder: '+1 или -1' },
+  { id: 'spellAttack', label: 'Бонус к атаке заклинаниями (+X)', placeholder: '+1 или -1' },
+  { id: 'spellDamage', label: 'Бонусный урон заклинаний (+X)', placeholder: '+1 или -1' },
   { id: 'savingThrows', label: 'Спасброски (ко всем)', placeholder: '+1 или -1' },
   { id: 'ability', label: 'Характеристика персонажа', placeholder: '+2 или -1' },
   { id: 'customTrait', label: 'Свойство / Умение (в лист)', placeholder: '1/день или +1' },
+  { id: 'attackDamage', label: 'Атака и урон оружия (+X, комбо)', placeholder: '+1 или -1' },
 ];
 
 function formatEffectBadge(eff: ItemEffect): string {
@@ -136,10 +140,20 @@ function formatEffectBadge(eff: ItemEffect): string {
       return `${sign}${eff.value} фт. Скор.`;
     case 'hpMax':
       return `${sign}${eff.value} Макс. HP`;
+    case 'attack':
+    case 'weaponAttack':
+      return `${sign}${eff.value} к попаданию`;
+    case 'damage':
+    case 'weaponDamage':
+      return `${sign}${eff.value} к урону оружия`;
     case 'attackDamage':
       return `${sign}${eff.value} к атаке/урону`;
     case 'spellDC':
       return `${sign}${eff.value} к Сл закл.`;
+    case 'spellAttack':
+      return `${sign}${eff.value} к атаке закл.`;
+    case 'spellDamage':
+      return `${sign}${eff.value} к урону закл.`;
     case 'savingThrows':
       return `${sign}${eff.value} ко всем спасам`;
     case 'ability':

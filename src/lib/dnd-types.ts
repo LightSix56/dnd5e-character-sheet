@@ -1110,19 +1110,35 @@ export function getSpellSaveDC(char: CharacterData): number {
 
 export function getSpellAttackBonus(char: CharacterData): number {
   if (!char.spellcastingAbility) return 0;
-  let eqDC = 0;
+  let eqAtk = 0;
   if (char.equippedSlots) {
     for (const item of Object.values(char.equippedSlots)) {
       if (item && item.effects && Array.isArray(item.effects)) {
         for (const eff of item.effects) {
-          if (eff && eff.type === 'spellDC') {
-            eqDC += Number(eff.value) || 0;
+          if (eff && eff.type === 'spellAttack') {
+            eqAtk += Number(eff.value) || 0;
           }
         }
       }
     }
   }
-  return calcProficiencyBonus(char.level) + getModifier(char, char.spellcastingAbility) + eqDC;
+  return calcProficiencyBonus(char.level) + getModifier(char, char.spellcastingAbility) + eqAtk;
+}
+
+export function getSpellDamageBonus(char: CharacterData): number {
+  let eqDmg = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'spellDamage') {
+            eqDmg += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  return eqDmg;
 }
 
 export function getSpellAbilityMod(char: CharacterData): number {

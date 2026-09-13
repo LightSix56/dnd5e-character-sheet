@@ -7,7 +7,7 @@ import {
   formatModifier, calcModifier, calcProficiencyBonus, getTotalScore, getModifier,
   getSavingThrow, getSkillBonus, getInitiative, getPassivePerception, getAC,
   getCalculatedAC, getAvailableArmorModes, type ArmorModeOption,
-  getHPMax, getSpellSaveDC, getSpellAttackBonus, getSpellAbilityMod,
+  getHPMax, getSpellSaveDC, getSpellAttackBonus, getSpellDamageBonus, getSpellAbilityMod,
   createDefaultCharacter, createExampleWarrior, createExampleWizard,
   Attack, SpellEntry, LevelUpEntry,
   getHitDieSize, getHitDieAverage, getHitDiceNotation, isStandardASILevel, getMilestonesAtLevel, createEmptyLevelUpEntry,
@@ -4511,10 +4511,11 @@ export default function DnDCharacterSheet() {
                   </div>
                 </div>
                 {char.spellcastingAbility && (
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div className="space-y-1"><label className="parchment-label">Сл. спасения</label><CalcBadge value={getSpellSaveDC(char)} /></div>
                     <div className="space-y-1"><label className="parchment-label">Бонус атаки</label><RollBadge value={formatModifier(getSpellAttackBonus(char))} label="Атака заклинанием" modifier={getSpellAttackBonus(char)} onRoll={handleRoll} /></div>
                     <div className="space-y-1"><label className="parchment-label">Мод. хар-ки</label><CalcBadge value={formatModifier(getSpellAbilityMod(char))} /></div>
+                    <div className="space-y-1"><label className="parchment-label">Бонус урона</label><CalcBadge value={formatModifier(getSpellDamageBonus(char))} /></div>
                   </div>
                 )}
               </div>

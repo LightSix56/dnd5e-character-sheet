@@ -8,7 +8,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const pagePath = path.resolve(__dirname, '../src/app/page.tsx');
 const primitivesPath = path.resolve(__dirname, '../src/components/sheet/SheetUIPrimitives.tsx');
-const pageContent = fs.readFileSync(pagePath, 'utf8') + (fs.existsSync(primitivesPath) ? '\n' + fs.readFileSync(primitivesPath, 'utf8') : '');
+const mainPagePath = path.resolve(__dirname, '../src/components/sheet/pages/MainSheetPage.tsx');
+const pageContent = fs.readFileSync(pagePath, 'utf8') +
+  (fs.existsSync(primitivesPath) ? '\n' + fs.readFileSync(primitivesPath, 'utf8') : '') +
+  (fs.existsSync(mainPagePath) ? '\n' + fs.readFileSync(mainPagePath, 'utf8') : '');
 
 describe('Hit Targets & Form Label Associations (TDD)', () => {
   describe('1. Functional Toggle Behavior for Skills & Saves', () => {

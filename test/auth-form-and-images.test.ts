@@ -11,9 +11,11 @@ const rootDir = path.resolve(__dirname, '..');
 const readFile = (relPath: string) => {
   const content = fs.readFileSync(path.resolve(rootDir, relPath), 'utf8');
   if (relPath === 'src/app/page.tsx') {
+    const main = path.resolve(rootDir, 'src/components/sheet/pages/MainSheetPage.tsx');
     const details = path.resolve(rootDir, 'src/components/sheet/pages/DetailsSheetPage.tsx');
     const spells = path.resolve(rootDir, 'src/components/sheet/pages/SpellsSheetPage.tsx');
     let extra = '';
+    if (fs.existsSync(main)) extra += '\n' + fs.readFileSync(main, 'utf8');
     if (fs.existsSync(details)) extra += '\n' + fs.readFileSync(details, 'utf8');
     if (fs.existsSync(spells)) extra += '\n' + fs.readFileSync(spells, 'utf8');
     return content + extra;

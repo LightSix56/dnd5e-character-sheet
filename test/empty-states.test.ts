@@ -5,8 +5,10 @@ import path from 'node:path';
 
 test('Alive Parchment Empty States', () => {
   const spellsPagePath = path.resolve('src/components/sheet/pages/SpellsSheetPage.tsx');
+  const mainPagePath = path.resolve('src/components/sheet/pages/MainSheetPage.tsx');
   const code = fs.readFileSync(path.resolve('src/app/page.tsx'), 'utf-8') +
-    (fs.existsSync(spellsPagePath) ? '\n' + fs.readFileSync(spellsPagePath, 'utf-8') : '');
+    (fs.existsSync(spellsPagePath) ? '\n' + fs.readFileSync(spellsPagePath, 'utf-8') : '') +
+    (fs.existsSync(mainPagePath) ? '\n' + fs.readFileSync(mainPagePath, 'utf-8') : '');
   const css = fs.readFileSync(path.resolve('src/app/globals.css'), 'utf-8');
 
   // Verify CSS class

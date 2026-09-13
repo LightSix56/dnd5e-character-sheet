@@ -8,5 +8,8 @@ describe('Sheet Page Components Contract', () => {
 
     const spellsMod = await import('../src/components/sheet/pages/SpellsSheetPage.js');
     assert.ok(typeof spellsMod.SpellsSheetPage === 'function' || typeof spellsMod.SpellsSheetPage === 'object');
+
+    const mainMod = await import('../src/components/sheet/pages/MainSheetPage.js');
+    assert.ok(typeof mainMod.MainSheetPage === 'function' || typeof mainMod.MainSheetPage === 'object');
   });
 });

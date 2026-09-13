@@ -130,6 +130,7 @@ export interface CharacterData {
   equippedArmor?: string;
   equippedShield?: boolean;
   equippedSlots?: Partial<Record<string, any>>;
+  customItems?: any[];
   initiativeOverride: number | null;
   speed: number;
   hpMax: number | null;
@@ -1109,6 +1110,7 @@ export function createDefaultCharacter(): CharacterData {
     equippedArmor: '',
     equippedShield: false,
     equippedSlots: {},
+    customItems: [],
     initiativeOverride: null,
     speed: 30,
     hpMax: null,

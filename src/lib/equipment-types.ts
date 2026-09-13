@@ -1,4 +1,4 @@
-import type { CharacterData, AbilityName } from './dnd-types';
+import type { CharacterData, AbilityName, TraitItem } from './dnd-types';
 import { calcModifier, calcProficiencyBonus, formatModifier, getTotalScore } from './dnd-types';
 import { findWeaponByName, DND_WEAPONS, type DndWeapon } from '../data/dnd-weapons';
 
@@ -41,6 +41,25 @@ export const EQUIPMENT_SLOTS: EquipmentSlotConfig[] = [
   { id: 'boots', name: 'Ноги / Сапоги', description: 'Сапоги скороходов, обувь', category: 'boots', icon: '🥾' },
 ];
 
+export type ItemEffectType =
+  | 'ac'             // Класс Доспеха (+1, +2, -1)
+  | 'speed'          // Скорость в футах (+10, -5)
+  | 'hpMax'          // Максимальные хиты (+10, -5)
+  | 'attackDamage'   // Бонус к атаке и урону оружия (+1, +2, +3)
+  | 'spellDC'        // Сложность спасбросков заклинаний и атака заклинанием (+1, +2)
+  | 'ability'        // Бонус к характеристике (+2 к Силе, -1 к Ловкости)
+  | 'savingThrows'   // Бонус ко всем спасброскам (+1)
+  | 'customTrait';   // Произвольное свойство от Мастера (текст + описание)
+
+export interface ItemEffect {
+  id: string;
+  type: ItemEffectType;
+  targetAbility?: AbilityName;
+  value: number | string;
+  description?: string;
+  customName?: string;
+}
+
 export interface EquippedItem {
   id: string;
   name: string;
@@ -54,6 +73,19 @@ export interface EquippedItem {
   weight?: number;
   description?: string;
   rarity?: string;
+  effects?: ItemEffect[];
+}
+
+export interface EquipmentBonusesSummary {
+  acBonus: number;
+  speedBonus: number;
+  hpMaxBonus: number;
+  abilityBonuses: Record<AbilityName, number>;
+  attackBonus: number;
+  damageBonus: number;
+  spellDCBonus: number;
+  savingThrowsBonus: number;
+  itemTraits: TraitItem[];
 }
 
 export function isOffHandBlocked(char: CharacterData): boolean {
@@ -92,9 +124,21 @@ export function equipItem(
 
   updatedSlots[slot] = item;
 
+  // Save custom items into char.customItems so they persist when unequipped
+  const updatedCustomItems = char.customItems ? [...char.customItems] : [];
+  if (item.effects && item.effects.length > 0) {
+    const existingIndex = updatedCustomItems.findIndex(i => i.id === item.id);
+    if (existingIndex >= 0) {
+      updatedCustomItems[existingIndex] = item;
+    } else {
+      updatedCustomItems.push(item);
+    }
+  }
+
   const updated: CharacterData = {
     ...char,
     equippedSlots: updatedSlots,
+    customItems: updatedCustomItems,
   };
 
   // Synchronize legacy/sheet armor and shield fields
@@ -127,6 +171,7 @@ export function unequipItem(
   const updated: CharacterData = {
     ...char,
     equippedSlots: updatedSlots,
+    customItems: char.customItems ? [...char.customItems] : [],
   };
 
   if (slot === 'armor') {
@@ -141,15 +186,106 @@ export function unequipItem(
   return updated;
 }
 
-export function calculateEquipmentBonuses(char: CharacterData): { acBonus: number; speedBonus: number } {
+export function deleteCustomItem(
+  char: CharacterData,
+  itemId: string
+): CharacterData {
+  let updated: CharacterData = {
+    ...char,
+    customItems: (char.customItems || []).filter(i => i.id !== itemId),
+  };
+
+  // If it is currently equipped in any slot, unequip it
+  if (updated.equippedSlots) {
+    for (const [slotId, item] of Object.entries(updated.equippedSlots)) {
+      if (item && item.id === itemId) {
+        updated = unequipItem(updated, slotId as EquipmentSlotId);
+      }
+    }
+  }
+
+  return updated;
+}
+
+export function calculateEquipmentBonuses(char: CharacterData): EquipmentBonusesSummary {
   let acBonus = 0;
   let speedBonus = 0;
+  let hpMaxBonus = 0;
+  let attackBonus = 0;
+  let damageBonus = 0;
+  let spellDCBonus = 0;
+  let savingThrowsBonus = 0;
+  const abilityBonuses: Record<AbilityName, number> = {
+    str: 0,
+    dex: 0,
+    con: 0,
+    int: 0,
+    wis: 0,
+    cha: 0,
+  };
+  const itemTraits: TraitItem[] = [];
 
-  if (!char.equippedSlots) return { acBonus, speedBonus };
+  if (!char.equippedSlots) {
+    return {
+      acBonus,
+      speedBonus,
+      hpMaxBonus,
+      abilityBonuses,
+      attackBonus,
+      damageBonus,
+      spellDCBonus,
+      savingThrowsBonus,
+      itemTraits,
+    };
+  }
 
   for (const [slotId, item] of Object.entries(char.equippedSlots)) {
     if (!item) continue;
-    // Magic accessory bonus AC (rings, cloaks, bracers)
+
+    // 1. Dynamic effects
+    if (item.effects && Array.isArray(item.effects)) {
+      for (const effect of item.effects) {
+        if (!effect) continue;
+        const numVal = Number(effect.value) || 0;
+        switch (effect.type) {
+          case 'ac':
+            acBonus += numVal;
+            break;
+          case 'speed':
+            speedBonus += numVal;
+            break;
+          case 'hpMax':
+            hpMaxBonus += numVal;
+            break;
+          case 'attackDamage':
+            attackBonus += numVal;
+            damageBonus += numVal;
+            break;
+          case 'spellDC':
+            spellDCBonus += numVal;
+            break;
+          case 'savingThrows':
+            savingThrowsBonus += numVal;
+            break;
+          case 'ability':
+            if (effect.targetAbility && effect.targetAbility in abilityBonuses) {
+              abilityBonuses[effect.targetAbility] += numVal;
+            }
+            break;
+          case 'customTrait':
+            itemTraits.push({
+              id: `trait-${item.id}-${effect.id}`,
+              name: String(effect.customName || effect.value || item.name),
+              source: `🎒 Экипировка: ${item.name}`,
+              summary: effect.description || `Магическое свойство предмета «${item.name}»`,
+              description: effect.description || '',
+            });
+            break;
+        }
+      }
+    }
+
+    // 2. Legacy / compendium fields
     if (slotId !== 'armor' && slotId !== 'offHand') {
       if (typeof item.bonusAC === 'number') {
         acBonus += item.bonusAC;
@@ -158,9 +294,25 @@ export function calculateEquipmentBonuses(char: CharacterData): { acBonus: numbe
     if (typeof item.bonusSpeed === 'number') {
       speedBonus += item.bonusSpeed;
     }
+    if (typeof item.bonusAttack === 'number') {
+      attackBonus += item.bonusAttack;
+    }
+    if (typeof item.bonusDamage === 'number') {
+      damageBonus += item.bonusDamage;
+    }
   }
 
-  return { acBonus, speedBonus };
+  return {
+    acBonus,
+    speedBonus,
+    hpMaxBonus,
+    abilityBonuses,
+    attackBonus,
+    damageBonus,
+    spellDCBonus,
+    savingThrowsBonus,
+    itemTraits,
+  };
 }
 
 export interface ActiveAttackOption {

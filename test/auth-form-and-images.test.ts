@@ -64,7 +64,29 @@ describe('Task 4: Auth Modal Form Wrapping, Image Sizing & Typographic Ellipsis 
         'Auth button must have type="submit" and use typographic ellipsis in "Загрузка…"'
       );
     });
+
+    it('provides explicit close buttons (✕ in header and cancel button) with onClose in AuthModal', () => {
+      const content = readFile('src/app/page.tsx');
+      const authModalMatch = content.match(/const AuthModal = React\.memo\(function AuthModal[\s\S]*?\n\}\);/);
+      assert.ok(authModalMatch, 'AuthModal component should exist');
+      const authModal = authModalMatch[0];
+
+      // Header close button with parchment-remove-btn and onClick={onClose}
+      assert.match(
+        authModal,
+        /<button[^>]*onClick=\{onClose\}[^>]*className="[^"]*parchment-remove-btn[^"]*"[^>]*>[\s\S]*?✕[\s\S]*?<\/button>/,
+        'AuthModal must have a parchment-remove-btn with onClick={onClose} containing ✕'
+      );
+
+      // Cancel button at bottom with onClick={onClose}
+      assert.match(
+        authModal,
+        /<button[^>]*onClick=\{onClose\}[^>]*>[\s\S]*?Отмена[\s\S]*?<\/button>/,
+        'AuthModal must have a cancel button with onClick={onClose} labeled "Отмена"'
+      );
+    });
   });
+
 
   describe('2. Portrait Image Sizing and Lazy Loading', () => {
     it('portrait <img> in src/app/page.tsx has width, height, and loading="lazy"', () => {

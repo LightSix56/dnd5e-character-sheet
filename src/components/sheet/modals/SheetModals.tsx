@@ -761,13 +761,24 @@ export const AuthModal = React.memo(function AuthModal({
     <div className="fixed inset-0 parchment-modal-overlay z-[200] flex items-center justify-center p-4">
       <div className="parchment-modal max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
         <div className="p-6">
-          <h2
-            className="text-xl font-bold mb-4 flex items-center gap-2"
-            style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
-          >
-            <RunedKeyIcon size={22} />
-            <span>{isSignUp ? 'Регистрация' : 'Вход в аккаунт'}</span>
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2
+              className="text-xl font-bold flex items-center gap-2"
+              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+            >
+              <RunedKeyIcon size={22} />
+              <span>{isSignUp ? 'Регистрация' : 'Вход в аккаунт'}</span>
+            </h2>
+            <button
+              type="button"
+              onClick={onClose}
+              className="parchment-remove-btn w-7 h-7 flex items-center justify-center text-sm font-bold"
+              title="Закрыть"
+              aria-label="Закрыть окно авторизации"
+            >
+              ✕
+            </button>
+          </div>
 
           <button
             onClick={onGoogleAuth}
@@ -873,6 +884,16 @@ export const AuthModal = React.memo(function AuthModal({
           >
             {isSignUp ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}
           </button>
+
+          <div className="mt-4 pt-3 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full parchment-btn-secondary text-xs py-2"
+            >
+              Отмена
+            </button>
+          </div>
         </div>
       </div>
     </div>

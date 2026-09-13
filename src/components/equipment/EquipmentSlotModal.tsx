@@ -414,9 +414,7 @@ export function EquipmentSlotModal({
   return (
     <div
       className="fixed inset-0 z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+      // Deliberately no backdrop dismiss to prevent accidental loss of selection
     >
       <div
         className="parchment-card w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl rounded-lg border-2 border-[#C9A84C] overflow-hidden text-[#3D2012]"

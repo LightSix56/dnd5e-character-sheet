@@ -367,5 +367,22 @@ describe('Task 3: Escape Key Modal Dismissal & Keyboard Dice Rolls (TDD)', () =>
         'TemplateModal backdrop must not have onClick={onCancel}'
       );
     });
+
+    it('equipment modals (EquipmentPaperDoll in page.tsx and EquipmentSlotModal) do not dismiss on backdrop click', () => {
+      const pageContent = readFile('src/app/page.tsx');
+      assert.doesNotMatch(
+        pageContent,
+        /showEquipmentModal[\s\S]*?onClick=\{\s*\(?e\)?\s*=>\s*\{\s*if\s*\(e\.target\s*===\s*e\.currentTarget\)/,
+        'EquipmentPaperDoll container in page.tsx must not dismiss on backdrop click'
+      );
+
+      const slotModalContent = readFile('src/components/equipment/EquipmentSlotModal.tsx');
+      assert.doesNotMatch(
+        slotModalContent,
+        /onClick=\{\s*\(?e\)?\s*=>\s*\{\s*if\s*\(e\.target\s*===\s*e\.currentTarget\)\s*onClose\(\)/,
+        'EquipmentSlotModal container must not dismiss on backdrop click'
+      );
+    });
   });
 });
+

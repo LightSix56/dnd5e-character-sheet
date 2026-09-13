@@ -1991,11 +1991,9 @@ export default function DnDCharacterSheet() {
       {showEquipmentModal && (
         <div
           className="fixed inset-0 z-[300] flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm overflow-y-auto animate-fade-in"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeEquipmentModal();
-          }}
+          // Deliberately no backdrop dismiss to prevent accidental loss of changes
         >
-          <div className="w-full max-w-4xl my-auto">
+          <div className="w-full max-w-4xl my-auto" onClick={(e) => e.stopPropagation()}>
             <EquipmentPaperDoll
               char={char}
               onChange={(updated) => setChar(updated)}

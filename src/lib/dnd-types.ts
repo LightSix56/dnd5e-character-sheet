@@ -271,8 +271,37 @@ export function getMilestonesAtLevel(level: number, className?: string): string[
   return base;
 }
 
-export function getTotalScore(char: CharacterData, ability: AbilityName): number {
-  return (char.abilityScores[ability] || 10) + (char.abilityBonuses[ability] || 0) + (char.asiBonuses[ability] || 0);
+export function normalizeAbilityName(ability: string): AbilityName {
+  const lower = (ability || '').toLowerCase().trim();
+  if (lower === 'сил' || lower === 'str' || lower === 'сила' || lower === 'strength') return 'СИЛ';
+  if (lower === 'лов' || lower === 'dex' || lower === 'ловкость' || lower === 'dexterity') return 'ЛОВ';
+  if (lower === 'тел' || lower === 'con' || lower === 'телосложение' || lower === 'constitution') return 'ТЕЛ';
+  if (lower === 'инт' || lower === 'int' || lower === 'интеллект' || lower === 'intelligence') return 'ИНТ';
+  if (lower === 'мдр' || lower === 'wis' || lower === 'мудрость' || lower === 'wisdom') return 'МДР';
+  if (lower === 'хар' || lower === 'cha' || lower === 'харизма' || lower === 'charisma') return 'ХАР';
+  return 'СИЛ';
+}
+
+export function getTotalScore(char: CharacterData, ability: AbilityName | string): number {
+  const norm = normalizeAbilityName(ability as string);
+  let eqBonus = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'ability' && eff.targetAbility) {
+            if (normalizeAbilityName(eff.targetAbility) === norm) {
+              eqBonus += Number(eff.value) || 0;
+            }
+          }
+        }
+      }
+    }
+  }
+  const rawScore = (char.abilityScores as any)?.[ability] ?? (char.abilityScores as any)?.[norm] ?? 10;
+  const rawBonus = (char.abilityBonuses as any)?.[ability] ?? (char.abilityBonuses as any)?.[norm] ?? 0;
+  const rawAsi = (char.asiBonuses as any)?.[ability] ?? (char.asiBonuses as any)?.[norm] ?? 0;
+  return rawScore + rawBonus + rawAsi + eqBonus;
 }
 
 export function getModifier(char: CharacterData, ability: AbilityName): number {
@@ -284,7 +313,19 @@ export function getSavingThrow(char: CharacterData, ability: AbilityName): numbe
   if (char.savingThrowProficiencies[ability]) {
     mod += calcProficiencyBonus(char.level);
   }
-  return mod;
+  let eqSave = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'savingThrows') {
+            eqSave += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  return mod + eqSave;
 }
 
 export function getSkillBonus(char: CharacterData, skill: string): number {
@@ -644,7 +685,15 @@ export function getCalculatedAC(char: CharacterData): number {
   let accessoryAcBonus = 0;
   if (char.equippedSlots) {
     for (const [slotId, item] of Object.entries(char.equippedSlots)) {
-      if (item && slotId !== 'armor' && slotId !== 'offHand' && typeof item.bonusAC === 'number') {
+      if (!item) continue;
+      if (item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'ac') {
+            accessoryAcBonus += Number(eff.value) || 0;
+          }
+        }
+      }
+      if (slotId !== 'armor' && slotId !== 'offHand' && typeof item.bonusAC === 'number') {
         accessoryAcBonus += item.bonusAC;
       }
     }
@@ -808,7 +857,15 @@ export function getEffectiveSpeed(char: CharacterData): number {
   let speedBonus = 0;
   if (char.equippedSlots) {
     for (const item of Object.values(char.equippedSlots)) {
-      if (item && typeof item.bonusSpeed === 'number') {
+      if (!item) continue;
+      if (item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'speed') {
+            speedBonus += Number(eff.value) || 0;
+          }
+        }
+      }
+      if (typeof item.bonusSpeed === 'number') {
         speedBonus += item.bonusSpeed;
       }
     }
@@ -1018,18 +1075,54 @@ export function applyRaceTemplate(
 }
 
 export function getHPMax(char: CharacterData): number {
-  if (char.hpMax !== null) return char.hpMax;
-  return 0;
+  let eqHp = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'hpMax') {
+            eqHp += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  if (char.hpMax !== null) return Math.max(0, char.hpMax + eqHp);
+  return Math.max(0, eqHp);
 }
 
 export function getSpellSaveDC(char: CharacterData): number {
   if (!char.spellcastingAbility) return 0;
-  return 8 + calcProficiencyBonus(char.level) + getModifier(char, char.spellcastingAbility);
+  let eqDC = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'spellDC') {
+            eqDC += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  return 8 + calcProficiencyBonus(char.level) + getModifier(char, char.spellcastingAbility) + eqDC;
 }
 
 export function getSpellAttackBonus(char: CharacterData): number {
   if (!char.spellcastingAbility) return 0;
-  return calcProficiencyBonus(char.level) + getModifier(char, char.spellcastingAbility);
+  let eqDC = 0;
+  if (char.equippedSlots) {
+    for (const item of Object.values(char.equippedSlots)) {
+      if (item && item.effects && Array.isArray(item.effects)) {
+        for (const eff of item.effects) {
+          if (eff && eff.type === 'spellDC') {
+            eqDC += Number(eff.value) || 0;
+          }
+        }
+      }
+    }
+  }
+  return calcProficiencyBonus(char.level) + getModifier(char, char.spellcastingAbility) + eqDC;
 }
 
 export function getSpellAbilityMod(char: CharacterData): number {

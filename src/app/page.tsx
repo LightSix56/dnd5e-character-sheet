@@ -34,7 +34,7 @@ import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { LevelUpModal } from '@/components/levelup/LevelUpModal';
 import { RestModal } from '@/components/gameplay/RestModal';
 import { EquipmentPaperDoll } from '@/components/equipment/EquipmentPaperDoll';
-import { getActiveCharacterAttacks, type ActiveAttackOption, hasTwoWeaponFightingStyle } from '@/lib/equipment-types';
+import { getActiveCharacterAttacks, type ActiveAttackOption, hasTwoWeaponFightingStyle, calculateEquipmentBonuses } from '@/lib/equipment-types';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { calculateWizardAC } from '@/components/wizard/wizard-helpers';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
@@ -1727,12 +1727,12 @@ export default function DnDCharacterSheet() {
   }, [char.abilityScores, char.abilityBonuses, char.asiBonuses, char.level]);
 
   const effectiveTraitsList = useMemo<TraitItem[]>(() => {
+    let baseList: TraitItem[] = [];
     if (char.traitsList && char.traitsList.length > 0) {
-      return char.traitsList;
-    }
-    if (char.featuresTraits && char.featuresTraits.trim()) {
+      baseList = [...char.traitsList];
+    } else if (char.featuresTraits && char.featuresTraits.trim()) {
       const lines = char.featuresTraits.split('\n').filter(l => l.trim());
-      return lines.map((line, idx) => {
+      baseList = lines.map((line, idx) => {
         const found = findTraitByName(line.trim());
         return {
           id: `legacy-${idx}`,
@@ -1743,8 +1743,13 @@ export default function DnDCharacterSheet() {
         };
       });
     }
-    return [];
-  }, [char.traitsList, char.featuresTraits]);
+
+    const eqBonuses = calculateEquipmentBonuses(char);
+    if (eqBonuses.itemTraits.length > 0) {
+      return [...baseList, ...eqBonuses.itemTraits];
+    }
+    return baseList;
+  }, [char.traitsList, char.featuresTraits, char.equippedSlots]);
 
   const handleQuickAddSpell = useCallback((item: AutocompleteItem) => {
     const spell = item.data as DndSpell | undefined;

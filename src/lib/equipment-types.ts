@@ -1,5 +1,5 @@
 import type { CharacterData, AbilityName, TraitItem } from './dnd-types';
-import { calcModifier, calcProficiencyBonus, formatModifier, getTotalScore } from './dnd-types';
+import { calcModifier, calcProficiencyBonus, formatModifier, getTotalScore, normalizeAbilityName } from './dnd-types';
 import { findWeaponByName, DND_WEAPONS, type DndWeapon } from '../data/dnd-weapons';
 
 export type EquipmentSlotId =
@@ -51,10 +51,12 @@ export type ItemEffectType =
   | 'savingThrows'   // Бонус ко всем спасброскам (+1)
   | 'customTrait';   // Произвольное свойство от Мастера (текст + описание)
 
+export type ItemAbilityKey = AbilityName | 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha';
+
 export interface ItemEffect {
   id: string;
   type: ItemEffectType;
-  targetAbility?: AbilityName;
+  targetAbility?: ItemAbilityKey;
   value: number | string;
   description?: string;
   customName?: string;
@@ -80,7 +82,7 @@ export interface EquipmentBonusesSummary {
   acBonus: number;
   speedBonus: number;
   hpMaxBonus: number;
-  abilityBonuses: Record<AbilityName, number>;
+  abilityBonuses: Record<AbilityName, number> & Record<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha', number>;
   attackBonus: number;
   damageBonus: number;
   spellDCBonus: number;
@@ -215,7 +217,13 @@ export function calculateEquipmentBonuses(char: CharacterData): EquipmentBonuses
   let damageBonus = 0;
   let spellDCBonus = 0;
   let savingThrowsBonus = 0;
-  const abilityBonuses: Record<AbilityName, number> = {
+  const abilityBonuses: Record<AbilityName, number> & Record<'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha', number> = {
+    'СИЛ': 0,
+    'ЛОВ': 0,
+    'ТЕЛ': 0,
+    'ИНТ': 0,
+    'МДР': 0,
+    'ХАР': 0,
     str: 0,
     dex: 0,
     con: 0,
@@ -268,8 +276,18 @@ export function calculateEquipmentBonuses(char: CharacterData): EquipmentBonuses
             savingThrowsBonus += numVal;
             break;
           case 'ability':
-            if (effect.targetAbility && effect.targetAbility in abilityBonuses) {
-              abilityBonuses[effect.targetAbility] += numVal;
+            if (effect.targetAbility) {
+              const norm = normalizeAbilityName(effect.targetAbility);
+              const engMap: Record<AbilityName, 'str' | 'dex' | 'con' | 'int' | 'wis' | 'cha'> = {
+                'СИЛ': 'str',
+                'ЛОВ': 'dex',
+                'ТЕЛ': 'con',
+                'ИНТ': 'int',
+                'МДР': 'wis',
+                'ХАР': 'cha',
+              };
+              abilityBonuses[norm] += numVal;
+              abilityBonuses[engMap[norm]] += numVal;
             }
             break;
           case 'customTrait':
@@ -446,6 +464,22 @@ const KNOWN_THROWN_CONFIGS = [
   { name: 'Сеть', test: (s: string) => /(^|[^\wа-яё])сеть([^\wа-яё]|$)/i.test(s) },
 ];
 
+function getItemAttackDamageBonuses(item?: EquippedItem): { atkBonus: number; dmgBonus: number } {
+  if (!item) return { atkBonus: 0, dmgBonus: 0 };
+  let atkBonus = typeof item.bonusAttack === 'number' ? item.bonusAttack : 0;
+  let dmgBonus = typeof item.bonusDamage === 'number' ? item.bonusDamage : 0;
+  if (item.effects && Array.isArray(item.effects)) {
+    for (const eff of item.effects) {
+      if (eff && eff.type === 'attackDamage') {
+        const num = Number(eff.value) || 0;
+        atkBonus += num;
+        dmgBonus += num;
+      }
+    }
+  }
+  return { atkBonus, dmgBonus };
+}
+
 export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOption[] {
   const attacks: ActiveAttackOption[] = [];
   const equipped = char.equippedSlots || {};
@@ -459,8 +493,11 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
     const mainDef = findWeaponByName(mainHandItem.name);
     const offDef = findWeaponByName(offHandItem.name);
 
-    const mainStats = getWeaponStats(char, mainDef, mainHandItem.bonusAttack, mainHandItem.bonusDamage);
-    const offStats = getWeaponStats(char, offDef, offHandItem.bonusAttack, offHandItem.bonusDamage);
+    const mainBonus = getItemAttackDamageBonuses(mainHandItem);
+    const offBonus = getItemAttackDamageBonuses(offHandItem);
+
+    const mainStats = getWeaponStats(char, mainDef, mainBonus.atkBonus, mainBonus.dmgBonus);
+    const offStats = getWeaponStats(char, offDef, offBonus.atkBonus, offBonus.dmgBonus);
 
     const hasStyle = hasTwoWeaponFightingStyle(char);
 
@@ -507,7 +544,8 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
     // Single weapon or 2-handed weapon in main hand
     if (mainHandItem) {
       const mainDef = findWeaponByName(mainHandItem.name);
-      const mainStats = getWeaponStats(char, mainDef, mainHandItem.bonusAttack, mainHandItem.bonusDamage);
+      const mainBonus = getItemAttackDamageBonuses(mainHandItem);
+      const mainStats = getWeaponStats(char, mainDef, mainBonus.atkBonus, mainBonus.dmgBonus);
 
       attacks.push({
         source: 'mainHand',
@@ -522,7 +560,8 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
     // Only offHand equipped (e.g. single dagger in off-hand)
     if (offHandItem && !offHandItem.isShield && !mainHandItem) {
       const offDef = findWeaponByName(offHandItem.name);
-      const offStats = getWeaponStats(char, offDef, offHandItem.bonusAttack, offHandItem.bonusDamage);
+      const offBonus = getItemAttackDamageBonuses(offHandItem);
+      const offStats = getWeaponStats(char, offDef, offBonus.atkBonus, offBonus.dmgBonus);
 
       attacks.push({
         source: 'offHand',

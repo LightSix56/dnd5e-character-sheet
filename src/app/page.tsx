@@ -34,7 +34,15 @@ import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
 import { LevelUpModal } from '@/components/levelup/LevelUpModal';
 import { RestModal } from '@/components/gameplay/RestModal';
 import { EquipmentPaperDoll } from '@/components/equipment/EquipmentPaperDoll';
-import { getActiveCharacterAttacks, type ActiveAttackOption, hasTwoWeaponFightingStyle, calculateEquipmentBonuses } from '@/lib/equipment-types';
+import {
+  getActiveCharacterAttacks,
+  type ActiveAttackOption,
+  hasTwoWeaponFightingStyle,
+  calculateEquipmentBonuses,
+  equipItem,
+  type EquippedItem,
+  type EquipmentSlotId,
+} from '@/lib/equipment-types';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { calculateWizardAC } from '@/components/wizard/wizard-helpers';
 import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
@@ -797,6 +805,39 @@ export default function DnDCharacterSheet() {
     });
   }, [char.abilityScores, char.abilityBonuses, char.asiBonuses, char.level]);
 
+  const handleQuickAddWeapon = useCallback((weaponNameOrItem: string | AutocompleteItem) => {
+    const name = typeof weaponNameOrItem === 'string' ? weaponNameOrItem.trim() : weaponNameOrItem.name;
+    if (!name) return;
+
+    const weaponDef = findWeaponByName(name);
+    if (weaponDef) {
+      const is2H = (weaponDef.properties || []).some(p => /двуручное|two-handed/i.test(p));
+      const targetSlot: EquipmentSlotId = 'mainHand';
+      const equipped: EquippedItem = {
+        id: `weapon-${Date.now()}-${weaponDef.name}`,
+        name: weaponDef.name,
+        slot: targetSlot,
+        twoHanded: is2H,
+        description: `${weaponDef.damageDice} ${weaponDef.damageType}. ${(weaponDef.properties || []).join(', ')}`,
+        weight: weaponDef.weight ? parseFloat(weaponDef.weight.replace(/[^\d.]/g, '')) || undefined : undefined,
+      };
+      setChar(prev => equipItem(prev, targetSlot, equipped));
+      showToast('Оружие экипировано', `«${weaponDef.name}» экипирован в основную руку!`);
+    } else {
+      const newAtk: Attack = {
+        name,
+        attackBonus: '+0',
+        damageAndType: '1d6 урона',
+      };
+      setChar(prev => ({
+        ...prev,
+        attacks: [...(prev.attacks || []), newAtk],
+      }));
+      showToast('Атака добавлена', `Атака «${name}» добавлена в список!`);
+    }
+    setAttackSearchQuery('');
+  }, [showToast]);
+
   const effectiveTraitsList = useMemo<TraitItem[]>(() => {
     let baseList: TraitItem[] = [];
     if (char.traitsList && char.traitsList.length > 0) {
@@ -820,7 +861,7 @@ export default function DnDCharacterSheet() {
       return [...baseList, ...eqBonuses.itemTraits];
     }
     return baseList;
-  }, [char.traitsList, char.featuresTraits, char.equippedSlots]);
+  }, [char]);
 
   const handleQuickAddSpell = useCallback((item: AutocompleteItem) => {
     const spell = item.data as DndSpell | undefined;
@@ -2168,6 +2209,8 @@ export default function DnDCharacterSheet() {
             attackSearchQuery={attackSearchQuery}
             setAttackSearchQuery={setAttackSearchQuery}
             displayedAttacks={displayedAttacks}
+            weaponAutocompleteItems={weaponAutocompleteItems}
+            handleQuickAddWeapon={handleQuickAddWeapon}
             effectiveTraitsList={effectiveTraitsList}
             traitSearchQuery={traitSearchQuery}
             setTraitSearchQuery={setTraitSearchQuery}

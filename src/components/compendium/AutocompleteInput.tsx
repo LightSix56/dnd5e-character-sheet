@@ -1,12 +1,59 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface AutocompleteItem {
   name: string;
   badge?: string;
   secondary?: string;
   data?: any;
+}
+
+export interface DropdownPosition {
+  placement: 'bottom' | 'top';
+  top?: number;
+  bottom?: number;
+  left: number;
+  width: number;
+  maxHeight: number;
+}
+
+/**
+ * Calculates dropdown positioning relative to viewport.
+ * Automatically flips to 'top' if space below the input is tight (< minRequiredSpace),
+ * completely preventing the dropdown from extending off-screen or forcing the user to scroll.
+ */
+export function calculateDropdownPosition(
+  rect: { top: number; bottom: number; left: number; width: number },
+  viewportHeight: number,
+  preferredMaxHeight: number = 240,
+  minRequiredSpace: number = 180
+): DropdownPosition {
+  const spaceBelow = viewportHeight - rect.bottom;
+  const spaceAbove = rect.top;
+
+  const openUpwards = spaceBelow < minRequiredSpace && spaceAbove > spaceBelow;
+
+  if (openUpwards) {
+    const maxHeight = Math.min(preferredMaxHeight, Math.max(100, spaceAbove - 16));
+    return {
+      placement: 'top',
+      bottom: viewportHeight - rect.top + 4,
+      left: rect.left,
+      width: rect.width,
+      maxHeight,
+    };
+  } else {
+    const maxHeight = Math.min(preferredMaxHeight, Math.max(100, spaceBelow - 16));
+    return {
+      placement: 'bottom',
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+      maxHeight,
+    };
+  }
 }
 
 interface AutocompleteInputProps {
@@ -32,7 +79,11 @@ export function AutocompleteInput({
 }: AutocompleteInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const [coords, setCoords] = useState<DropdownPosition | null>(null);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const query = value.trim().toLowerCase();
   const filtered = query.length >= minChars
@@ -40,8 +91,47 @@ export function AutocompleteInput({
     : [];
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const updatePosition = useCallback(() => {
+    if (!wrapperRef.current || typeof window === 'undefined') return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+
+    // If element is completely scrolled out of the viewport, close suggestions
+    if (rect.bottom < 0 || rect.top > window.innerHeight) {
+      setIsOpen(false);
+      return;
+    }
+
+    const pos = calculateDropdownPosition(rect, window.innerHeight);
+    setCoords(pos);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen || filtered.length === 0) return;
+
+    updatePosition();
+
+    // Listen on window resize and capture-phase scroll (so nested scrolls in modals/cards trigger update)
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [isOpen, filtered.length, updatePosition]);
+
+  useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
+      ) {
         setIsOpen(false);
       }
     }
@@ -91,6 +181,7 @@ export function AutocompleteInput({
         onFocus={() => {
           if (value.trim().length >= minChars && filtered.length > 0) {
             setIsOpen(true);
+            updatePosition();
           }
         }}
         onKeyDown={handleKeyDown}
@@ -98,52 +189,74 @@ export function AutocompleteInput({
         className={className}
       />
 
-      {isOpen && filtered.length > 0 && (
-        <div
-          className="absolute left-0 right-0 top-full mt-1 z-[150] rounded-md shadow-2xl max-h-60 overflow-y-auto"
-          style={{
-            background: '#FDF7EC',
-            border: '2px solid #C9A84C',
-            boxShadow: '0 10px 30px rgba(61, 32, 18, 0.3)'
-          }}
-        >
-          {filtered.map((item, idx) => (
-            <div
-              key={item.name + idx}
-              onMouseDown={e => {
-                e.preventDefault();
-                handleSelectItem(item);
-              }}
-              onMouseEnter={() => setHighlightIndex(idx)}
-              className={`px-3 py-2 cursor-pointer flex items-center justify-between text-xs transition-colors border-b last:border-b-0 ${
-                idx === highlightIndex ? 'bg-[#F0DEB4]' : 'hover:bg-[#F7EACD]'
-              }`}
-              style={{ borderColor: 'rgba(201, 168, 76, 0.25)' }}
-            >
-              <div className="flex items-center gap-2 font-medium" style={{ color: '#3D2012', fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                <span className="font-bold">{item.name}</span>
-                {item.secondary && (
-                  <span className="text-[11px] opacity-75" style={{ color: '#8B6914' }}>
-                    ({item.secondary})
+      {mounted &&
+        isOpen &&
+        filtered.length > 0 &&
+        coords &&
+        typeof document !== 'undefined' &&
+        document.body &&
+        createPortal(
+          <div
+            ref={dropdownRef}
+            role="listbox"
+            className="rounded-md shadow-2xl overflow-y-auto custom-scrollbar animate-fade-in"
+            style={{
+              position: 'fixed',
+              left: `${coords.left}px`,
+              width: `${coords.width}px`,
+              ...(coords.placement === 'bottom'
+                ? { top: `${coords.top}px` }
+                : { bottom: `${coords.bottom}px` }),
+              maxHeight: `${coords.maxHeight}px`,
+              zIndex: 9999,
+              background: '#FDF7EC',
+              border: '2px solid #C9A84C',
+              boxShadow: '0 10px 30px rgba(61, 32, 18, 0.4)',
+            }}
+          >
+            {filtered.map((item, idx) => (
+              <div
+                key={item.name + idx}
+                role="option"
+                aria-selected={idx === highlightIndex}
+                onMouseDown={e => {
+                  e.preventDefault();
+                  handleSelectItem(item);
+                }}
+                onMouseEnter={() => setHighlightIndex(idx)}
+                className={`px-3 py-2 cursor-pointer flex items-center justify-between text-xs transition-colors border-b last:border-b-0 ${
+                  idx === highlightIndex ? 'bg-[#F0DEB4]' : 'hover:bg-[#F7EACD]'
+                }`}
+                style={{ borderColor: 'rgba(201, 168, 76, 0.25)' }}
+              >
+                <div
+                  className="flex items-center gap-2 font-medium"
+                  style={{ color: '#3D2012', fontFamily: 'Georgia, "Times New Roman", serif' }}
+                >
+                  <span className="font-bold">{item.name}</span>
+                  {item.secondary && (
+                    <span className="text-[11px] opacity-75" style={{ color: '#8B6914' }}>
+                      ({item.secondary})
+                    </span>
+                  )}
+                </div>
+                {item.badge && (
+                  <span
+                    className="px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ml-2"
+                    style={{
+                      background: '#E8D3A2',
+                      color: '#5C341F',
+                      border: '1px solid rgba(201, 168, 76, 0.5)',
+                    }}
+                  >
+                    {item.badge}
                   </span>
                 )}
               </div>
-              {item.badge && (
-                <span
-                  className="px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ml-2"
-                  style={{
-                    background: '#E8D3A2',
-                    color: '#5C341F',
-                    border: '1px solid rgba(201, 168, 76, 0.5)'
-                  }}
-                >
-                  {item.badge}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

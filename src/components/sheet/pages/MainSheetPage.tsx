@@ -69,6 +69,8 @@ export interface MainSheetPageProps {
   attackSearchQuery: string;
   setAttackSearchQuery: (q: string) => void;
   displayedAttacks: ActiveAttackOption[];
+  weaponAutocompleteItems?: AutocompleteItem[];
+  handleQuickAddWeapon?: (weaponNameOrItem: string | AutocompleteItem) => void;
   effectiveTraitsList: TraitItem[];
   traitSearchQuery: string;
   setTraitSearchQuery: (q: string) => void;
@@ -115,6 +117,8 @@ export const MainSheetPage = React.memo(function MainSheetPage({
   attackSearchQuery,
   setAttackSearchQuery,
   displayedAttacks,
+  weaponAutocompleteItems,
+  handleQuickAddWeapon,
   effectiveTraitsList,
   traitSearchQuery,
   setTraitSearchQuery,
@@ -677,14 +681,35 @@ export const MainSheetPage = React.memo(function MainSheetPage({
           </div>
 
           <div className="px-3 sm:px-4 pb-4 space-y-2">
-            <div className="relative">
-              <input
-                type="text"
-                value={attackSearchQuery}
-                onChange={e => setAttackSearchQuery(e.target.value)}
-                placeholder="Оружие или атака…"
-                className="parchment-input text-xs w-full py-1 px-2 mb-1"
-              />
+            <div className="flex gap-2 items-center mb-1">
+              <div className="flex-1">
+                <AutocompleteInput
+                  value={attackSearchQuery}
+                  onChange={setAttackSearchQuery}
+                  onSelect={item => {
+                    if (handleQuickAddWeapon) {
+                      handleQuickAddWeapon(item);
+                    }
+                  }}
+                  items={weaponAutocompleteItems || []}
+                  placeholder="Оружие или атака…"
+                  className="parchment-input text-xs w-full py-1 px-2"
+                />
+              </div>
+              {handleQuickAddWeapon && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (attackSearchQuery.trim()) {
+                      handleQuickAddWeapon(attackSearchQuery.trim());
+                    }
+                  }}
+                  className="parchment-btn-secondary text-xs px-3 py-1.5 shrink-0 font-bold"
+                  title="Экипировать оружие в основную руку"
+                >
+                  + Вооружить
+                </button>
+              )}
             </div>
 
             <div className="overflow-x-auto custom-scrollbar pb-1">

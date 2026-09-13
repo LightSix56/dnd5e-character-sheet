@@ -690,5 +690,27 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
     notes: '1 + мод. СИЛ урона',
   });
 
+  // 6. Custom manual attacks from char.attacks (if not already equipped as weapon or thrown)
+  if (char.attacks && Array.isArray(char.attacks)) {
+    for (const ca of char.attacks) {
+      if (ca.name && ca.name.trim()) {
+        const isAlreadyPresent = attacks.some(
+          a => a.weaponName.toLowerCase().trim() === ca.name.toLowerCase().trim()
+        );
+        if (!isAlreadyPresent) {
+          attacks.push({
+            source: 'mainHand',
+            weaponName: ca.name,
+            attackBonus: ca.attackBonus || '+0',
+            damageAndType: ca.damageAndType || '—',
+            actionType: 'action',
+            weaponDef: findWeaponByName(ca.name),
+            notes: 'Пользовательская атака',
+          });
+        }
+      }
+    }
+  }
+
   return attacks;
 }

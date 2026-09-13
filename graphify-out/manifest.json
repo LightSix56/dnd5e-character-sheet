@@ -126,9 +126,9 @@
     "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
   },
   "src/app/page.tsx": {
-    "mtime": 1789294998.2941222,
-    "seen": 1789295336.0623565,
-    "ast_hash": "c057556a59a6f9e6ac736bbab3f82a99",
+    "mtime": 1789303103.0617976,
+    "seen": 1789303410.1782458,
+    "ast_hash": "1c8ee58d8f834623905f89cb6cbf4c6a",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -144,10 +144,10 @@
     "semantic_hash": "dad1b5a313dc1e03bce7050bec38aa97"
   },
   "src/components/compendium/AutocompleteInput.tsx": {
-    "mtime": 1788423223.6336124,
-    "seen": 1788767676.2556252,
-    "ast_hash": "e1064e18e8045289ef8fd50fa366c70d",
-    "semantic_hash": "e1064e18e8045289ef8fd50fa366c70d"
+    "mtime": 1789302957.9158218,
+    "seen": 1789303410.1788192,
+    "ast_hash": "646f27894af36dcaf3a6a85451839b02",
+    "semantic_hash": ""
   },
   "src/components/compendium/ClassSelectorModal.tsx": {
     "mtime": 1789207614.1839576,
@@ -1134,9 +1134,9 @@
     "semantic_hash": ""
   },
   "src/lib/equipment-types.ts": {
-    "mtime": 1789291476.6274636,
-    "seen": 1789291687.6983037,
-    "ast_hash": "984c4b8a4115d11c01d9e8cb22f4f7c6",
+    "mtime": 1789302981.2209382,
+    "seen": 1789303410.196645,
+    "ast_hash": "721a535c7c32111d4a413e9798b3c140",
     "semantic_hash": ""
   },
   "test/equipment-slots.test.ts": {
@@ -1242,9 +1242,9 @@
     "semantic_hash": ""
   },
   "src/components/sheet/pages/MainSheetPage.tsx": {
-    "mtime": 1789294142.8604443,
-    "seen": 1789295336.067014,
-    "ast_hash": "f847de83aa5bdc80e4c290b5b608d9eb",
+    "mtime": 1789303231.2201686,
+    "seen": 1789303410.1838114,
+    "ast_hash": "b37c21cd6b06c7f13eab5a2cd1e4e891",
     "semantic_hash": ""
   },
   "src/components/sheet/pages/SpellsSheetPage.tsx": {
@@ -1305,6 +1305,12 @@
     "mtime": 1789302129.189603,
     "seen": 1789302418.2016082,
     "ast_hash": "6d863f40dcaa7d00e55416ed77c3aa2f",
+    "semantic_hash": ""
+  },
+  "test/autocomplete-overflow-positioning.test.ts": {
+    "mtime": 1789302940.970373,
+    "seen": 1789303410.2010117,
+    "ast_hash": "82c06d11a718473ef4d5742dedb2886c",
     "semantic_hash": ""
   }
 }

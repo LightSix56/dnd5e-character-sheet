@@ -70,6 +70,8 @@ import {
   textareaClass,
   getThirdCasterSpellSlots,
 } from '@/components/sheet/SheetUIPrimitives';
+import { DetailsSheetPage } from '@/components/sheet/pages/DetailsSheetPage';
+import { SpellsSheetPage } from '@/components/sheet/pages/SpellsSheetPage';
 
 // ── Level Down Confirm ──
 
@@ -4257,313 +4259,40 @@ export default function DnDCharacterSheet() {
 
         {/* ═══ PAGE 2 ═══ */}
         {activeTab === 'page2' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="parchment-card">
-              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><UserHeroIcon size={20} /><span>Физическое описание</span></h3></div>
-              <div className="px-4 pb-4 space-y-3">
-                {/* Portrait */}
-                <div className="mb-4">
-                  <div className="flex items-start gap-4">
-                    <div className="shrink-0">
-                      {portraitUrl ? (
-                        <div className="relative w-24 h-24 rounded" style={{ border: '2px solid rgba(139, 105, 20, 0.4)', overflow: 'hidden' }}>
-                          <label className="w-full h-full cursor-pointer block">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={portraitUrl} alt="Портрет" width={144} height={176} loading="lazy" className="w-full h-full object-cover" />
-                            <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
-                          </label>
-                          <button onClick={() => setPortraitUrl(null)} className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center text-[10px] cursor-pointer" style={{ background: 'rgba(139, 37, 0, 0.7)', color: '#FBF0DC', border: 'none', borderRadius: '0 0 0 3px' }}>✕</button>
-                        </div>
-                      ) : (
-                        <label className="w-24 h-24 flex flex-col items-center justify-center cursor-pointer rounded gap-1" style={{ border: '2px dashed rgba(139, 105, 20, 0.3)', background: 'rgba(251, 240, 220, 0.3)' }}>
-                          <CameraPortraitIcon size={24} />
-                          <span className="text-[10px] text-center px-1" style={{ color: '#8B6914' }}>Загрузить портрет</span>
-                          <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
-                        </label>
-                      )}
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <label className="parchment-label">Внешность (описание)</label>
-                      <textarea value={char.appearance} onChange={e => update('appearance', e.target.value)} rows={4} className={textareaClass} placeholder="Опишите внешность персонажа: цвет волос, глаз, отличительные черты…" />
-                    </div>
-                  </div>
-                  {!portraitUrl && (
-                    <label className="mt-2 inline-flex items-center gap-1 cursor-pointer text-xs" style={{ color: '#8B6914' }}>
-                      <input type="file" accept="image/*" onChange={handlePortraitUpload} className="hidden" />
-                      + Добавить картинку
-                    </label>
-                  )}
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <StatInput label="Возраст" value={char.age} onChange={v => update('age', v)} type="text" />
-                  <StatInput label="Рост" value={char.height} onChange={v => update('height', v)} type="text" />
-                  <StatInput label="Вес" value={char.weight} onChange={v => update('weight', v)} type="text" />
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <StatInput label="Глаза" value={char.eyes} onChange={v => update('eyes', v)} type="text" />
-                  <StatInput label="Кожа" value={char.skin} onChange={v => update('skin', v)} type="text" />
-                  <StatInput label="Волосы" value={char.hair} onChange={v => update('hair', v)} type="text" />
-                </div>
-              </div>
-            </div>
-            {[
-              { label: 'Внешность', key: 'appearance' as const, rows: 5, icon: <UserHeroIcon size={18} /> },
-              { label: 'Союзники и организации', key: 'alliesOrganizations' as const, rows: 5, icon: <ArcaneLinkIcon size={18} /> },
-              { label: 'Доп. умения и особенности', key: 'additionalFeaturesTraits' as const, rows: 5, icon: <SparklesDndIcon size={18} /> }
-            ].map(item => (
-              <div key={item.key} className="parchment-card">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">{item.icon}<span>{item.label}</span></h3></div>
-                <div className="px-4 pb-4"><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={item.rows} className={textareaClass} /></div>
-              </div>
-            ))}
-            {[
-              { label: 'Предыстория персонажа', key: 'backstory' as const, rows: 8, icon: <ScrollIcon size={18} /> },
-              { label: 'Сокровища', key: 'treasure' as const, rows: 3, icon: <CoinsChestIcon size={18} /> }
-            ].map(item => (
-              <div key={item.key} className="parchment-card lg:col-span-2">
-                <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2">{item.icon}<span>{item.label}</span></h3></div>
-                <div className="px-4 pb-4"><textarea value={char[item.key]} onChange={e => update(item.key, e.target.value)} rows={item.rows} className={textareaClass} placeholder={item.key === 'backstory' ? 'Расскажите историю персонажа…' : ''} /></div>
-              </div>
-            ))}
-          </div>
+          <DetailsSheetPage
+            char={char}
+            update={update}
+            portraitUrl={portraitUrl}
+            setPortraitUrl={setPortraitUrl}
+            handlePortraitUpload={handlePortraitUpload}
+          />
         )}
 
         {/* ═══ PAGE 3 ═══ */}
         {activeTab === 'page3' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="parchment-card">
-              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SpellbookIcon size={20} /><span>Параметры заклинателя</span></h3></div>
-              <div className="px-4 pb-4 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <StatInput label="Класс заклинателя" value={char.spellcastingClass} onChange={v => update('spellcastingClass', v)} type="text" placeholder="Волшебник" />
-                  <div className="space-y-1"><label className="parchment-label">Характеристика</label>
-                    <select value={char.spellcastingAbility} onChange={e => update('spellcastingAbility', e.target.value as AbilityName | '')} className="parchment-select h-8">
-                      <option value="">— Нет —</option>
-                      {ABILITY_NAMES.map(a => <option key={a} value={a}>{ABILITY_FULL[a]} ({a})</option>)}
-                    </select>
-                  </div>
-                </div>
-                {char.spellcastingAbility && (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="space-y-1"><label className="parchment-label">Сл. спасения</label><CalcBadge value={getSpellSaveDC(char)} /></div>
-                    <div className="space-y-1"><label className="parchment-label">Бонус атаки</label><RollBadge value={formatModifier(getSpellAttackBonus(char))} label="Атака заклинанием" modifier={getSpellAttackBonus(char)} onRoll={handleRoll} /></div>
-                    <div className="space-y-1"><label className="parchment-label">Мод. хар-ки</label><CalcBadge value={formatModifier(getSpellAbilityMod(char))} /></div>
-                    <div className="space-y-1"><label className="parchment-label">Бонус урона</label><CalcBadge value={formatModifier(getSpellDamageBonus(char))} /></div>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="parchment-card">
-              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><CrystalBallDndIcon size={20} /><span>Ячейки заклинаний</span></h3></div>
-              <div className="px-4 pb-4 space-y-2">
-                {[1,2,3,4,5,6,7,8,9].map(lvl => {
-                  const slot = char.spellSlots[lvl] || { totalSlots: 0, expendedSlots: 0 };
-                  // Always show all 9 spell slot levels on the website
-                  return (
-                    <div key={lvl} className="grid grid-cols-[auto_1fr_1fr] gap-2 items-center">
-                      <span className="text-xs font-bold w-16" style={{ color: '#6B3A2A', fontFamily: 'Georgia, "Times New Roman", serif' }}>{lvl} ур.</span>
-                      <div className="space-y-0.5"><label className="text-[10px]" style={{ color: '#8B6914' }}>Всего</label><input type="number" min={0} value={slot.totalSlots} onChange={e => updateSpellSlot(lvl, 'totalSlots', Number(e.target.value) || 0)} className={inputClassCenter} /></div>
-                      <div className="space-y-0.5"><label className="text-[10px]" style={{ color: '#8B6914' }}>Потрач.</label><input type="number" min={0} max={slot.totalSlots} value={slot.expendedSlots} onChange={e => updateSpellSlot(lvl, 'expendedSlots', Number(e.target.value) || 0)} className={inputClassCenter} /></div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            {/* Quick Spell Adder (Unified Search) */}
-            <div className="parchment-card lg:col-span-2">
-              <div className="px-4 pt-4 pb-3 flex items-center justify-between flex-wrap gap-2">
-                <h3 className="parchment-heading flex items-center gap-2">
-                  <SpellbookIcon size={20} />
-                  <span>Поиск и быстрое добавление заклинания</span>
-                </h3>
-                <label className="flex items-center gap-1.5 cursor-pointer select-none text-[11px] font-semibold" style={{ color: '#5C341F' }}>
-                  <input
-                    type="checkbox"
-                    checked={filterOnlyMyClassSpells}
-                    onChange={e => setFilterOnlyMyClassSpells(e.target.checked)}
-                    className="rounded accent-[#5C341F] cursor-pointer"
-                  />
-                  <span>
-                    Только заклинания {char.className || char.spellcastingClass || 'моего класса'}{char.subclass ? ` (+ ${char.subclass})` : ''}
-                  </span>
-                </label>
-              </div>
-              <div className="px-4 pb-4">
-                <div className="flex gap-2 items-center">
-                  <div className="flex-1 relative">
-                    <AutocompleteInput
-                      value={spellSearchQuery}
-                      onChange={setSpellSearchQuery}
-                      onSelect={handleQuickAddSpell}
-                      items={spellAutocompleteItems}
-                      placeholder="Введите заклинание (Огненный шар, Щит, Лечащее слово)…"
-                      autoClearOnSelect={true}
-                      className={inputClass + " w-full font-medium"}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (spellSearchQuery.trim()) {
-                        const matched = findSpellByName(spellSearchQuery.trim());
-                        handleQuickAddSpell({ name: spellSearchQuery.trim(), data: matched });
-                      }
-                    }}
-                    className="parchment-btn-secondary text-xs px-3 py-1.5 shrink-0"
-                  >
-                    + Добавить
-                  </button>
-                </div>
-                {spellAddSuccess && (
-                  <div className="mt-2.5 text-xs font-medium px-3 py-1.5 rounded flex items-center justify-between" style={{ background: 'rgba(201, 168, 76, 0.15)', color: '#6B3A2A', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
-                    <span>{spellAddSuccess}</span>
-                    <button onClick={() => setSpellAddSuccess(null)} className="opacity-70 hover:opacity-100 font-bold ml-2">✕</button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="parchment-card lg:col-span-2">
-              <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SparklesDndIcon size={20} /><span>Заговоры (0 ур.)</span></h3></div>
-              <div className="px-4 pb-4 space-y-2">
-                {char.cantrips.map((c, i) => {
-                  const spellDef = findSpellByName(c);
-                  const check = c.trim() ? isSpellAllowedForCharacter(char, spellDef || c) : null;
-                  return (
-                    <div key={i} className="flex gap-1.5 items-center">
-                      <div className="flex-1 relative flex items-center">
-                        <input
-                          value={c}
-                          onChange={e => updateCantrip(i, e.target.value)}
-                          placeholder="Название заговора…"
-                          className={inputClass + (check ? " pr-28" : "")}
-                        />
-                        {check && (
-                          <span
-                            className="absolute right-2 text-[10px] px-1.5 py-0.5 rounded font-mono pointer-events-none truncate max-w-[110px]"
-                            style={{
-                              background: check.allowed ? (check.source === 'class' ? 'rgba(40, 140, 40, 0.15)' : 'rgba(30, 100, 200, 0.15)') : 'rgba(217, 83, 79, 0.18)',
-                              color: check.allowed ? (check.source === 'class' ? '#276727' : '#1B4D89') : '#900',
-                              border: check.allowed ? (check.source === 'class' ? '1px solid rgba(40, 140, 40, 0.3)' : '1px solid rgba(30, 100, 200, 0.3)') : '1px solid rgba(217, 83, 79, 0.4)'
-                            }}
-                            title={check.reason || check.sourceLabel}
-                          >
-                            {check.allowed ? check.sourceLabel : '⚠️ Чужой'}
-                          </span>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setActiveSpellModal({
-                          spell: spellDef || null,
-                          customName: c || 'Заговор'
-                        })}
-                        title="Подробности заговора"
-                        className="w-8 h-8 shrink-0 flex items-center justify-center rounded transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                        style={{
-                          background: 'rgba(237, 224, 200, 0.6)',
-                          border: '1px solid rgba(139, 105, 20, 0.35)'
-                        }}
-                      >
-                        <InfoSealIcon size={18} />
-                      </button>
-                      <button onClick={() => removeCantrip(i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center cursor-pointer">✕</button>
-                    </div>
-                  );
-                })}
-                <button onClick={addCantrip} className="parchment-btn-secondary text-xs py-1.5">+ Добавить заговор</button>
-              </div>
-            </div>
-            {[1,2,3,4,5,6,7,8,9].map(lvl => {
-              const spells = char.spellsByLevel[lvl] || [];
-              return (
-                <div key={lvl} className="parchment-card">
-                  <div className="px-4 pt-4 pb-3 flex items-center justify-between flex-wrap gap-1">
-                    <h3 className="parchment-heading flex items-center gap-2">
-                      <SpellbookIcon size={18} />
-                      <span>Заклинания {lvl} ур.</span>
-                      <span className="text-xs font-normal" style={{ color: '#8B6914' }}>({spells.length})</span>
-                    </h3>
-                    {lvl > maxAvailableSlot && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded font-mono" style={{ background: 'rgba(217, 130, 43, 0.15)', color: '#A04000', border: '1px solid rgba(217, 130, 43, 0.3)' }} title={`Ячейки ${lvl}-го круга еще не доступны вашему персонажу`}>
-                        🔒 Ячейки не открыты
-                      </span>
-                    )}
-                  </div>
-                  <div className="px-4 pb-4 space-y-2">
-                    {spells.length === 0 ? (
-                      <div className="parchment-empty-state">
-                        <SpellbookIcon size={22} />
-                        <p className="text-xs text-[#5C341F] font-semibold">В книге заклинаний пока нет записей</p>
-                        <p className="text-[11px] text-[#8B6914]">Нажмите «+ Добавить», чтобы записать заклинание {lvl}-го круга.</p>
-                      </div>
-                    ) : (
-                      spells.map((spell, i) => {
-                        const spellDef = findSpellByName(spell.name);
-                        const check = spell.name.trim() ? isSpellAllowedForCharacter(char, spellDef || spell.name) : null;
-                        return (
-                          <div key={i} className="flex gap-1.5 items-center">
-                            <label className="parchment-checkbox" title="Подготовлено"><input type="checkbox" checked={spell.prepared} onChange={e => updateSpellEntry(lvl, i, 'prepared', e.target.checked)} /><span className="checkmark"></span></label>
-                            <div className="flex-1 relative flex items-center">
-                              <AutocompleteInput
-                                value={spell.name}
-                                onChange={val => updateSpellEntry(lvl, i, 'name', val)}
-                                items={spellAutocompleteItems}
-                                placeholder={`Заклинание ${lvl} ур.…`}
-                                className={inputClass + (check ? " pr-28" : "")}
-                              />
-                              {check && (
-                                <span
-                                  className="absolute right-2 text-[10px] px-1.5 py-0.5 rounded font-mono pointer-events-none truncate max-w-[110px]"
-                                  style={{
-                                    background: check.allowed ? (check.source === 'class' ? 'rgba(40, 140, 40, 0.15)' : 'rgba(30, 100, 200, 0.15)') : 'rgba(217, 83, 79, 0.18)',
-                                    color: check.allowed ? (check.source === 'class' ? '#276727' : '#1B4D89') : '#900',
-                                    border: check.allowed ? (check.source === 'class' ? '1px solid rgba(40, 140, 40, 0.3)' : '1px solid rgba(30, 100, 200, 0.3)') : '1px solid rgba(217, 83, 79, 0.4)'
-                                  }}
-                                  title={check.reason || check.sourceLabel}
-                                >
-                                  {check.allowed ? check.sourceLabel : '⚠️ Чужой'}
-                                </span>
-                              )}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => setActiveSpellModal({
-                                spell: spellDef || null,
-                                customName: spell.name || `Заклинание ${lvl} ур.`
-                              })}
-                              title="Подробности заклинания"
-                              className="w-8 h-8 shrink-0 flex items-center justify-center rounded text-xs font-bold transition-transform active:scale-95 hover:brightness-110"
-                              style={{
-                                background: 'rgba(237, 224, 200, 0.6)',
-                                border: '1px solid rgba(139, 105, 20, 0.35)'
-                              }}
-                            >
-                              <InfoSealIcon size={18} />
-                            </button>
-                            <button onClick={() => removeSpell(lvl, i)} className="parchment-remove-btn w-8 h-8 shrink-0 flex items-center justify-center">✕</button>
-                          </div>
-                        );
-                      })
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (lvl > maxAvailableSlot) {
-                          showToast('Ячейки не открыты', `У персонажа еще нет ячеек ${lvl}-го круга. Повысьте уровень персонажа.`);
-                          return;
-                        }
-                        addSpell(lvl);
-                      }}
-                      className="parchment-btn-secondary text-xs py-1.5"
-                    >
-                      + Добавить
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <SpellsSheetPage
+            char={char}
+            update={update}
+            updateSpellSlot={updateSpellSlot}
+            updateCantrip={updateCantrip}
+            addCantrip={addCantrip}
+            removeCantrip={removeCantrip}
+            updateSpellEntry={updateSpellEntry}
+            addSpell={addSpell}
+            removeSpell={removeSpell}
+            filterOnlyMyClassSpells={filterOnlyMyClassSpells}
+            setFilterOnlyMyClassSpells={setFilterOnlyMyClassSpells}
+            spellSearchQuery={spellSearchQuery}
+            setSpellSearchQuery={setSpellSearchQuery}
+            spellAutocompleteItems={spellAutocompleteItems}
+            handleQuickAddSpell={handleQuickAddSpell}
+            spellAddSuccess={spellAddSuccess}
+            setSpellAddSuccess={setSpellAddSuccess}
+            setActiveSpellModal={setActiveSpellModal}
+            maxAvailableSlot={maxAvailableSlot}
+            handleRoll={handleRoll}
+            showToast={showToast}
+          />
         )}
 
         <div className="mt-8 flex justify-center">

@@ -8,7 +8,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
-const readFile = (relPath: string) => fs.readFileSync(path.resolve(rootDir, relPath), 'utf8');
+const readFile = (relPath: string) => {
+  const content = fs.readFileSync(path.resolve(rootDir, relPath), 'utf8');
+  if (relPath === 'src/app/page.tsx') {
+    const prim = path.resolve(rootDir, 'src/components/sheet/SheetUIPrimitives.tsx');
+    if (fs.existsSync(prim)) return content + '\n' + fs.readFileSync(prim, 'utf8');
+  }
+  return content;
+};
 
 describe('Task 3: Escape Key Modal Dismissal & Keyboard Dice Rolls (TDD)', () => {
   describe('1. useEscapeKey Hook Specification', () => {

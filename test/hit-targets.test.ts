@@ -1,4 +1,4 @@
-﻿import test, { describe, it } from 'node:test';
+import test, { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const pagePath = path.resolve(__dirname, '../src/app/page.tsx');
-const pageContent = fs.readFileSync(pagePath, 'utf8');
+const primitivesPath = path.resolve(__dirname, '../src/components/sheet/SheetUIPrimitives.tsx');
+const pageContent = fs.readFileSync(pagePath, 'utf8') + (fs.existsSync(primitivesPath) ? '\n' + fs.readFileSync(primitivesPath, 'utf8') : '');
 
 describe('Hit Targets & Form Label Associations (TDD)', () => {
   describe('1. Functional Toggle Behavior for Skills & Saves', () => {

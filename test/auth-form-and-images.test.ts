@@ -8,7 +8,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
-const readFile = (relPath: string) => fs.readFileSync(path.resolve(rootDir, relPath), 'utf8');
+const readFile = (relPath: string) => {
+  const content = fs.readFileSync(path.resolve(rootDir, relPath), 'utf8');
+  if (relPath === 'src/app/page.tsx') {
+    const details = path.resolve(rootDir, 'src/components/sheet/pages/DetailsSheetPage.tsx');
+    const spells = path.resolve(rootDir, 'src/components/sheet/pages/SpellsSheetPage.tsx');
+    let extra = '';
+    if (fs.existsSync(details)) extra += '\n' + fs.readFileSync(details, 'utf8');
+    if (fs.existsSync(spells)) extra += '\n' + fs.readFileSync(spells, 'utf8');
+    return content + extra;
+  }
+  return content;
+};
 
 describe('Task 4: Auth Modal Form Wrapping, Image Sizing & Typographic Ellipsis (TDD)', () => {
   describe('1. AuthModal Form Wrapping & Attributes in src/app/page.tsx', () => {

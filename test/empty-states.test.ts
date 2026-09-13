@@ -1,10 +1,12 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
 test('Alive Parchment Empty States', () => {
-  const code = fs.readFileSync(path.resolve('src/app/page.tsx'), 'utf-8');
+  const spellsPagePath = path.resolve('src/components/sheet/pages/SpellsSheetPage.tsx');
+  const code = fs.readFileSync(path.resolve('src/app/page.tsx'), 'utf-8') +
+    (fs.existsSync(spellsPagePath) ? '\n' + fs.readFileSync(spellsPagePath, 'utf-8') : '');
   const css = fs.readFileSync(path.resolve('src/app/globals.css'), 'utf-8');
 
   // Verify CSS class

@@ -1,6 +1,4 @@
-'use client';
-
-import React from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   CharacterData,
   AbilityName,
@@ -22,8 +20,8 @@ import {
   inputClassCenter,
 } from '@/components/sheet/SheetUIPrimitives';
 import { AutocompleteInput, AutocompleteItem } from '@/components/compendium/AutocompleteInput';
-import { findSpellByName, DndSpell } from '@/data/dnd-spells';
-import { isSpellAllowedForCharacter } from '@/data/compendium';
+import { DND_SPELLS, findSpellByName, type DndSpell } from '@/data/dnd-spells';
+import { isSpellAllowedForCharacter, getMaxAvailableSpellSlotLevel } from '@/data/compendium/class-spells';
 import {
   SpellbookIcon,
   CrystalBallDndIcon,
@@ -41,18 +39,20 @@ export interface SpellsSheetPageProps {
   updateSpellEntry: (level: number, index: number, field: keyof SpellEntry, value: any) => void;
   addSpell: (level: number) => void;
   removeSpell: (level: number, index: number) => void;
-  filterOnlyMyClassSpells: boolean;
-  setFilterOnlyMyClassSpells: (val: boolean) => void;
-  spellSearchQuery: string;
-  setSpellSearchQuery: (val: string) => void;
-  spellAutocompleteItems: AutocompleteItem[];
-  handleQuickAddSpell: (item: AutocompleteItem) => void;
-  spellAddSuccess: string | null;
-  setSpellAddSuccess: (val: string | null) => void;
   setActiveSpellModal: (data: { spell: DndSpell | null; customName: string }) => void;
-  maxAvailableSlot: number;
   handleRoll: (result: RollResult) => void;
   showToast: (title: string, message: string) => void;
+  // Optional overrides (fallback to internal state if omitted)
+  filterOnlyMyClassSpells?: boolean;
+  setFilterOnlyMyClassSpells?: (val: boolean) => void;
+  spellSearchQuery?: string;
+  setSpellSearchQuery?: (val: string) => void;
+  spellAutocompleteItems?: AutocompleteItem[];
+  handleQuickAddSpell?: (item: AutocompleteItem) => void;
+  spellAddSuccess?: string | null;
+  setSpellAddSuccess?: (val: string | null) => void;
+  maxAvailableSlot?: number;
+  setPendingForeignSpell?: (data: { spell: DndSpell; level: number; callback: () => void } | null) => void;
 }
 
 export const SpellsSheetPage = React.memo(function SpellsSheetPage({
@@ -65,19 +65,114 @@ export const SpellsSheetPage = React.memo(function SpellsSheetPage({
   updateSpellEntry,
   addSpell,
   removeSpell,
-  filterOnlyMyClassSpells,
-  setFilterOnlyMyClassSpells,
-  spellSearchQuery,
-  setSpellSearchQuery,
-  spellAutocompleteItems,
-  handleQuickAddSpell,
-  spellAddSuccess,
-  setSpellAddSuccess,
+  filterOnlyMyClassSpells: filterOnlyMyClassSpellsProp,
+  setFilterOnlyMyClassSpells: setFilterOnlyMyClassSpellsProp,
+  spellSearchQuery: spellSearchQueryProp,
+  setSpellSearchQuery: setSpellSearchQueryProp,
+  spellAutocompleteItems: spellAutocompleteItemsProp,
+  handleQuickAddSpell: handleQuickAddSpellProp,
+  spellAddSuccess: spellAddSuccessProp,
+  setSpellAddSuccess: setSpellAddSuccessProp,
   setActiveSpellModal,
-  maxAvailableSlot,
+  maxAvailableSlot: maxAvailableSlotProp,
   handleRoll,
   showToast,
+  setPendingForeignSpell,
 }: SpellsSheetPageProps) {
+  const [internalFilter, setInternalFilter] = useState(true);
+  const [internalQuery, setInternalQuery] = useState('');
+  const [internalSuccess, setInternalSuccess] = useState<string | null>(null);
+
+  const filterOnlyMyClassSpells = filterOnlyMyClassSpellsProp !== undefined ? filterOnlyMyClassSpellsProp : internalFilter;
+  const setFilterOnlyMyClassSpells = setFilterOnlyMyClassSpellsProp || setInternalFilter;
+
+  const spellSearchQuery = spellSearchQueryProp !== undefined ? spellSearchQueryProp : internalQuery;
+  const setSpellSearchQuery = setSpellSearchQueryProp || setInternalQuery;
+
+  const spellAddSuccess = spellAddSuccessProp !== undefined ? spellAddSuccessProp : internalSuccess;
+  const setSpellAddSuccess = setSpellAddSuccessProp || setInternalSuccess;
+
+  const calculatedMaxSlot = useMemo(() => getMaxAvailableSpellSlotLevel(char), [char]);
+  const maxAvailableSlot = maxAvailableSlotProp !== undefined ? maxAvailableSlotProp : calculatedMaxSlot;
+
+  const internalAutocompleteItems = useMemo<AutocompleteItem[]>(() => {
+    return DND_SPELLS.map((s) => {
+      const check = isSpellAllowedForCharacter(char, s);
+      const slotAllowed = s.level === 0 || s.level <= maxAvailableSlot;
+      return { spell: s, check, slotAllowed };
+    })
+      .filter(({ check, slotAllowed }) => {
+        if (!filterOnlyMyClassSpells) return true;
+        return check.allowed && slotAllowed;
+      })
+      .map(({ spell: s, check, slotAllowed }) => {
+        const levelBadge = s.level === 0 ? 'Заговор' : `${s.level} ур.`;
+        const slotNote = slotAllowed ? '' : ` • 🔒 Нет ячеек (макс. ${maxAvailableSlot || '0'} ур.)`;
+        const badge = `${levelBadge} • ${check.sourceLabel}${slotNote}`;
+
+        return {
+          name: s.name,
+          badge,
+          secondary: s.nameEn ? `${s.nameEn} • ${s.school}` : s.school,
+          data: s,
+        };
+      });
+  }, [char, filterOnlyMyClassSpells, maxAvailableSlot]);
+
+  const spellAutocompleteItems = spellAutocompleteItemsProp || internalAutocompleteItems;
+
+  const internalQuickAdd = useCallback(
+    (item: AutocompleteItem) => {
+      const spell = item.data as DndSpell | undefined;
+      const spellName = item.name.trim();
+      if (!spellName) return;
+
+      const matchedSpell = spell || findSpellByName(spellName);
+      const level = matchedSpell ? matchedSpell.level : 0;
+
+      if (level > 0) {
+        if (level > maxAvailableSlot) {
+          showToast(
+            'Недоступный круг ячеек',
+            `Заклинание «${matchedSpell?.name || spellName}» (${level} ур.) требует ячейки ${level}-го уровня. У вашего персонажа доступны ячейки только до ${maxAvailableSlot || '0 (нет ячеек)'}-го уровня.`
+          );
+          return;
+        }
+      }
+
+      const doAdd = () => {
+        if (level === 0) {
+          update('cantrips', [...(char.cantrips || []), spellName]);
+        } else {
+          const s = { ...(char.spellsByLevel || {}) };
+          s[level] = [...(s[level] || []), { name: spellName, prepared: true }];
+          update('spellsByLevel', s);
+        }
+
+        const lvlLabel = level === 0 ? 'Заговоры (0 ур.)' : `Заклинания ${level} ур.`;
+        setSpellAddSuccess(`✨ «${spellName}» добавлено в ${lvlLabel}`);
+        setTimeout(() => setSpellAddSuccess(null), 3000);
+        setSpellSearchQuery('');
+      };
+
+      if (matchedSpell) {
+        const check = isSpellAllowedForCharacter(char, matchedSpell);
+        if (!check.allowed && setPendingForeignSpell) {
+          setPendingForeignSpell({
+            spell: matchedSpell,
+            level,
+            callback: doAdd,
+          });
+          return;
+        }
+      }
+
+      doAdd();
+    },
+    [char, maxAvailableSlot, showToast, update, setSpellAddSuccess, setSpellSearchQuery, setPendingForeignSpell]
+  );
+
+  const handleQuickAddSpell = handleQuickAddSpellProp || internalQuickAdd;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="parchment-card">

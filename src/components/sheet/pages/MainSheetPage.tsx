@@ -5,6 +5,7 @@ import type {
   CharacterData,
   AbilityName,
   TraitItem,
+  ClassTemplate,
 } from '@/lib/dnd-types';
 import {
   ABILITY_NAMES,
@@ -93,7 +94,7 @@ export interface MainSheetPageProps {
   setActiveItemModal: (item: CompendiumItem) => void;
   setActiveTraitModal: (data: { trait: DndTrait | null; customName: string; customSource?: string; customSummary?: string; customDescription?: string; traitIndex?: number }) => void;
   showToast: (title: string, message: string) => void;
-  compClass?: CompendiumClass | null;
+  compClass?: CompendiumClass | ClassTemplate | null;
 }
 
 export const MainSheetPage = React.memo(function MainSheetPage({

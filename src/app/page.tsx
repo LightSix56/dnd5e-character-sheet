@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CharacterData, AbilityName, ABILITY_NAMES, ABILITY_FULL, ALL_SKILLS, SKILL_MAP,
@@ -13,27 +14,29 @@ import {
   getHitDieSize, getHitDieAverage, getHitDiceNotation, isStandardASILevel, getMilestonesAtLevel, createEmptyLevelUpEntry,
   CLASS_TEMPLATES, ClassTemplate, applyClassTemplate, applyRaceTemplate, ARMOR_AC_MAP,
   recalculateAttacksOnStatsChange,
-  getCarryingCapacity, getJumpDistances, setAttackProficiency,
+  getCarryingCapacity, getJumpDistances, setAttackProficiency, calculateWizardAC,
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
-import { DND_SPELLS, findSpellByName, type DndSpell } from '@/data/dnd-spells';
+import type { DndSpell } from '@/data/compendium/spells/types';
 import { DND_WEAPONS, findWeaponByName, type DndWeapon } from '@/data/dnd-weapons';
 import { DND_TRAITS, findTraitByName, type DndTrait } from '@/data/dnd-traits';
 import { AutocompleteInput, type AutocompleteItem } from '@/components/compendium/AutocompleteInput';
-import { SpellDetailModal, WeaponDetailModal, TraitDetailModal } from '@/components/compendium/CompendiumModals';
-import { CharacterGridModal } from '@/components/tools/CharacterGridModal';
-import { ShareModal } from '@/components/tools/ShareModal';
-import { NameGeneratorModal } from '@/components/tools/NameGeneratorModal';
-import { StatsCalculatorModal } from '@/components/tools/StatsCalculatorModal';
-import { CharacterCreationWizardModal } from '@/components/wizard/CharacterCreationWizardModal';
-import { ClassSelectorModal } from '@/components/compendium/ClassSelectorModal';
-import { RaceSelectorModal } from '@/components/compendium/RaceSelectorModal';
-import { SubclassSelectorModal } from '@/components/compendium/SubclassSelectorModal';
-import { ItemDetailModal } from '@/components/compendium/ItemDetailModal';
-import { LevelUpModal } from '@/components/levelup/LevelUpModal';
-import { RestModal } from '@/components/gameplay/RestModal';
-import { EquipmentPaperDoll } from '@/components/equipment/EquipmentPaperDoll';
+const SpellDetailModal = dynamic(() => import('@/components/compendium/CompendiumModals').then(mod => mod.SpellDetailModal), { ssr: false });
+const WeaponDetailModal = dynamic(() => import('@/components/compendium/CompendiumModals').then(mod => mod.WeaponDetailModal), { ssr: false });
+const TraitDetailModal = dynamic(() => import('@/components/compendium/CompendiumModals').then(mod => mod.TraitDetailModal), { ssr: false });
+const CharacterGridModal = dynamic(() => import('@/components/tools/CharacterGridModal').then(mod => mod.CharacterGridModal), { ssr: false });
+const ShareModal = dynamic(() => import('@/components/tools/ShareModal').then(mod => mod.ShareModal), { ssr: false });
+const NameGeneratorModal = dynamic(() => import('@/components/tools/NameGeneratorModal').then(mod => mod.NameGeneratorModal), { ssr: false });
+const StatsCalculatorModal = dynamic(() => import('@/components/tools/StatsCalculatorModal').then(mod => mod.StatsCalculatorModal), { ssr: false });
+const CharacterCreationWizardModal = dynamic(() => import('@/components/wizard/CharacterCreationWizardModal').then(mod => mod.CharacterCreationWizardModal), { ssr: false });
+const ClassSelectorModal = dynamic(() => import('@/components/compendium/ClassSelectorModal').then(mod => mod.ClassSelectorModal), { ssr: false });
+const RaceSelectorModal = dynamic(() => import('@/components/compendium/RaceSelectorModal').then(mod => mod.RaceSelectorModal), { ssr: false });
+const SubclassSelectorModal = dynamic(() => import('@/components/compendium/SubclassSelectorModal').then(mod => mod.SubclassSelectorModal), { ssr: false });
+const ItemDetailModal = dynamic(() => import('@/components/compendium/ItemDetailModal').then(mod => mod.ItemDetailModal), { ssr: false });
+const LevelUpModal = dynamic(() => import('@/components/levelup/LevelUpModal').then(mod => mod.LevelUpModal), { ssr: false });
+const RestModal = dynamic(() => import('@/components/gameplay/RestModal').then(mod => mod.RestModal), { ssr: false });
+const EquipmentPaperDoll = dynamic(() => import('@/components/equipment/EquipmentPaperDoll').then(mod => mod.EquipmentPaperDoll), { ssr: false });
 import {
   getActiveCharacterAttacks,
   type ActiveAttackOption,
@@ -44,17 +47,14 @@ import {
   type EquipmentSlotId,
 } from '@/lib/equipment-types';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
-import { calculateWizardAC } from '@/components/wizard/wizard-helpers';
-import { findItemByName, type CompendiumItem } from '@/data/compendium/items';
+import type { CompendiumItem } from '@/data/compendium/items';
 import type { CompendiumRace, CompendiumSubrace } from '@/data/compendium/races';
-import { DND_COMPENDIUM_CLASSES, getSubclassesForClass, type CompendiumClass, type CompendiumSubclass } from '@/data/compendium/classes';
+import type { CompendiumClass, CompendiumSubclass } from '@/data/compendium/classes';
 import {
   getClassSubclassLevel,
   getSpellSlotsForClassLevel,
-  isSpellAllowedForCharacter,
-  getMaxAvailableSpellSlotLevel,
   normalizeClassName,
-} from '@/data/compendium';
+} from '@/data/compendium/class-progression';
 import { WARLOCK_INVOCATIONS } from '@/data/compendium/warlock-choices';
 import type { TraitItem } from '@/lib/dnd-types';
 
@@ -79,21 +79,19 @@ import {
   getThirdCasterSpellSlots,
 } from '@/components/sheet/SheetUIPrimitives';
 import { MainSheetPage } from '@/components/sheet/pages/MainSheetPage';
-import { DetailsSheetPage } from '@/components/sheet/pages/DetailsSheetPage';
-import { SpellsSheetPage } from '@/components/sheet/pages/SpellsSheetPage';
+const DetailsSheetPage = dynamic(() => import('@/components/sheet/pages/DetailsSheetPage').then(mod => mod.DetailsSheetPage), { ssr: false });
+const SpellsSheetPage = dynamic(() => import('@/components/sheet/pages/SpellsSheetPage').then(mod => mod.SpellsSheetPage), { ssr: false });
 import { SheetHeader } from '@/components/sheet/SheetHeader';
 import { SheetNavbar, type SheetTab } from '@/components/sheet/SheetNavbar';
 import { SheetFooter } from '@/components/sheet/SheetFooter';
-import {
-  LevelDownModal,
-  LevelHistoryModal,
-  NonClassSpellConfirmModal,
-  TemplateModal,
-  AuthModal,
-  SignOutModal,
-  ResetModal,
-  CreateChoiceModal,
-} from '@/components/sheet/modals/SheetModals';
+const LevelDownModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.LevelDownModal), { ssr: false });
+const LevelHistoryModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.LevelHistoryModal), { ssr: false });
+const NonClassSpellConfirmModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.NonClassSpellConfirmModal), { ssr: false });
+const TemplateModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.TemplateModal), { ssr: false });
+const AuthModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.AuthModal), { ssr: false });
+const SignOutModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.SignOutModal), { ssr: false });
+const ResetModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.ResetModal), { ssr: false });
+const CreateChoiceModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.CreateChoiceModal), { ssr: false });
 
 // ── Universal Deep Merge Character Normalizer ──
 function normalizeCharacterData(raw: Partial<CharacterData> | null | undefined): CharacterData {
@@ -159,11 +157,8 @@ export default function DnDCharacterSheet() {
   const [activeSpellModal, setActiveSpellModal] = useState<{ spell: DndSpell | null; customName?: string } | null>(null);
   const [activeWeaponModal, setActiveWeaponModal] = useState<{ weapon: DndWeapon | null; customName?: string; customBonus?: string; customDamage?: string } | null>(null);
   const [activeTraitModal, setActiveTraitModal] = useState<{ trait: DndTrait | null; customName?: string; customSource?: string; customSummary?: string; customDescription?: string; traitIndex?: number } | null>(null);
-  const [spellSearchQuery, setSpellSearchQuery] = useState('');
-  const [spellAddSuccess, setSpellAddSuccess] = useState<string | null>(null);
   const [traitSearchQuery, setTraitSearchQuery] = useState('');
   const [traitAddSuccess, setTraitAddSuccess] = useState<string | null>(null);
-  const [filterOnlyMyClassSpells, setFilterOnlyMyClassSpells] = useState(true);
   const [pendingForeignSpell, setPendingForeignSpell] = useState<{ spell: DndSpell; level: number; callback: () => void } | null>(null);
 
   const weaponAutocompleteItems: AutocompleteItem[] = useMemo(() => {
@@ -174,36 +169,6 @@ export default function DnDCharacterSheet() {
       data: w,
     }));
   }, []);
-
-  const maxAvailableSlot = useMemo(() => getMaxAvailableSpellSlotLevel(char), [char]);
-
-  const spellAutocompleteItems: AutocompleteItem[] = useMemo(() => {
-    return DND_SPELLS.map(s => {
-      const check = isSpellAllowedForCharacter(char, s);
-      const slotAllowed = s.level === 0 || s.level <= maxAvailableSlot;
-      return {
-        spell: s,
-        check,
-        slotAllowed,
-      };
-    })
-    .filter(({ check, slotAllowed }) => {
-      if (!filterOnlyMyClassSpells) return true;
-      return check.allowed && slotAllowed;
-    })
-    .map(({ spell: s, check, slotAllowed }) => {
-      const levelBadge = s.level === 0 ? 'Заговор' : `${s.level} ур.`;
-      const slotNote = slotAllowed ? '' : ` • 🔒 Нет ячеек (макс. ${maxAvailableSlot || '0'} ур.)`;
-      const badge = `${levelBadge} • ${check.sourceLabel}${slotNote}`;
-
-      return {
-        name: s.name,
-        badge,
-        secondary: s.nameEn ? `${s.nameEn} • ${s.school}` : s.school,
-        data: s,
-      };
-    });
-  }, [char, filterOnlyMyClassSpells, maxAvailableSlot]);
 
   const traitAutocompleteItems: AutocompleteItem[] = useMemo(() => {
     return DND_TRAITS.map(t => ({
@@ -863,64 +828,6 @@ export default function DnDCharacterSheet() {
     return baseList;
   }, [char]);
 
-  const handleQuickAddSpell = useCallback((item: AutocompleteItem) => {
-    const spell = item.data as DndSpell | undefined;
-    const spellName = item.name.trim();
-    if (!spellName) return;
-
-    const matchedSpell = spell || findSpellByName(spellName);
-    const level = matchedSpell ? matchedSpell.level : 0;
-
-    // 1. Strict spell slot validation: cannot take spells higher than available slots
-    if (level > 0) {
-      const maxSlot = getMaxAvailableSpellSlotLevel(char);
-      if (level > maxSlot) {
-        showToast(
-          'Недоступный круг ячеек',
-          `Заклинание «${matchedSpell?.name || spellName}» (${level} ур.) требует ячейки ${level}-го уровня. У вашего персонажа доступны ячейки только до ${maxSlot || '0 (нет ячеек)'}-го уровня.`
-        );
-        return;
-      }
-    }
-
-    const doAdd = () => {
-      setChar(prev => {
-        if (level === 0) {
-          return {
-            ...prev,
-            cantrips: [...prev.cantrips, spellName],
-          };
-        } else {
-          const s = { ...prev.spellsByLevel };
-          s[level] = [...(s[level] || []), { name: spellName, prepared: true }];
-          return {
-            ...prev,
-            spellsByLevel: s,
-          };
-        }
-      });
-
-      const lvlLabel = level === 0 ? 'Заговоры (0 ур.)' : `Заклинания ${level} ур.`;
-      setSpellAddSuccess(`✨ «${spellName}» добавлено в ${lvlLabel}`);
-      setTimeout(() => setSpellAddSuccess(null), 3000);
-      setSpellSearchQuery('');
-    };
-
-    if (matchedSpell) {
-      const check = isSpellAllowedForCharacter(char, matchedSpell);
-      if (!check.allowed) {
-        setPendingForeignSpell({
-          spell: matchedSpell,
-          level,
-          callback: doAdd,
-        });
-        return;
-      }
-    }
-
-    doAdd();
-  }, [char, showToast]);
-
   const updateTraitItem = useCallback((index: number, field: keyof TraitItem, value: string) => {
     setChar(prev => {
       const currentList = prev.traitsList && prev.traitsList.length > 0
@@ -1060,9 +967,9 @@ export default function DnDCharacterSheet() {
 
   const compClass = useMemo(() => {
     if (!char.className) return undefined;
-    return DND_COMPENDIUM_CLASSES.find(c =>
+    return CLASS_TEMPLATES.find(c =>
       char.className.toLowerCase().includes(c.name.toLowerCase()) ||
-      char.className.toLowerCase().includes(c.nameEn.toLowerCase())
+      char.className.toLowerCase().includes(c.id.toLowerCase())
     );
   }, [char.className]);
 
@@ -2139,11 +2046,13 @@ export default function DnDCharacterSheet() {
         />
       )}
 
-      <CharacterCreationWizardModal
-        isOpen={showCreationWizard}
-        onClose={() => setShowCreationWizard(false)}
-        onComplete={handleWizardComplete}
-      />
+      {showCreationWizard && (
+        <CharacterCreationWizardModal
+          isOpen={showCreationWizard}
+          onClose={() => setShowCreationWizard(false)}
+          onComplete={handleWizardComplete}
+        />
+      )}
 
       {showCreateChoiceModal && (
         <CreateChoiceModal
@@ -2258,18 +2167,10 @@ export default function DnDCharacterSheet() {
             updateSpellEntry={updateSpellEntry}
             addSpell={addSpell}
             removeSpell={removeSpell}
-            filterOnlyMyClassSpells={filterOnlyMyClassSpells}
-            setFilterOnlyMyClassSpells={setFilterOnlyMyClassSpells}
-            spellSearchQuery={spellSearchQuery}
-            setSpellSearchQuery={setSpellSearchQuery}
-            spellAutocompleteItems={spellAutocompleteItems}
-            handleQuickAddSpell={handleQuickAddSpell}
-            spellAddSuccess={spellAddSuccess}
-            setSpellAddSuccess={setSpellAddSuccess}
             setActiveSpellModal={setActiveSpellModal}
-            maxAvailableSlot={maxAvailableSlot}
             handleRoll={handleRoll}
             showToast={showToast}
+            setPendingForeignSpell={setPendingForeignSpell}
           />
         )}
 

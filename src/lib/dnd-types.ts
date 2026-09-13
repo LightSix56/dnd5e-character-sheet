@@ -1921,3 +1921,5 @@ export function createExampleWizard(): CharacterData {
   ];
   return char;
 }
+
+export { calculateWizardAC } from './ac-calculator';

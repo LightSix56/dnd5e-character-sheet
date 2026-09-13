@@ -6,10 +6,10 @@
     "semantic_hash": "c011988f3f49e03f84c466119ba73683"
   },
   "next.config.ts": {
-    "mtime": 1788434815.515462,
-    "seen": 1788767676.255573,
-    "ast_hash": "61b75764992ae129d835c9d3c019d66e",
-    "semantic_hash": "61b75764992ae129d835c9d3c019d66e"
+    "mtime": 1789305455.6278994,
+    "seen": 1789306243.1019878,
+    "ast_hash": "498086ff583ec5664643f74843c7f262",
+    "semantic_hash": ""
   },
   "package.json": {
     "mtime": 1789054684.7692454,
@@ -120,15 +120,15 @@
     "semantic_hash": ""
   },
   "src/app/layout.tsx": {
-    "mtime": 1788602418.5094862,
-    "seen": 1788767676.255616,
-    "ast_hash": "2f133c43bb78f5c929c46433621b1222",
-    "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
+    "mtime": 1789305462.0794623,
+    "seen": 1789306243.1118212,
+    "ast_hash": "b3b846d7671c184b95a1fc1376c0afee",
+    "semantic_hash": ""
   },
   "src/app/page.tsx": {
-    "mtime": 1789304423.0698445,
-    "seen": 1789304668.1492248,
-    "ast_hash": "4b7d59518256334b76db4d548afa2969",
+    "mtime": 1789305808.1439147,
+    "seen": 1789306243.1118252,
+    "ast_hash": "715b84362db23be59f4ad1eba64efa66",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -222,9 +222,9 @@
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
-    "mtime": 1789300129.7938712,
-    "seen": 1789300321.901092,
-    "ast_hash": "34d1fdf79f6578c805e652f3b0ad3810",
+    "mtime": 1789305669.0065694,
+    "seen": 1789306243.1215906,
+    "ast_hash": "877a6caf367bc805b2b86a09b3acf017",
     "semantic_hash": ""
   },
   "src/data/compendium/backgrounds.ts": {
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1789302141.7893064,
-    "seen": 1789302418.186263,
-    "ast_hash": "9985062eeb9e02a379ce5719810fc795",
+    "mtime": 1789305660.5413208,
+    "seen": 1789306243.1318548,
+    "ast_hash": "ff8b881f16886eecb10faa6669e54480",
     "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
@@ -1242,15 +1242,15 @@
     "semantic_hash": ""
   },
   "src/components/sheet/pages/MainSheetPage.tsx": {
-    "mtime": 1789303231.2201686,
-    "seen": 1789303410.1838114,
-    "ast_hash": "b37c21cd6b06c7f13eab5a2cd1e4e891",
+    "mtime": 1789305943.5291598,
+    "seen": 1789306243.1197808,
+    "ast_hash": "c1b7a4f21ba19aebda9cc7f5fc5fce7d",
     "semantic_hash": ""
   },
   "src/components/sheet/pages/SpellsSheetPage.tsx": {
-    "mtime": 1789293382.0350554,
-    "seen": 1789295336.0670161,
-    "ast_hash": "416638317559a100838768c5bb17095e",
+    "mtime": 1789305525.5725694,
+    "seen": 1789306243.119785,
+    "ast_hash": "47ab52477cc8a52a0a486494c13f4571",
     "semantic_hash": ""
   },
   "test/sheet-header-navbar.test.ts": {
@@ -1311,6 +1311,36 @@
     "mtime": 1789302940.970373,
     "seen": 1789303410.2010117,
     "ast_hash": "82c06d11a718473ef4d5742dedb2886c",
+    "semantic_hash": ""
+  },
+  "src/lib/ac-calculator.ts": {
+    "mtime": 1789305888.7985787,
+    "seen": 1789306243.1318483,
+    "ast_hash": "58f4041185ae69fcc07ab4ace64e598d",
+    "semantic_hash": ""
+  },
+  "test/dynamic-imports.test.ts": {
+    "mtime": 1789305766.4147944,
+    "seen": 1789306243.1399987,
+    "ast_hash": "9f0a537af4b8971433ab77895132f668",
+    "semantic_hash": ""
+  },
+  "test/performance-assets.test.ts": {
+    "mtime": 1789305442.060797,
+    "seen": 1789306243.1466594,
+    "ast_hash": "c6d53062a86d506dcfdaac09a6ee94af",
+    "semantic_hash": ""
+  },
+  "test/spells-autocomplete-internal.test.ts": {
+    "mtime": 1789305481.2565987,
+    "seen": 1789306243.15155,
+    "ast_hash": "9fa698ed8bb12f4b98d64e5fadc41f48",
+    "semantic_hash": ""
+  },
+  "test/tree-shaking-compendium.test.ts": {
+    "mtime": 1789305641.6728919,
+    "seen": 1789306243.1523902,
+    "ast_hash": "1fa8a54157733656459543e68c05cae7",
     "semantic_hash": ""
   }
 }

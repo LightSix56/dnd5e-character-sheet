@@ -16,6 +16,7 @@ export interface RaceNamingEntry {
   name: string;
   aliases: string[];
   namingTradition: string;
+  hasOfficialRacialNames: boolean;
   maleNames?: string[];
   femaleNames?: string[];
   unisexNames?: string[];
@@ -37,6 +38,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Человек',
     aliases: ['human', 'человек', 'люди', 'человеческий'],
     namingTradition: 'Человеческие имена отличаются огромным разнообразием в зависимости от культурного и этнического происхождения их предков.',
+    hasOfficialRacialNames: true,
     cultures: [
       {
         id: 'damaran',
@@ -103,6 +105,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Дварф',
     aliases: ['dwarf', 'дварф', 'дварфы', 'гном-дварф', 'горный дварф', 'холмовой дварф', 'дварфийский'],
     namingTradition: 'Дварфийские имена даются старейшинами клана согласно древним обычаям. Каждое имя принадлежит клану и передаётся из поколения в поколение.',
+    hasOfficialRacialNames: true,
     maleNames: ['Адрик', 'Альберих', 'Баренд', 'Баэрн', 'Броттор', 'Бруенор', 'Вондал', 'Вэйт', 'Гардаин', 'Даин', 'Даррак', 'Делг', 'Килдрак', 'Моргран', 'Орсик', 'Оскар', 'Рангрим', 'Рюрик', 'Таклинн', 'Торадин', 'Тордек', 'Торин', 'Травок', 'Траубон', 'Ульфгар', 'Фаргрим', 'Флинт', 'Харбек', 'Эберк', 'Эйнкиль'],
     femaleNames: ['Артин', 'Бардрин', 'Вистра', 'Гуннлода', 'Гурдис', 'Дагнал', 'Диеза', 'Илде', 'Катра', 'Кристид', 'Лифтраса', 'Мардред', 'Одхильд', 'Рисвин', 'Саннл', 'Торбера', 'Торгга', 'Фалкрунн', 'Финеллен', 'Хельджа', 'Хлин', 'Эльдет', 'Эмбер'],
     surnames: ['Балдерк', 'Боевой Молот', 'Горунн', 'Данкил', 'Железный Кулак', 'Крепкая Наковальня', 'Ледяная Борода', 'Лодерр', 'Лютгер', 'Огненная Кузня', 'Рамнахейм', 'Стракелн', 'Торунн', 'Унгарт', 'Холдерхек']
@@ -114,6 +117,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Эльф',
     aliases: ['elf', 'эльф', 'эльфы', 'высший эльф', 'лесной эльф', 'тёмный эльф', 'дроу', 'эладрин', 'морской эльф', 'шадар-кай'],
     namingTradition: 'Эльфы носят детские имена вплоть до достижения совершеннолетия (100 лет). Затем они выбирают себе взрослое имя и сохраняют родовую фамилию, которая обычно переводится на Общий.',
+    hasOfficialRacialNames: true,
     maleNames: ['Адран', 'Арамиль', 'Араннис', 'Ауст', 'Аэлар', 'Бейро', 'Берриан', 'Варис', 'Галинндан', 'Ивеллиос', 'Иммераль', 'Каррик', 'Куарион', 'Лаусиан', 'Миндартис', 'Паэлиас', 'Перен', 'Риардон', 'Ролен', 'Совелисс', 'Тамиорн', 'Таривол', 'Терен', 'Хадарай', 'Химо', 'Хэйян', 'Эниалис', 'Эрдан', 'Эреван'],
     femaleNames: ['Адриэна', 'Алтея', 'Анастрианна', 'Андрасте', 'Антидуа', 'Бетринна', 'Бирель', 'Валантина', 'Еления', 'Йелениа', 'Каэлинн', 'Квилена', 'Ксанафия', 'Лезианна', 'Лия', 'Мелиэ', 'Миали', 'Найвара', 'Силфира', 'Тиа', 'Шава', 'Шанаирра', 'Эна'],
     unisexNames: ['Ара', 'Брин', 'Валь', 'Дель', 'Ири', 'Каи', 'Лаэль', 'Риэль', 'Рир', 'Сай', 'Та', 'Фаэн'],
@@ -126,6 +130,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Полурослик',
     aliases: ['halfling', 'полурослик', 'полурослики', 'легконогий', 'коренастый'],
     namingTradition: 'Полурослики носят личное имя, фамилию клана и зачастую шутливое прозвище, выкованное семьей или соседями.',
+    hasOfficialRacialNames: true,
     maleNames: ['Алтон', 'Андер', 'Велби', 'Гаррет', 'Коррин', 'Лайл', 'Линджер', 'Майло', 'Осборн', 'Перрин', 'Рид', 'Роско', 'Сибо', 'Уэлби', 'Фарин', 'Финеган', 'Элдон'],
     femaleNames: ['Андри', 'Бри', 'Ванда', 'Верна', 'Джиллиан', 'Калли', 'Кора', 'Криста', 'Кипри', 'Лавиния', 'Лидда', 'Мерла', 'Неда', 'Паэла', 'Порция', 'Серафина', 'Трикси', 'Шаэна'],
     surnames: ['Большепуз', 'Бузинный Холм', 'Веткопрыг', 'Высокорослый', 'Зеленохолм', 'Заросший Чай', 'Подкустов', 'Пышнорукий', 'Тенистый Сад', 'Чайный Лист']
@@ -137,6 +142,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Гном',
     aliases: ['gnome', 'гном', 'гномы', 'скальный гном', 'лесной гном', 'свирфнеблин'],
     namingTradition: 'Гномы обожают имена и имеют их не меньше шести. Каждое имя дается родственниками, а в повседневной жизни используется самое звучное и лаконичное.',
+    hasOfficialRacialNames: true,
     maleNames: ['Алвин', 'Алстон', 'Боддинок', 'Брок', 'Бюргел', 'Варрин', 'Вренн', 'Гербо', 'Гимбл', 'Глим', 'Джебеддо', 'Димбл', 'Зук', 'Келлен', 'Намфудл', 'Оррин', 'Рундарик', 'Сибо', 'Синдри', 'Фонкин', 'Фрик', 'Элдон', 'Эрван'],
     femaleNames: ['Бимпноттин', 'Брина', 'Вейвикет', 'Донелла', 'Дували', 'Занна', 'Карлин', 'Куэми', 'Лупмоттин', 'Лилли', 'Мардна', 'Нисса', 'Никс', 'Ода', 'Орла', 'Ройвин', 'Тана', 'Шамил', 'Элливик', 'Эллиджобел'],
     surnames: ['Берен', 'Даэргал', 'Карлнин', 'Нэкл', 'Норно', 'Тимберс', 'Туррен', 'Фоликор', 'Шеппен', 'Шенобер']
@@ -148,6 +154,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Драконорожденный',
     aliases: ['dragonborn', 'драконорожденный', 'драконид'],
     namingTradition: 'У драконорожденных имя клана ставится на первое место в знак почтения и служения роду. Детское имя дается родителями при вылуплении.',
+    hasOfficialRacialNames: true,
     maleNames: ['Арьюхан', 'Баласар', 'Бхараш', 'Геш', 'Донаар', 'Дравош', 'Калаш', 'Клеш', 'Медраш', 'Мехен', 'Надир', 'Патраш', 'Рогар', 'Тарашун', 'Торинн', 'Харрош', 'Хедари'],
     femaleNames: ['Акра', 'Бири', 'Даари', 'Йолве', 'Кава', 'Коринна', 'Мишна', 'Нала', 'Перра', 'Раан', 'Сури', 'Тари', 'Уаджит', 'Фарида', 'Хараше', 'Шамиш', 'Эдна'],
     surnames: ['Верихидат', 'Даалан', 'Демирхиш', 'Друркар', 'Клетраш', 'Линшандро', 'Мубараш', 'Мяштан', 'Немирхи', 'Нориксиус', 'Офтандель', 'Прексийиндалин', 'Схетрат', 'Турмиш', 'Улусхан', 'Фембар', 'Шешендат', 'Ярхан']
@@ -159,6 +166,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Тифлинг',
     aliases: ['tiefling', 'тифлинг', 'тифлинги'],
     namingTradition: 'Тифлинги делятся на три традиции: традиционные инфернальные имена демонических предков, человеческие имена окружения или имена-добродетели, отражающие жизненную цель.',
+    hasOfficialRacialNames: true,
     maleNames: ['Акменос', 'Амнон', 'Баракас', 'Дамакос', 'Йадос', 'Кайрон', 'Люцис', 'Мелех', 'Мордай', 'Мортос', 'Пелайос', 'Скамос', 'Терай', 'Экемон'],
     femaleNames: ['Акта', 'Анакис', 'Брисеис', 'Дамая', 'Каллиста', 'Криелла', 'Лерисса', 'Макария', 'Немея', 'Орианна', 'Риета', 'Фелая', 'Эа'],
     virtueNames: ['Безрассудство', 'Величие', 'Вера', 'Гимн', 'Горе', 'Идеал', 'Искусство', 'Музыка', 'Надежда', 'Напев', 'Находчивость', 'Отвага', 'Открытость', 'Поиск', 'Радость', 'Рубеж', 'Скорбь', 'Страдание', 'Счастье', 'Тайна', 'Тьма', 'Храбрость', 'Шанс']
@@ -170,6 +178,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Полуэльф',
     aliases: ['half-elf', 'полуэльф', 'полуэльфы'],
     namingTradition: 'Полуэльфы пользуются либо человеческими, либо эльфийскими именами, подчеркивая принадлежность к культуре, в которой они были воспитаны.',
+    hasOfficialRacialNames: true,
     maleNames: ['Адран', 'Арамиль', 'Бор', 'Григор', 'Ивеллиос', 'Козеф', 'Ландер', 'Павел', 'Перен', 'Риардон', 'Ролен', 'Совелисс', 'Таман', 'Эндер'],
     femaleNames: ['Анастрианна', 'Алетра', 'Бирель', 'Еления', 'Зора', 'Кара', 'Лия', 'Мара', 'Миали', 'Ольга', 'Селизе', 'Силфира', 'Тана', 'Шава'],
     surnames: ['Амакиир', 'Брайтвуд', 'Галанодель', 'Куленов', 'Лиадон', 'Найло', 'Сианнодель', 'Хорнрейвен', 'Штормвинд']
@@ -181,6 +190,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Полуорк',
     aliases: ['half-orc', 'полуорк', 'полуорки', 'orc', 'орк', 'орки'],
     namingTradition: 'Полуорки обычно носят имена, данные в племени орков, либо человеческие имена. Орочьи имена гортанные, звучные и отражают боевые заслуги.',
+    hasOfficialRacialNames: true,
     maleNames: ['Баг', 'Варг', 'Ворш', 'Гелл', 'Денч', 'Карга', 'Крон', 'Крэк', 'Морг', 'Ронт', 'Тэнк', 'Уг', 'Фенг', 'Хольг', 'Шамп'],
     femaleNames: ['Багги', 'Бэгги', 'Варка', 'Вола', 'Евельда', 'Кансиф', 'Мьев', 'Негга', 'Овак', 'Роза', 'Сутха', 'Шаутха'],
     surnames: ['Железный Клык', 'Кровавый Топор', 'Костолом', 'Раздиратель', 'Сокрушитель', 'Черный Череп']
@@ -191,6 +201,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Орк',
     aliases: ['orc', 'орк', 'орки'],
     namingTradition: 'Орочьи имена носят гортанный и боевой характер, прославляя силу племени.',
+    hasOfficialRacialNames: true,
     maleNames: ['Баг', 'Варг', 'Ворш', 'Гелл', 'Денч', 'Карга', 'Крон', 'Крэк', 'Морг', 'Ронт', 'Тэнк', 'Уг', 'Фенг', 'Хольг', 'Шамп'],
     femaleNames: ['Багги', 'Бэгги', 'Варка', 'Вола', 'Евельда', 'Кансиф', 'Мьев', 'Негга', 'Овак', 'Роза', 'Сутха', 'Шаутха'],
     surnames: ['Громобой', 'Камнерез', 'Клыкодер', 'Костолом', 'Огнегляд', 'Череподав']
@@ -202,6 +213,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Голиаф',
     aliases: ['goliath', 'голиаф', 'голиафы'],
     namingTradition: 'У каждого голиафа три имени: личное имя, данное родителями; прозвище, присвоенное вождём за выдающийся поступок; и родовая фамилия клана.',
+    hasOfficialRacialNames: true,
     maleNames: ['Аукани', 'Вагакан', 'Вила-Кег', 'Гау-Кег', 'Гокенат', 'Иликакан', 'Кеглак', 'Маки-Кег', 'Мано-Кег', 'Нала-Кег', 'Ори-Кег', 'Па-Кег', 'Сила-Кег', 'Туни-Кег'],
     femaleNames: ['Бесники', 'Гаула-Кег', 'Гоки', 'Илика', 'Кани', 'Куни', 'Маки', 'Мано', 'Нала', 'Ори', 'Па', 'Пуни', 'Сила', 'Туни'],
     surnames: ['Анакалатинии', 'Анига-Гауна', 'Гала-Гонэ', 'Калаг-Ваке', 'Манэо-Хиту', 'Нагала-Хиту', 'Ого-Кег', 'Угава-Гоке', 'Эла-Кег']
@@ -213,6 +225,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Табакси',
     aliases: ['tabaxi', 'табакси'],
     namingTradition: 'Каждое имя табакси даётся кланом и включает поэтический образ и краткое обиходное прозвище (в скобках). Название клана связано с природными ориентирами.',
+    hasOfficialRacialNames: true,
     unisexNames: [
       'Леворукая колибри («Птица»)',
       'Нефритовый башмак («Нефрит»)',
@@ -235,6 +248,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Аасимар',
     aliases: ['aasimar', 'аасимар', 'аасимары'],
     namingTradition: 'Большинство аасимаров получают имена культуры, в которой они выросли, но часто носят возвышенные библейские или небесные имена.',
+    hasOfficialRacialNames: true,
     maleNames: ['Августин', 'Аркадиус', 'Валериус', 'Габриэль', 'Дамиан', 'Кассиэль', 'Лазарус', 'Люциан', 'Малахия', 'Рафаэль', 'Серафим', 'Уриил', 'Элион'],
     femaleNames: ['Аурелия', 'Вероника', 'Габриэлла', 'Кассиопея', 'Лилит', 'Люмина', 'Мириэль', 'Ноктис', 'Селеста', 'Серафима', 'Элизия'],
     surnames: ['Благословенный', 'Златокрыл', 'Лучезарный', 'Небожитель', 'Рассветный', 'Светлоносный', 'Чистосерд']
@@ -246,6 +260,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Кованый',
     aliases: ['warforged', 'кованый', 'кованые', 'варфорджед'],
     namingTradition: 'Созданные для войны, кованые изначально носили номера, но обретя свободу, выбрали имена-титулы, отражающие их путь, броню или оружие.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Бастион', 'Булава', 'Вмятина', 'Дерево', 'Железо', 'Знамя', 'Камень', 'Клинок', 'Копьё', 'Красный', 'Кристалл', 'Кузнец', 'Лук', 'Меч', 'Молот', 'Палаш', 'Пика', 'Пятый', 'Резак', 'Ржавый', 'Синий', 'Скаут', 'Стена', 'Счастливчик', 'Храм', 'Хранилище', 'Хруст', 'Церковь', 'Штаны', 'Якорь']
   },
 
@@ -255,6 +270,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Тритон',
     aliases: ['triton', 'тритон', 'тритоны'],
     namingTradition: 'Мужские имена тритонов оканчиваются на гласную с «-с», женские оканчиваются на «-н». Фамилии формируются от названия домашнего протектората с суффиксом «-ат».',
+    hasOfficialRacialNames: true,
     maleNames: ['Водос', 'Делнис', 'Джимас', 'Зунис', 'Керос', 'Корус', 'Молос', 'Налос'],
     femaleNames: ['Белтин', 'Вуолин', 'Влэрин', 'Дьютин', 'Отанин', 'Филорин', 'Шелрин', 'Эрин'],
     surnames: ['Алорсат', 'Вууваксат', 'Пуманат', 'Талассат', 'Маринат', 'Океанат']
@@ -266,6 +282,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Тортл',
     aliases: ['tortle', 'тортл', 'тортлы'],
     namingTradition: 'Тортлы предпочитают простые гендерно-нейтральные имена из 1-2 слогов. Они не пользуются фамилиями и могут свободно менять имя на протяжении жизни.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Бака', 'Вабу', 'Даму', 'Гар', 'Гура', 'Зопа', 'Ини', 'Йог', 'Кве', 'Квег', 'Квотт', 'Кинлек', 'Крулл', 'Лим', 'Лоп', 'Нортл', 'Нулка', 'Оло', 'Плокват', 'Санни', 'Тибор', 'Убо', 'Уок', 'Яппа']
   },
 
@@ -275,6 +292,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Юань-ти',
     aliases: ['yuan-ti', 'юань-ти', 'чистокровный юань-ти'],
     namingTradition: 'Имена юань-ти имеют священные значения и произносятся с выраженным шипящим призвуком, передаваясь из древних поколений.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Асутали', 'Зиху', 'Исзаху', 'Итстли', 'Мануюа', 'Мезтли', 'Несалли', 'Отлех', 'Саисатал', 'Сзималли', 'Ситлали', 'Сисава', 'Соако', 'Асисс', 'Вересс', 'Зассис', 'Ксассис', 'Нагис', 'Сассис']
   },
 
@@ -284,6 +302,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Лизардфолк (Людоящер)',
     aliases: ['lizardfolk', 'людоящер', 'лизардфолк'],
     namingTradition: 'Людоящеры берут имена из драконьего языка на основе выдающихся деяний и черт характера. Имена не разделяются по полу.',
+    hasOfficialRacialNames: true,
     unisexNames: [
       'Ачуак («Зелёный»)',
       'Гарурт («Топор»)',
@@ -304,6 +323,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Генази',
     aliases: ['genasi', 'дженази', 'генази', 'генази воздуха', 'генази земли', 'генази огня', 'генази воды'],
     namingTradition: 'Генази берут имена народов, среди которых росли, но затем принимают звучное имя, подчёркивающее их первородную стихийную природу.',
+    hasOfficialRacialNames: true,
     cultures: [
       {
         id: 'air',
@@ -338,6 +358,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Ааракокра',
     aliases: ['aarakocra', 'ааракокра', 'ааракокры'],
     namingTradition: 'Имена ааракокр состоят из птичьих щелчков, трелей и свиста. При общении с другими расами они используют короткие звучные формы.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Айял', 'Аур', 'Аэра', 'Дикек', 'Зид', 'Икки', 'Ирк', 'Клик', 'Крэк', 'Оор', 'Рук', 'Сарик', 'Хрик', 'Чирик']
   },
 
@@ -347,6 +368,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Кенку',
     aliases: ['kenku', 'кенку'],
     namingTradition: 'Кенку воспроизводят услышанные звуки: воины берут звуки оружия и битвы, воры — крики городских птиц и животных, ремесленники — звон инструментов.',
+    hasOfficialRacialNames: true,
     unisexNames: [
       'Разбиватель («Лязг булавы»)',
       'Лязгун («Удар стали о сталь»)',
@@ -367,6 +389,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Калаштар',
     aliases: ['kalashtar', 'калаштар', 'калаштары'],
     namingTradition: 'Имя калаштара составляется из личного префикса и имени духа куори, живущего внутри него.',
+    hasOfficialRacialNames: true,
     maleNames: ['Ваш', 'Кош', 'Мелк', 'Таш', 'Улад', 'Хад', 'Харет'],
     femaleNames: ['Ашана', 'Аштаи', 'Вакшина', 'Катана', 'Сорада', 'Тариша']
   },
@@ -377,6 +400,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Перевертыш (Шифтер)',
     aliases: ['shifter', 'шифтер', 'перевертыш'],
     namingTradition: 'Шифтеры не афишируют истинные имена незнакомцам и берут краткие имена, отражающие их животную натуру или приметы.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Барсук', 'Баки', 'Быстрый', 'Волк', 'Грация', 'Дождь', 'Клык', 'Кот', 'Красный', 'Луна', 'Медведь', 'Мрак', 'Полосатый', 'Шрам']
   },
 
@@ -386,6 +410,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Кентавр',
     aliases: ['centaur', 'кентавр', 'кентавры'],
     namingTradition: 'Имена передаются по семейным линиям в память об ушедших предках. Фамилии заменяются родовыми символами и узорами.',
+    hasOfficialRacialNames: true,
     maleNames: ['Бонмод', 'Борис', 'Донар', 'Зенобиос', 'Иокастос', 'Ксенофон', 'Никос', 'Орион', 'Салазар'],
     femaleNames: ['Ариона', 'Брисеида', 'Даная', 'Иокаста', 'Клеопатра', 'Лисандра', 'Медея', 'Ниоба', 'Талия', 'Филомела']
   },
@@ -396,6 +421,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Ведалкин',
     aliases: ['vedalken', 'ведалкин', 'ведалкен'],
     namingTradition: 'Ведалкены получают имя при рождении и меняют его в день совершеннолетия, подчеркивая стремление к совершенству и логике.',
+    hasOfficialRacialNames: true,
     maleNames: ['Аглар', 'Беллин', 'Даллид', 'Затаз', 'Йолов', 'Кэвин', 'Коплони', 'Ломар', 'Матван', 'Модар', 'Небун', 'Нилош', 'Нитт', 'Овлан', 'Отровас', 'Пеленер', 'Рилл', 'Тривас', 'Улдин', 'Фирелан'],
     femaleNames: ['Ази', 'Барвиска', 'Бразия', 'Дирелл', 'Грия', 'Зловов', 'Кетрилл', 'Ковел', 'Лилла', 'Мирела', 'Морай', 'Небресс', 'Оссия', 'Пиеренн', 'Роя', 'Сестри', 'Триэл', 'Узана', 'Фаин', 'Халия', 'Ярагия']
   },
@@ -406,6 +432,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Гоблин',
     aliases: ['goblin', 'гоблин', 'гоблины'],
     namingTradition: 'Гоблинские имена короткие, резкие и зубодробительные, часто вдохновлены звуками пакостей или предметов.',
+    hasOfficialRacialNames: true,
     maleNames: ['Арок', 'Блак', 'Боог', 'Ворг', 'Глинк', 'Гнар', 'Дриз', 'Зик', 'Зорг', 'Квик', 'Морг', 'Нок', 'Рог', 'Сник', 'Снорк', 'Торг', 'Уг', 'Флик', 'Хак', 'Чак'],
     femaleNames: ['Брэтта', 'Варка', 'Векса', 'Гризла', 'Дризза', 'Зилка', 'Зуба', 'Квилла', 'Мирка', 'Никса', 'Рикка', 'Сника', 'Фарга', 'Хелка']
   },
@@ -416,6 +443,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Хобгоблин',
     aliases: ['hobgoblin', 'хобгоблин', 'хобгоблины'],
     namingTradition: 'Хобгоблины носят суровые военные имена легиона с клановыми приставками рангов.',
+    hasOfficialRacialNames: true,
     maleNames: ['Ворг', 'Гар', 'Гол', 'Драг', 'Зар', 'Кор', 'Мор', 'Рак', 'Торг', 'Ур', 'Харк', 'Шаг'],
     femaleNames: ['Варка', 'Гра', 'Дра', 'Зарка', 'Корка', 'Марга', 'Рака', 'Торка', 'Урга', 'Харка'],
     surnames: ['Железный Легион', 'Кровавый Щит', 'Стальной Полк', 'Фаланга Теней']
@@ -427,6 +455,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Багбир',
     aliases: ['bugbear', 'багбир', 'багбиры'],
     namingTradition: 'Грубые рычащие имена, внушающие страх жертвам ночных засад.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Браг', 'Варг', 'Грон', 'Драг', 'Зор', 'Клык', 'Кранч', 'Морг', 'Рок', 'Смерч', 'Топ', 'Ург', 'Хруст']
   },
 
@@ -436,6 +465,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Кобольд',
     aliases: ['kobold', 'кобольд', 'кобольды'],
     namingTradition: 'Короткие шипяще-щелкающие имена в подражание драконьему наречию.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Дак', 'Дрик', 'Заз', 'Зол', 'Ирк', 'Кирк', 'Крик', 'Мип', 'Ник', 'Рик', 'Снак', 'Тик', 'Трик', 'Чик']
   },
 
@@ -445,6 +475,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Гит (Гитьянки и Гитцерай)',
     aliases: ['gith', 'гит', 'гитьянки', 'гитцерай'],
     namingTradition: 'Имена гитов отражают тысячелетнюю войну против иллитидов и древние заветы матери Гит или Зермона.',
+    hasOfficialRacialNames: true,
     maleNames: ['Баль', 'Джах', 'Зир', 'Кераш', 'Кзар', 'Маль', 'Раэль', 'Сарн', 'Таль', 'Тхарн', 'Шаар', 'Элрик'],
     femaleNames: ['Варна', 'Даэла', 'Зира', 'Кира', 'Лаэзель', 'Мира', 'Рая', 'Сарна', 'Тира', 'Хаэла', 'Шара']
   },
@@ -455,6 +486,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Локсодон',
     aliases: ['loxodon', 'локсодон', 'локсодоны'],
     namingTradition: 'Величественные и древние слоновьи имена, наполненные спокойствием и традициями мудрости.',
+    hasOfficialRacialNames: true,
     maleNames: ['Ананта', 'Барака', 'Ганеша', 'Джамбу', 'Индра', 'Кави', 'Махабали', 'Раджа', 'Саматха'],
     femaleNames: ['Ананди', 'Индира', 'Кавери', 'Лилавати', 'Падма', 'Ратна', 'Тарка', 'Чандра', 'Элифан']
   },
@@ -465,6 +497,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Минотавр',
     aliases: ['minotaur', 'минотавр', 'минотавры'],
     namingTradition: 'Имена, гремящие подобно лабиринту и грому копыт воинов Лабиринта.',
+    hasOfficialRacialNames: true,
     maleNames: ['Астерий', 'Бронт', 'Головар', 'Громорог', 'Драг', 'Крит', 'Лабиринт', 'Рог', 'Тавр', 'Тор', 'Удар'],
     femaleNames: ['Астерия', 'Бронта', 'Валка', 'Гроза', 'Кирена', 'Крита', 'Минотавра', 'Пасифая', 'Тавра']
   },
@@ -475,6 +508,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Сатир',
     aliases: ['satyr', 'сатир', 'сатиры'],
     namingTradition: 'Вакхические, музыкальные и озорные имена древнегреческих лесных духов и праздников.',
+    hasOfficialRacialNames: true,
     maleNames: ['Бахус', 'Дафнис', 'Дионис', 'Ксанф', 'Марсий', 'Пан', 'Силен', 'Фавн', 'Филемон'],
     femaleNames: ['Хлоя', 'Эхо', 'Нимфа', 'Менада', 'Дафна', 'Каллисто', 'Семела', 'Талия', 'Филлида']
   },
@@ -485,6 +519,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Подменыш (Чанглинг)',
     aliases: ['changeling', 'подменыш', 'чанглинг', 'чейнджлинг'],
     namingTradition: 'Чейнджлинги используют односложные имена в кругу семьи, а на публике примеряют имена рас, в которых они маскируются.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Бин', 'Блик', 'Векс', 'Грей', 'Двойка', 'Зеркало', 'Клик', 'Маска', 'Ник', 'Пятно', 'Тень', 'Трик', 'Фэйс', 'Штиль']
   },
 
@@ -494,6 +529,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Фирболг',
     aliases: ['firbolg', 'фирболг', 'фирболги'],
     namingTradition: 'Фирболги не используют имена среди своих, узнавая друг друга по делам. Для чужаков они берут эльфийские имена или природные прозвища.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Ветвь', 'Дуб', 'Корень', 'Лесник', 'Мох', 'Орех', 'Пень', 'Ручей', 'Сосна', 'Тропа', 'Трава', 'Хранитель']
   },
 
@@ -503,6 +539,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Леонинец',
     aliases: ['leonin', 'леонинец', 'леонинцы'],
     namingTradition: 'Гордые львиные имена прайда, символизирующие доблесть и солнечный свет саванны.',
+    hasOfficialRacialNames: true,
     maleNames: ['Атос', 'Бран', 'Валиант', 'Грифон', 'Драко', 'Зулу', 'Леон', 'Леоний', 'Леопольд', 'Максимус'],
     femaleNames: ['Ариана', 'Зулейка', 'Киара', 'Леона', 'Львица', 'Нала', 'Саванна', 'Солара', 'Шани'],
     surnames: ['Золотая Грива', 'Клык Саванны', 'Солнечный Прайд', 'Хранитель Звезд']
@@ -514,6 +551,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Совлин',
     aliases: ['owlin', 'совлин', 'совлины'],
     namingTradition: 'Тихие шепчущие имена ночных птиц, вдохновленные совиным оперением и полуночным небом.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Арктик', 'Бриз', 'Вихрь', 'Грач', 'Зоркий', 'Кир', 'Лунь', 'Неясыть', 'Опал', 'Перо', 'Птиц', 'Пух', 'Сипуха', 'Сов', 'Сова', 'Стриж', 'Шепот']
   },
 
@@ -523,6 +561,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Автогном',
     aliases: ['autognome', 'автогном', 'автогномы'],
     namingTradition: 'Имена состоят из механических деталей, звуков шестеренок или серийных обозначений создателей.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Авто', 'Болт', 'Винтик', 'Гиро', 'Диод', 'Зубец', 'Искра', 'Кликер', 'Мотор', 'Пружина', 'Реле', 'Спрокет', 'Тикер', 'Чип', 'Шпуля']
   },
 
@@ -532,6 +571,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Гифф',
     aliases: ['giff', 'гифф', 'гиффы'],
     namingTradition: 'Гиффы любят воинские звания и чопорные аристократические имена в духе пороховых полков.',
+    hasOfficialRacialNames: true,
     maleNames: ['Артур', 'Барнаби', 'Горацио', 'Монтгомери', 'Реджинальд', 'Уинстон', 'Капитан Барнаби', 'Майор Горацио'],
     femaleNames: ['Беатрис', 'Виктория', 'Лавиния', 'Пенелопа', 'Шарлотта', 'Элеонора']
   },
@@ -542,6 +582,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Хадози',
     aliases: ['hadozee', 'хадози'],
     namingTradition: 'Короткие парусные и летучие прозвища крылатых исследователей Дикого Космоса.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Баш', 'Брик', 'Глайд', 'Даш', 'Зип', 'Кук', 'Луп', 'Пак', 'Скип', 'Слип', 'Твиг', 'Флип']
   },
 
@@ -551,6 +592,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Плазмоид',
     aliases: ['plasmoid', 'плазмоид', 'плазмоиды'],
     namingTradition: 'Описательные имена формы, плотности или звука, издаваемого аморфным телом.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Блоб', 'Вяз', 'Глоб', 'Дроп', 'Капля', 'Клей', 'Лип', 'Мыло', 'Пузырь', 'Слизь', 'Слайм', 'Смола', 'Течь', 'Флюид']
   },
 
@@ -560,6 +602,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Три-крин',
     aliases: ['thri-kreen', 'три-крин', 'трикрин'],
     namingTradition: 'Имена состоят из щелканья жвал и стрекотания хитиновых пластин богомолоподобного народа.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Ка-Чак', 'Кли-Клик', 'Крик-Чак', 'Так-Тик', 'Ча-Тик', 'Чи-Клик', 'Чак-Тор', 'Тк-Тк']
   },
 
@@ -569,6 +612,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Дампир',
     aliases: ['dhampir', 'дампир', 'дампиры'],
     namingTradition: 'Носят благородные готические или старинные человеческие имена в память о смертном или вампирском роде.',
+    hasOfficialRacialNames: true,
     maleNames: ['Виктор', 'Влад', 'Кассиан', 'Константин', 'Люциан', 'Мортимер', 'Себастьян', 'Феликс'],
     femaleNames: ['Владлена', 'Кармилла', 'Лилия', 'Люси', 'Мира', 'Моргана', 'Селена', 'Эвелина']
   },
@@ -579,6 +623,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Хексблад (Ведьмовская кровь)',
     aliases: ['hexblood', 'хексблад', 'ведьмовская кровь'],
     namingTradition: 'Имена, навеянные ведьмовским фольклором, травами, туманами и шепотом чащоб.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Баба', 'Вереск', 'Воронья Лапа', 'Дымка', 'Крапива', 'Лихо', 'Морозка', 'Полуночница', 'Шепот', 'Ягода']
   },
 
@@ -588,6 +633,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Возрождённый',
     aliases: ['reborn', 'возрождённый', 'возрожденный'],
     namingTradition: 'Осколки имен прошлой жизни или символические прозвища нового пробуждения.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Воскресший', 'Забытый', 'Некро', 'Осколок', 'Пепел', 'Призрак', 'Странник', 'Эхо', 'Возвращенный', 'Тень']
   },
 
@@ -597,6 +643,7 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Астральный эльф',
     aliases: ['astral-elf', 'астральный эльф'],
     namingTradition: 'Звёздные имена, черпающие вдохновение из созвездий Серебряной Пустоты.',
+    hasOfficialRacialNames: true,
     maleNames: ['Альтаир', 'Антарес', 'Денеб', 'Кастор', 'Орион', 'Поллукс', 'Сириус', 'Цефей', 'Эридан'],
     femaleNames: ['Андромеда', 'Вега', 'Кассиопея', 'Лира', 'Мира', 'Плеяда', 'Стелла', 'Электра']
   },
@@ -607,7 +654,43 @@ export const DND_COMPENDIUM_NAMES_DB: Record<string, RaceNamingEntry> = {
     name: 'Гринг',
     aliases: ['grung', 'гринг', 'гринги'],
     namingTradition: 'Звуки кваканья, влажных джунглей и цвета кастовой иерархии.',
+    hasOfficialRacialNames: true,
     unisexNames: ['Блорк', 'Грок', 'Дроп', 'Квак', 'Квакун', 'Крок', 'Крокет', 'Ляг', 'Плюх', 'Прыг', 'Скок', 'Слюн', 'Тоад']
+  },
+  // ── 47. СВОЁ ПРОИСХОЖДЕНИЕ (CUSTOM LINEAGE) ──
+  'custom-lineage': {
+    id: 'custom-lineage',
+    name: 'Своё происхождение',
+    aliases: ['custom-lineage', 'custom lineage', 'своё происхождение', 'свое происхождение'],
+    namingTradition: 'Уникальные существа с кастомным происхождением носят имя по выбору игрока.',
+    hasOfficialRacialNames: false
+  },
+
+  // ── 48. ФЭЙРИ (FAIRY) ──
+  fairy: {
+    id: 'fairy',
+    name: 'Фэйри',
+    aliases: ['fairy', 'фэйри', 'фея', 'феи'],
+    namingTradition: 'Фэйри черпают вдохновение в природных стихиях, цветах или берут сказочные прозвища.',
+    hasOfficialRacialNames: false
+  },
+
+  // ── 49. ЗАЙЦЕГОНЫ (HARENGON) ──
+  harengon: {
+    id: 'harengon',
+    name: 'Зайцегон',
+    aliases: ['harengon', 'зайцегон', 'кроликолюд'],
+    namingTradition: 'Зайцегоны заимствуют имена из Страны Фей или окружающих культур путешественников.',
+    hasOfficialRacialNames: false
+  },
+
+  // ── 50. КЕНДЕРЫ (KENDER) ──
+  kender: {
+    id: 'kender',
+    name: 'Кендер',
+    aliases: ['kender', 'кендер', 'кендеры'],
+    namingTradition: 'Кендеры берут имена по приключениям, забавным безделушкам или ярким прозвищам.',
+    hasOfficialRacialNames: false
   }
 };
 
@@ -746,3 +829,166 @@ export function generateMultipleFantasyNames(
 }
 
 export const FANTASY_NAMES_DATABASE = Object.values(DND_COMPENDIUM_NAMES_DB);
+
+export const UNIVERSAL_FANTASY_NAMES: { male: string[]; female: string[]; surnames: string[] } = {
+  male: [
+    'Аларик', 'Аэрин', 'Бран', 'Валериан', 'Гарибальд', 'Дариус', 'Кориус', 'Люциан',
+    'Морган', 'Освальд', 'Роланд', 'Сильвас', 'Талион', 'Эдвард', 'Эладор', 'Элрион'
+  ],
+  female: [
+    'Алиса', 'Алтея', 'Брианна', 'Гвендолин', 'Изольда', 'Катарина', 'Лираэль', 'Лилиана',
+    'Мириэль', 'Морриган', 'Розалина', 'Селена', 'Сильвиэль', 'Талия', 'Эления', 'Элория'
+  ],
+  surnames: [
+    'Блэквуд', 'Волкодав', 'Железнорукий', 'Звёздный Ветер', 'Золотой Рассвет', 'Кроу',
+    'Лунная Тень', 'Огненный Горн', 'Райдер', 'Серебряный Лист', 'Старк', 'Штормхейвен'
+  ]
+};
+
+export interface RaceFantasyNameGenResult {
+  name: string;
+  isOfficial: boolean;
+  tradition?: string;
+  warning?: string;
+  culture?: string;
+}
+
+/**
+ * Robust, non-hardcoded lookup of race naming entry supporting subraces, MPMM, and variant aliases.
+ */
+export function lookupRaceNamingEntry(raceId?: string, subraceId?: string): RaceNamingEntry | undefined {
+  if (!raceId && !subraceId) return undefined;
+  const rId = (raceId || '').toLowerCase().trim();
+  const srId = (subraceId || '').toLowerCase().trim();
+
+  // 1. If subraceId is provided, check if any entry directly matches the subrace (e.g. 'drow', 'duergar', 'deep-gnome')
+  if (srId) {
+    for (const entry of Object.values(DND_COMPENDIUM_NAMES_DB)) {
+      if (entry.id === srId || entry.aliases.some(a => a.toLowerCase() === srId)) {
+        return entry;
+      }
+    }
+  }
+
+  // 2. Direct match on raceId
+  if (rId && DND_COMPENDIUM_NAMES_DB[rId]) {
+    return DND_COMPENDIUM_NAMES_DB[rId];
+  }
+
+  // 3. Base ID without common variant suffixes (-mpmm, -variant, -lineage, etc.)
+  const baseId = rId.replace(/-(?:mpmm|variant|lineage|2024|legacy)$/, '');
+  if (baseId && DND_COMPENDIUM_NAMES_DB[baseId]) {
+    return DND_COMPENDIUM_NAMES_DB[baseId];
+  }
+
+  // 4. Aliases search across all entries
+  for (const entry of Object.values(DND_COMPENDIUM_NAMES_DB)) {
+    if (
+      entry.id === rId ||
+      entry.id === baseId ||
+      entry.aliases.some(a => {
+        const aLow = a.toLowerCase();
+        return aLow === rId || aLow === baseId || rId.includes(aLow) || (aLow.length > 3 && aLow.includes(rId));
+      })
+    ) {
+      return entry;
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Generates an authentic gender-specific name from dnd.su compendium, or falls back
+ * to a universal fantasy name with an informative warning if the race lacks official names.
+ */
+export function generateRaceFantasyName(
+  raceId?: string,
+  subraceId?: string,
+  gender: string = 'Мужской'
+): RaceFantasyNameGenResult {
+  const entry = lookupRaceNamingEntry(raceId, subraceId);
+
+  const isMale = gender === 'Мужской' || gender === 'male' || gender === '♂ Мужской';
+  const isFemale = gender === 'Женский' || gender === 'female' || gender === '♀ Женский';
+
+  // If race is not in compendium or officially lacks names (e.g. Custom Lineage, Fairy, Harengon)
+  if (!entry || !entry.hasOfficialRacialNames) {
+    const pool = isMale
+      ? UNIVERSAL_FANTASY_NAMES.male
+      : isFemale
+      ? UNIVERSAL_FANTASY_NAMES.female
+      : Math.random() > 0.5 ? UNIVERSAL_FANTASY_NAMES.male : UNIVERSAL_FANTASY_NAMES.female;
+
+    const firstName = pickRandom(pool);
+    const surname = Math.random() > 0.2 ? pickRandom(UNIVERSAL_FANTASY_NAMES.surnames) : '';
+    const fullName = surname ? `${firstName} ${surname}` : firstName;
+
+    return {
+      name: fullName,
+      isOfficial: false,
+      warning: 'В официальном справочнике D&D 5e (dnd.su) у этой расы отсутствуют отдельные расовые имена. Сгенерировано универсальное фэнтезийное имя.'
+    };
+  }
+
+  // Race has official naming traditions
+  let firstName = '';
+  let surname = '';
+  let cultureLabel: string | undefined = undefined;
+
+  // 1. Race has ethnic cultures (e.g. Human, Genasi)
+  if (entry.cultures && entry.cultures.length > 0) {
+    const chosenCulture = pickRandom(entry.cultures);
+    cultureLabel = chosenCulture.name;
+
+    const pool = isMale
+      ? (chosenCulture.maleNames.length > 0 ? chosenCulture.maleNames : chosenCulture.femaleNames)
+      : isFemale
+      ? (chosenCulture.femaleNames.length > 0 ? chosenCulture.femaleNames : chosenCulture.maleNames)
+      : (Math.random() > 0.5 ? chosenCulture.maleNames : chosenCulture.femaleNames);
+
+    firstName = pickRandom(pool.length > 0 ? pool : chosenCulture.maleNames);
+    if (chosenCulture.surnames && chosenCulture.surnames.length > 0 && Math.random() > 0.1) {
+      surname = pickRandom(chosenCulture.surnames);
+    }
+  } else {
+    // 2. Standard race
+    const hasMale = entry.maleNames && entry.maleNames.length > 0;
+    const hasFemale = entry.femaleNames && entry.femaleNames.length > 0;
+    const hasUnisex = entry.unisexNames && entry.unisexNames.length > 0;
+
+    let pool: string[] = [];
+    if (isMale) {
+      pool = hasMale ? entry.maleNames! : (hasUnisex ? entry.unisexNames! : (hasFemale ? entry.femaleNames! : UNIVERSAL_FANTASY_NAMES.male));
+    } else if (isFemale) {
+      pool = hasFemale ? entry.femaleNames! : (hasUnisex ? entry.unisexNames! : (hasMale ? entry.maleNames! : UNIVERSAL_FANTASY_NAMES.female));
+    } else {
+      if (hasUnisex) {
+        pool = entry.unisexNames!;
+      } else if (hasMale && hasFemale) {
+        pool = Math.random() > 0.5 ? entry.maleNames! : entry.femaleNames!;
+      } else {
+        pool = entry.maleNames || entry.femaleNames || UNIVERSAL_FANTASY_NAMES.male;
+      }
+    }
+
+    // Special check for tiefling virtue names
+    if (entry.id === 'tiefling' && entry.virtueNames && Math.random() < 0.25) {
+      firstName = pickRandom(entry.virtueNames);
+    } else {
+      firstName = pickRandom(pool);
+      if (entry.surnames && entry.surnames.length > 0 && Math.random() > 0.15) {
+        surname = pickRandom(entry.surnames);
+      }
+    }
+  }
+
+  const fullName = surname ? `${firstName} ${surname}` : firstName;
+
+  return {
+    name: fullName,
+    isOfficial: true,
+    tradition: entry.namingTradition || `Официальная традиция имён ${entry.name} (dnd.su)`,
+    culture: cultureLabel
+  };
+}

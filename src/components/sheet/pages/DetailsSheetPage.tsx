@@ -109,7 +109,8 @@ export const DetailsSheetPage = React.memo(function DetailsSheetPage({
               </label>
             )}
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatInput label="Пол" value={char.gender || 'Мужской'} onChange={(v) => update('gender', v)} type="text" />
             <StatInput label="Возраст" value={char.age} onChange={(v) => update('age', v)} type="text" />
             <StatInput label="Рост" value={char.height} onChange={(v) => update('height', v)} type="text" />
             <StatInput label="Вес" value={char.weight} onChange={(v) => update('weight', v)} type="text" />

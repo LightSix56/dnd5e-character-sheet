@@ -15,68 +15,11 @@ import { DND_COMPENDIUM_RACES } from '@/data/compendium/races';
 import type { CompendiumBackground } from '@/data/compendium/backgrounds';
 
 // ── Fantasy Name Generator ──
+import { generateRaceFantasyName, type RaceFantasyNameGenResult } from '@/data/compendium/names-data';
+export { generateRaceFantasyName, type RaceFantasyNameGenResult };
 
-const FANTASY_NAMES: Record<string, { male: string[]; female: string[]; surnames: string[] }> = {
-  elf: {
-    male: ['Аэрин', 'Эладор', 'Фаэлин', 'Варис', 'Эмиль', 'Сильвас', 'Лиандри', 'Таэлор', 'Исильдур', 'Элрион', 'Фенрис', 'Талион'],
-    female: ['Аравель', 'Лираэль', 'Мириэль', 'Сильвиэль', 'Киара', 'Эления', 'Селена', 'Талия', 'Фираэль', 'Элория', 'Алтея'],
-    surnames: ['Лунная Тень', 'Звёздный Ветер', 'Серебряный Лист', 'Солнечный Луч', 'Шелест Леса', 'Ледяной Цветок', 'Зелёный Дол']
-  },
-  dwarf: {
-    male: ['Брунор', 'Торин', 'Дагнал', 'Торгрим', 'Балин', 'Хротгар', 'Двалин', 'Моргран', 'Орик', 'Флинто', 'Гимли', 'Бальдур'],
-    female: ['Хельга', 'Дис', 'Дагна', 'Мардра', 'Вестра', 'Тордис', 'Брунгильда', 'Криста', 'Хильда', 'Эльдрида'],
-    surnames: ['Железный Кулак', 'Золотой Молот', 'Каменный Шлем', 'Огненный Горн', 'Медный Топор', 'Глубокий Камень', 'Стальной Щит']
-  },
-  human: {
-    male: ['Аларик', 'Роланд', 'Годрик', 'Бран', 'Эдвард', 'Валериан', 'Кайл', 'Дариус', 'Морган', 'Люциан', 'Гаррет', 'Виктор'],
-    female: ['Элинора', 'Брианна', 'Лилиана', 'Морриган', 'Селеста', 'Гвендолин', 'Алиса', 'Розалина', 'Катарина', 'Изольда'],
-    surnames: ['Штормхейвен', 'Блэквуд', 'Райдер', 'Волкодав', 'Старк', 'Грей', 'Фостер', 'Кроу', 'Железнорукий', 'Холмс']
-  },
-  halfling: {
-    male: ['Мерри', 'Пиппин', 'Мило', 'Финдо', 'Альдо', 'Барнаби', 'Оливер', 'Тобиас', 'Корни', 'Берри'],
-    female: ['Рози', 'Примула', 'Белла', 'Люсинда', 'Поппи', 'Дейзи', 'Мэй', 'Виллоу', 'Клевер', 'Миртл'],
-    surnames: ['Подхолмик', 'Зеленый Холм', 'Чайный Лист', 'Быстроног', 'Яблочкин', 'Тихоступ', 'Светловод']
-  },
-  dragonborn: {
-    male: ['Баласар', 'Клеш', 'Дондар', 'Геш', 'Медрик', 'Надир', 'Торрин', 'Архан', 'Рашар', 'Тархун'],
-    female: ['Акра', 'Бири', 'Даида', 'Харачес', 'Миша', 'Нала', 'Перра', 'Сурин', 'Коринна', 'Шава'],
-    surnames: ['Клан Ундачеллор', 'Клан Драказис', 'Клан Клеш', 'Клан Огненного Клыка', 'Клан Чешуи Бури']
-  },
-  tiefling: {
-    male: ['Мортос', 'Малахи', 'Азраил', 'Валак', 'Люциус', 'Дамиан', 'Каин', 'Зариэль', 'Бальтазар'],
-    female: ['Лилит', 'Морриган', 'Кармилла', 'Калипсо', 'Нерисса', 'Вельвет', 'Астарта', 'Геката'],
-    surnames: ['Надежда', 'Скорбь', 'Тайна', 'Пепел', 'Ярость', 'Бездна', 'Свет во Тьме', 'Забвение']
-  },
-  orc: {
-    male: ['Громмаш', 'Тарг', 'Круг', 'Денгар', 'Варлок', 'Багрок', 'Морг', 'Горок', 'Дурзо', 'Харгар'],
-    female: ['Багги', 'Эмен', 'Келла', 'Варла', 'Морга', 'Шаута', 'Олга', 'Грета', 'Зулка'],
-    surnames: ['Костелом', 'Кровопийца', 'Железный Клык', 'Громовой Удар', 'Чёрный Череп', 'Волчья Стая']
-  },
-  gnome: {
-    male: ['Бим', 'Димбл', 'Финбар', 'Гербо', 'Зигги', 'Кварк', 'Спарки', 'Никл', 'Визл', 'Тинкер'],
-    female: ['Бинки', 'Элли', 'Никс', 'Пиппа', 'Тана', 'Трикси', 'Винни', 'Занна', 'Фиджет'],
-    surnames: ['Часовщик', 'Искромет', 'Шестеренник', 'Быстромысл', 'Хитрован', 'Меднопал']
-  }
-};
-
-export function generateFantasyName(raceId?: string): string {
-  const r = (raceId || '').toLowerCase();
-  let key = 'human';
-  if (r.includes('elf') || r.includes('эльф')) key = 'elf';
-  else if (r.includes('dwarf') || r.includes('дворф')) key = 'dwarf';
-  else if (r.includes('halfling') || r.includes('полурос')) key = 'halfling';
-  else if (r.includes('dragon') || r.includes('дракон')) key = 'dragonborn';
-  else if (r.includes('tief') || r.includes('тифл')) key = 'tiefling';
-  else if (r.includes('orc') || r.includes('орк')) key = 'orc';
-  else if (r.includes('gnome') || r.includes('гном')) key = 'gnome';
-
-  const group = FANTASY_NAMES[key] || FANTASY_NAMES.human;
-  const isMale = Math.random() > 0.5;
-  const firstNames = isMale ? group.male : group.female;
-  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-  const surname = group.surnames[Math.floor(Math.random() * group.surnames.length)];
-
-  return `${firstName} ${surname}`;
+export function generateFantasyName(raceId?: string, subraceId?: string, gender: string = 'Мужской'): string {
+  return generateRaceFantasyName(raceId, subraceId, gender).name;
 }
 
 // ── Racial Skills Rules ──

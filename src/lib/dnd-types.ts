@@ -166,6 +166,7 @@ export interface CharacterData {
   equipment: string;
 
   // Page 2
+  gender?: string;
   age: string;
   height: string;
   weight: string;
@@ -1238,6 +1239,7 @@ export function createDefaultCharacter(): CharacterData {
     featuresTraits: '',
     traitsList: [],
     equipment: '',
+    gender: 'Мужской',
     age: '',
     height: '',
     weight: '',

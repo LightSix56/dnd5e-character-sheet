@@ -364,10 +364,15 @@ export function EquipmentSlotModal({
 
   // Filter candidates by search and category
   const filteredCandidates = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim();
+    const norm = (s: string) => s.toLowerCase().replace(/ё/g, 'е').trim();
+    const q = norm(searchQuery);
     return candidateItems.filter(item => {
-      if (q && !item.name.toLowerCase().includes(q) && !(item.description || '').toLowerCase().includes(q)) {
-        return false;
+      if (q) {
+        const nameNorm = norm(item.name);
+        const descNorm = norm(item.description || '');
+        if (!nameNorm.includes(q) && !descNorm.includes(q)) {
+          return false;
+        }
       }
       if (slotId === 'mainHand') {
         if (filterType === '2h' && !item.twoHanded) return false;

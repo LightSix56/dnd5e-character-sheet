@@ -1,4 +1,7 @@
 // D&D 5e Items, Armors and Weapons Compendium
+import { DND_WEAPONS, weaponToCompendiumItem, findWeaponByName, type DndWeapon } from '../dnd-weapons';
+
+export { DND_WEAPONS, findWeaponByName, type DndWeapon };
 
 export interface CompendiumItem {
   name: string;
@@ -11,7 +14,7 @@ export interface CompendiumItem {
   weapon?: {
     category: 'Простое рукопашное' | 'Простое дальнобойное' | 'Воинское рукопашное' | 'Воинское дальнобойное';
     damageDice: string;
-    damageType: 'колющий' | 'рубящий' | 'дробящий';
+    damageType: 'колющий' | 'рубящий' | 'дробящий' | 'особое';
     properties: string[];
     finesse?: boolean;
     versatileDice?: string;
@@ -27,6 +30,8 @@ export interface CompendiumItem {
     stealthDisadvantage?: boolean;
   };
 }
+
+export const DND_WEAPON_COMPENDIUM_ITEMS: CompendiumItem[] = DND_WEAPONS.map(weaponToCompendiumItem);
 
 export const DND_COMPENDIUM_ITEMS: CompendiumItem[] = [
   {
@@ -242,609 +247,7 @@ export const DND_COMPENDIUM_ITEMS: CompendiumItem[] = [
       "strMinimum": 0
     }
   },
-  {
-    "name": "Боевой посох",
-    "nameEn": "Quarterstaff",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "2 см",
-    "weight": "4 фнт.",
-    "description": "Деревянный посох. Универсальное (1d8).",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d6",
-      "damageType": "дробящий",
-      "properties": [
-        "Универсальное (1d8)"
-      ],
-      "versatileDice": "1d8"
-    }
-  },
-  {
-    "name": "Булава",
-    "nameEn": "Mace",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "5 зм",
-    "weight": "4 фнт.",
-    "description": "Тяжелое ударное оружие.",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d6",
-      "damageType": "дробящий",
-      "properties": []
-    }
-  },
-  {
-    "name": "Дубинка",
-    "nameEn": "Club",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "1 см",
-    "weight": "2 фнт.",
-    "description": "Простая дубинка. Легкое.",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d4",
-      "damageType": "дробящий",
-      "properties": [
-        "Легкое"
-      ]
-    }
-  },
-  {
-    "name": "Кинжал",
-    "nameEn": "Dagger",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "2 зм",
-    "weight": "1 фнт.",
-    "description": "Острое короткое лезвие. Фехтовальное, легкое, метательное (20/60).",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d4",
-      "damageType": "колющий",
-      "properties": [
-        "Фехтовальное",
-        "Легкое",
-        "Метательное (дист. 20/60)"
-      ],
-      "finesse": true,
-      "rangeNormal": 20,
-      "rangeLong": 60
-    }
-  },
-  {
-    "name": "Копье",
-    "nameEn": "Spear",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "1 зм",
-    "weight": "3 фнт.",
-    "description": "Длинное древко с наконечником. Метательное (20/60), универсальное (1d8).",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d6",
-      "damageType": "колющий",
-      "properties": [
-        "Метательное (дист. 20/60)",
-        "Универсальное (1d8)"
-      ],
-      "versatileDice": "1d8",
-      "rangeNormal": 20,
-      "rangeLong": 60
-    }
-  },
-  {
-    "name": "Легкий молот",
-    "nameEn": "Light Hammer",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "2 зм",
-    "weight": "2 фнт.",
-    "description": "Компактный молот. Легкое, метательное (20/60).",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d4",
-      "damageType": "дробящий",
-      "properties": [
-        "Легкое",
-        "Метательное (дист. 20/60)"
-      ],
-      "rangeNormal": 20,
-      "rangeLong": 60
-    }
-  },
-  {
-    "name": "Метательное копье",
-    "nameEn": "Javelin",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "5 см",
-    "weight": "2 фнт.",
-    "description": "Облегченное копье для метания (30/120).",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d6",
-      "damageType": "колющий",
-      "properties": [
-        "Метательное (дист. 30/120)"
-      ],
-      "rangeNormal": 30,
-      "rangeLong": 120
-    }
-  },
-  {
-    "name": "Палица",
-    "nameEn": "Greatclub",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "2 см",
-    "weight": "10 фнт.",
-    "description": "Тяжелая двуручная дубина.",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d8",
-      "damageType": "дробящий",
-      "properties": [
-        "Двуручное"
-      ]
-    }
-  },
-  {
-    "name": "Ручной топор",
-    "nameEn": "Handaxe",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "5 зм",
-    "weight": "2 фнт.",
-    "description": "Удобный топор. Легкое, метательное (20/60).",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d6",
-      "damageType": "рубящий",
-      "properties": [
-        "Легкое",
-        "Метательное (дист. 20/60)"
-      ],
-      "rangeNormal": 20,
-      "rangeLong": 60
-    }
-  },
-  {
-    "name": "Серп",
-    "nameEn": "Sickle",
-    "category": "Оружие",
-    "subcategory": "Простое рукопашное",
-    "cost": "1 зм",
-    "weight": "2 фнт.",
-    "description": "Изогнутый клинок. Легкое.",
-    "weapon": {
-      "category": "Простое рукопашное",
-      "damageDice": "1d4",
-      "damageType": "рубящий",
-      "properties": [
-        "Легкое"
-      ]
-    }
-  },
-  {
-    "name": "Дротик",
-    "nameEn": "Dart",
-    "category": "Оружие",
-    "subcategory": "Простое дальнобойное",
-    "cost": "5 мм",
-    "weight": "1/4 фнт.",
-    "description": "Метательное фехтовальное острие (20/60).",
-    "weapon": {
-      "category": "Простое дальнобойное",
-      "damageDice": "1d4",
-      "damageType": "колющий",
-      "properties": [
-        "Фехтовальное",
-        "Метательное (дист. 20/60)"
-      ],
-      "finesse": true,
-      "rangeNormal": 20,
-      "rangeLong": 60
-    }
-  },
-  {
-    "name": "Короткий лук",
-    "nameEn": "Shortbow",
-    "category": "Оружие",
-    "subcategory": "Простое дальнобойное",
-    "cost": "25 зм",
-    "weight": "2 фнт.",
-    "description": "Двуручный лук (80/320).",
-    "weapon": {
-      "category": "Простое дальнобойное",
-      "damageDice": "1d6",
-      "damageType": "колющий",
-      "properties": [
-        "Боеприпас (дист. 80/320)",
-        "Двуручное"
-      ],
-      "rangeNormal": 80,
-      "rangeLong": 320
-    }
-  },
-  {
-    "name": "Легкий арбалет",
-    "nameEn": "Light Crossbow",
-    "category": "Оружие",
-    "subcategory": "Простое дальнобойное",
-    "cost": "25 зм",
-    "weight": "5 фнт.",
-    "description": "Простой арбалет (80/320). Перезарядка, двуручное.",
-    "weapon": {
-      "category": "Простое дальнобойное",
-      "damageDice": "1d8",
-      "damageType": "колющий",
-      "properties": [
-        "Боеприпас (дист. 80/320)",
-        "Перезарядка",
-        "Двуручное"
-      ],
-      "rangeNormal": 80,
-      "rangeLong": 320
-    }
-  },
-  {
-    "name": "Праща",
-    "nameEn": "Sling",
-    "category": "Оружие",
-    "subcategory": "Простое дальнобойное",
-    "cost": "1 см",
-    "weight": "-",
-    "description": "Метает камни или пули на 30/120 фт.",
-    "weapon": {
-      "category": "Простое дальнобойное",
-      "damageDice": "1d4",
-      "damageType": "дробящий",
-      "properties": [
-        "Боеприпас (дист. 30/120)"
-      ],
-      "rangeNormal": 30,
-      "rangeLong": 120
-    }
-  },
-  {
-    "name": "Алебарда",
-    "nameEn": "Halberd",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "20 зм",
-    "weight": "6 фнт.",
-    "description": "Длинное древковое оружие. Тяжелое, досягаемость, двуручное.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d10",
-      "damageType": "рубящий",
-      "properties": [
-        "Тяжелое",
-        "Досягаемость",
-        "Двуручное"
-      ]
-    }
-  },
-  {
-    "name": "Боевой молот",
-    "nameEn": "Warhammer",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "15 зм",
-    "weight": "2 фнт.",
-    "description": "Универсальный тяжелый молот (1d10 в двух руках).",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d8",
-      "damageType": "дробящий",
-      "properties": [
-        "Универсальное (1d10)"
-      ],
-      "versatileDice": "1d10"
-    }
-  },
-  {
-    "name": "Боевой топор",
-    "nameEn": "Battleaxe",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "10 зм",
-    "weight": "4 фнт.",
-    "description": "Классический топор воинов. Универсальное (1d10).",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d8",
-      "damageType": "рубящий",
-      "properties": [
-        "Универсальное (1d10)"
-      ],
-      "versatileDice": "1d10"
-    }
-  },
-  {
-    "name": "Глефа",
-    "nameEn": "Glaive",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "20 зм",
-    "weight": "6 фнт.",
-    "description": "Длинное рубящее лезвие на древке. Тяжелое, досягаемость, двуручное.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d10",
-      "damageType": "рубящий",
-      "properties": [
-        "Тяжелое",
-        "Досягаемость",
-        "Двуручное"
-      ]
-    }
-  },
-  {
-    "name": "Двуручный меч",
-    "nameEn": "Greatsword",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "50 зм",
-    "weight": "6 фнт.",
-    "description": "Огромный двуручный клинок (2d6). Тяжелое, двуручное.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "2d6",
-      "damageType": "рубящий",
-      "properties": [
-        "Тяжелое",
-        "Двуручное"
-      ]
-    }
-  },
-  {
-    "name": "Двуручный топор",
-    "nameEn": "Greataxe",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "30 зм",
-    "weight": "7 фнт.",
-    "description": "Массивный топор (1d12). Любимое оружие варваров.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d12",
-      "damageType": "рубящий",
-      "properties": [
-        "Тяжелое",
-        "Двуручное"
-      ]
-    }
-  },
-  {
-    "name": "Длинный меч",
-    "nameEn": "Longsword",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "15 зм",
-    "weight": "3 фнт.",
-    "description": "Рыцарский меч. Универсальное (1d10).",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d8",
-      "damageType": "рубящий",
-      "properties": [
-        "Универсальное (1d10)"
-      ],
-      "versatileDice": "1d10"
-    }
-  },
-  {
-    "name": "Короткий меч",
-    "nameEn": "Shortsword",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "10 зм",
-    "weight": "2 фнт.",
-    "description": "Быстрый колющий клинок. Фехтовальное, легкое.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d6",
-      "damageType": "колющий",
-      "properties": [
-        "Фехтовальное",
-        "Легкое"
-      ],
-      "finesse": true
-    }
-  },
-  {
-    "name": "Молот (Кувалда)",
-    "nameEn": "Maul",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "10 зм",
-    "weight": "10 фнт.",
-    "description": "Тяжелый двуручный молот (2d6). Двуручное, тяжелое.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "2d6",
-      "damageType": "дробящий",
-      "properties": [
-        "Тяжелое",
-        "Двуручное"
-      ]
-    }
-  },
-  {
-    "name": "Моргенштерн",
-    "nameEn": "Morningstar",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "15 зм",
-    "weight": "4 фнт.",
-    "description": "Шипастое ударное оружие.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d8",
-      "damageType": "колющий",
-      "properties": []
-    }
-  },
-  {
-    "name": "Пика",
-    "nameEn": "Pike",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "5 зм",
-    "weight": "18 фнт.",
-    "description": "Сверхдлинное копье (1d10). Тяжелое, досягаемость, двуручное.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d10",
-      "damageType": "колющий",
-      "properties": [
-        "Тяжелое",
-        "Досягаемость",
-        "Двуручное"
-      ]
-    }
-  },
-  {
-    "name": "Рапира",
-    "nameEn": "Rapier",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "25 зм",
-    "weight": "2 фнт.",
-    "description": "Изящный клинок дуэлянтов (1d8). Фехтовальное.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d8",
-      "damageType": "колющий",
-      "properties": [
-        "Фехтовальное"
-      ],
-      "finesse": true
-    }
-  },
-  {
-    "name": "Скимитар",
-    "nameEn": "Scimitar",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "25 зм",
-    "weight": "3 фнт.",
-    "description": "Изогнутая сабля. Фехтовальное, легкое.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d6",
-      "damageType": "рубящий",
-      "properties": [
-        "Фехтовальное",
-        "Легкое"
-      ],
-      "finesse": true
-    }
-  },
-  {
-    "name": "Трезубец",
-    "nameEn": "Trident",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "5 зм",
-    "weight": "4 фнт.",
-    "description": "Трезубое копье. Метательное (20/60), универсальное (1d8).",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d6",
-      "damageType": "колющий",
-      "properties": [
-        "Метательное (дист. 20/60)",
-        "Универсальное (1d8)"
-      ],
-      "versatileDice": "1d8",
-      "rangeNormal": 20,
-      "rangeLong": 60
-    }
-  },
-  {
-    "name": "Цеп",
-    "nameEn": "Flail",
-    "category": "Оружие",
-    "subcategory": "Воинское рукопашное",
-    "cost": "10 зм",
-    "weight": "2 фнт.",
-    "description": "Шар с шипами на цепи.",
-    "weapon": {
-      "category": "Воинское рукопашное",
-      "damageDice": "1d8",
-      "damageType": "дробящий",
-      "properties": []
-    }
-  },
-  {
-    "name": "Длинный лук",
-    "nameEn": "Longbow",
-    "category": "Оружие",
-    "subcategory": "Воинское дальнобойное",
-    "cost": "50 зм",
-    "weight": "2 фнт.",
-    "description": "Большой боевой лук (150/600). Тяжелое, двуручное.",
-    "weapon": {
-      "category": "Воинское дальнобойное",
-      "damageDice": "1d8",
-      "damageType": "колющий",
-      "properties": [
-        "Боеприпас (дист. 150/600)",
-        "Тяжелое",
-        "Двуручное"
-      ],
-      "rangeNormal": 150,
-      "rangeLong": 600
-    }
-  },
-  {
-    "name": "Ручной арбалет",
-    "nameEn": "Hand Crossbow",
-    "category": "Оружие",
-    "subcategory": "Воинское дальнобойное",
-    "cost": "75 зм",
-    "weight": "3 фнт.",
-    "description": "Одноручный компактный арбалет (30/120). Легкое, перезарядка.",
-    "weapon": {
-      "category": "Воинское дальнобойное",
-      "damageDice": "1d6",
-      "damageType": "колющий",
-      "properties": [
-        "Боеприпас (дист. 30/120)",
-        "Легкое",
-        "Перезарядка"
-      ],
-      "rangeNormal": 30,
-      "rangeLong": 120
-    }
-  },
-  {
-    "name": "Тяжелый арбалет",
-    "nameEn": "Heavy Crossbow",
-    "category": "Оружие",
-    "subcategory": "Воинское дальнобойное",
-    "cost": "50 зм",
-    "weight": "18 фнт.",
-    "description": "Мощный арбалет (100/400, 1d10). Тяжелое, перезарядка, двуручное.",
-    "weapon": {
-      "category": "Воинское дальнобойное",
-      "damageDice": "1d10",
-      "damageType": "колющий",
-      "properties": [
-        "Боеприпас (дист. 100/400)",
-        "Тяжелое",
-        "Перезарядка",
-        "Двуручное"
-      ],
-      "rangeNormal": 100,
-      "rangeLong": 400
-    }
-  },
+  ...DND_WEAPON_COMPENDIUM_ITEMS,
   {
     "name": "Зелье лечения",
     "nameEn": "Potion of Healing",
@@ -937,11 +340,38 @@ export const DND_COMPENDIUM_ITEMS: CompendiumItem[] = [
 
 export function findItemByName(query: string): CompendiumItem | undefined {
   if (!query) return undefined;
-  const q = query.trim().toLowerCase();
-  return DND_COMPENDIUM_ITEMS.find(it => 
-    it.name.toLowerCase() === q || 
-    (it.nameEn && it.nameEn.toLowerCase() === q)
+  const norm = (s: string) => s.toLowerCase().replace(/ё/g, 'е').trim();
+  const q = norm(query);
+
+  // 1. Direct exact match on name or nameEn
+  let found = DND_COMPENDIUM_ITEMS.find(it => 
+    norm(it.name) === q || 
+    (it.nameEn && norm(it.nameEn) === q)
   );
+  if (found) return found;
+
+  // 2. Weapon lookup with aliases and normalized variations
+  const matchedWeapon = findWeaponByName(query);
+  if (matchedWeapon) {
+    found = DND_COMPENDIUM_ITEMS.find(it => it.category === 'Оружие' && it.name === matchedWeapon.name);
+    if (found) return found;
+  }
+
+  // 3. Words subset match
+  const words = q.split(/[\s,]+/).filter(w => w.length > 2);
+  if (words.length > 0) {
+    found = DND_COMPENDIUM_ITEMS.find(it => {
+      const itNorm = norm(it.name);
+      return words.every(word => itNorm.includes(word));
+    });
+    if (found) return found;
+  }
+
+  // 4. Substring match
+  return DND_COMPENDIUM_ITEMS.find(it => {
+    const itNorm = norm(it.name);
+    return q.includes(itNorm) || itNorm.includes(q);
+  });
 }
 
 export function getArmorItems(): CompendiumItem[] {

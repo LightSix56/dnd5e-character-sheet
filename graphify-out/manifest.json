@@ -144,9 +144,9 @@
     "semantic_hash": "dad1b5a313dc1e03bce7050bec38aa97"
   },
   "src/components/compendium/AutocompleteInput.tsx": {
-    "mtime": 1789302957.9158218,
-    "seen": 1789303410.1788192,
-    "ast_hash": "646f27894af36dcaf3a6a85451839b02",
+    "mtime": 1789309167.03225,
+    "seen": 1789309391.3649836,
+    "ast_hash": "87e801812ea5f867bc32f88758f19033",
     "semantic_hash": ""
   },
   "src/components/compendium/ClassSelectorModal.tsx": {
@@ -264,10 +264,10 @@
     "semantic_hash": ""
   },
   "src/data/compendium/items.ts": {
-    "mtime": 1788424016.9791262,
-    "seen": 1788767676.2556667,
-    "ast_hash": "3464daac9c53aa397dc54ee3746f072d",
-    "semantic_hash": "3464daac9c53aa397dc54ee3746f072d"
+    "mtime": 1789309098.2470229,
+    "seen": 1789309391.3768296,
+    "ast_hash": "6bd06021c45d2adeff5f07612f9d5785",
+    "semantic_hash": ""
   },
   "src/data/compendium/names-data.ts": {
     "mtime": 1789300097.800314,
@@ -306,9 +306,9 @@
     "semantic_hash": "9deefcbb51ad5ccfc627a17655b4425c"
   },
   "src/data/dnd-weapons.ts": {
-    "mtime": 1789132105.2621813,
-    "seen": 1789132173.6746979,
-    "ast_hash": "db0ddd9587de1f0f83bc689bffd2bbcf",
+    "mtime": 1789309028.0296447,
+    "seen": 1789309391.384391,
+    "ast_hash": "40a985d2969ea200420e533bcfbbf6b7",
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentSlotModal.tsx": {
-    "mtime": 1789306941.198968,
-    "seen": 1789307565.7418668,
-    "ast_hash": "16bea42a573f08d082f7a89282895836",
+    "mtime": 1789309116.916706,
+    "seen": 1789309391.3673613,
+    "ast_hash": "f995b8830ecea9a4811a14c9d9a2ab96",
     "semantic_hash": ""
   },
   "src/lib/equipment-types.ts": {
@@ -1347,6 +1347,12 @@
     "mtime": 1789307342.344763,
     "seen": 1789307565.7646897,
     "ast_hash": "b27ba449076e0031e65aebaf5d072897",
+    "semantic_hash": ""
+  },
+  "test/weapons-catalog.test.ts": {
+    "mtime": 1789309175.9471803,
+    "seen": 1789309391.410071,
+    "ast_hash": "860c097f1ced1d27e4bb21c163b35233",
     "semantic_hash": ""
   }
 }

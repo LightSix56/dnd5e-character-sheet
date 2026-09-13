@@ -85,9 +85,19 @@ export function AutocompleteInput({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const query = value.trim().toLowerCase();
+  const norm = (s: string) => s.toLowerCase().replace(/ё/g, 'е').trim();
+  const query = norm(value);
   const filtered = query.length >= minChars
-    ? items.filter(it => it.name.toLowerCase().includes(query)).slice(0, 10)
+    ? items
+        .filter(it => {
+          if (norm(it.name).includes(query)) return true;
+          if (it.secondary && norm(it.secondary).includes(query)) return true;
+          if (it.badge && norm(it.badge).includes(query)) return true;
+          if (it.data?.nameEn && norm(it.data.nameEn).includes(query)) return true;
+          if (Array.isArray(it.data?.aliases) && it.data.aliases.some((a: string) => norm(a).includes(query))) return true;
+          return false;
+        })
+        .slice(0, 10)
     : [];
 
   useEffect(() => {

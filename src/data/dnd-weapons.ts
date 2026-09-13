@@ -1,8 +1,7 @@
-export * from './compendium/items';
-import { DND_COMPENDIUM_ITEMS, getWeaponItems, type CompendiumItem } from './compendium/items';
-
 export interface DndWeapon {
   name: string;
+  nameEn?: string;
+  aliases?: string[];
   category: 'Простое рукопашное' | 'Простое дальнобойное' | 'Воинское рукопашное' | 'Воинское дальнобойное';
   damageDice: string;
   damageType: 'колющий' | 'рубящий' | 'дробящий' | 'особое';
@@ -20,6 +19,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   // ── Простое рукопашное ──
   {
     name: 'Боевой посох',
+    nameEn: 'Quarterstaff',
+    aliases: ['Посох', 'Деревянный посох'],
     category: 'Простое рукопашное',
     cost: '2 см',
     damageDice: '1d6',
@@ -31,6 +32,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Булава',
+    nameEn: 'Mace',
+    aliases: ['Буздыхан', 'Шестопёр', 'Шестопер'],
     category: 'Простое рукопашное',
     cost: '5 зм',
     damageDice: '1d6',
@@ -41,6 +44,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Дубинка',
+    nameEn: 'Club',
+    aliases: ['Дубина'],
     category: 'Простое рукопашное',
     cost: '1 см',
     damageDice: '1d4',
@@ -51,6 +56,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Кинжал',
+    nameEn: 'Dagger',
+    aliases: ['Нож', 'Стилет', 'Кортик'],
     category: 'Простое рукопашное',
     cost: '2 зм',
     damageDice: '1d4',
@@ -64,6 +71,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Копьё',
+    nameEn: 'Spear',
+    aliases: ['Копье'],
     category: 'Простое рукопашное',
     cost: '1 зм',
     damageDice: '1d6',
@@ -77,6 +86,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Лёгкий молот',
+    nameEn: 'Light Hammer',
+    aliases: ['Легкий молот', 'Молоток'],
     category: 'Простое рукопашное',
     cost: '2 зм',
     damageDice: '1d4',
@@ -89,6 +100,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Метательное копьё',
+    nameEn: 'Javelin',
+    aliases: ['Метательное копье', 'Джавелин', 'Сулица'],
     category: 'Простое рукопашное',
     cost: '5 см',
     damageDice: '1d6',
@@ -101,6 +114,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Палица',
+    nameEn: 'Greatclub',
+    aliases: ['Большая палица', 'Двуручная дубина'],
     category: 'Простое рукопашное',
     cost: '2 см',
     damageDice: '1d8',
@@ -111,6 +126,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Ручной топор',
+    nameEn: 'Handaxe',
+    aliases: ['Топорик', 'Томагавк'],
     category: 'Простое рукопашное',
     cost: '5 зм',
     damageDice: '1d6',
@@ -123,6 +140,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Серп',
+    nameEn: 'Sickle',
+    aliases: ['Жатвенный серп'],
     category: 'Простое рукопашное',
     cost: '1 зм',
     damageDice: '1d4',
@@ -135,6 +154,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   // ── Простое дальнобойное ──
   {
     name: 'Арбалет, лёгкий',
+    nameEn: 'Light Crossbow',
+    aliases: ['Легкий арбалет', 'Лёгкий арбалет', 'Арбалет легкий'],
     category: 'Простое дальнобойное',
     cost: '25 зм',
     damageDice: '1d8',
@@ -147,6 +168,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Дротик',
+    nameEn: 'Dart',
+    aliases: ['Дартс'],
     category: 'Простое дальнобойное',
     cost: '5 мм',
     damageDice: '1d4',
@@ -160,6 +183,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Короткий лук',
+    nameEn: 'Shortbow',
+    aliases: ['Лук короткий'],
     category: 'Простое дальнобойное',
     cost: '25 зм',
     damageDice: '1d6',
@@ -172,6 +197,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Праща',
+    nameEn: 'Sling',
+    aliases: ['Кожаная праща'],
     category: 'Простое дальнобойное',
     cost: '1 см',
     damageDice: '1d4',
@@ -186,6 +213,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   // ── Воинское рукопашное ──
   {
     name: 'Алебарда',
+    nameEn: 'Halberd',
+    aliases: ['Бердыш', 'Полэкс'],
     category: 'Воинское рукопашное',
     cost: '20 зм',
     damageDice: '1d10',
@@ -196,6 +225,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Боевая кирка',
+    nameEn: 'War pick',
+    aliases: ['Кирка', 'Клевец', 'Боевой клевец', 'Чеккан', 'Чекан', 'Warpick'],
     category: 'Воинское рукопашное',
     cost: '5 зм',
     damageDice: '1d8',
@@ -206,6 +237,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Боевой молот',
+    nameEn: 'Warhammer',
+    aliases: ['Чекан-молот', 'Клевец-молот'],
     category: 'Воинское рукопашное',
     cost: '15 зм',
     damageDice: '1d8',
@@ -217,6 +250,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Боевой топор',
+    nameEn: 'Battleaxe',
+    aliases: ['Секирка', 'Боевая секира'],
     category: 'Воинское рукопашное',
     cost: '10 зм',
     damageDice: '1d8',
@@ -228,6 +263,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Глефа',
+    nameEn: 'Glaive',
+    aliases: ['Глевия', 'Нагината', 'Совня'],
     category: 'Воинское рукопашное',
     cost: '20 зм',
     damageDice: '1d10',
@@ -238,6 +275,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Двуручный меч',
+    nameEn: 'Greatsword',
+    aliases: ['Цвайхендер', 'Клеймор', 'Эспадон'],
     category: 'Воинское рукопашное',
     cost: '50 зм',
     damageDice: '2d6',
@@ -248,16 +287,20 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Длинное копьё',
+    nameEn: 'Lance',
+    aliases: ['Длинное копье', 'Лэнс', 'Рыцарское копье', 'Кавалерийское копье'],
     category: 'Воинское рукопашное',
     cost: '10 зм',
     damageDice: '1d12',
     damageType: 'колющий',
     weight: '6 фнт.',
     properties: ['Досягаемость', 'особое'],
-    description: 'Рыцарское кавалерийское копье (лэнс).'
+    description: 'Рыцарское кавалерийское копье (лэнс). Вы совершаете с помехой броски атаки по целям в пределах 5 фт. Для использования требуется две руки, если вы не на верховом животном.'
   },
   {
     name: 'Длинный меч',
+    nameEn: 'Longsword',
+    aliases: ['Меч', 'Рыцарский меч', 'Полуторный меч'],
     category: 'Воинское рукопашное',
     cost: '15 зм',
     damageDice: '1d8',
@@ -269,6 +312,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Кнут',
+    nameEn: 'Whip',
+    aliases: ['Хлыст', 'Плеть'],
     category: 'Воинское рукопашное',
     cost: '2 зм',
     damageDice: '1d4',
@@ -280,6 +325,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Короткий меч',
+    nameEn: 'Shortsword',
+    aliases: ['Гладиус', 'Меч короткий', 'Акинак'],
     category: 'Воинское рукопашное',
     cost: '10 зм',
     damageDice: '1d6',
@@ -291,6 +338,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Молот',
+    nameEn: 'Maul',
+    aliases: ['Кувалда', 'Молот (Кувалда)', 'Двуручный молот', 'Боевая кувалда'],
     category: 'Воинское рукопашное',
     cost: '10 зм',
     damageDice: '2d6',
@@ -301,6 +350,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Моргенштерн',
+    nameEn: 'Morningstar',
+    aliases: ['Утренняя звезда', 'Шипастая булава'],
     category: 'Воинское рукопашное',
     cost: '15 зм',
     damageDice: '1d8',
@@ -311,6 +362,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Пика',
+    nameEn: 'Pike',
+    aliases: ['Пехотная пика', 'Сарисса'],
     category: 'Воинское рукопашное',
     cost: '5 зм',
     damageDice: '1d10',
@@ -321,6 +374,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Рапира',
+    nameEn: 'Rapier',
+    aliases: ['Шпага', 'Эсток'],
     category: 'Воинское рукопашное',
     cost: '25 зм',
     damageDice: '1d8',
@@ -332,6 +387,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Секира',
+    nameEn: 'Greataxe',
+    aliases: ['Двуручный топор', 'Большой топор', 'Боевая секира'],
     category: 'Воинское рукопашное',
     cost: '30 зм',
     damageDice: '1d12',
@@ -342,6 +399,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Скимитар',
+    nameEn: 'Scimitar',
+    aliases: ['Сабля', 'Ятаган', 'Шамшир'],
     category: 'Воинское рукопашное',
     cost: '25 зм',
     damageDice: '1d6',
@@ -353,6 +412,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Трезубец',
+    nameEn: 'Trident',
+    aliases: ['Тройзуб', 'Острога'],
     category: 'Воинское рукопашное',
     cost: '5 зм',
     damageDice: '1d6',
@@ -366,6 +427,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Цеп',
+    nameEn: 'Flail',
+    aliases: ['Боевой цеп', 'Моргенштерн на цепи', 'Кистень'],
     category: 'Воинское рукопашное',
     cost: '10 зм',
     damageDice: '1d8',
@@ -378,6 +441,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   // ── Воинское дальнобойное ──
   {
     name: 'Арбалет, ручной',
+    nameEn: 'Hand Crossbow',
+    aliases: ['Ручной арбалет', 'Одноручный арбалет', 'Арбалет ручной'],
     category: 'Воинское дальнобойное',
     cost: '75 зм',
     damageDice: '1d6',
@@ -390,6 +455,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Арбалет, тяжёлый',
+    nameEn: 'Heavy Crossbow',
+    aliases: ['Тяжелый арбалет', 'Тяжёлый арбалет', 'Арбалет тяжелый', 'Арбалест'],
     category: 'Воинское дальнобойное',
     cost: '50 зм',
     damageDice: '1d10',
@@ -402,6 +469,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Длинный лук',
+    nameEn: 'Longbow',
+    aliases: ['Большой лук', 'Английский лук', 'Лук длинный'],
     category: 'Воинское дальнобойное',
     cost: '50 зм',
     damageDice: '1d8',
@@ -414,6 +483,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Духовая трубка',
+    nameEn: 'Blowgun',
+    aliases: ['Духовое ружье', 'Сарбакан', 'Фукибара'],
     category: 'Воинское дальнобойное',
     cost: '10 зм',
     damageDice: '1',
@@ -426,6 +497,8 @@ export const DND_WEAPONS: DndWeapon[] = [
   },
   {
     name: 'Сеть',
+    nameEn: 'Net',
+    aliases: ['Боевая сеть', 'Ловчая сеть'],
     category: 'Воинское дальнобойное',
     cost: '1 зм',
     damageDice: '-',
@@ -434,9 +507,31 @@ export const DND_WEAPONS: DndWeapon[] = [
     properties: ['Метательное (дис. 5/15)', 'особое'],
     rangeNormal: 5,
     rangeLong: 15,
-    description: 'Сеть для стреноживания врагов.'
+    description: 'Сеть для стреноживания врагов. Существо Большого или меньшего размера становится опутанным, пока не высвободится.'
   }
 ];
+
+export function weaponToCompendiumItem(w: DndWeapon) {
+  return {
+    name: w.name,
+    nameEn: w.nameEn,
+    category: 'Оружие' as const,
+    subcategory: w.category,
+    cost: w.cost,
+    weight: w.weight,
+    description: w.description || `${w.name} (${w.category}). Урон: ${w.damageDice} ${w.damageType}.${w.properties.length ? ' Свойства: ' + w.properties.join(', ') : ''}`,
+    weapon: {
+      category: w.category,
+      damageDice: w.damageDice,
+      damageType: w.damageType,
+      properties: w.properties,
+      finesse: w.finesse,
+      versatileDice: w.versatileDice,
+      rangeNormal: w.rangeNormal,
+      rangeLong: w.rangeLong,
+    },
+  };
+}
 
 export function findWeaponByName(name: string): DndWeapon | undefined {
   if (!name) return undefined;
@@ -449,32 +544,39 @@ export function findWeaponByName(name: string): DndWeapon | undefined {
 
   const clean = norm(name);
 
-  // 1. Direct exact match
+  // 1. Direct exact match on name
   let found = DND_WEAPONS.find(w => norm(w.name) === clean);
+  if (found) return found;
+
+  // 1.1 Match nameEn or aliases
+  found = DND_WEAPONS.find(w =>
+    (w.nameEn && norm(w.nameEn) === clean) ||
+    (w.aliases && w.aliases.some(a => norm(a) === clean))
+  );
   if (found) return found;
 
   // 2. Words subset match (e.g. "легкий арбалет" <-> "арбалет, легкий")
   const words = clean.split(/[\s,]+/).filter(w => w.length > 2);
   if (words.length > 0) {
     found = DND_WEAPONS.find(w => {
-      const wNorm = norm(w.name);
-      return words.every(word => wNorm.includes(word));
+      const candidates = [norm(w.name), ...(w.aliases ? w.aliases.map(norm) : []), ...(w.nameEn ? [norm(w.nameEn)] : [])];
+      return candidates.some(c => words.every(word => c.includes(word)));
     });
     if (found) return found;
 
     // 3. Stems match (e.g. "ручных топора" -> stems "ручн", "топор")
     const stems = words.map(w => (w.length > 4 ? w.slice(0, 4) : w));
     found = DND_WEAPONS.find(w => {
-      const wNorm = norm(w.name);
-      return stems.every(stem => wNorm.includes(stem));
+      const candidates = [norm(w.name), ...(w.aliases ? w.aliases.map(norm) : [])];
+      return candidates.some(c => stems.every(stem => c.includes(stem)));
     });
     if (found) return found;
   }
 
   // 4. Substring match
   return DND_WEAPONS.find(w => {
-    const wNorm = norm(w.name);
-    return clean.includes(wNorm) || wNorm.includes(clean);
+    const candidates = [norm(w.name), ...(w.aliases ? w.aliases.map(norm) : []), ...(w.nameEn ? [norm(w.nameEn)] : [])];
+    return candidates.some(c => clean.includes(c) || c.includes(clean));
   });
 }
 
@@ -545,4 +647,3 @@ export function getWeaponsByCategory(category?: string): DndWeapon[] {
   }
   return DND_WEAPONS.filter(w => w.category === category);
 }
-

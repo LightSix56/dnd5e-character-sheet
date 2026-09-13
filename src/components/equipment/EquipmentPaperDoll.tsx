@@ -14,6 +14,7 @@ import {
   EQUIPMENT_SLOTS,
   equipItem,
   unequipItem,
+  deleteCustomItem,
   isOffHandBlocked,
   getOffHandBlockedReason,
 } from '@/lib/equipment-types';
@@ -77,6 +78,14 @@ export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDo
   const handleUnequip = useCallback(
     (slotId: EquipmentSlotId) => {
       const updated = unequipItem(char, slotId);
+      onChange(updated);
+    },
+    [char, onChange]
+  );
+
+  const handleDeleteCustomItem = useCallback(
+    (itemId: string) => {
+      const updated = deleteCustomItem(char, itemId);
       onChange(updated);
     },
     [char, onChange]
@@ -278,6 +287,7 @@ export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDo
           onClose={() => setSelectedSlot(null)}
           onEquip={handleEquip}
           onUnequip={handleUnequip}
+          onDeleteCustomItem={handleDeleteCustomItem}
         />
       )}
     </div>

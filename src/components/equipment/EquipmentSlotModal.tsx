@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { CharacterData } from '@/lib/dnd-types';
+import { CharacterData, ABILITY_NAMES, ABILITY_FULL } from '@/lib/dnd-types';
 import {
   EquipmentSlotId,
   EquippedItem,
+  ItemEffect,
+  ItemEffectType,
+  ItemAbilityKey,
   EQUIPMENT_SLOTS,
   isOffHandBlocked,
 } from '@/lib/equipment-types';
@@ -18,6 +21,7 @@ export interface EquipmentSlotModalProps {
   onClose: () => void;
   onEquip: (slotId: EquipmentSlotId, item: EquippedItem) => void;
   onUnequip: (slotId: EquipmentSlotId) => void;
+  onDeleteCustomItem?: (itemId: string) => void;
 }
 
 // Preset catalog for accessory and specialty slots
@@ -102,6 +106,51 @@ const SLOT_PRESETS: Record<string, Partial<EquippedItem>[]> = {
   ],
 };
 
+const ITEM_RARITIES = [
+  'Обычный',
+  'Необычный',
+  'Редкий',
+  'Очень редкий',
+  'Легендарный',
+  'Артефакт',
+  'Свой предмет',
+];
+
+const EFFECT_TYPES: { id: ItemEffectType; label: string; placeholder: string }[] = [
+  { id: 'ac', label: 'Класс Доспеха (КД)', placeholder: '+1 или -1' },
+  { id: 'speed', label: 'Скорость (фт.)', placeholder: '+10 или -10' },
+  { id: 'hpMax', label: 'Максимум HP', placeholder: '+5 или -5' },
+  { id: 'attackDamage', label: 'Атака и урон оружия (+X)', placeholder: '+1 или -1' },
+  { id: 'spellDC', label: 'Сложность и атака заклинаний (+X)', placeholder: '+1 или -1' },
+  { id: 'savingThrows', label: 'Спасброски (ко всем)', placeholder: '+1 или -1' },
+  { id: 'ability', label: 'Характеристика персонажа', placeholder: '+2 или -1' },
+  { id: 'customTrait', label: 'Свойство / Умение (в лист)', placeholder: '1/день или +1' },
+];
+
+function formatEffectBadge(eff: ItemEffect): string {
+  const sign = typeof eff.value === 'number' && eff.value > 0 ? '+' : '';
+  switch (eff.type) {
+    case 'ac':
+      return `${sign}${eff.value} КД`;
+    case 'speed':
+      return `${sign}${eff.value} фт. Скор.`;
+    case 'hpMax':
+      return `${sign}${eff.value} Макс. HP`;
+    case 'attackDamage':
+      return `${sign}${eff.value} к атаке/урону`;
+    case 'spellDC':
+      return `${sign}${eff.value} к Сл закл.`;
+    case 'savingThrows':
+      return `${sign}${eff.value} ко всем спасам`;
+    case 'ability':
+      return `${eff.targetAbility || 'СИЛ'} ${sign}${eff.value}`;
+    case 'customTrait':
+      return `✨ ${eff.customName || eff.value || 'Особое свойство'}`;
+    default:
+      return `${eff.type}: ${eff.value}`;
+  }
+}
+
 export function EquipmentSlotModal({
   slotId,
   char,
@@ -109,6 +158,7 @@ export function EquipmentSlotModal({
   onClose,
   onEquip,
   onUnequip,
+  onDeleteCustomItem,
 }: EquipmentSlotModalProps) {
   useEscapeKey(onClose, isOpen);
 
@@ -119,11 +169,40 @@ export function EquipmentSlotModal({
   // Custom Item Form State
   const [customName, setCustomName] = useState('');
   const [customDesc, setCustomDesc] = useState('');
-  const [customBonusAC, setCustomBonusAC] = useState<string>('');
-  const [customBonusSpeed, setCustomBonusSpeed] = useState<string>('');
+  const [customRarity, setCustomRarity] = useState('Обычный');
   const [customTwoHanded, setCustomTwoHanded] = useState(false);
   const [customIsShield, setCustomIsShield] = useState(slotId === 'offHand');
   const [customWeight, setCustomWeight] = useState<string>('');
+  const [customEffects, setCustomEffects] = useState<ItemEffect[]>([]);
+
+  const handleAddEffect = () => {
+    setCustomEffects(prev => [
+      ...prev,
+      {
+        id: `eff-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        type: 'ac',
+        value: 1,
+        description: '',
+      },
+    ]);
+  };
+
+  const handleUpdateEffect = (index: number, updates: Partial<ItemEffect>) => {
+    setCustomEffects(prev => {
+      const next = [...prev];
+      if (next[index]) {
+        next[index] = { ...next[index], ...updates };
+        if (updates.type === 'ability' && !next[index].targetAbility) {
+          next[index].targetAbility = 'СИЛ';
+        }
+      }
+      return next;
+    });
+  };
+
+  const handleRemoveEffect = (index: number) => {
+    setCustomEffects(prev => prev.filter((_, i) => i !== index));
+  };
 
   const slotConfig = useMemo(() => {
     return EQUIPMENT_SLOTS.find(s => s.id === slotId) || {
@@ -292,22 +371,34 @@ export function EquipmentSlotModal({
     onClose();
   };
 
+  // Saved custom items for this slot from persistent stash
+  const savedCustomItems = useMemo(() => {
+    if (!char.customItems || !Array.isArray(char.customItems)) return [];
+    return char.customItems.filter(item => item && item.slot === slotId);
+  }, [char.customItems, slotId]);
+
   // Handle custom item submission
   const handleCreateCustom = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customName.trim()) return;
+
+    const validEffects = customEffects.filter(eff => {
+      if (eff.type === 'customTrait') {
+        return Boolean(eff.value || eff.customName || eff.description);
+      }
+      return typeof eff.value === 'number' || Boolean(eff.value);
+    });
 
     const newItem: EquippedItem = {
       id: `custom-${Date.now()}`,
       name: customName.trim(),
       slot: slotId,
       description: customDesc.trim() || undefined,
-      bonusAC: customBonusAC ? parseInt(customBonusAC, 10) || undefined : undefined,
-      bonusSpeed: customBonusSpeed ? parseInt(customBonusSpeed, 10) || undefined : undefined,
+      rarity: customRarity || 'Свой предмет',
       twoHanded: slotId === 'mainHand' ? customTwoHanded : undefined,
       isShield: slotId === 'offHand' ? customIsShield : undefined,
       weight: customWeight ? parseFloat(customWeight) || undefined : undefined,
-      rarity: 'Свой предмет',
+      effects: validEffects.length > 0 ? validEffects : undefined,
     };
 
     onEquip(slotId, newItem);
@@ -509,6 +600,87 @@ export function EquipmentSlotModal({
               </div>
             )}
 
+            {/* Saved custom items in character stash */}
+            {savedCustomItems.length > 0 && searchQuery.trim() === '' && (
+              <div className="mb-3 p-2.5 rounded-lg border border-[#C9A84C]/60 bg-[#EAD6B8]/40">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-[#3D2012] uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🎒</span>
+                    <span>Мои созданные предметы ({savedCustomItems.length})</span>
+                  </span>
+                  <span className="text-[11px] text-[#8B6914] italic">
+                    Сохранены в инвентаре
+                  </span>
+                </div>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                  {savedCustomItems.map((item) => {
+                    const isCurrent = currentEquipped?.id === item.id || currentEquipped?.name === item.name;
+                    return (
+                      <div
+                        key={item.id}
+                        className={`p-2 rounded border transition-all flex items-center justify-between gap-2 text-xs ${
+                          isCurrent
+                            ? 'border-[#C9A84C] bg-[#FFE58F]/40 shadow-xs'
+                            : 'border-[#C9A84C]/40 bg-[#FBF0DC]/80 hover:bg-[#FBF0DC]'
+                        }`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-serif font-bold text-[#3D2012]">{item.name}</span>
+                            {item.rarity && (
+                              <span className="text-[10px] px-1 py-0.2 rounded bg-purple-100 text-purple-900 font-medium">
+                                {item.rarity}
+                              </span>
+                            )}
+                            {(item.effects || []).map((eff, idx) => (
+                              <span
+                                key={eff.id || idx}
+                                className="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-[#C9A84C]/25 text-[#3D2012] border border-[#C9A84C]/40"
+                                title={eff.description || undefined}
+                              >
+                                {formatEffectBadge(eff)}
+                              </span>
+                            ))}
+                          </div>
+                          {item.description && (
+                            <p className="text-[11px] text-[#6B3A2A] mt-0.5 line-clamp-1">{item.description}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleSelectEquip(item)}
+                            disabled={isCurrent}
+                            className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-all whitespace-nowrap ${
+                              isCurrent
+                                ? 'bg-[#C9A84C]/30 text-[#8B6914] cursor-default'
+                                : 'parchment-btn hover:brightness-105'
+                            }`}
+                          >
+                            {isCurrent ? 'Надето' : 'Экипировать'}
+                          </button>
+                          {onDeleteCustomItem && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Удалить предмет «${item.name}» из инвентаря персонажа?`)) {
+                                  onDeleteCustomItem(item.id);
+                                }
+                              }}
+                              className="p-1 rounded text-[#8B2500] hover:bg-[#8B2500]/15 transition-colors"
+                              title="Удалить предмет навсегда"
+                            >
+                              🗑️
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* List of items */}
             <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
               {filteredCandidates.length === 0 ? (
@@ -586,79 +758,71 @@ export function EquipmentSlotModal({
 
         {/* Tab 2: Custom Item Form */}
         {activeTab === 'custom' && (
-          <form onSubmit={handleCreateCustom} className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-            <div>
-              <label className="block text-xs font-bold text-[#3D2012] mb-1">
-                Название предмета *
-              </label>
-              <input
-                type="text"
-                required
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-                placeholder="например: Кольцо драконьей чешуи"
-                className="parchment-input-boxed w-full text-xs py-1.5 px-3 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[#3D2012] mb-1">
-                Описание и свойства
-              </label>
-              <textarea
-                value={customDesc}
-                onChange={(e) => setCustomDesc(e.target.value)}
-                rows={2}
-                placeholder="например: Дает +1 к КД и сопротивление огню"
-                className="parchment-textarea w-full text-xs py-1.5 px-3 rounded"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <div>
-                <label className="block text-[11px] font-bold text-[#6B3A2A] mb-1">
-                  Бонус к КД (+X)
+          <form onSubmit={handleCreateCustom} className="flex-1 overflow-y-auto px-5 py-4 space-y-3.5 custom-scrollbar">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-[#3D2012] mb-1">
+                  Название предмета *
                 </label>
                 <input
-                  type="number"
-                  value={customBonusAC}
-                  onChange={(e) => setCustomBonusAC(e.target.value)}
-                  placeholder="0"
-                  className="parchment-input-boxed w-full text-xs py-1 px-2 rounded"
+                  type="text"
+                  required
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  placeholder={`например: ${slotConfig.name} Драконьего Взора`}
+                  className="parchment-input-boxed w-full text-xs py-1.5 px-3 rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-[#6B3A2A] mb-1">
-                  Бонус к скорости (+X фт.)
+                <label className="block text-xs font-bold text-[#3D2012] mb-1">
+                  Редкость
                 </label>
-                <input
-                  type="number"
-                  step="5"
-                  value={customBonusSpeed}
-                  onChange={(e) => setCustomBonusSpeed(e.target.value)}
-                  placeholder="0"
-                  className="parchment-input-boxed w-full text-xs py-1 px-2 rounded"
+                <select
+                  value={customRarity}
+                  onChange={(e) => setCustomRarity(e.target.value)}
+                  className="parchment-select w-full text-xs py-1.5 px-2 rounded"
+                >
+                  {ITEM_RARITIES.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-[#3D2012] mb-1">
+                  Описание и свойства (опционально)
+                </label>
+                <textarea
+                  value={customDesc}
+                  onChange={(e) => setCustomDesc(e.target.value)}
+                  rows={2}
+                  placeholder="например: Кованый эльфийскими мастерами в огне горного пламени..."
+                  className="parchment-textarea w-full text-xs py-1.5 px-3 rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-[#6B3A2A] mb-1">
+                <label className="block text-xs font-bold text-[#3D2012] mb-1">
                   Вес (фнт.)
                 </label>
                 <input
                   type="number"
-                  step="0.5"
+                  step="0.1"
                   value={customWeight}
                   onChange={(e) => setCustomWeight(e.target.value)}
-                  placeholder="0"
-                  className="parchment-input-boxed w-full text-xs py-1 px-2 rounded"
+                  placeholder="напр. 2"
+                  className="parchment-input-boxed w-full text-xs py-1.5 px-3 rounded"
                 />
               </div>
             </div>
 
             {slotId === 'mainHand' && (
-              <div className="pt-1">
+              <div className="pt-0.5">
                 <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-[#3D2012]">
                   <input
                     type="checkbox"
@@ -672,7 +836,7 @@ export function EquipmentSlotModal({
             )}
 
             {slotId === 'offHand' && (
-              <div className="pt-1">
+              <div className="pt-0.5">
                 <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-[#3D2012]">
                   <input
                     type="checkbox"
@@ -685,6 +849,189 @@ export function EquipmentSlotModal({
               </div>
             )}
 
+            {/* Dynamic Effects Builder */}
+            <div className="pt-2 border-t border-[#C9A84C]/40">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <h4 className="text-xs font-bold text-[#3D2012] uppercase tracking-wider flex items-center gap-1.5">
+                    <span>✨</span>
+                    <span>Магические эффекты и свойства ({customEffects.length})</span>
+                  </h4>
+                  <p className="text-[11px] text-[#8B6914]">
+                    Добавляйте любые бонусы или штрафы (+/-), а также уникальные умения
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddEffect}
+                  className="parchment-btn text-xs px-2.5 py-1 rounded flex items-center gap-1 font-semibold"
+                >
+                  <span>+</span>
+                  <span>Добавить эффект</span>
+                </button>
+              </div>
+
+              {customEffects.length === 0 ? (
+                <div className="py-4 px-3 text-center rounded border border-dashed border-[#C9A84C]/50 bg-[#FBF0DC]/40 text-xs text-[#8B6914] italic">
+                  У предмета пока нет магических эффектов. Нажмите «+ Добавить эффект», чтобы наделить его силой.
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {customEffects.map((eff, index) => {
+                    const effTypeConfig = EFFECT_TYPES.find((t) => t.id === eff.type) || EFFECT_TYPES[0];
+                    return (
+                      <div
+                        key={eff.id || index}
+                        className="p-2.5 rounded-lg border border-[#C9A84C]/50 bg-[#FBF0DC]/90 flex flex-col gap-2 shadow-xs"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-bold text-[#8B6914] uppercase">
+                            Эффект #{index + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveEffect(index)}
+                            className="parchment-remove-btn w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                            title="Удалить этот эффект"
+                          >
+                            ✕
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                          {/* Effect Type Select */}
+                          <div className={eff.type === 'ability' ? 'sm:col-span-4' : 'sm:col-span-5'}>
+                            <label className="block text-[10px] font-semibold text-[#6B3A2A] mb-0.5">
+                              Эффект:
+                            </label>
+                            <select
+                              value={eff.type}
+                              onChange={(e) => {
+                                const newType = e.target.value as ItemEffectType;
+                                handleUpdateEffect(index, {
+                                  type: newType,
+                                  value: newType === 'customTrait' ? '' : 1,
+                                  targetAbility: newType === 'ability' ? 'СИЛ' : undefined,
+                                });
+                              }}
+                              className="parchment-select w-full text-xs py-1 px-2 rounded"
+                            >
+                              {EFFECT_TYPES.map((t) => (
+                                <option key={t.id} value={t.id}>
+                                  {t.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Specific sub-selector for Ability Score */}
+                          {eff.type === 'ability' && (
+                            <div className="sm:col-span-3">
+                              <label className="block text-[10px] font-semibold text-[#6B3A2A] mb-0.5">
+                                Характеристика:
+                              </label>
+                              <select
+                                value={eff.targetAbility || 'СИЛ'}
+                                onChange={(e) =>
+                                  handleUpdateEffect(index, {
+                                    targetAbility: e.target.value as ItemAbilityKey,
+                                  })
+                                }
+                                className="parchment-select w-full text-xs py-1 px-2 rounded"
+                              >
+                                {ABILITY_NAMES.map((ab) => (
+                                  <option key={ab} value={ab}>
+                                    {ab} ({ABILITY_FULL[ab]})
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+
+                          {/* Specific input for customTrait Name */}
+                          {eff.type === 'customTrait' && (
+                            <div className="sm:col-span-4">
+                              <label className="block text-[10px] font-semibold text-[#6B3A2A] mb-0.5">
+                                Название свойства:
+                              </label>
+                              <input
+                                type="text"
+                                value={eff.customName || ''}
+                                onChange={(e) =>
+                                  handleUpdateEffect(index, { customName: e.target.value })
+                                }
+                                placeholder="например: Дар Дракона"
+                                className="parchment-input-boxed w-full text-xs py-1 px-2 rounded"
+                              />
+                            </div>
+                          )}
+
+                          {/* Value Input */}
+                          <div
+                            className={
+                              eff.type === 'ability'
+                                ? 'sm:col-span-2'
+                                : eff.type === 'customTrait'
+                                ? 'sm:col-span-3'
+                                : 'sm:col-span-3'
+                            }
+                          >
+                            <label className="block text-[10px] font-semibold text-[#6B3A2A] mb-0.5">
+                              Значение:
+                            </label>
+                            {eff.type === 'customTrait' ? (
+                              <input
+                                type="text"
+                                value={eff.value?.toString() || ''}
+                                onChange={(e) =>
+                                  handleUpdateEffect(index, { value: e.target.value })
+                                }
+                                placeholder="напр: 1/день"
+                                className="parchment-input-boxed w-full text-xs py-1 px-2 rounded"
+                              />
+                            ) : (
+                              <input
+                                type="number"
+                                step={eff.type === 'speed' ? '5' : '1'}
+                                value={eff.value === undefined ? '' : eff.value}
+                                onChange={(e) =>
+                                  handleUpdateEffect(index, {
+                                    value: parseInt(e.target.value, 10) || 0,
+                                  })
+                                }
+                                placeholder={effTypeConfig.placeholder}
+                                className="parchment-input-boxed w-full text-xs py-1 px-2 rounded font-bold text-center"
+                              />
+                            )}
+                          </div>
+
+                          {/* Description Input (Optional) */}
+                          <div
+                            className={
+                              eff.type === 'ability' ? 'sm:col-span-3' : 'sm:col-span-4'
+                            }
+                          >
+                            <label className="block text-[10px] font-semibold text-[#6B3A2A] mb-0.5">
+                              Описание (опционально):
+                            </label>
+                            <input
+                              type="text"
+                              value={eff.description || ''}
+                              onChange={(e) =>
+                                handleUpdateEffect(index, { description: e.target.value })
+                              }
+                              placeholder="краткая заметка"
+                              className="parchment-input-boxed w-full text-xs py-1 px-2 rounded text-[11px]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <div className="pt-3 border-t border-[#C9A84C]/30 flex justify-end gap-2">
               <button
                 type="button"
@@ -695,9 +1042,10 @@ export function EquipmentSlotModal({
               </button>
               <button
                 type="submit"
-                className="parchment-btn px-4 py-1.5 text-xs rounded font-semibold"
+                className="parchment-btn px-4 py-1.5 text-xs rounded font-semibold flex items-center gap-1.5"
               >
-                Создать и экипировать
+                <span>✨</span>
+                <span>Создать и экипировать</span>
               </button>
             </div>
           </form>

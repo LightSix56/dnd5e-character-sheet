@@ -13,6 +13,7 @@ export interface DndWeapon {
   weight?: string;
   cost?: string;
   description?: string;
+  specialGrip?: 'lance';
 }
 
 export const DND_WEAPONS: DndWeapon[] = [
@@ -295,6 +296,7 @@ export const DND_WEAPONS: DndWeapon[] = [
     damageType: 'колющий',
     weight: '6 фнт.',
     properties: ['Досягаемость', 'особое'],
+    specialGrip: 'lance',
     description: 'Рыцарское кавалерийское копье (лэнс). Вы совершаете с помехой броски атаки по целям в пределах 5 фт. Для использования требуется две руки, если вы не на верховом животном.'
   },
   {
@@ -647,3 +649,38 @@ export function getWeaponsByCategory(category?: string): DndWeapon[] {
   }
   return DND_WEAPONS.filter(w => w.category === category);
 }
+
+/**
+ * Checks whether a weapon supports toggling between 1-handed (1H) and 2-handed (2H) grips.
+ * Data-driven: returns true for versatile weapons and special weapons (e.g. Lance).
+ * Strictly two-handed weapons or strictly one-handed non-versatile weapons return false.
+ */
+export function canToggleWeaponGrip(weaponDef?: DndWeapon): boolean {
+  if (!weaponDef) return false;
+  // Strictly two-handed weapons cannot be toggled
+  if ((weaponDef.properties || []).some(p => /двуручное|two-handed/i.test(p))) {
+    return false;
+  }
+  // Versatile weapons can be toggled
+  if (weaponDef.versatileDice || (weaponDef.properties || []).some(p => /универсальное|versatile/i.test(p))) {
+    return true;
+  }
+  // Special grip weapons: Lance (2H on foot, 1H mounted)
+  if (weaponDef.specialGrip === 'lance' || (weaponDef.properties || []).some(p => /особое/i.test(p) && /верховом|mounted/i.test(weaponDef.description || ''))) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Returns damage dice based on weapon definition and current grip (1H vs 2H).
+ * Versatile weapons return versatileDice when twoHandGrip is true.
+ */
+export function getWeaponDamageDiceForGrip(weaponDef?: DndWeapon, twoHandGrip?: boolean): string {
+  if (!weaponDef) return '1d6';
+  if (twoHandGrip && weaponDef.versatileDice) {
+    return weaponDef.versatileDice;
+  }
+  return weaponDef.damageDice || '1d6';
+}
+

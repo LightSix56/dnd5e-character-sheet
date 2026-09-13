@@ -1,6 +1,8 @@
 import type { CharacterData, AbilityName, TraitItem } from './dnd-types';
 import { calcModifier, calcProficiencyBonus, formatModifier, getTotalScore, normalizeAbilityName } from './dnd-types';
-import { findWeaponByName, DND_WEAPONS, type DndWeapon } from '../data/dnd-weapons';
+import { findWeaponByName, DND_WEAPONS, canToggleWeaponGrip, getWeaponDamageDiceForGrip, type DndWeapon } from '../data/dnd-weapons';
+
+export { canToggleWeaponGrip, getWeaponDamageDiceForGrip };
 
 export type EquipmentSlotId =
   | 'head'
@@ -77,6 +79,7 @@ export interface EquippedItem {
   bonusAttack?: number;
   bonusDamage?: number;
   twoHanded?: boolean;
+  twoHandGrip?: boolean;
   isShield?: boolean;
   weight?: number;
   description?: string;
@@ -101,7 +104,7 @@ export interface EquipmentBonusesSummary {
 export function isOffHandBlocked(char: CharacterData): boolean {
   const mainHand = char.equippedSlots?.mainHand;
   if (!mainHand) return false;
-  return !!mainHand.twoHanded;
+  return Boolean(mainHand.twoHanded || mainHand.twoHandGrip);
 }
 
 export function getOffHandBlockedReason(char: CharacterData): string | null {
@@ -109,6 +112,33 @@ export function getOffHandBlockedReason(char: CharacterData): string | null {
     return 'Занято двуручным хватом';
   }
   return null;
+}
+
+export function toggleMainHandGrip(char: CharacterData): CharacterData {
+  const mainHand = char.equippedSlots?.mainHand;
+  if (!mainHand) return char;
+
+  const weaponDef = findWeaponByName(mainHand.name);
+  if (!canToggleWeaponGrip(weaponDef)) return char;
+
+  const nextGrip = !mainHand.twoHandGrip;
+  const updatedSlots: Partial<Record<EquipmentSlotId, EquippedItem>> = {
+    ...(char.equippedSlots || {}),
+    mainHand: {
+      ...mainHand,
+      twoHandGrip: nextGrip,
+    },
+  };
+
+  // If switching to 2H grip, offHand is automatically cleared to enforce two-handed holding
+  if (nextGrip) {
+    delete updatedSlots.offHand;
+  }
+
+  return {
+    ...char,
+    equippedSlots: updatedSlots,
+  };
 }
 
 export function equipItem(
@@ -120,15 +150,20 @@ export function equipItem(
     ...(char.equippedSlots || {}),
   };
 
-  // If equipping a two-handed weapon in mainHand, offHand is automatically cleared
-  if (slot === 'mainHand' && item.twoHanded) {
+  // If equipping a two-handed weapon or 2H grip in mainHand, offHand is automatically cleared
+  if (slot === 'mainHand' && (item.twoHanded || item.twoHandGrip)) {
     delete updatedSlots.offHand;
   }
 
-  // If equipping into offHand, check if mainHand was two-handed; if so, clear mainHand
+  // If equipping into offHand, check if mainHand was two-handed or 2H grip; if so, clear mainHand or switch grip
   if (slot === 'offHand') {
     if (updatedSlots.mainHand?.twoHanded) {
       delete updatedSlots.mainHand;
+    } else if (updatedSlots.mainHand?.twoHandGrip) {
+      updatedSlots.mainHand = {
+        ...updatedSlots.mainHand,
+        twoHandGrip: false,
+      };
     }
   }
 
@@ -367,6 +402,8 @@ export interface ActiveAttackOption {
   attackBonus: string;
   damageAndType: string;
   actionType: 'action' | 'bonus' | 'dualAction';
+  grip?: '1H' | '2H';
+  canToggleGrip?: boolean;
   dualDetails?: {
     mainWeapon?: string;
     offWeapon?: string;
@@ -421,11 +458,44 @@ export function hasTwoWeaponFightingStyle(char: CharacterData): boolean {
   return false;
 }
 
+export function hasDualWielderFeat(char: CharacterData): boolean {
+  const queryRu = 'обоерукий';
+  const queryEn = 'dual wielder';
+
+  if (char.featuresTraits) {
+    const lower = char.featuresTraits.toLowerCase();
+    if (lower.includes(queryRu) || lower.includes(queryEn)) return true;
+  }
+  if (char.traitsList) {
+    for (const t of char.traitsList) {
+      const tName = (t.name || '').toLowerCase();
+      const tDesc = (t.description || '').toLowerCase();
+      const tSumm = (t.summary || '').toLowerCase();
+      if (
+        tName.includes(queryRu) || tName.includes(queryEn) ||
+        tDesc.includes(queryRu) || tDesc.includes(queryEn) ||
+        tSumm.includes(queryRu) || tSumm.includes(queryEn)
+      ) {
+        return true;
+      }
+    }
+  }
+  if (char.levelHistory) {
+    for (const h of char.levelHistory) {
+      if (h.selectedFeat && (h.selectedFeat.toLowerCase().includes(queryRu) || h.selectedFeat.toLowerCase().includes(queryEn))) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function getWeaponStats(
   char: CharacterData,
   weaponDef: DndWeapon | undefined,
   itemBonusAtk = 0,
-  itemBonusDmg = 0
+  itemBonusDmg = 0,
+  twoHandGrip = false
 ) {
   const strScore = getTotalScore(char, 'СИЛ');
   const dexScore = getTotalScore(char, 'ЛОВ');
@@ -446,7 +516,7 @@ function getWeaponStats(
   const atkBonusNum = profBonus + usedMod + itemBonusAtk;
   const atkBonusStr = formatModifier(atkBonusNum);
 
-  const dice = weaponDef?.damageDice || '1d6';
+  const dice = getWeaponDamageDiceForGrip(weaponDef, twoHandGrip);
   const type = weaponDef?.damageType || 'дробящий';
 
   // Full damage with ability modifier
@@ -551,8 +621,9 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
 
   const mainHandItem = equipped.mainHand;
   const offHandItem = equipped.offHand;
+  const is2HMain = Boolean(mainHandItem?.twoHanded || mainHandItem?.twoHandGrip);
 
-  const isDualWield = Boolean(mainHandItem && offHandItem && !offHandItem.isShield);
+  const isDualWield = Boolean(mainHandItem && offHandItem && !offHandItem.isShield && !is2HMain);
 
   if (isDualWield && mainHandItem && offHandItem) {
     const mainDef = findWeaponByName(mainHandItem.name);
@@ -561,8 +632,8 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
     const mainBonus = getItemAttackDamageBonuses(mainHandItem);
     const offBonus = getItemAttackDamageBonuses(offHandItem);
 
-    const mainStats = getWeaponStats(char, mainDef, mainBonus.atkBonus + accBonus.atkBonus, mainBonus.dmgBonus + accBonus.dmgBonus);
-    const offStats = getWeaponStats(char, offDef, offBonus.atkBonus + accBonus.atkBonus, offBonus.dmgBonus + accBonus.dmgBonus);
+    const mainStats = getWeaponStats(char, mainDef, mainBonus.atkBonus + accBonus.atkBonus, mainBonus.dmgBonus + accBonus.dmgBonus, is2HMain);
+    const offStats = getWeaponStats(char, offDef, offBonus.atkBonus + accBonus.atkBonus, offBonus.dmgBonus + accBonus.dmgBonus, false);
 
     const hasStyle = hasTwoWeaponFightingStyle(char);
 
@@ -574,6 +645,8 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
       damageAndType: mainStats.fullDmgStr,
       actionType: 'action',
       weaponDef: mainDef,
+      grip: is2HMain ? '2H' : '1H',
+      canToggleGrip: canToggleWeaponGrip(mainDef),
     };
     attacks.push(mainAtk);
 
@@ -610,7 +683,7 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
     if (mainHandItem) {
       const mainDef = findWeaponByName(mainHandItem.name);
       const mainBonus = getItemAttackDamageBonuses(mainHandItem);
-      const mainStats = getWeaponStats(char, mainDef, mainBonus.atkBonus + accBonus.atkBonus, mainBonus.dmgBonus + accBonus.dmgBonus);
+      const mainStats = getWeaponStats(char, mainDef, mainBonus.atkBonus + accBonus.atkBonus, mainBonus.dmgBonus + accBonus.dmgBonus, is2HMain);
 
       attacks.push({
         source: 'mainHand',
@@ -619,6 +692,8 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
         damageAndType: mainStats.fullDmgStr,
         actionType: 'action',
         weaponDef: mainDef,
+        grip: is2HMain ? '2H' : '1H',
+        canToggleGrip: canToggleWeaponGrip(mainDef),
       });
     }
 
@@ -626,7 +701,7 @@ export function getActiveCharacterAttacks(char: CharacterData): ActiveAttackOpti
     if (offHandItem && !offHandItem.isShield && !mainHandItem) {
       const offDef = findWeaponByName(offHandItem.name);
       const offBonus = getItemAttackDamageBonuses(offHandItem);
-      const offStats = getWeaponStats(char, offDef, offBonus.atkBonus + accBonus.atkBonus, offBonus.dmgBonus + accBonus.dmgBonus);
+      const offStats = getWeaponStats(char, offDef, offBonus.atkBonus + accBonus.atkBonus, offBonus.dmgBonus + accBonus.dmgBonus, false);
 
       attacks.push({
         source: 'offHand',

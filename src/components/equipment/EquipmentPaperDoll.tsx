@@ -17,7 +17,9 @@ import {
   deleteCustomItem,
   isOffHandBlocked,
   getOffHandBlockedReason,
+  toggleMainHandGrip,
 } from '@/lib/equipment-types';
+import { canToggleWeaponGrip, findWeaponByName } from '@/data/dnd-weapons';
 import { EquipmentSlotModal } from './EquipmentSlotModal';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import {
@@ -31,9 +33,10 @@ export interface EquipmentPaperDollProps {
   char: CharacterData;
   onChange: (updatedChar: CharacterData) => void;
   onClose?: () => void;
+  onToggleMainHandGrip?: () => void;
 }
 
-export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDollProps) {
+export function EquipmentPaperDoll({ char, onChange, onClose, onToggleMainHandGrip }: EquipmentPaperDollProps) {
   const [selectedSlot, setSelectedSlot] = useState<EquipmentSlotId | null>(null);
 
   useEscapeKey(onClose, !!onClose && !selectedSlot);
@@ -103,6 +106,9 @@ export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDo
 
     const equipped = char.equippedSlots?.[slotId];
     const isLockedOffHand = slotId === 'offHand' && offHandBlocked;
+    const isMainHand = slotId === 'mainHand';
+    const mainWeaponDef = isMainHand && equipped ? findWeaponByName(equipped.name) : undefined;
+    const canToggleGrip = isMainHand && canToggleWeaponGrip(mainWeaponDef);
 
     return (
       <div
@@ -170,17 +176,56 @@ export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDo
                   +{equipped.bonusSpeed} фт.
                 </span>
               )}
-              {equipped.twoHanded && (
+              {equipped.twoHanded ? (
                 <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-200/90 text-amber-900 font-semibold">
                   Двуручное
                 </span>
-              )}
+              ) : equipped.twoHandGrip ? (
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-200/90 text-amber-900 font-semibold">
+                  2H хват
+                </span>
+              ) : canToggleGrip ? (
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#C9A84C]/25 text-[#3D2012] font-semibold">
+                  1H хват
+                </span>
+              ) : null}
               {equipped.isShield && (
                 <span className="text-[10px] px-1.5 py-0.2 rounded bg-sky-100 text-sky-900 font-semibold">
                   Щит
                 </span>
               )}
             </div>
+
+            {/* Interactive Grip Toggle for Versatile / Special weapons */}
+            {canToggleGrip && (
+              <div className="mt-1 pt-1 border-t border-[#C9A84C]/30 flex items-center justify-between gap-1">
+                <span className="text-[10px] text-[#8B6914] font-medium">Хват:</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onToggleMainHandGrip) {
+                      onToggleMainHandGrip();
+                    } else {
+                      onChange(toggleMainHandGrip(char));
+                    }
+                  }}
+                  className="px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+                  style={{
+                    background: equipped.twoHandGrip
+                      ? 'linear-gradient(180deg, #8B4513, #5C341F)'
+                      : 'rgba(232, 211, 162, 0.95)',
+                    color: equipped.twoHandGrip ? '#FFE58F' : '#5C341F',
+                    border: equipped.twoHandGrip ? '1px solid #C9A84C' : '1px solid rgba(139, 105, 20, 0.45)',
+                  }}
+                  title={equipped.twoHandGrip
+                    ? 'Двуручный хват (увеличенный урон, вторая рука блокируется). Нажмите для 1H хвата'
+                    : 'Одноручный хват (базовый урон, вторая рука свободна). Нажмите для 2H хвата'}
+                >
+                  <span>{equipped.twoHandGrip ? '👐 2H хват' : '✋ 1H хват'}</span>
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="py-1">

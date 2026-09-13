@@ -43,6 +43,7 @@ import {
   hasTwoWeaponFightingStyle,
   calculateEquipmentBonuses,
   equipItem,
+  toggleMainHandGrip,
   type EquippedItem,
   type EquipmentSlotId,
 } from '@/lib/equipment-types';
@@ -801,6 +802,20 @@ export default function DnDCharacterSheet() {
       showToast('Атака добавлена', `Атака «${name}» добавлена в список!`);
     }
     setAttackSearchQuery('');
+  }, [showToast]);
+
+  const handleToggleMainHandGrip = useCallback(() => {
+    setChar(prev => {
+      const updated = toggleMainHandGrip(prev);
+      const isNow2H = !!updated.equippedSlots?.mainHand?.twoHandGrip;
+      showToast(
+        isNow2H ? 'Двуручный хват' : 'Одноручный хват',
+        isNow2H
+          ? 'Оружие удерживается двумя руками (увеличенный урон, вторая рука занята)'
+          : 'Оружие удерживается одной рукой (вторая рука свободна)'
+      );
+      return updated;
+    });
   }, [showToast]);
 
   const effectiveTraitsList = useMemo<TraitItem[]>(() => {
@@ -1905,6 +1920,7 @@ export default function DnDCharacterSheet() {
               char={char}
               onChange={(updated) => setChar(updated)}
               onClose={closeEquipmentModal}
+              onToggleMainHandGrip={handleToggleMainHandGrip}
             />
           </div>
         </div>
@@ -2141,6 +2157,7 @@ export default function DnDCharacterSheet() {
             setActiveTraitModal={setActiveTraitModal}
             showToast={showToast}
             compClass={compClass}
+            onToggleMainHandGrip={handleToggleMainHandGrip}
           />
         )}
 

@@ -10,7 +10,9 @@ import {
   ItemAbilityKey,
   EQUIPMENT_SLOTS,
   isOffHandBlocked,
+  hasDualWielderFeat,
 } from '@/lib/equipment-types';
+import { findWeaponByName } from '@/data/dnd-weapons';
 import { DND_COMPENDIUM_ITEMS } from '@/data/compendium/items';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import {
@@ -505,7 +507,7 @@ export function EquipmentSlotModal({
           <div className="mx-4 mt-2 px-3 py-2 rounded bg-amber-100/90 border border-amber-400 text-xs text-amber-900 flex items-center gap-2">
             <WarningSignIcon size={16} />
             <span>
-              В основной руке экипировано двуручное оружие. Экипировка в этот слот освободит основную руку.
+              В основной руке экипировано двуручное оружие или выбран двуручный хват. Экипировка во вторую руку переключит хват на одноручный или освободит основную руку.
             </span>
           </div>
         )}
@@ -631,6 +633,20 @@ export function EquipmentSlotModal({
                                 {formatEffectBadge(eff)}
                               </span>
                             ))}
+                            {slotId === 'offHand' && (() => {
+                              const wDef = findWeaponByName(item.name);
+                              if (!wDef) return null;
+                              const isLight = wDef.properties.some(p => /легкое|light/i.test(p));
+                              const hasDW = hasDualWielderFeat(char);
+                              return !isLight && !hasDW && !item.isShield ? (
+                                <span
+                                  className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-medium"
+                                  title="Оружие без свойства «Лёгкое»: для боя двумя руками требуется черта «Обоерукий»"
+                                >
+                                  ⚠️ Требуется «Обоерукий»
+                                </span>
+                              ) : null;
+                            })()}
                           </div>
                           {item.description && (
                             <p className="text-[11px] text-[#6B3A2A] mt-0.5 line-clamp-1">{item.description}</p>
@@ -719,6 +735,33 @@ export function EquipmentSlotModal({
                               {item.rarity}
                             </span>
                           )}
+                          {slotId === 'offHand' && (() => {
+                            const wDef = findWeaponByName(item.name);
+                            if (!wDef) return null;
+                            const isLight = wDef.properties.some(p => /легкое|light/i.test(p));
+                            const hasDW = hasDualWielderFeat(char);
+                            const isLance = wDef.specialGrip === 'lance';
+                            return (
+                              <>
+                                {isLance && (
+                                  <span
+                                    className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-medium"
+                                    title="Длинное копье требует двух рук, если персонаж не верхом на скакуне"
+                                  >
+                                    🐴 Только верхом
+                                  </span>
+                                )}
+                                {!isLight && !hasDW && !item.isShield && (
+                                  <span
+                                    className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-medium"
+                                    title="Оружие без свойства «Лёгкое»: для боя двумя руками требуется черта «Обоерукий»"
+                                  >
+                                    ⚠️ Требуется «Обоерукий»
+                                  </span>
+                                )}
+                              </>
+                            );
+                          })()}
                         </div>
                         {item.description && (
                           <p className="text-xs text-[#6B3A2A] mt-0.5 line-clamp-2">

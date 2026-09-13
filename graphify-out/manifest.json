@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "src/app/page.tsx": {
-    "mtime": 1789305808.1439147,
-    "seen": 1789306243.1118252,
-    "ast_hash": "715b84362db23be59f4ad1eba64efa66",
+    "mtime": 1789310227.7477262,
+    "seen": 1789310521.8924255,
+    "ast_hash": "e6c2563406388d8f0c72ea929b39a9cb",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -306,9 +306,9 @@
     "semantic_hash": "9deefcbb51ad5ccfc627a17655b4425c"
   },
   "src/data/dnd-weapons.ts": {
-    "mtime": 1789309028.0296447,
-    "seen": 1789309391.384391,
-    "ast_hash": "40a985d2969ea200420e533bcfbbf6b7",
+    "mtime": 1789310002.7809765,
+    "seen": 1789310521.909743,
+    "ast_hash": "c04979da9c805ae91813172335b305c4",
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
@@ -1122,21 +1122,21 @@
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentPaperDoll.tsx": {
-    "mtime": 1789306873.9665203,
-    "seen": 1789307565.74186,
-    "ast_hash": "2a0cb3c4cd216331456a44a366b98031",
+    "mtime": 1789310270.9381893,
+    "seen": 1789310521.8950987,
+    "ast_hash": "2b25d6acd04689ad1601b51c99497ab3",
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentSlotModal.tsx": {
-    "mtime": 1789309116.916706,
-    "seen": 1789309391.3673613,
-    "ast_hash": "f995b8830ecea9a4811a14c9d9a2ab96",
+    "mtime": 1789310320.2971468,
+    "seen": 1789310521.895103,
+    "ast_hash": "67186cb80317ae8bdbae6856ae883fb1",
     "semantic_hash": ""
   },
   "src/lib/equipment-types.ts": {
-    "mtime": 1789302981.2209382,
-    "seen": 1789303410.196645,
-    "ast_hash": "721a535c7c32111d4a413e9798b3c140",
+    "mtime": 1789310082.0062184,
+    "seen": 1789310521.910601,
+    "ast_hash": "ef54cd0d228a65a11fae9e2a16ac845e",
     "semantic_hash": ""
   },
   "test/equipment-slots.test.ts": {
@@ -1242,9 +1242,9 @@
     "semantic_hash": ""
   },
   "src/components/sheet/pages/MainSheetPage.tsx": {
-    "mtime": 1789307296.8351843,
-    "seen": 1789307565.744597,
-    "ast_hash": "eb67c0533ca06a872a2f6101ccb8fbc0",
+    "mtime": 1789310246.9938612,
+    "seen": 1789310521.8977187,
+    "ast_hash": "90f0517c522baebd4c9e803d9512e547",
     "semantic_hash": ""
   },
   "src/components/sheet/pages/SpellsSheetPage.tsx": {
@@ -1353,6 +1353,12 @@
     "mtime": 1789309175.9471803,
     "seen": 1789309391.410071,
     "ast_hash": "860c097f1ced1d27e4bb21c163b35233",
+    "semantic_hash": ""
+  },
+  "test/weapon-grip.test.ts": {
+    "mtime": 1789309958.1635983,
+    "seen": 1789310521.9426193,
+    "ast_hash": "584d4cd70daae20e9f385b211e83f97d",
     "semantic_hash": ""
   }
 }

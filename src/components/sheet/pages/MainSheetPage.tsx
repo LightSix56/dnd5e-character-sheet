@@ -102,6 +102,7 @@ export interface MainSheetPageProps {
   setActiveTraitModal: (data: { trait: DndTrait | null; customName: string; customSource?: string; customSummary?: string; customDescription?: string; traitIndex?: number }) => void;
   showToast: (title: string, message: string) => void;
   compClass?: CompendiumClass | ClassTemplate | null;
+  onToggleMainHandGrip?: () => void;
 }
 
 export const MainSheetPage = React.memo(function MainSheetPage({
@@ -150,6 +151,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
   setActiveTraitModal,
   showToast,
   compClass,
+  onToggleMainHandGrip,
 }: MainSheetPageProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -824,11 +826,33 @@ export const MainSheetPage = React.memo(function MainSheetPage({
 
                         {/* Weapon Name and Subtext */}
                         <div className="min-w-0 pr-1">
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="font-bold text-xs truncate flex items-center gap-1" style={{ color: '#3D2012' }}>
                               <CrossedSwordsIcon size={12} className="shrink-0" />
                               <span>{atk.weaponName}</span>
                             </span>
+                            {atk.canToggleGrip && onToggleMainHandGrip && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onToggleMainHandGrip();
+                                }}
+                                className="px-1.5 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1 cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-xs"
+                                style={{
+                                  background: atk.grip === '2H'
+                                    ? 'linear-gradient(180deg, #8B4513, #5C341F)'
+                                    : 'rgba(232, 211, 162, 0.95)',
+                                  color: atk.grip === '2H' ? '#FFE58F' : '#5C341F',
+                                  border: atk.grip === '2H' ? '1px solid #C9A84C' : '1px solid rgba(139, 105, 20, 0.45)',
+                                }}
+                                title={atk.grip === '2H'
+                                  ? 'Двуручный хват (увеличенный урон, вторая рука занята). Нажмите, чтобы переключить на 1H хват'
+                                  : 'Одноручный хват (базовый урон, вторая рука свободна). Нажмите, чтобы переключить на 2H хват'}
+                              >
+                                <span>{atk.grip === '2H' ? '👐 2H хват' : '✋ 1H хват'}</span>
+                              </button>
+                            )}
                           </div>
                           <div className="text-[10px] truncate" style={{ color: isDual ? '#8B4513' : '#8B6914' }}>
                             {isDual
@@ -839,6 +863,8 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                               ? 'Метательное (снаряжение / пояс)'
                               : isUnarmed
                               ? 'Безоружная атака'
+                              : atk.grip === '2H'
+                              ? 'Основная рука · Двуручный хват'
                               : 'Основная рука'}
                           </div>
                         </div>

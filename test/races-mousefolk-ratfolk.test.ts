@@ -1,7 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DND_COMPENDIUM_RACES, findRaceByName } from '../src/data/compendium/races/index.js';
-import { createDefaultCharacter, applyRaceTemplate } from '../src/lib/dnd-types.js';
+import {
+  createDefaultCharacter,
+  applyRaceTemplate,
+  getTotalScore,
+  getModifier,
+  formatAbilityBonus,
+} from '../src/lib/dnd-types.js';
+import { getRacialBonusConfig } from '../src/components/wizard/wizard-helpers.js';
 
 test('Compendium: Mousefolk and Ratfolk are included in DND_COMPENDIUM_RACES', () => {
   const mousefolk = findRaceByName('Мышинец');
@@ -112,3 +119,54 @@ test('applyRaceTemplate: Ratfolk applies negative and positive ability modifiers
   assert.ok(applied.traitsList?.some(t => t.name === 'Тактика стаи'));
   assert.ok(applied.traitsList?.some(t => t.name === 'Пловцы'));
 });
+
+test('Racial Bonuses: formatAbilityBonus formats positive, negative and zero bonuses accurately', () => {
+  assert.equal(formatAbilityBonus(2), '+2');
+  assert.equal(formatAbilityBonus(1), '+1');
+  assert.equal(formatAbilityBonus(-2), '-2');
+  assert.equal(formatAbilityBonus(-1), '-1');
+  assert.equal(formatAbilityBonus(0), '0');
+});
+
+test('Racial Bonuses: getRacialBonusConfig properly formats negative modifiers without +- syntax', () => {
+  const ratfolk = findRaceByName('Людокрыса');
+  assert.ok(ratfolk);
+
+  const cfg = getRacialBonusConfig(ratfolk);
+  assert.equal(cfg.fixedBonuses['СИЛ'], -2);
+  assert.equal(cfg.fixedBonuses['ЛОВ'], 2);
+  assert.equal(cfg.fixedBonuses['ИНТ'], 1);
+
+  // Must contain "СИЛ -2" and NOT "СИЛ +-2"
+  assert.ok(cfg.description.includes('СИЛ -2'), `Expected "СИЛ -2" in description but got: "${cfg.description}"`);
+  assert.ok(!cfg.description.includes('+-'), `Description should not contain "+-": "${cfg.description}"`);
+});
+
+test('Racial Bonuses: Ratfolk Strength penalty reduces total ability scores and modifiers correctly', () => {
+  const ratfolk = findRaceByName('Людокрыса');
+  assert.ok(ratfolk);
+
+  const char = createDefaultCharacter();
+  const applied = applyRaceTemplate(char, ratfolk);
+
+  // Base score 10 + (-2) = 8 -> modifier -1
+  applied.abilityScores['СИЛ'] = 10;
+  assert.equal(getTotalScore(applied, 'СИЛ'), 8);
+  assert.equal(getModifier(applied, 'СИЛ'), -1);
+
+  // Point-buy minimum 8 + (-2) = 6 -> modifier -2
+  applied.abilityScores['СИЛ'] = 8;
+  assert.equal(getTotalScore(applied, 'СИЛ'), 6);
+  assert.equal(getModifier(applied, 'СИЛ'), -2);
+
+  // Point-buy maximum 15 + (-2) = 13 -> modifier +1
+  applied.abilityScores['СИЛ'] = 15;
+  assert.equal(getTotalScore(applied, 'СИЛ'), 13);
+  assert.equal(getModifier(applied, 'СИЛ'), 1);
+
+  // Standard array high 14 + (-2) = 12 -> modifier +1
+  applied.abilityScores['СИЛ'] = 14;
+  assert.equal(getTotalScore(applied, 'СИЛ'), 12);
+  assert.equal(getModifier(applied, 'СИЛ'), 1);
+});
+

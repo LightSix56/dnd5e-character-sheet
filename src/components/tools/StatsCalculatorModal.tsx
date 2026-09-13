@@ -7,6 +7,7 @@ import {
   type AbilityName,
   calcModifier,
   formatModifier,
+  formatAbilityBonus,
 } from '@/lib/dnd-types';
 import { D20Icon, SparklesDndIcon } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
@@ -534,8 +535,11 @@ export function StatsCalculatorModal({
                       </div>
 
                       {/* Racial bonus */}
-                      <div className="sm:col-span-2 text-center text-xs font-semibold" style={{ color: racial > 0 ? '#2E7D32' : '#8B6914' }}>
-                        {racial > 0 ? `+${racial}` : '0'}
+                      <div
+                        className="sm:col-span-2 text-center text-xs font-semibold"
+                        style={{ color: racial > 0 ? '#2E7D32' : racial < 0 ? '#8B2500' : '#8B6914' }}
+                      >
+                        {formatAbilityBonus(racial)}
                       </div>
 
                       {/* Final + Mod */}
@@ -779,8 +783,11 @@ export function StatsCalculatorModal({
                       </div>
 
                       {/* Racial bonus */}
-                      <div className="sm:col-span-2 text-center text-xs font-semibold" style={{ color: racial > 0 ? '#2E7D32' : '#8B6914' }}>
-                        Раса: {racial > 0 ? `+${racial}` : '0'}
+                      <div
+                        className="sm:col-span-2 text-center text-xs font-semibold"
+                        style={{ color: racial > 0 ? '#2E7D32' : racial < 0 ? '#8B2500' : '#8B6914' }}
+                      >
+                        Раса: {formatAbilityBonus(racial)}
                       </div>
 
                       {/* Final + Mod */}
@@ -845,11 +852,11 @@ export function StatsCalculatorModal({
                   </span>
                   <input
                     type="number"
-                    min="0"
+                    min="-4"
                     max="4"
                     value={bonuses[ab] || 0}
                     onChange={e => {
-                      const val = Math.max(0, Math.min(4, parseInt(e.target.value) || 0));
+                      const val = Math.max(-4, Math.min(4, parseInt(e.target.value) || 0));
                       setBonuses(prev => ({ ...prev, [ab]: val }));
                     }}
                     className="parchment-input-boxed w-full text-center text-xs font-bold py-1 px-1"

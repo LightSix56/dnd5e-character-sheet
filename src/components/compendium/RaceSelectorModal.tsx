@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { DND_COMPENDIUM_RACES, type CompendiumRace, type CompendiumSubrace, type RaceCategory } from '@/data/compendium/races';
 import { UserHeroIcon, SparklesDndIcon } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { formatAbilityBonus } from '@/lib/dnd-types';
 
 interface RaceSelectorModalProps {
   currentRace?: string;
@@ -240,22 +241,30 @@ export function RaceSelectorModal({ currentRace, currentLevel, onSelect, onClose
                   <div className="flex flex-wrap gap-2">
                     {(() => {
                       const bonuses = { ...selectedRace.abilityBonuses, ...(selectedSubrace?.abilityBonuses || {}) };
-                      const entries = Object.entries(bonuses).filter(([_, v]) => v && v > 0);
+                      const entries = Object.entries(bonuses).filter(([_, v]) => typeof v === 'number' && v !== 0);
                       if (entries.length === 0) {
                         if (selectedRace.id === 'custom-lineage') {
                           return <span className="text-xs font-semibold" style={{ color: '#5C341F' }}>+2 к одной характеристике на выбор (Tasha)</span>;
                         }
                         return <span className="text-xs font-semibold" style={{ color: '#5C341F' }}>+2 к одной и +1 к другой ЛИБО +1 к трём различным характеристикам на выбор (правила MPMM)</span>;
                       }
-                      return entries.map(([ab, val]) => (
-                        <span
-                          key={ab}
-                          className="px-2.5 py-1 rounded text-xs font-bold font-mono"
-                          style={{ background: '#E8D3A2', border: '1px solid #C9A84C', color: '#5C341F' }}
-                        >
-                          {ab} +{val}
-                        </span>
-                      ));
+                      return entries.map(([ab, val]) => {
+                        const numVal = val as number;
+                        const isNegative = numVal < 0;
+                        return (
+                          <span
+                            key={ab}
+                            className="px-2.5 py-1 rounded text-xs font-bold font-mono"
+                            style={
+                              isNegative
+                                ? { background: 'rgba(139, 37, 0, 0.12)', border: '1px solid rgba(139, 37, 0, 0.35)', color: '#8B2500' }
+                                : { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#5C341F' }
+                            }
+                          >
+                            {ab} {formatAbilityBonus(numVal)}
+                          </span>
+                        );
+                      });
                     })()}
                   </div>
                 </div>

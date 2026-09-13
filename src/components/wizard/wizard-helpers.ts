@@ -1,5 +1,5 @@
 // Helper functions, generators, and rules engine for Character Creation Wizard
-import { AbilityName, ABILITY_NAMES, ALL_SKILLS, calcModifier } from '@/lib/dnd-types';
+import { AbilityName, ABILITY_NAMES, ALL_SKILLS, calcModifier, formatAbilityBonus } from '@/lib/dnd-types';
 import { CLASS_TEMPLATES, type ClassTemplate } from '@/lib/dnd-types';
 import type {
   CompendiumRace,
@@ -266,7 +266,10 @@ export function getRacialBonusConfig(race: CompendiumRace, subrace?: CompendiumS
     choiceCount: 0,
     bonusAmount: 0,
     availableAbilities: [],
-    description: Object.entries(combined).map(([k, v]) => `${k} +${v}`).join(', ')
+    description: Object.entries(combined)
+      .filter(([_, v]) => typeof v === 'number' && v !== 0)
+      .map(([k, v]) => `${k} ${formatAbilityBonus(v as number)}`)
+      .join(', ')
   };
 }
 

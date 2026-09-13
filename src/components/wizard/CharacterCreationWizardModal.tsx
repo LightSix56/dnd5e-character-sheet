@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
   CharacterData, AbilityName, ABILITY_NAMES, ABILITY_FULL, ALL_SKILLS, SKILL_MAP,
-  calcModifier, formatModifier, Attack, SpellEntry, createDefaultCharacter,
+  calcModifier, formatModifier, formatAbilityBonus, Attack, SpellEntry, createDefaultCharacter,
   BaseGenderChoice, resolveCharacterGender, parseCharacterGender
 } from '@/lib/dnd-types';
 import { DND_COMPENDIUM_RACES, type CompendiumRace, type CompendiumSubrace } from '@/data/compendium/races';
@@ -1694,7 +1694,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                             <div className="text-[10px] opacity-75">{r.nameEn} · {r.source}</div>
                           </div>
                           <span className="text-[11px] font-mono text-[#8B6914]">
-                            {Object.entries(r.abilityBonuses || {}).map(([k, v]) => `${k}+${v}`).join(' ')}
+                            {Object.entries(r.abilityBonuses || {}).map(([k, v]) => `${k} ${formatAbilityBonus(v as number)}`).join(' ')}
                           </span>
                         </button>
                       );
@@ -1733,7 +1733,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                   <div className="text-[10px] opacity-75 mt-0.5">{sr.description}</div>
                                   {sr.abilityBonuses && Object.keys(sr.abilityBonuses).length > 0 && (
                                     <div className="text-[10px] font-mono mt-1 text-[#4a7c3f]">
-                                      Бонус: {Object.entries(sr.abilityBonuses).map(([k, v]) => `${k} +${v}`).join(', ')}
+                                      Бонус: {Object.entries(sr.abilityBonuses).map(([k, v]) => `${k} ${formatAbilityBonus(v as number)}`).join(', ')}
                                     </div>
                                   )}
                                 </button>
@@ -2436,7 +2436,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                           <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
                             <div className="text-[10px] text-[#8B6914]">Бонусы:</div>
                             <div className="font-bold text-[#4a7c3f]">
-                              {Object.entries(racialBonuses).filter(([_, v]) => v > 0).map(([k, v]) => `${k} +${v}`).join(', ') || 'Нет'}
+                              {Object.entries(racialBonuses).filter(([_, v]) => typeof v === 'number' && v !== 0).map(([k, v]) => `${k} ${formatAbilityBonus(v as number)}`).join(', ') || 'Нет'}
                             </div>
                           </div>
                           <div className="p-2 rounded" style={{ background: 'rgba(232, 211, 162, 0.25)' }}>
@@ -3799,7 +3799,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         {/* Breakdown: Base + Racial = Total & Mod */}
                         <div className="text-right">
                           <div className="text-[10px] text-[#8B6914]">
-                            {base} {bonus > 0 ? `+ ${bonus} раса` : ''}
+                            {base} {bonus > 0 ? `+ ${bonus} раса` : bonus < 0 ? `- ${Math.abs(bonus)} раса` : ''}
                           </div>
                           <div className="flex items-center gap-1.5 justify-end">
                             <span className="text-lg font-bold font-mono text-[#3D2012]">{total}</span>

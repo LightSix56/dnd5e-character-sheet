@@ -203,6 +203,12 @@ export function formatModifier(mod: number): string {
   return mod >= 0 ? `+${mod}` : `${mod}`;
 }
 
+export function formatAbilityBonus(bonus: number): string {
+  if (bonus > 0) return `+${bonus}`;
+  if (bonus < 0) return `${bonus}`;
+  return '0';
+}
+
 // Universal proficiency bonus by level
 export function calcProficiencyBonus(level: number): number {
   if (level <= 4) return 2;

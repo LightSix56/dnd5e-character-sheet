@@ -162,9 +162,9 @@
     "semantic_hash": ""
   },
   "src/components/compendium/ItemDetailModal.tsx": {
-    "mtime": 1789207624.893612,
-    "seen": 1789207836.1947036,
-    "ast_hash": "075d2359ba959fd680a47b7222645288",
+    "mtime": 1789307084.2304327,
+    "seen": 1789307565.7409763,
+    "ast_hash": "168bacefc7f9b89a9ba9208610c1face",
     "semantic_hash": ""
   },
   "src/components/compendium/RaceSelectorModal.tsx": {
@@ -180,15 +180,15 @@
     "semantic_hash": ""
   },
   "src/components/dnd-icons.tsx": {
-    "mtime": 1788423223.6356237,
-    "seen": 1788767676.2556374,
-    "ast_hash": "17fbb173b48f73144aa2db68059e273f",
-    "semantic_hash": "17fbb173b48f73144aa2db68059e273f"
+    "mtime": 1789307339.2162797,
+    "seen": 1789307565.7418506,
+    "ast_hash": "f4380c1005b8031a1f4217c9e6019b72",
+    "semantic_hash": ""
   },
   "src/components/tools/CharacterGridModal.tsx": {
-    "mtime": 1789207605.1702406,
-    "seen": 1789207836.195355,
-    "ast_hash": "d1a3b4dcbaac96f0959c8f4ddd8d160a",
+    "mtime": 1789307133.893356,
+    "seen": 1789307565.7446096,
+    "ast_hash": "8dabb85eaaee1ffa937f5c2d31275520",
     "semantic_hash": ""
   },
   "src/components/tools/NameGeneratorModal.tsx": {
@@ -198,15 +198,15 @@
     "semantic_hash": ""
   },
   "src/components/tools/ShareModal.tsx": {
-    "mtime": 1789207609.8072343,
-    "seen": 1789207836.1953623,
-    "ast_hash": "2ba2ca92271ec485e5d3b0fae980ffa4",
+    "mtime": 1789306979.9743216,
+    "seen": 1789307565.7450001,
+    "ast_hash": "dde84e7b09c7672f26cb84486934c45f",
     "semantic_hash": ""
   },
   "src/components/tools/StatsCalculatorModal.tsx": {
-    "mtime": 1789207596.269783,
-    "seen": 1789207836.1953654,
-    "ast_hash": "c72bf4bff48081d4e895853d4516b4aa",
+    "mtime": 1789307249.9448779,
+    "seen": 1789307565.7450047,
+    "ast_hash": "532562147e3786a87f472221912c9885",
     "semantic_hash": ""
   },
   "src/components/tools/index.ts": {
@@ -216,9 +216,9 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1789302195.0928242,
-    "seen": 1789302418.1745636,
-    "ast_hash": "6293952abc56e7c1d7425b1f89cc94d4",
+    "mtime": 1789307240.589578,
+    "seen": 1789307565.7453294,
+    "ast_hash": "dfb5eeb68e28f81ddcc61ac887d7ca3c",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789207592.1004565,
-    "seen": 1789207836.1950326,
-    "ast_hash": "1a8dd07b0627b1dcfa67858bb54877e6",
+    "mtime": 1789307275.7901738,
+    "seen": 1789307565.7418818,
+    "ast_hash": "ea84bf4d3070c202e1813ad0114cbdc6",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "src/components/gameplay/RestModal.tsx": {
-    "mtime": 1789216553.817067,
-    "seen": 1789216731.082708,
-    "ast_hash": "4e69573e46ebdcf694a432e297633232",
+    "mtime": 1789306967.9951317,
+    "seen": 1789307565.7418737,
+    "ast_hash": "a3bb2b8df6c09c43815075ea92a77b42",
     "semantic_hash": ""
   },
   "test/gameplay-rest-jump-attacks.test.ts": {
@@ -1122,15 +1122,15 @@
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentPaperDoll.tsx": {
-    "mtime": 1789289807.1311932,
-    "seen": 1789290226.5519907,
-    "ast_hash": "289001003739cd514014a56026e8dbc8",
+    "mtime": 1789306873.9665203,
+    "seen": 1789307565.74186,
+    "ast_hash": "2a0cb3c4cd216331456a44a366b98031",
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentSlotModal.tsx": {
-    "mtime": 1789304429.4079409,
-    "seen": 1789304668.1521206,
-    "ast_hash": "40c7a6d552bea8abff4c238fa41f89fa",
+    "mtime": 1789306941.198968,
+    "seen": 1789307565.7418668,
+    "ast_hash": "16bea42a573f08d082f7a89282895836",
     "semantic_hash": ""
   },
   "src/lib/equipment-types.ts": {
@@ -1212,9 +1212,9 @@
     "semantic_hash": ""
   },
   "src/components/sheet/SheetHeader.tsx": {
-    "mtime": 1789294507.3529508,
-    "seen": 1789295336.0669987,
-    "ast_hash": "948b4afdbc0fc4aefd1cd6637857df61",
+    "mtime": 1789306727.916696,
+    "seen": 1789307565.7430148,
+    "ast_hash": "3942027134b4643db2ea074914e3b7eb",
     "semantic_hash": ""
   },
   "src/components/sheet/SheetNavbar.tsx": {
@@ -1230,9 +1230,9 @@
     "semantic_hash": ""
   },
   "src/components/sheet/modals/SheetModals.tsx": {
-    "mtime": 1789304444.265883,
-    "seen": 1789304668.1541946,
-    "ast_hash": "be48dab61c180b9e3dce1317be162d7e",
+    "mtime": 1789307114.5553725,
+    "seen": 1789307565.74411,
+    "ast_hash": "09d4696198042333a23f14d31638099d",
     "semantic_hash": ""
   },
   "src/components/sheet/pages/DetailsSheetPage.tsx": {
@@ -1242,15 +1242,15 @@
     "semantic_hash": ""
   },
   "src/components/sheet/pages/MainSheetPage.tsx": {
-    "mtime": 1789305943.5291598,
-    "seen": 1789306243.1197808,
-    "ast_hash": "c1b7a4f21ba19aebda9cc7f5fc5fce7d",
+    "mtime": 1789307296.8351843,
+    "seen": 1789307565.744597,
+    "ast_hash": "eb67c0533ca06a872a2f6101ccb8fbc0",
     "semantic_hash": ""
   },
   "src/components/sheet/pages/SpellsSheetPage.tsx": {
-    "mtime": 1789305525.5725694,
-    "seen": 1789306243.119785,
-    "ast_hash": "47ab52477cc8a52a0a486494c13f4571",
+    "mtime": 1789307013.7952151,
+    "seen": 1789307565.7446046,
+    "ast_hash": "4ab5f9ccf01cffa9119f445b6b9ec29b",
     "semantic_hash": ""
   },
   "test/sheet-header-navbar.test.ts": {
@@ -1341,6 +1341,12 @@
     "mtime": 1789305641.6728919,
     "seen": 1789306243.1523902,
     "ast_hash": "1fa8a54157733656459543e68c05cae7",
+    "semantic_hash": ""
+  },
+  "test/dnd-icons-theme.test.ts": {
+    "mtime": 1789307342.344763,
+    "seen": 1789307565.7646897,
+    "ast_hash": "b27ba449076e0031e65aebaf5d072897",
     "semantic_hash": ""
   }
 }

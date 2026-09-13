@@ -75,6 +75,7 @@ import {
   CrystalBallDndIcon,
   HourglassIcon,
   EngravedShieldIcon,
+  WarningSignIcon,
 } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 
@@ -2736,7 +2737,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
             <div className="parchment-modal-section space-y-3">
               <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
                 <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3C2415' }}>
-                  <span>🛡️</span>
+                  <EngravedShieldIcon size={16} />
                   <span>Стойкость исчадия (10-й уровень):</span>
                 </h3>
                 <span
@@ -3736,7 +3737,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
                             {isUnmet && (
                               <div className="text-[10px] text-[#B45309] font-medium flex items-center gap-1 pt-1 border-t border-[rgba(201,168,76,0.25)] w-full">
-                                <span>⚠️</span>
+                                <WarningSignIcon size={12} className="shrink-0" />
                                 <span className="truncate">{prereqStatus.unmetReason}</span>
                               </div>
                             )}
@@ -3797,7 +3798,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                             }`}
                           >
                             <span className="shrink-0 mt-0.5 font-bold">
-                              {selectedFeatPrereq.satisfied ? '✓' : '⚠️'}
+                              {selectedFeatPrereq.satisfied ? '✓' : <WarningSignIcon size={12} className="inline" />}
                             </span>
                             <div className="leading-snug">
                               <span className="font-semibold">Требование: </span>

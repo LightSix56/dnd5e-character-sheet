@@ -27,6 +27,8 @@ import {
   CrystalBallDndIcon,
   SparklesDndIcon,
   InfoSealIcon,
+  LockSealIcon,
+  WarningSignIcon,
 } from '@/components/dnd-icons';
 
 export interface SpellsSheetPageProps {
@@ -107,7 +109,7 @@ export const SpellsSheetPage = React.memo(function SpellsSheetPage({
       })
       .map(({ spell: s, check, slotAllowed }) => {
         const levelBadge = s.level === 0 ? 'Заговор' : `${s.level} ур.`;
-        const slotNote = slotAllowed ? '' : ` • 🔒 Нет ячеек (макс. ${maxAvailableSlot || '0'} ур.)`;
+        const slotNote = slotAllowed ? '' : ` • [нет ячеек] (макс. ${maxAvailableSlot || '0'} ур.)`;
         const badge = `${levelBadge} • ${check.sourceLabel}${slotNote}`;
 
         return {
@@ -395,7 +397,14 @@ export const SpellsSheetPage = React.memo(function SpellsSheetPage({
                       }}
                       title={check.reason || check.sourceLabel}
                     >
-                      {check.allowed ? check.sourceLabel : '⚠️ Чужой'}
+                      {check.allowed ? (
+                        check.sourceLabel
+                      ) : (
+                        <span className="inline-flex items-center gap-1">
+                          <WarningSignIcon size={10} />
+                          <span>Чужой</span>
+                        </span>
+                      )}
                     </span>
                   )}
                 </div>
@@ -445,7 +454,7 @@ export const SpellsSheetPage = React.memo(function SpellsSheetPage({
               </h3>
               {lvl > maxAvailableSlot && (
                 <span
-                  className="text-[10px] px-1.5 py-0.5 rounded font-mono"
+                  className="text-[10px] px-1.5 py-0.5 rounded font-mono inline-flex items-center gap-1"
                   style={{
                     background: 'rgba(217, 130, 43, 0.15)',
                     color: '#A04000',
@@ -453,7 +462,8 @@ export const SpellsSheetPage = React.memo(function SpellsSheetPage({
                   }}
                   title={`Ячейки ${lvl}-го круга еще не доступны вашему персонажу`}
                 >
-                  🔒 Ячейки не открыты
+                  <LockSealIcon size={11} />
+                  <span>Ячейки не открыты</span>
                 </span>
               )}
             </div>
@@ -512,7 +522,14 @@ export const SpellsSheetPage = React.memo(function SpellsSheetPage({
                             }}
                             title={check.reason || check.sourceLabel}
                           >
-                            {check.allowed ? check.sourceLabel : '⚠️ Чужой'}
+                            {check.allowed ? (
+                              check.sourceLabel
+                            ) : (
+                              <span className="inline-flex items-center gap-1">
+                                <WarningSignIcon size={10} />
+                                <span>Чужой</span>
+                              </span>
+                            )}
                           </span>
                         )}
                       </div>

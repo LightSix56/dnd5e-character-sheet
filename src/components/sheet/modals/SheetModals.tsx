@@ -24,6 +24,8 @@ import {
   PortalIcon,
   UserHeroIcon,
   QuillIcon,
+  WarningSignIcon,
+  InfoSealIcon,
 } from '@/components/dnd-icons';
 
 // ── Level Down Confirm ──
@@ -130,8 +132,9 @@ export const LevelDownModal = React.memo(function LevelDownModal({
               className="mb-4 p-3 rounded text-sm space-y-1"
               style={{ background: 'rgba(201, 168, 76, 0.15)', border: '1px solid rgba(201, 168, 76, 0.4)' }}
             >
-              <p className="font-bold text-xs" style={{ color: '#8B6914' }}>
-                ⚠️ Запись о предыдущем уровне не найдена
+              <p className="font-bold text-xs flex items-center gap-1.5" style={{ color: '#8B6914' }}>
+                <WarningSignIcon size={14} className="shrink-0" />
+                <span>Запись о предыдущем уровне не найдена</span>
               </p>
               <p className="text-xs" style={{ color: '#6B3A2A' }}>
                 Персонаж будет понижен до {targetLevel} уровня, а здоровье скорректировано на среднее значение кости.
@@ -400,7 +403,7 @@ export function NonClassSpellConfirmModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b pb-3" style={{ borderColor: 'rgba(217, 130, 43, 0.4)' }}>
-          <span className="text-2xl">⚠️</span>
+          <WarningSignIcon size={24} className="shrink-0 text-amber-700" />
           <div>
             <h3 className="text-base font-bold text-[#6B3A2A]" style={{ fontFamily: 'Georgia, serif' }}>
               Заклинание другого класса
@@ -445,7 +448,10 @@ export function NonClassSpellConfirmModal({
             className="p-2 rounded text-[11px]"
             style={{ background: 'rgba(201, 168, 76, 0.2)', border: '1px dashed #C9A84C' }}
           >
-            <p className="font-semibold text-[#5C341F]">💡 Добавление из внешнего источника:</p>
+            <p className="font-semibold text-[#5C341F] flex items-center gap-1.5">
+              <InfoSealIcon size={14} className="shrink-0" />
+              <span>Добавление из внешнего источника:</span>
+            </p>
             <p className="opacity-90">
               Вы можете добавить это заклинание, если оно получено от свитка, магического предмета, обучения у мастера или специальной черты.
             </p>
@@ -716,9 +722,10 @@ export const TemplateModal = React.memo(function TemplateModal({
             <button
               onClick={() => selected && onSelect(selected)}
               disabled={!selected}
-              className={`flex-1 font-medium ${selected ? 'parchment-btn' : 'parchment-btn opacity-40 cursor-not-allowed'}`}
+              className={`flex-1 font-medium flex items-center justify-center gap-1.5 ${selected ? 'parchment-btn' : 'parchment-btn opacity-40 cursor-not-allowed'}`}
             >
-              📋 Применить шаблон
+              <ScrollIcon size={14} />
+              <span>Применить шаблон</span>
             </button>
           </div>
         </div>

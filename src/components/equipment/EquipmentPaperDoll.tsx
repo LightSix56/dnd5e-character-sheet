@@ -20,6 +20,12 @@ import {
 } from '@/lib/equipment-types';
 import { EquipmentSlotModal } from './EquipmentSlotModal';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import {
+  LockSealIcon,
+  EngravedShieldIcon,
+  WingedBootIcon,
+  WeightAnvilIcon,
+} from '@/components/dnd-icons';
 
 export interface EquipmentPaperDollProps {
   char: CharacterData;
@@ -140,8 +146,8 @@ export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDo
         {/* Slot Body */}
         {isLockedOffHand ? (
           <div className="py-1">
-            <div className="text-[11px] font-bold text-amber-800 flex items-center gap-1">
-              <span>🔒</span>
+            <div className="text-[11px] font-bold text-amber-800 flex items-center gap-1.5">
+              <LockSealIcon size={13} />
               <span>[ Занято хватом ]</span>
             </div>
             <p className="text-[10px] text-amber-700/90 leading-tight mt-0.5">
@@ -241,8 +247,8 @@ export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDo
 
       {/* Live Stats Summary Bar */}
       <div className="mt-5 pt-3 border-t border-[#C9A84C]/40 grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
-        <div className="p-2.5 rounded-lg bg-[#EAD6B8]/50 border border-[#C9A84C]/50 flex items-center justify-center gap-2">
-          <span className="text-xl">🛡️</span>
+        <div className="p-2.5 rounded-lg bg-[#EAD6B8]/50 border border-[#C9A84C]/50 flex items-center justify-center gap-2.5">
+          <EngravedShieldIcon size={24} />
           <div className="text-left">
             <span className="text-[10px] uppercase font-bold text-[#8B6914] block leading-none">
               Класс Доспеха
@@ -253,8 +259,8 @@ export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDo
           </div>
         </div>
 
-        <div className="p-2.5 rounded-lg bg-[#EAD6B8]/50 border border-[#C9A84C]/50 flex items-center justify-center gap-2">
-          <span className="text-xl">🏃</span>
+        <div className="p-2.5 rounded-lg bg-[#EAD6B8]/50 border border-[#C9A84C]/50 flex items-center justify-center gap-2.5">
+          <WingedBootIcon size={24} />
           <div className="text-left">
             <span className="text-[10px] uppercase font-bold text-[#8B6914] block leading-none">
               Скорость
@@ -265,8 +271,8 @@ export function EquipmentPaperDoll({ char, onChange, onClose }: EquipmentPaperDo
           </div>
         </div>
 
-        <div className="p-2.5 rounded-lg bg-[#EAD6B8]/50 border border-[#C9A84C]/50 flex items-center justify-center gap-2">
-          <span className="text-xl">⚖️</span>
+        <div className="p-2.5 rounded-lg bg-[#EAD6B8]/50 border border-[#C9A84C]/50 flex items-center justify-center gap-2.5">
+          <WeightAnvilIcon size={24} />
           <div className="text-left">
             <span className="text-[10px] uppercase font-bold text-[#8B6914] block leading-none">
               Грузоподъемность

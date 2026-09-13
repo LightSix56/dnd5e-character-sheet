@@ -8,6 +8,9 @@ import {
   MysticSpinnerIcon,
   RunedKeyIcon,
   ScrollIcon,
+  EyeMysticIcon,
+  ScrollDownloadIcon,
+  HourglassIcon,
 } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 
@@ -296,20 +299,20 @@ export function ShareModal({
 
               {/* Explanatory Info Card */}
               <div className="p-3 bg-[#C9A84C]/10 border border-[#C9A84C]/35 rounded text-xs space-y-1.5 flex flex-col justify-center">
-                <div className="flex items-start gap-1.5">
-                  <span className="text-[#6B3A2A] font-bold">👁️</span>
+                <div className="flex items-start gap-2">
+                  <EyeMysticIcon size={14} className="shrink-0 mt-0.5" />
                   <span>
                     <strong>Режим DM:</strong> Мастер увидит все статы, спасброски, навыки, заклинания и экипировку в удобном виде.
                   </span>
                 </div>
-                <div className="flex items-start gap-1.5">
-                  <span className="text-[#6B3A2A] font-bold">📥</span>
+                <div className="flex items-start gap-2">
+                  <ScrollDownloadIcon size={14} className="shrink-0 mt-0.5" />
                   <span>
                     <strong>Импорт:</strong> Любой зритель сможет в 1 клик сохранить копию листа себе или открыть в редакторе.
                   </span>
                 </div>
-                <div className="flex items-start gap-1.5">
-                  <span className="text-[#6B3A2A] font-bold">⏳</span>
+                <div className="flex items-start gap-2">
+                  <HourglassIcon size={14} className="shrink-0 mt-0.5" />
                   <span>
                     <strong>Срок хранения:</strong> Ссылка активна в течение 30 дней.
                   </span>

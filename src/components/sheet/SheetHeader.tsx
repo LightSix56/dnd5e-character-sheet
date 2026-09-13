@@ -17,6 +17,8 @@ import {
   ArcaneLinkIcon,
   QuillIcon,
   HourglassIcon,
+  WarningSignIcon,
+  ParchmentMenuIcon,
 } from '@/components/dnd-icons';
 
 export interface SheetHeaderProps {
@@ -248,7 +250,7 @@ export const SheetHeader = React.memo(function SheetHeader({
                   </>
                 ) : cloudSaveStatus === 'error' ? (
                   <>
-                    <span className="text-amber-600 font-bold text-sm">⚠️</span>
+                    <WarningSignIcon size={15} />
                     <span className="text-amber-800 font-semibold text-xs">Повторить</span>
                   </>
                 ) : cloudSaveStatus === 'saved' ? (
@@ -378,7 +380,7 @@ export const SheetHeader = React.memo(function SheetHeader({
               {cloudSaveStatus === 'saving' ? (
                 <MysticSpinnerIcon size={16} />
               ) : cloudSaveStatus === 'error' ? (
-                <span className="text-amber-600 font-bold text-xs">⚠️</span>
+                <WarningSignIcon size={16} />
               ) : cloudSaveStatus === 'saved' ? (
                 <GoldSealCheckIcon size={16} />
               ) : (
@@ -397,7 +399,7 @@ export const SheetHeader = React.memo(function SheetHeader({
             }}
             aria-label="Меню листа персонажа"
           >
-            <span className="text-sm">☰</span>
+            <ParchmentMenuIcon size={16} />
             <span>Меню</span>
           </button>
         </div>

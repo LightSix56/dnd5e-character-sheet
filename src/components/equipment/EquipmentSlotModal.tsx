@@ -13,6 +13,14 @@ import {
 } from '@/lib/equipment-types';
 import { DND_COMPENDIUM_ITEMS } from '@/data/compendium/items';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import {
+  CrossedSwordsIcon,
+  WarningSignIcon,
+  CompendiumBookIcon,
+  SparklesDndIcon,
+  BackpackPackIcon,
+  TrashBinIcon,
+} from '@/components/dnd-icons';
 
 export interface EquipmentSlotModalProps {
   slotId: EquipmentSlotId;
@@ -481,7 +489,7 @@ export function EquipmentSlotModal({
         {/* Two-Handed Context Notice */}
         {slotId === 'mainHand' && (
           <div className="mx-4 mt-2 px-3 py-1.5 rounded bg-amber-50/80 border border-amber-300 text-xs text-amber-900 flex items-center gap-2">
-            <span className="text-base">⚔️</span>
+            <CrossedSwordsIcon size={16} />
             <span>
               <strong>Двуручное оружие</strong> автоматически займет обе руки и освободит слот «Вторая рука».
             </span>
@@ -490,7 +498,7 @@ export function EquipmentSlotModal({
 
         {isOffHandConflict && (
           <div className="mx-4 mt-2 px-3 py-2 rounded bg-amber-100/90 border border-amber-400 text-xs text-amber-900 flex items-center gap-2">
-            <span className="text-base">⚠️</span>
+            <WarningSignIcon size={16} />
             <span>
               В основной руке экипировано двуручное оружие. Экипировка в этот слот освободит основную руку.
             </span>
@@ -502,24 +510,26 @@ export function EquipmentSlotModal({
           <button
             type="button"
             onClick={() => setActiveTab('compendium')}
-            className={`px-3 py-1.5 rounded text-xs font-semibold tracking-wide transition-all ${
+            className={`px-3 py-1.5 rounded text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
               activeTab === 'compendium'
                 ? 'bg-[#8B4513] text-[#F5E6C8] shadow-sm'
                 : 'bg-transparent text-[#6B3A2A] hover:bg-[#C9A84C]/20'
             }`}
           >
-            📚 Из компендиума ({filteredCandidates.length})
+            <CompendiumBookIcon size={14} />
+            <span>Из компендиума ({filteredCandidates.length})</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('custom')}
-            className={`px-3 py-1.5 rounded text-xs font-semibold tracking-wide transition-all ${
+            className={`px-3 py-1.5 rounded text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
               activeTab === 'custom'
                 ? 'bg-[#8B4513] text-[#F5E6C8] shadow-sm'
                 : 'bg-transparent text-[#6B3A2A] hover:bg-[#C9A84C]/20'
             }`}
           >
-            ✨ Свой предмет
+            <SparklesDndIcon size={14} />
+            <span>Свой предмет</span>
           </button>
         </div>
 
@@ -580,7 +590,7 @@ export function EquipmentSlotModal({
               <div className="mb-3 p-2.5 rounded-lg border border-[#C9A84C]/60 bg-[#EAD6B8]/40">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold text-[#3D2012] uppercase tracking-wider flex items-center gap-1.5">
-                    <span>🎒</span>
+                    <BackpackPackIcon size={14} />
                     <span>Мои созданные предметы ({savedCustomItems.length})</span>
                   </span>
                   <span className="text-[11px] text-[#8B6914] italic">
@@ -642,10 +652,10 @@ export function EquipmentSlotModal({
                                   onDeleteCustomItem(item.id);
                                 }
                               }}
-                              className="p-1 rounded text-[#8B2500] hover:bg-[#8B2500]/15 transition-colors"
+                              className="p-1 rounded text-[#8B2500] hover:bg-[#8B2500]/15 transition-colors flex items-center justify-center"
                               title="Удалить предмет навсегда"
                             >
-                              🗑️
+                              <TrashBinIcon size={14} />
                             </button>
                           )}
                         </div>
@@ -829,7 +839,7 @@ export function EquipmentSlotModal({
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <h4 className="text-xs font-bold text-[#3D2012] uppercase tracking-wider flex items-center gap-1.5">
-                    <span>✨</span>
+                    <SparklesDndIcon size={14} />
                     <span>Магические эффекты и свойства ({customEffects.length})</span>
                   </h4>
                   <p className="text-[11px] text-[#8B6914]">
@@ -1019,7 +1029,7 @@ export function EquipmentSlotModal({
                 type="submit"
                 className="parchment-btn px-4 py-1.5 text-xs rounded font-semibold flex items-center gap-1.5"
               >
-                <span>✨</span>
+                <SparklesDndIcon size={14} />
                 <span>Создать и экипировать</span>
               </button>
             </div>

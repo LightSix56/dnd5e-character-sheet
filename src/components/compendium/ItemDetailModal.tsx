@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BackpackPackIcon, EngravedShieldIcon, CrossedSwordsIcon } from '@/components/dnd-icons';
+import { BackpackPackIcon, EngravedShieldIcon, CrossedSwordsIcon, WarningSignIcon } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import type { CompendiumItem } from '@/data/compendium/items';
 
@@ -88,8 +88,9 @@ export function ItemDetailModal({ item, onEquipArmor, onToggleShield, onClose }:
                 </div>
               ) : null}
               {item.armor.stealthDisadvantage && (
-                <div className="text-xs font-bold text-amber-900">
-                  ⚠️ Накладывает помеху на проверки Скрытности
+                <div className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                  <WarningSignIcon size={14} className="shrink-0" />
+                  <span>Накладывает помеху на проверки Скрытности</span>
                 </div>
               )}
             </div>

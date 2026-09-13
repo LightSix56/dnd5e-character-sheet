@@ -4,6 +4,14 @@ import {
   MysticCloudIcon,
   ArcaneLinkIcon,
   ScrollIcon,
+  SearchLensIcon,
+  WarningSignIcon,
+  TrashBinIcon,
+  DeviceStoneIcon,
+  HeartGemIcon,
+  EngravedShieldIcon,
+  CrossedSwordsIcon,
+  HourglassIcon,
 } from '@/components/dnd-icons';
 
 export interface SavedCharacter {
@@ -529,8 +537,8 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
 
           {/* ── Search Input Bar ── */}
           <div className="relative flex items-center">
-            <div className="absolute left-3 text-[#8B6914] pointer-events-none text-sm">
-              🔍
+            <div className="absolute left-3 pointer-events-none flex items-center">
+              <SearchLensIcon size={16} />
             </div>
             <input
               type="text"
@@ -596,7 +604,9 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
           ) : filteredCharacters.length === 0 ? (
             /* Empty State: Search yielded no matches */
             <div className="py-12 px-4 flex flex-col items-center justify-center text-center">
-              <div className="text-4xl mb-3">📜</div>
+              <div className="mb-3">
+                <ScrollIcon size={44} />
+              </div>
               <h3 className="text-lg font-bold font-serif text-[#3C2415] mb-1">
                 Ничего не найдено
               </h3>
@@ -644,7 +654,9 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                     {/* Inline Delete Confirmation Overlay */}
                     {isConfirmingDelete && (
                       <div className="absolute inset-0 bg-[#28150C]/95 backdrop-blur-sm rounded-lg flex flex-col items-center justify-center p-4 text-center z-20 animate-fade-in">
-                        <div className="text-2xl mb-1">⚠️</div>
+                        <div className="flex justify-center mb-1">
+                          <WarningSignIcon size={26} />
+                        </div>
                         <p className="text-amber-100 text-xs sm:text-sm font-semibold mb-3">
                           Удалить персонажа <br />
                           <span className="text-amber-300 font-bold font-serif text-sm">
@@ -705,17 +717,19 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                             </h4>
                             {char.isLocal ? (
                               <span
-                                className="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/10 text-amber-900 border border-amber-800/20 shrink-0 font-sans"
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/10 text-amber-900 border border-amber-800/20 shrink-0 font-sans flex items-center gap-1"
                                 title="Персонаж сохранён локально в браузере"
                               >
-                                💾 Устройство
+                                <DeviceStoneIcon size={12} />
+                                <span>Устройство</span>
                               </span>
                             ) : (
                               <span
-                                className="text-[10px] px-1.5 py-0.5 rounded bg-blue-900/10 text-blue-900 border border-blue-800/20 shrink-0 font-sans"
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-blue-900/10 text-blue-900 border border-blue-800/20 shrink-0 font-sans flex items-center gap-1"
                                 title="Персонаж сохранён в облаке"
                               >
-                                ☁️ Облако
+                                <MysticCloudIcon size={12} />
+                                <span>Облако</span>
                               </span>
                             )}
                           </div>
@@ -748,8 +762,9 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                           <span className="text-[10px] font-medium text-red-950/70 leading-none mb-0.5">
                             Здоровье
                           </span>
-                          <span className="text-xs font-bold text-red-900 font-serif leading-none flex items-center gap-0.5">
-                            ❤️ {hp}
+                          <span className="text-xs font-bold text-red-900 font-serif leading-none flex items-center gap-1">
+                            <HeartGemIcon size={13} />
+                            <span>{hp}</span>
                           </span>
                         </div>
 
@@ -761,8 +776,9 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                           <span className="text-[10px] font-medium text-amber-950/70 leading-none mb-0.5">
                             Броня (КД)
                           </span>
-                          <span className="text-xs font-bold text-[#5C341F] font-serif leading-none flex items-center gap-0.5">
-                            🛡️ {ac}
+                          <span className="text-xs font-bold text-[#5C341F] font-serif leading-none flex items-center gap-1">
+                            <EngravedShieldIcon size={13} />
+                            <span>{ac}</span>
                           </span>
                         </div>
 
@@ -784,8 +800,9 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                     {/* ── Card Footer: Date & Quick Actions ── */}
                     <div className="pt-2 border-t border-[#8B6914]/20 mt-auto">
                       {updatedDateStr && (
-                        <div className="text-[10px] text-[#8B6914] italic mb-2 truncate">
-                          🕒 {updatedDateStr}
+                        <div className="text-[10px] text-[#8B6914] italic mb-2 truncate flex items-center gap-1">
+                          <HourglassIcon size={11} />
+                          <span>{updatedDateStr}</span>
                         </div>
                       )}
 
@@ -793,10 +810,11 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                         <button
                           type="button"
                           onClick={() => onLoad(char)}
-                          className="parchment-btn text-xs py-1.5 px-3 flex-1 flex items-center justify-center gap-1 font-bold shadow-sm"
+                          className="parchment-btn text-xs py-1.5 px-3 flex-1 flex items-center justify-center gap-1.5 font-bold shadow-sm"
                           title="Загрузить этого персонажа в лист"
                         >
-                          <span>⚔️ Играть</span>
+                          <CrossedSwordsIcon size={14} />
+                          <span>Играть</span>
                         </button>
 
                         {onShare && (
@@ -817,7 +835,7 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                           className="parchment-remove-btn px-2 py-1.5 text-xs text-red-700 hover:text-red-950 hover:bg-red-200/50 rounded flex items-center justify-center"
                           title="Удалить персонажа"
                         >
-                          🗑️
+                          <TrashBinIcon size={15} />
                         </button>
                       </div>
                     </div>

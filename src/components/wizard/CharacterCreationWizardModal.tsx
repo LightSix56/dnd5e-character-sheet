@@ -42,7 +42,8 @@ import {
   D20Icon, ScrollIcon, SpellbookIcon, CrossedSwordsIcon,
   EngravedShieldIcon, SparklesDndIcon, CoinsChestIcon,
   MasksDramaIcon, BackpackPackIcon, InfoSealIcon,
-  UserHeroIcon, GoldSealCheckIcon
+  UserHeroIcon, GoldSealCheckIcon, WarningSignIcon,
+  LockSealIcon, CrownRulerIcon
 } from '@/components/dnd-icons';
 import {
   detectWeaponCategoryPlaceholder,
@@ -1610,7 +1611,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                       !selectedRaceId ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
-                    <span>🎲</span>
+                    <D20Icon size={14} />
                     <span className="hidden sm:inline">Случайное имя</span>
                   </button>
                 </div>
@@ -1627,7 +1628,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                           color: '#92400E'
                         }}
                       >
-                        <span className="text-base leading-none select-none">⚠️</span>
+                        <WarningSignIcon size={16} className="shrink-0 mt-0.5 text-amber-700" />
                         <div className="leading-snug">
                           <span className="font-semibold">{nameLoreInfo.warning}</span>
                         </div>
@@ -1641,7 +1642,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                           color: '#3D2012'
                         }}
                       >
-                        <span className="text-base leading-none select-none">📜</span>
+                        <ScrollIcon size={16} className="shrink-0 mt-0.5" />
                         <div className="leading-snug">
                           <span className="font-bold text-[#8B4513]">Традиция имён dnd.su: </span>
                           <span className="text-[#5C341F]">{nameLoreInfo.tradition}</span>
@@ -1919,7 +1920,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
                                     {isUnmet && (
                                       <div className="text-[10px] text-[#B45309] font-medium flex items-center gap-1 pt-1 border-t border-[rgba(201,168,76,0.25)] w-full">
-                                        <span>⚠️</span>
+                                        <WarningSignIcon size={12} className="shrink-0" />
                                         <span className="truncate">{prereqStatus.unmetReason}</span>
                                       </div>
                                     )}
@@ -1973,7 +1974,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                     }`}
                                   >
                                     <span className="shrink-0 mt-0.5 font-bold">
-                                      {selectedFeatPrereq.satisfied ? '✓' : '⚠️'}
+                                      {selectedFeatPrereq.satisfied ? '✓' : <WarningSignIcon size={12} className="inline" />}
                                     </span>
                                     <div className="leading-snug">
                                       <span className="font-semibold">Требование: </span>
@@ -2558,7 +2559,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.4)' }}>
                     <div>
                       <h4 className="text-sm font-bold flex items-center gap-1.5" style={{ color: '#3D2012' }}>
-                        <span>👑</span>
+                        <CrownRulerIcon size={16} />
                         <span>{selectedClass.subclassTitle || 'Выбор архетипа / подкласса'} (1-й уровень)</span>
                       </h4>
                       <p className="text-[11px] text-[#8B6914]">
@@ -2664,8 +2665,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         }
                       >
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm">
-                            {isFromRace ? '🔒' : isSelected ? '☑' : '☐'}
+                          <span className="font-mono text-sm flex items-center justify-center">
+                            {isFromRace ? <LockSealIcon size={14} /> : isSelected ? '☑' : '☐'}
                           </span>
                           <div>
                             <div className="font-semibold flex items-center gap-1">
@@ -3353,8 +3354,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                     ✓ Заменён на «{replacement}»
                                   </span>
                                 ) : (
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#8B2500] bg-[rgba(217,56,30,0.1)] border border-[rgba(217,56,30,0.3)]">
-                                    ⚠️ Уже получен от {isFromRace ? 'расы' : 'класса'}!
+                                  <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#8B2500] bg-[rgba(217,56,30,0.1)] border border-[rgba(217,56,30,0.3)] inline-flex items-center gap-1">
+                                    <WarningSignIcon size={12} className="shrink-0" />
+                                    <span>Уже получен от {isFromRace ? 'расы' : 'класса'}!</span>
                                   </span>
                                 )
                               )}
@@ -3482,8 +3484,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                             <div key={chSkill} className="p-2.5 rounded text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2" style={{ background: 'rgba(245, 230, 200, 0.8)', border: '1px solid rgba(139, 105, 20, 0.3)' }}>
                               <div className="flex items-center gap-2">
                                 <span className="font-semibold text-[#3D2012]">{chSkill}</span>
-                                <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#8B2500] bg-[rgba(217,56,30,0.1)] border border-[rgba(217,56,30,0.3)]">
-                                  ⚠️ Уже получен от {isFromRace ? 'расы' : 'класса'}!
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold text-[#8B2500] bg-[rgba(217,56,30,0.1)] border border-[rgba(217,56,30,0.3)] inline-flex items-center gap-1">
+                                  <WarningSignIcon size={12} className="shrink-0" />
+                                  <span>Уже получен от {isFromRace ? 'расы' : 'класса'}!</span>
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -3659,7 +3662,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     if (!stdVal.valid) {
                       return (
                         <div className="p-2 rounded text-xs flex items-center gap-2 bg-[rgba(254,243,199,0.7)] border border-[#D97706] text-[#92400E]">
-                          <span>⚠️</span>
+                          <WarningSignIcon size={14} className="shrink-0" />
                           <span>{stdVal.error}</span>
                         </div>
                       );
@@ -3686,7 +3689,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     className="text-xs font-bold px-3 py-1 rounded cursor-pointer transition-all active:scale-95 flex items-center gap-1.5 shadow-sm"
                     style={{ background: '#5C341F', color: '#FBF0DC' }}
                   >
-                    <span>🎲</span>
+                    <D20Icon size={14} />
                     <span>Перебросить все</span>
                   </button>
                 </div>
@@ -3788,7 +3791,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                               className="w-6 h-6 rounded flex items-center justify-center text-xs cursor-pointer active:scale-95 transition-transform"
                               style={{ background: '#E8D3A2', color: '#3D2012' }}
                             >
-                              🎲
+                              <D20Icon size={12} />
                             </button>
                           </div>
                         )}

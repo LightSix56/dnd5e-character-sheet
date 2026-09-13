@@ -47,6 +47,13 @@ import {
   BackpackPackIcon,
   InfoSealIcon,
   D20Icon,
+  WarningSignIcon,
+  CrownRulerIcon,
+  WeightAnvilIcon,
+  WingedBootIcon,
+  LightningStrikeIcon,
+  TargetAimIcon,
+  CompendiumBookIcon,
 } from '@/components/dnd-icons';
 
 export interface MainSheetPageProps {
@@ -159,11 +166,12 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                   <button
                     type="button"
                     onClick={() => setShowNameGenModal(true)}
-                    className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5 leading-none"
+                    className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-1 leading-none"
                     style={{ color: '#8B6914' }}
                     title="Открыть генератор фэнтезийных имён с этимологией и корнями"
                   >
-                    🎲 Имена
+                    <D20Icon size={12} />
+                    <span>Имена</span>
                   </button>
                 </div>
                 <input
@@ -185,11 +193,12 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                     <button
                       type="button"
                       onClick={() => setShowClassModal(true)}
-                      className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5 leading-none"
+                      className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-1 leading-none"
                       style={{ color: '#8B6914' }}
                       title="Выбрать класс из компендиума"
                     >
-                      📖 Каталог классов
+                      <CompendiumBookIcon size={12} />
+                      <span>Каталог классов</span>
                     </button>
                   )}
                 </div>
@@ -204,11 +213,18 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                 <div className="flex items-center justify-between pt-0.5">
                   <span className="text-[10px]" style={{ color: '#8B6914' }}>Архетип:</span>
                   <span
-                    className="text-[10px] font-bold truncate max-w-[140px]"
+                    className="text-[10px] font-bold truncate max-w-[140px] flex items-center gap-1"
                     style={{ color: '#6B3A2A' }}
                     title={char.subclass ? `Архетип: ${char.subclass}` : 'Выбор архетипа на соответствующем уровне'}
                   >
-                    {char.subclass ? `👑 ${char.subclass}` : 'Выбор на уровне'}
+                    {char.subclass ? (
+                      <>
+                        <CrownRulerIcon size={12} />
+                        <span>{char.subclass}</span>
+                      </>
+                    ) : (
+                      'Выбор на уровне'
+                    )}
                   </span>
                 </div>
               </div>
@@ -235,11 +251,12 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                     <button
                       type="button"
                       onClick={() => setShowRaceModal(true)}
-                      className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-0.5 leading-none"
+                      className="text-[10px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-1 leading-none"
                       style={{ color: '#8B6914' }}
                       title="Открыть полный компендиум рас"
                     >
-                      📖 Каталог рас
+                      <CompendiumBookIcon size={12} />
+                      <span>Каталог рас</span>
                     </button>
                   )}
                 </div>
@@ -335,7 +352,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                         <span className={`text-xs font-bold ${isOverMax ? 'text-red-700' : ''}`} style={{ color: isOverMax ? '#C92A2A' : '#6B3A2A' }}>
                           {total}
                         </span>
-                        {isOverMax && <span title={`Превышает обычный максимум D&D 5e (${maxAllowed})`} className="text-[10px] cursor-help">⚠️</span>}
+                        {isOverMax && <WarningSignIcon size={12} className="inline cursor-help" title={`Превышает обычный максимум D&D 5e (${maxAllowed})`} />}
                         <span className="text-[11px]" style={{ color: '#8B6914' }}>({formatModifier(mod)})</span>
                       </div>
                       {/* Save throw in top-right */}
@@ -374,7 +391,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                       <CalcBadge value={asi > 0 ? `+${asi}` : '0'} />
                       <div className="flex items-center justify-center gap-1">
                         <CalcBadge value={total} />
-                        {isOverMax && <span title={`Превышает обычный максимум D&D 5e (${maxAllowed})`} className="text-[11px] cursor-help">⚠️</span>}
+                        {isOverMax && <WarningSignIcon size={13} className="inline cursor-help" title={`Превышает обычный максимум D&D 5e (${maxAllowed})`} />}
                       </div>
                       <RollBadge value={formatModifier(mod)} label={`Проверка ${ABILITY_FULL[abbr]}`} modifier={mod} onRoll={handleRoll} />
                       <div className="flex items-center gap-1">
@@ -389,7 +406,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
               {/* Warning alert if stats exceed official limits */}
               {abilityWarnings.length > 0 && (
                 <div className="p-2.5 rounded text-xs flex items-center gap-2 mt-2" style={{ background: 'rgba(230, 140, 20, 0.15)', border: '1px solid rgba(200, 120, 20, 0.4)', color: '#7C3E08' }}>
-                  <span className="text-base leading-none">⚠️</span>
+                  <WarningSignIcon size={18} />
                   <div className="flex-1 min-w-0">
                     <span className="font-bold">Предупреждение по правилам D&D 5e:</span>
                     <div className="text-[11px] opacity-90">{abilityWarnings.join(' • ')}</div>
@@ -402,11 +419,12 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                 <button
                   type="button"
                   onClick={handleResetToStandardScores}
-                  className="text-[11px] font-bold underline cursor-pointer hover:opacity-80"
+                  className="text-[11px] font-bold underline cursor-pointer hover:opacity-80 flex items-center gap-1"
                   style={{ color: '#8B6914' }}
                   title="Установить рекомендованный стандартный набор 15, 14, 13, 12, 10, 8 для этого класса"
                 >
-                  🎯 Сбросить на стандарт класса ({compClass?.name || char.className || 'Воин'})
+                  <TargetAimIcon size={12} />
+                  <span>Сбросить на стандарт класса ({compClass?.name || char.className || 'Воин'})</span>
                 </button>
                 <p className="text-[10px]" style={{ color: '#8B6914' }}>
                   База | Раса | АСИ · Нажмите Мод./Спасбр. для d20
@@ -512,15 +530,25 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                   title="Надеть броню, щит или аксессуары в окне Экипировки"
                 >
                   <EngravedShieldIcon size={13} />
-                  <span>🛡️ Экипировка</span>
+                  <span>Экипировка</span>
                 </button>
               </div>
               <div className="flex items-center justify-between text-xs pt-0.5">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-semibold" style={{ color: '#3D2012' }}>
-                    {char.equippedSlots?.armor?.name
-                      ? `🛡️ ${char.equippedSlots.armor.name}`
-                      : (char.equippedArmor ? `🛡️ ${char.equippedArmor}` : '🥋 Без доспехов')}
+                  <span className="font-semibold flex items-center gap-1" style={{ color: '#3D2012' }}>
+                    {char.equippedSlots?.armor?.name ? (
+                      <>
+                        <EngravedShieldIcon size={12} />
+                        <span>{char.equippedSlots.armor.name}</span>
+                      </>
+                    ) : char.equippedArmor ? (
+                      <>
+                        <EngravedShieldIcon size={12} />
+                        <span>{char.equippedArmor}</span>
+                      </>
+                    ) : (
+                      <span>Без доспехов</span>
+                    )}
                   </span>
                   {(char.equippedSlots?.offHand?.isShield || char.equippedShield) && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ background: 'rgba(201, 168, 76, 0.25)', color: '#5C341F', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
@@ -570,8 +598,9 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                   style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.35)' }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold flex items-center gap-1" style={{ color: '#5C341F' }}>
-                      <span>🏋️</span> <span>Грузоподъёмность:</span>
+                    <span className="font-bold flex items-center gap-1.5" style={{ color: '#5C341F' }}>
+                      <WeightAnvilIcon size={15} />
+                      <span>Грузоподъёмность:</span>
                     </span>
                     {carryCap.isPowerfulBuild && (
                       <span
@@ -595,8 +624,9 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                   style={{ background: 'rgba(232, 211, 162, 0.35)', border: '1px solid rgba(201, 168, 76, 0.35)' }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold flex items-center gap-1" style={{ color: '#5C341F' }}>
-                      <span>🦘</span> <span>Прыжки:</span>
+                    <span className="font-bold flex items-center gap-1.5" style={{ color: '#5C341F' }}>
+                      <WingedBootIcon size={15} />
+                      <span>Прыжки:</span>
                     </span>
                     <span className="text-[10px] opacity-75" style={{ color: '#8B6914' }}>
                       разбег / с места
@@ -677,7 +707,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
               title="Экипировать, сменить оружие или щит в окне Экипировки"
             >
               <CrossedSwordsIcon size={14} />
-              <span>⚔️ Настроить в Экипировке</span>
+              <span>Настроить в Экипировке</span>
             </button>
           </div>
 
@@ -760,7 +790,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                               }}
                               title="Требует Основное действие + Бонусное действие"
                             >
-                              <span>⚔️</span>
+                              <CrossedSwordsIcon size={11} />
                               <span>Действие + Бонус</span>
                             </span>
                           ) : atk.actionType === 'bonus' ? (
@@ -773,7 +803,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                               }}
                               title="Бонусное действие (вторая рука)"
                             >
-                              <span>⚡</span>
+                              <LightningStrikeIcon size={11} />
                               <span>Бонусное</span>
                             </span>
                           ) : (
@@ -786,7 +816,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                               }}
                               title="Основное действие"
                             >
-                              <span>🎯</span>
+                              <TargetAimIcon size={11} />
                               <span>Действие</span>
                             </span>
                           )}
@@ -795,9 +825,9 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                         {/* Weapon Name and Subtext */}
                         <div className="min-w-0 pr-1">
                           <div className="flex items-center gap-1">
-                            <span className="font-bold text-xs truncate" style={{ color: '#3D2012' }}>
-                              {isDual ? '⚔️ ' : isThrown ? '🎯 ' : isUnarmed ? '👊 ' : isOff ? '🗡️ ' : '🗡️ '}
-                              {atk.weaponName}
+                            <span className="font-bold text-xs truncate flex items-center gap-1" style={{ color: '#3D2012' }}>
+                              <CrossedSwordsIcon size={12} className="shrink-0" />
+                              <span>{atk.weaponName}</span>
                             </span>
                           </div>
                           <div className="text-[10px] truncate" style={{ color: isDual ? '#8B4513' : '#8B6914' }}>
@@ -867,7 +897,7 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                             }}
                             title={isDual ? 'Бросить урон обеих атак суммарно' : 'Бросить урон оружия'}
                           >
-                            🎲
+                            <D20Icon size={14} />
                           </button>
                         </div>
 
@@ -906,7 +936,10 @@ export const MainSheetPage = React.memo(function MainSheetPage({
             </div>
 
             <div className="pt-1 flex items-center justify-between text-[11px] px-1" style={{ color: '#8B6914' }}>
-              <span>💡 Оружие в руках управляется в Экипировке. Метательное оружие из рюкзака всегда доступно для броска.</span>
+              <span className="flex items-center gap-1.5">
+                <InfoSealIcon size={14} className="shrink-0" />
+                <span>Оружие в руках управляется в Экипировке. Метательное оружие из рюкзака всегда доступно для броска.</span>
+              </span>
             </div>
           </div>
         </div>

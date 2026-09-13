@@ -17,6 +17,11 @@ import {
   SparklesDndIcon,
   GoldSealCheckIcon,
   SpellbookIcon,
+  MoonRestIcon,
+  HeartGemIcon,
+  EngravedShieldIcon,
+  SkullDeathIcon,
+  CrystalBallDndIcon,
 } from '@/components/dnd-icons';
 
 export interface RestModalProps {
@@ -187,7 +192,8 @@ export function RestModal({ char, onApplyRest, onClose }: RestModalProps) {
                 : 'border-transparent text-[#8B6914] hover:text-[#5C341F] hover:bg-black/5'
             }`}
           >
-            <span>⏳ Короткий отдых (1 ч.)</span>
+            <HourglassIcon size={16} />
+            <span>Короткий отдых (1 ч.)</span>
           </button>
           <button
             type="button"
@@ -198,7 +204,8 @@ export function RestModal({ char, onApplyRest, onClose }: RestModalProps) {
                 : 'border-transparent text-[#8B6914] hover:text-[#5C341F] hover:bg-black/5'
             }`}
           >
-            <span>🌙 Продолжительный отдых (8 ч.)</span>
+            <MoonRestIcon size={16} />
+            <span>Продолжительный отдых (8 ч.)</span>
           </button>
         </div>
 
@@ -348,7 +355,7 @@ export function RestModal({ char, onApplyRest, onClose }: RestModalProps) {
               >
                 <div className="flex items-center justify-between pb-2 border-b border-[#C9A84C]/30">
                   <span className="font-medium flex items-center gap-1.5">
-                    <span>💖</span> <span>Здоровье:</span>
+                    <HeartGemIcon size={15} /> <span>Здоровье:</span>
                   </span>
                   <span className="font-bold text-sm" style={{ color: '#3D2012' }}>
                     {currentHP} ➔ <strong className="text-emerald-800">{maxHP} HP (100%)</strong>
@@ -357,7 +364,7 @@ export function RestModal({ char, onApplyRest, onClose }: RestModalProps) {
 
                 <div className="flex items-center justify-between pb-2 border-b border-[#C9A84C]/30">
                   <span className="font-medium flex items-center gap-1.5">
-                    <span>🛡️</span> <span>Временные хиты:</span>
+                    <EngravedShieldIcon size={15} /> <span>Временные хиты:</span>
                   </span>
                   <span className="font-bold">
                     {char.hpTemp > 0 ? `${char.hpTemp} ➔ 0` : '0 (нет)'}
@@ -366,18 +373,18 @@ export function RestModal({ char, onApplyRest, onClose }: RestModalProps) {
 
                 <div className="flex items-center justify-between pb-2 border-b border-[#C9A84C]/30">
                   <span className="font-medium flex items-center gap-1.5">
-                    <span>💀</span> <span>Спасброски от смерти:</span>
+                    <SkullDeathIcon size={15} /> <span>Спасброски от смерти:</span>
                   </span>
                   <span className="font-bold">
                     {char.deathSaveSuccesses > 0 || char.deathSaveFailures > 0
-                      ? `Сброс (${char.deathSaveSuccesses} усп. / ${char.deathSaveFailures} пров. ➔ 0)`
+                       ? `Сброс (${char.deathSaveSuccesses} усп. / ${char.deathSaveFailures} пров. ➔ 0)`
                       : '0 / 0'}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between pb-2 border-b border-[#C9A84C]/30">
                   <span className="font-medium flex items-center gap-1.5">
-                    <span>🎲</span> <span>Восстановление костей хитов:</span>
+                    <D20Icon size={15} /> <span>Восстановление костей хитов:</span>
                   </span>
                   <span className="font-bold" style={{ color: '#3D2012' }}>
                     +{diceToRecoverOnLongRest} костей ({initiallySpentDice} ➔ {newSpentAfterLongRest} потрачено)
@@ -386,7 +393,7 @@ export function RestModal({ char, onApplyRest, onClose }: RestModalProps) {
 
                 <div className="flex items-center justify-between">
                   <span className="font-medium flex items-center gap-1.5">
-                    <span>🔮</span> <span>Ячейки заклинаний:</span>
+                    <CrystalBallDndIcon size={15} /> <span>Ячейки заклинаний:</span>
                   </span>
                   <span className="font-bold text-emerald-800">
                     Полное восстановление всех кругов

@@ -636,10 +636,10 @@ export function StatsCalculatorModal({
                           type="button"
                           onClick={() => handleRollSingle(ab)}
                           disabled={isRolling}
-                          className="parchment-btn-secondary text-[11px] py-1 px-2 cursor-pointer"
+                          className="parchment-btn-secondary text-[11px] py-1 px-2 cursor-pointer flex items-center justify-center"
                           title="Перебросить эту характеристику"
                         >
-                          🎲
+                          <D20Icon size={13} />
                         </button>
                       </div>
 

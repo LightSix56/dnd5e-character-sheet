@@ -126,9 +126,9 @@
     "semantic_hash": "2f133c43bb78f5c929c46433621b1222"
   },
   "src/app/page.tsx": {
-    "mtime": 1789291513.5934162,
-    "seen": 1789291687.6807718,
-    "ast_hash": "a1ad19a683ef0b34199c2b4490780766",
+    "mtime": 1789294998.2941222,
+    "seen": 1789295336.0623565,
+    "ast_hash": "c057556a59a6f9e6ac736bbab3f82a99",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -606,15 +606,15 @@
     "semantic_hash": ""
   },
   "test/escape-key-and-keyboard-rolls.test.ts": {
-    "mtime": 1789207563.4204679,
-    "seen": 1789207836.2133791,
-    "ast_hash": "7555e353dd68319d625c05a6778d5cd2",
+    "mtime": 1789294955.3580077,
+    "seen": 1789295336.0881064,
+    "ast_hash": "9025880a3f6a3a029051b723a2f0ae4a",
     "semantic_hash": ""
   },
   "test/hit-targets.test.ts": {
-    "mtime": 1788966694.537517,
-    "seen": 1788967505.145313,
-    "ast_hash": "1421afae17c8c1ed6efc7a6ecfa0ec26",
+    "mtime": 1789294023.6535795,
+    "seen": 1789295336.0905972,
+    "ast_hash": "c4c2a92c61d80c4e16239edc8dc5e0d5",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-09-ux-web-guidelines-enhancements-plan.md": {
@@ -630,9 +630,9 @@
     "semantic_hash": ""
   },
   "test/auth-form-and-images.test.ts": {
-    "mtime": 1788967846.1520894,
-    "seen": 1788968151.5244827,
-    "ast_hash": "68e2392ef777fe231fe3c87294a65491",
+    "mtime": 1789294961.4134202,
+    "seen": 1789295336.084138,
+    "ast_hash": "fbc76edeb067ce9cf5dd2925d69aeca0",
     "semantic_hash": ""
   },
   "e2e/ux-enhancements.spec.ts": {
@@ -642,21 +642,21 @@
     "semantic_hash": ""
   },
   "test/dice-spring-physics.test.ts": {
-    "mtime": 1788969528.3189573,
-    "seen": 1788970487.27181,
-    "ast_hash": "500098260c757335045426bc925c0861",
+    "mtime": 1789294521.5935938,
+    "seen": 1789295336.086897,
+    "ast_hash": "52908adfc2152b3d04fc66094a0bd5d7",
     "semantic_hash": ""
   },
   "test/empty-states.test.ts": {
-    "mtime": 1788969911.163249,
-    "seen": 1788970487.2718148,
-    "ast_hash": "dee2a67a9cfc55eada042bed45f74f41",
+    "mtime": 1789294034.2898295,
+    "seen": 1789295336.0875032,
+    "ast_hash": "9f5e77b12c196709c89621abf78a3a36",
     "semantic_hash": ""
   },
   "test/header-menu.test.ts": {
-    "mtime": 1788969730.7172112,
-    "seen": 1788970487.2721202,
-    "ast_hash": "98cafeb9cf4f7f5a732bb31467e31d25",
+    "mtime": 1789294511.869529,
+    "seen": 1789295336.090593,
+    "ast_hash": "56e4c74fa3b4da7326c0dc23715a4cfd",
     "semantic_hash": ""
   },
   "test/materiality-and-tactility.test.ts": {
@@ -666,9 +666,9 @@
     "semantic_hash": ""
   },
   "test/sliding-tabs.test.ts": {
-    "mtime": 1788969656.0351362,
-    "seen": 1788970487.2737315,
-    "ast_hash": "6f42c8c797fd8bdaca7851ee7625c089",
+    "mtime": 1789294517.0223553,
+    "seen": 1789295336.094551,
+    "ast_hash": "3b8976994f3fa670a937a10f2229c190",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-09-premium-medieval-design-enhancements-plan.md": {
@@ -696,9 +696,9 @@
     "semantic_hash": ""
   },
   "test/label-alignment.test.ts": {
-    "mtime": 1788971915.113027,
-    "seen": 1789023729.3073752,
-    "ast_hash": "5102bd9e7fe661a9c7bd9272eb40c762",
+    "mtime": 1789294029.0880563,
+    "seen": 1789295336.090601,
+    "ast_hash": "3807ea35ec3a2476cbcce1dbb5d9aa9b",
     "semantic_hash": ""
   },
   "test/level-up-warlock-choices.test.ts": {
@@ -1203,6 +1203,90 @@
     "mtime": 1789291421.8378987,
     "seen": 1789291687.7137606,
     "ast_hash": "b137f7c0591ea4f0bc741090d3f8141d",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/SheetFooter.tsx": {
+    "mtime": 1789294735.0087044,
+    "seen": 1789295336.0669951,
+    "ast_hash": "35d8718e08bf553c81fff2014f732412",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/SheetHeader.tsx": {
+    "mtime": 1789294507.3529508,
+    "seen": 1789295336.0669987,
+    "ast_hash": "948b4afdbc0fc4aefd1cd6637857df61",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/SheetNavbar.tsx": {
+    "mtime": 1789294481.0317721,
+    "seen": 1789295336.0670025,
+    "ast_hash": "279dd6b0c33b52e0153630d251091aa3",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/SheetUIPrimitives.tsx": {
+    "mtime": 1789293281.3665295,
+    "seen": 1789295336.0670054,
+    "ast_hash": "1333c3f52a6e18a50c145c639c3e56a3",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/modals/SheetModals.tsx": {
+    "mtime": 1789294949.6048906,
+    "seen": 1789295336.0670083,
+    "ast_hash": "3497551456a8873aa0cd9d315e9ef60e",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/pages/DetailsSheetPage.tsx": {
+    "mtime": 1789293361.5601554,
+    "seen": 1789295336.0670116,
+    "ast_hash": "b66df66b117ed2debad5dde483f8d599",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/pages/MainSheetPage.tsx": {
+    "mtime": 1789294142.8604443,
+    "seen": 1789295336.067014,
+    "ast_hash": "f847de83aa5bdc80e4c290b5b608d9eb",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/pages/SpellsSheetPage.tsx": {
+    "mtime": 1789293382.0350554,
+    "seen": 1789295336.0670161,
+    "ast_hash": "416638317559a100838768c5bb17095e",
+    "semantic_hash": ""
+  },
+  "test/sheet-header-navbar.test.ts": {
+    "mtime": 1789294524.7265148,
+    "seen": 1789295336.0945382,
+    "ast_hash": "3ed75c7fdf670ee6ca3abe8ec2a8db75",
+    "semantic_hash": ""
+  },
+  "test/sheet-modals.test.ts": {
+    "mtime": 1789294964.510424,
+    "seen": 1789295336.094542,
+    "ast_hash": "974d9f7257587bcb18bd207ae6fbab59",
+    "semantic_hash": ""
+  },
+  "test/sheet-pages.test.ts": {
+    "mtime": 1789293943.7493527,
+    "seen": 1789295336.094545,
+    "ast_hash": "3c5778b07cbc0ba206651975769c701e",
+    "semantic_hash": ""
+  },
+  "test/sheet-ui-primitives.test.ts": {
+    "mtime": 1789293268.0039854,
+    "seen": 1789295336.0945475,
+    "ast_hash": "4b7f1deb55fcf5ddf73a6510eceabace",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-13-page-decomposition.md": {
+    "mtime": 1789293189.3756733,
+    "seen": 1789295336.1046338,
+    "ast_hash": "f0571c957cbad26ef50bae13f5a68402",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-13-page-decomposition-design.md": {
+    "mtime": 1789293149.7428408,
+    "seen": 1789295336.1068306,
+    "ast_hash": "a5c7656a91a8833531db54492a57c0e1",
     "semantic_hash": ""
   }
 }

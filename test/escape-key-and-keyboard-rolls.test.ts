@@ -12,7 +12,11 @@ const readFile = (relPath: string) => {
   const content = fs.readFileSync(path.resolve(rootDir, relPath), 'utf8');
   if (relPath === 'src/app/page.tsx') {
     const prim = path.resolve(rootDir, 'src/components/sheet/SheetUIPrimitives.tsx');
-    if (fs.existsSync(prim)) return content + '\n' + fs.readFileSync(prim, 'utf8');
+    const modals = path.resolve(rootDir, 'src/components/sheet/modals/SheetModals.tsx');
+    let extra = '';
+    if (fs.existsSync(prim)) extra += '\n' + fs.readFileSync(prim, 'utf8');
+    if (fs.existsSync(modals)) extra += '\n' + fs.readFileSync(modals, 'utf8');
+    return content + extra;
   }
   return content;
 };

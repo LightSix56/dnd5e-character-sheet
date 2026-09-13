@@ -14,10 +14,12 @@ const readFile = (relPath: string) => {
     const main = path.resolve(rootDir, 'src/components/sheet/pages/MainSheetPage.tsx');
     const details = path.resolve(rootDir, 'src/components/sheet/pages/DetailsSheetPage.tsx');
     const spells = path.resolve(rootDir, 'src/components/sheet/pages/SpellsSheetPage.tsx');
+    const modals = path.resolve(rootDir, 'src/components/sheet/modals/SheetModals.tsx');
     let extra = '';
     if (fs.existsSync(main)) extra += '\n' + fs.readFileSync(main, 'utf8');
     if (fs.existsSync(details)) extra += '\n' + fs.readFileSync(details, 'utf8');
     if (fs.existsSync(spells)) extra += '\n' + fs.readFileSync(spells, 'utf8');
+    if (fs.existsSync(modals)) extra += '\n' + fs.readFileSync(modals, 'utf8');
     return content + extra;
   }
   return content;

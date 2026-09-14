@@ -60,6 +60,7 @@ import {
   GENIE_KINDS_LIST,
   WARLOCK_MYSTIC_ARCANUM_SPELLS,
 } from '@/data/compendium/warlock-choices';
+import { getFeatAbilityBonusFromFeat } from '@/lib/feat-bonus-engine';
 import { FIGHTING_STYLES } from '@/components/wizard/wizard-helpers';
 import {
   AutocompleteInput,
@@ -373,6 +374,27 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     allFeats[0]?.id || 'alert'
   );
   const selectedFeat = allFeats.find(f => f.id === selectedFeatId);
+
+  const selectedFeatBonusConfig = useMemo(() => {
+    return getFeatAbilityBonusFromFeat(selectedFeat);
+  }, [selectedFeat]);
+
+  const [selectedFeatAbilityBonus, setSelectedFeatAbilityBonus] = useState<AbilityName | null>(() => {
+    const cfg = getFeatAbilityBonusFromFeat(allFeats[0]);
+    return cfg?.options[0] || null;
+  });
+
+  // When selected feat changes, keep choice if still in options, otherwise select first available
+  useEffect(() => {
+    if (selectedFeatBonusConfig && selectedFeatBonusConfig.options.length > 0) {
+      setSelectedFeatAbilityBonus(prev => {
+        if (prev && selectedFeatBonusConfig.options.includes(prev)) return prev;
+        return selectedFeatBonusConfig.options[0];
+      });
+    } else {
+      setSelectedFeatAbilityBonus(null);
+    }
+  }, [selectedFeatBonusConfig]);
 
   // ASI Cap calculation (max 20 per 5e rules)
   const score1 = getTotalScore(char, asiAbility1);
@@ -1076,11 +1098,13 @@ export const LevelUpModal = React.memo(function LevelUpModal({
 
     // Feat trait
     let featName: string | undefined = undefined;
+    let featBonusStat: AbilityName | undefined = undefined;
     if (isASI && asiChoice === 'feat' && selectedFeat) {
-      featName = selectedFeat.name;
+      featBonusStat = selectedFeatAbilityBonus || (selectedFeatBonusConfig?.options[0]) || undefined;
+      featName = featBonusStat ? `${selectedFeat.name} (+1 ${featBonusStat})` : selectedFeat.name;
       addedTraits.push({
         id: `feat-${newLevel}-${Math.random().toString(36).slice(2, 8)}`,
-        name: selectedFeat.name,
+        name: featName,
         source: `Черта (${newLevel} ур.)`,
         summary: selectedFeat.summary,
         description: selectedFeat.description,
@@ -1392,6 +1416,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
           ? [asiAbility1, asiAbility2]
           : null,
       selectedFeat: featName,
+      featAbilityBonus: isASI && asiChoice === 'feat' ? featBonusStat : undefined,
       newSubclass:
         isSubclassChoice && chosenSubclass ? chosenSubclass : undefined,
       selectedFightingStyle:
@@ -3821,6 +3846,64 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                         <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)] max-h-40 overflow-y-auto">
                           {selectedFeat.description}
                         </div>
+
+                        {/* Interactive Feat Ability Bonus Selector */}
+                        {selectedFeatBonusConfig && (
+                          <div className="pt-2 border-t border-[rgba(201,168,76,0.35)] space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-bold text-[#3D2012] flex items-center gap-1">
+                                <span>🎯</span>
+                                <span>{selectedFeatBonusConfig.isChoice ? 'Выберите характеристику для бонуса (+1):' : 'Бонус к характеристике (+1):'}</span>
+                              </span>
+                              {!selectedFeatBonusConfig.isChoice && (
+                                <span className="text-[10px] uppercase font-bold text-[#2d5f24] tracking-wide bg-[rgba(74,124,63,0.15)] px-1.5 py-0.5 rounded border border-[rgba(74,124,63,0.3)]">
+                                  Применяется автоматически
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                              {selectedFeatBonusConfig.options.map(ability => {
+                                const isSelected = selectedFeatAbilityBonus === ability;
+                                const currentScore = getTotalScore(char, ability);
+                                const nextScore = currentScore + 1;
+                                const isOverCap = nextScore > 20;
+
+                                return (
+                                  <button
+                                    key={ability}
+                                    type="button"
+                                    onClick={() => setSelectedFeatAbilityBonus(ability)}
+                                    disabled={!selectedFeatBonusConfig.isChoice}
+                                    className={`p-2 rounded border text-left flex items-center justify-between transition-all ${
+                                      isSelected
+                                        ? 'parchment-btn shadow-sm ring-1 ring-[#C9A84C]'
+                                        : 'parchment-btn-secondary hover:bg-[rgba(201,168,76,0.15)]'
+                                    } ${!selectedFeatBonusConfig.isChoice ? 'cursor-default opacity-95' : 'cursor-pointer'}`}
+                                  >
+                                    <div className="flex flex-col">
+                                      <span className="font-bold text-xs">{ABILITY_FULL[ability]}</span>
+                                      <span className="text-[10px] opacity-80">{ability}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-xs font-mono font-bold">
+                                      <span>{currentScore}</span>
+                                      <span className="opacity-60">➔</span>
+                                      <span className={isOverCap ? 'text-red-700 font-extrabold' : 'text-emerald-800'}>
+                                        {nextScore}
+                                      </span>
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {selectedFeatAbilityBonus && getTotalScore(char, selectedFeatAbilityBonus) >= 20 && (
+                              <p className="text-[10px] text-[#B45309] font-medium flex items-center gap-1">
+                                <WarningSignIcon size={11} className="shrink-0" />
+                                <span>Значение характеристики уже равно 20 (максимум D&D 5e). Бонус не увеличит её выше 20.</span>
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })()}
@@ -4376,6 +4459,11 @@ export const LevelUpModal = React.memo(function LevelUpModal({
             {isASI && asiChoice === 'feat' && selectedFeat && (
               <p>
                 • Получена черта: <strong>{selectedFeat.name}</strong>
+                {selectedFeatAbilityBonus && (
+                  <span className="ml-1 text-emerald-800 font-bold">
+                    (+1 к {ABILITY_FULL[selectedFeatAbilityBonus]})
+                  </span>
+                )}
               </p>
             )}
             {autoSpells.length > 0 && (

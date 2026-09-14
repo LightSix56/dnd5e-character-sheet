@@ -1041,6 +1041,9 @@ export default function DnDCharacterSheet() {
         newAsi[entry.asiAbilities[0]] = (newAsi[entry.asiAbilities[0]] || 0) + 1;
         newAsi[entry.asiAbilities[1]] = (newAsi[entry.asiAbilities[1]] || 0) + 1;
       }
+      if (entry.featAbilityBonus) {
+        newAsi[entry.featAbilityBonus] = (newAsi[entry.featAbilityBonus] || 0) + 1;
+      }
       // Update hit dice count (preserve user's notation: d or к)
       let newHitDice = prev.hitDice;
       if (newHitDice) {
@@ -1222,6 +1225,9 @@ export default function DnDCharacterSheet() {
         if (last.asiAbilities[1]) {
           newAsi[last.asiAbilities[1]] = Math.max(0, (newAsi[last.asiAbilities[1]] || 0) - 1);
         }
+      }
+      if (last?.featAbilityBonus) {
+        newAsi[last.featAbilityBonus] = Math.max(0, (newAsi[last.featAbilityBonus] || 0) - 1);
       }
       let newHitDice = prev.hitDice;
       if (newHitDice) {

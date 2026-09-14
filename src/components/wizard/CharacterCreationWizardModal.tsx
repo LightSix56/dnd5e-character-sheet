@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   CharacterData, AbilityName, ABILITY_NAMES, ABILITY_FULL, ALL_SKILLS, SKILL_MAP,
   calcModifier, formatModifier, formatAbilityBonus, Attack, SpellEntry, createDefaultCharacter,
@@ -11,6 +11,7 @@ import { DND_COMPENDIUM_CLASSES, type CompendiumClass } from '@/data/compendium/
 import { DND_COMPENDIUM_BACKGROUNDS, type CompendiumBackground } from '@/data/compendium/backgrounds';
 import { DND_COMPENDIUM_SPELLS, type DndSpell } from '@/data/compendium/spells';
 import { DND_COMPENDIUM_FEATS, getFeats, checkFeatPrerequisites, type CompendiumFeat } from '@/data/compendium/feats';
+import { getFeatAbilityBonusFromFeat } from '@/lib/feat-bonus-engine';
 import { GENIE_KINDS, GENIE_KINDS_LIST, type GenieKindId } from '@/data/compendium/warlock-choices';
 import {
   generateFantasyName,
@@ -82,6 +83,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [customRacialSkills, setCustomRacialSkills] = useState<string[]>([]);
   // Additional racial choices (Variant Human Feat, High Elf Cantrip, Dwarf Tool, Dragon Ancestry, Languages)
   const [selectedRacialFeatId, setSelectedRacialFeatId] = useState<string>('');
+  const [selectedRacialFeatAbilityBonus, setSelectedRacialFeatAbilityBonus] = useState<AbilityName | null>(null);
   const [racialFeatSearch, setRacialFeatSearch] = useState<string>('');
   const [selectedRacialCantrip, setSelectedRacialCantrip] = useState<string>('');
   const [selectedRacialTool, setSelectedRacialTool] = useState<string>('Инструменты кузнеца');
@@ -208,6 +210,35 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return getRacialBonusConfig(selectedRace, selectedSubrace);
   }, [selectedRace, selectedSubrace]);
 
+  // Racial choices configuration (Feat, Cantrip, Tool, Dragon Ancestry, Languages)
+  const racialChoicesConfig = useMemo(() => {
+    if (!selectedRace) return null;
+    return getRacialChoicesConfig(selectedRace, selectedSubrace);
+  }, [selectedRace, selectedSubrace]);
+
+  // Selected racial feat details
+  const selectedRacialFeat = useMemo(() => {
+    if (!selectedRacialFeatId) return null;
+    return DND_COMPENDIUM_FEATS.find(f => f.id === selectedRacialFeatId) || null;
+  }, [selectedRacialFeatId]);
+
+  // Selected racial feat ability bonus configuration
+  const selectedRacialFeatBonusConfig = useMemo(() => {
+    return getFeatAbilityBonusFromFeat(selectedRacialFeat);
+  }, [selectedRacialFeat]);
+
+  // Sync selected racial feat ability bonus
+  useEffect(() => {
+    if (!racialChoicesConfig?.needsFeat || !selectedRacialFeatBonusConfig) {
+      setSelectedRacialFeatAbilityBonus(null);
+    } else if (
+      !selectedRacialFeatAbilityBonus ||
+      !selectedRacialFeatBonusConfig.options.includes(selectedRacialFeatAbilityBonus)
+    ) {
+      setSelectedRacialFeatAbilityBonus(selectedRacialFeatBonusConfig.options[0]);
+    }
+  }, [racialChoicesConfig?.needsFeat, selectedRacialFeatBonusConfig, selectedRacialFeatAbilityBonus]);
+
   // Final effective racial bonuses map
   const racialBonuses = useMemo<Record<AbilityName, number>>(() => {
     const map: Record<AbilityName, number> = { 'СИЛ': 0, 'ЛОВ': 0, 'ТЕЛ': 0, 'ИНТ': 0, 'МДР': 0, 'ХАР': 0 };
@@ -223,8 +254,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         map[ab] = (map[ab] || 0) + racialBonusConfig.bonusAmount;
       }
     }
+    // Add racial feat ability bonus (e.g. Athlete, Resilient, Heavy Armor Master)
+    if (racialChoicesConfig?.needsFeat && selectedRacialFeatAbilityBonus) {
+      map[selectedRacialFeatAbilityBonus] = (map[selectedRacialFeatAbilityBonus] || 0) + 1;
+    }
     return map;
-  }, [racialBonusConfig, customRacialBonuses]);
+  }, [racialBonusConfig, customRacialBonuses, racialChoicesConfig?.needsFeat, selectedRacialFeatAbilityBonus]);
 
   // Racial skills
   const racialSkillData = useMemo(() => {
@@ -246,12 +281,6 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     }
     return list;
   }, [racialSkillData, customRacialSkills]);
-
-  // Racial choices configuration (Feat, Cantrip, Tool, Dragon Ancestry, Languages)
-  const racialChoicesConfig = useMemo(() => {
-    if (!selectedRace) return null;
-    return getRacialChoicesConfig(selectedRace, selectedSubrace);
-  }, [selectedRace, selectedSubrace]);
 
   // Base languages granted by race (excluding placeholder text like "на выбор")
   const baseRaceLanguages = useMemo(() => {
@@ -309,12 +338,6 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       })
     ).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
   }, [racialChoicesConfig]);
-
-  // Selected racial feat details
-  const selectedRacialFeat = useMemo(() => {
-    if (!selectedRacialFeatId) return null;
-    return DND_COMPENDIUM_FEATS.find(f => f.id === selectedRacialFeatId) || null;
-  }, [selectedRacialFeatId]);
 
   // Selected dragon ancestry details
   const selectedDragonAncestry = useMemo(() => {
@@ -461,6 +484,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
     // Reset racial choices
     setSelectedRacialFeatId('');
+    setSelectedRacialFeatAbilityBonus(null);
     setSelectedRacialCantrip('');
     setSelectedRacialTool('Инструменты кузнеца');
     setSelectedDragonColor('Красный');
@@ -486,6 +510,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
     // Reset racial choices on subrace switch
     setSelectedRacialFeatId('');
+    setSelectedRacialFeatAbilityBonus(null);
     setSelectedRacialCantrip('');
     setSelectedRacialTool('Инструменты кузнеца');
     setSelectedDragonColor('Красный');
@@ -703,6 +728,9 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       }
       if (racialChoicesConfig?.needsFeat && !selectedRacialFeatId) {
         return { valid: false, error: 'Пожалуйста, выберите стартовую черту (Feat).' };
+      }
+      if (racialChoicesConfig?.needsFeat && selectedRacialFeatBonusConfig && !selectedRacialFeatAbilityBonus) {
+        return { valid: false, error: 'Пожалуйста, выберите характеристику для бонуса от черты.' };
       }
       if (racialChoicesConfig?.needsCantrip && !selectedRacialCantrip) {
         return { valid: false, error: 'Пожалуйста, выберите дополнительный расовый заговор.' };
@@ -964,14 +992,17 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
     // Racial Feat trait (Variant Human, Custom Lineage)
     if (racialChoicesConfig?.needsFeat && selectedRacialFeat) {
+      const bonusSuffix = selectedRacialFeatBonusConfig && selectedRacialFeatAbilityBonus
+        ? ` (+1 ${selectedRacialFeatAbilityBonus})`
+        : '';
       traitsList.push({
         id: `feat-${selectedRacialFeat.id}`,
-        name: `Черта: ${selectedRacialFeat.name}`,
+        name: `Черта: ${selectedRacialFeat.name}${bonusSuffix}`,
         source: selectedRace?.name || 'Раса',
         summary: selectedRacialFeat.summary,
         description: selectedRacialFeat.description
       });
-      featureTextLines.push(`[Черта] ${selectedRacialFeat.name}: ${selectedRacialFeat.description}`);
+      featureTextLines.push(`[Черта] ${selectedRacialFeat.name}${bonusSuffix}: ${selectedRacialFeat.description}`);
     }
 
     // Racial Cantrip trait (High Elf)
@@ -1997,6 +2028,78 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                                 <div className="text-[11px] text-[#3D2012] whitespace-pre-line leading-relaxed pt-1.5 border-t border-[rgba(201,168,76,0.3)] max-h-40 overflow-y-auto">
                                   {selectedRacialFeat.description}
                                 </div>
+
+                                {/* Interactive Racial Feat Ability Bonus Selector */}
+                                {selectedRacialFeatBonusConfig && (
+                                  <div className="pt-2 border-t border-[rgba(201,168,76,0.35)] space-y-1.5">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[11px] font-bold text-[#3D2012] flex items-center gap-1">
+                                        <span>🎯</span>
+                                        <span>
+                                          {selectedRacialFeatBonusConfig.isChoice
+                                            ? 'Выберите характеристику для бонуса (+1):'
+                                            : 'Бонус к характеристике (+1):'}
+                                        </span>
+                                      </span>
+                                      {!selectedRacialFeatBonusConfig.isChoice && (
+                                        <span className="text-[10px] uppercase font-bold text-[#2d5f24] tracking-wide bg-[rgba(74,124,63,0.15)] px-1.5 py-0.5 rounded border border-[rgba(74,124,63,0.3)]">
+                                          Применяется автоматически
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                                      {selectedRacialFeatBonusConfig.options.map(ability => {
+                                        const isSelected = selectedRacialFeatAbilityBonus === ability;
+                                        const baseWithoutFeat =
+                                          (baseScores[ability] || 10) +
+                                          (racialBonusConfig.fixedBonuses?.[ability] || 0) +
+                                          (customRacialBonuses.includes(ability) ? racialBonusConfig.bonusAmount : 0);
+                                        const nextScore = baseWithoutFeat + 1;
+                                        const isOverCap = nextScore > 20;
+
+                                        return (
+                                          <button
+                                            key={ability}
+                                            type="button"
+                                            onClick={() => setSelectedRacialFeatAbilityBonus(ability)}
+                                            disabled={!selectedRacialFeatBonusConfig.isChoice}
+                                            className={`p-2 rounded border text-left flex items-center justify-between transition-all ${
+                                              isSelected
+                                                ? 'parchment-btn shadow-sm ring-1 ring-[#C9A84C]'
+                                                : 'parchment-btn-secondary hover:bg-[rgba(201,168,76,0.15)]'
+                                            } ${!selectedRacialFeatBonusConfig.isChoice ? 'cursor-default opacity-95' : 'cursor-pointer'}`}
+                                          >
+                                            <div className="flex flex-col">
+                                              <span className="font-bold text-xs">{ABILITY_FULL[ability]}</span>
+                                              <span className="text-[10px] opacity-80">{ability}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-xs font-mono font-bold">
+                                              <span>{baseWithoutFeat}</span>
+                                              <span className="opacity-60">➔</span>
+                                              <span className={isOverCap ? 'text-red-700 font-extrabold' : 'text-emerald-800'}>
+                                                {nextScore}
+                                              </span>
+                                            </div>
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+
+                                    {selectedRacialFeatAbilityBonus && (() => {
+                                      const baseWithoutFeat =
+                                        (baseScores[selectedRacialFeatAbilityBonus] || 10) +
+                                        (racialBonusConfig.fixedBonuses?.[selectedRacialFeatAbilityBonus] || 0) +
+                                        (customRacialBonuses.includes(selectedRacialFeatAbilityBonus) ? racialBonusConfig.bonusAmount : 0);
+                                      return baseWithoutFeat >= 20 ? (
+                                        <p className="text-[10px] text-[#B45309] font-medium flex items-center gap-1">
+                                          <WarningSignIcon size={11} className="shrink-0" />
+                                          <span>Значение характеристики уже достигло 20 (максимум D&D 5e). Бонус не увеличит её выше 20.</span>
+                                        </p>
+                                      ) : null;
+                                    })()}
+                                  </div>
+                                )}
                               </div>
                             );
                           })()}
@@ -4248,6 +4351,34 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                     })}
                   </div>
                 </div>
+
+                {/* Racial Choices summary */}
+                {racialChoicesConfig && (racialChoicesConfig.needsFeat || racialChoicesConfig.needsCantrip || racialChoicesConfig.needsTool || racialChoicesConfig.needsDragonColor) && (
+                  <div className="text-xs space-y-1 pt-1 border-t" style={{ borderColor: 'rgba(201, 168, 76, 0.25)' }}>
+                    <div className="font-semibold text-[#5C341F]">📜 Расовые особенности и выбор:</div>
+                    {racialChoicesConfig.needsFeat && selectedRacialFeat && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Стартовая черта: </strong>{selectedRacialFeat.name}
+                        {selectedRacialFeatBonusConfig && selectedRacialFeatAbilityBonus ? ` (+1 к ${ABILITY_FULL[selectedRacialFeatAbilityBonus]})` : ''}
+                      </div>
+                    )}
+                    {racialChoicesConfig.needsCantrip && selectedRacialCantrip && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Расовый заговор: </strong>{selectedRacialCantrip}
+                      </div>
+                    )}
+                    {racialChoicesConfig.needsTool && selectedRacialTool && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Владение инструментом: </strong>{selectedRacialTool}
+                      </div>
+                    )}
+                    {racialChoicesConfig.needsDragonColor && selectedDragonAncestry && (
+                      <div className="text-[11px] text-[#3D2012]">
+                        <strong>Драконье наследие: </strong>{selectedDragonAncestry.color} (урон: {selectedDragonAncestry.damageType})
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Class Choices summary */}
                 {(classChoicesConfig.needsFightingStyle || classChoicesConfig.needsExpertise || classChoicesConfig.needsFavoredEnemy || classChoicesConfig.needsDraconicAncestor || classChoicesConfig.needsGenieKind) && (

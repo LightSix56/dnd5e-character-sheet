@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "src/app/page.tsx": {
-    "mtime": 1789376112.7366261,
-    "seen": 1789376306.1921582,
-    "ast_hash": "cdcba8ac1cc0b1550defd9b0ea25bfbb",
+    "mtime": 1789377537.5673554,
+    "seen": 1789378136.1763287,
+    "ast_hash": "a9a525473e725c97870253629e840e59",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -216,9 +216,9 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1789311960.5085335,
-    "seen": 1789312153.067924,
-    "ast_hash": "fc17cdd2b73bbc4340d4833548b14185",
+    "mtime": 1789377905.930655,
+    "seen": 1789378136.1843393,
+    "ast_hash": "fcb1e6ee3c12ac59898d644f15c5d8c9",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1789311886.5199046,
-    "seen": 1789312153.079084,
-    "ast_hash": "df55a5c614bc4bf9d85ef48e898c5169",
+    "mtime": 1789377131.4488406,
+    "seen": 1789378136.19568,
+    "ast_hash": "b822f2cebf6676a361d796824936e452",
     "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789307275.7901738,
-    "seen": 1789307565.7418818,
-    "ast_hash": "ea84bf4d3070c202e1813ad0114cbdc6",
+    "mtime": 1789377493.9481258,
+    "seen": 1789378136.1799624,
+    "ast_hash": "ff9484d105b1dfca61d8c99e3d98f706",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -1371,6 +1371,42 @@
     "mtime": 1789375996.7907846,
     "seen": 1789376306.2130582,
     "ast_hash": "e0e67d2abf341d851090008ac5bfd462",
+    "semantic_hash": ""
+  },
+  "src/lib/feat-bonus-engine.ts": {
+    "mtime": 1789377928.5555234,
+    "seen": 1789378136.1959703,
+    "ast_hash": "977ba0f1f77a40918add4479f207230f",
+    "semantic_hash": ""
+  },
+  "test/feat-bonus-engine.test.ts": {
+    "mtime": 1789377117.504974,
+    "seen": 1789378136.2060962,
+    "ast_hash": "0f34846811c46aad6d7145d6600dbc52",
+    "semantic_hash": ""
+  },
+  "test/level-up-feat-choice.test.ts": {
+    "mtime": 1789377164.969098,
+    "seen": 1789378136.2098665,
+    "ast_hash": "7904ee0bf78efb313db87e6f10745ee1",
+    "semantic_hash": ""
+  },
+  "test/wizard-feat-choice.test.ts": {
+    "mtime": 1789377774.7037895,
+    "seen": 1789378136.218173,
+    "ast_hash": "100de6f3459efe34af04a89f05f606ea",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-14-feat-ability-bonus-choice-plan.md": {
+    "mtime": 1789377052.2427747,
+    "seen": 1789378136.2257974,
+    "ast_hash": "040d169996b91a6013b7d42623995492",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-09-14-feat-ability-bonus-choice-design.md": {
+    "mtime": 1789377038.9086118,
+    "seen": 1789378136.228357,
+    "ast_hash": "b93c5f044663ad7ba80ecfe60b76fd8a",
     "semantic_hash": ""
   }
 }

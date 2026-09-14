@@ -73,6 +73,7 @@ export interface LevelUpEntry {
 
   // Structured additions (tracked for level-down rollback)
   selectedFeat?: string;                              // Feat chosen instead of ASI
+  featAbilityBonus?: AbilityName;                     // Ability chosen for feat ability score bonus
   newSubclass?: string;                               // Subclass chosen at this level
   selectedFightingStyle?: string;                     // Fighting style chosen at this level
   addedTraits?: TraitItem[];                          // Traits added to traitsList

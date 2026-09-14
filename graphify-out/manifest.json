@@ -1122,9 +1122,9 @@
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentPaperDoll.tsx": {
-    "mtime": 1789374196.6604,
-    "seen": 1789374364.3418121,
-    "ast_hash": "c9d54fe93df660bd3ceddd5cd67a6c3c",
+    "mtime": 1789374834.6329453,
+    "seen": 1789375038.7929702,
+    "ast_hash": "1fff9bc8b97365c168b9de3b6c242de6",
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentSlotModal.tsx": {
@@ -1365,12 +1365,6 @@
     "mtime": 1789311870.322628,
     "seen": 1789312153.0958104,
     "ast_hash": "cdf1421928efa9def50694858151ced0",
-    "semantic_hash": ""
-  },
-  "public/mannequin_transparent.png": {
-    "mtime": 1789373295.8678658,
-    "seen": 1789374364.3997104,
-    "ast_hash": "0b93c9521b25219e3dcc1525af50cff5",
     "semantic_hash": ""
   }
 }

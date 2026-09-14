@@ -40,6 +40,8 @@ export interface SheetHeaderProps {
   onOpenSignOut: () => void;
   onOpenAuth: () => void;
   onExportDocx: () => void;
+  onStartTour: () => void;
+  onOpenEncyclopedia: (chapterId?: string) => void;
 }
 
 export const SheetHeader = React.memo(function SheetHeader({
@@ -61,18 +63,24 @@ export const SheetHeader = React.memo(function SheetHeader({
   onOpenSignOut,
   onOpenAuth,
   onExportDocx,
+  onStartTour,
+  onOpenEncyclopedia,
 }: SheetHeaderProps) {
   const [showSheetMenu, setShowSheetMenu] = useState(false);
+  const [showGuideMenu, setShowGuideMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   React.useEffect(() => {
-    if (!showSheetMenu) return;
+    if (!showSheetMenu && !showGuideMenu) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setShowSheetMenu(false);
+      if (e.key === 'Escape') {
+        setShowSheetMenu(false);
+        setShowGuideMenu(false);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSheetMenu]);
+  }, [showSheetMenu, showGuideMenu]);
 
   return (
     <header className="sticky top-0 z-50 parchment-header">
@@ -103,6 +111,67 @@ export const SheetHeader = React.memo(function SheetHeader({
               <UserHeroIcon size={16} />
               <span>Создать персонажа</span>
             </button>
+          </div>
+
+          {/* Onboarding & Guide Dropdown */}
+          <div className="relative">
+            <div className="parchment-btn-group">
+              <button
+                type="button"
+                onClick={() => setShowGuideMenu((prev) => !prev)}
+                className="parchment-header-btn flex items-center gap-1.5 font-semibold"
+                title="Обучение D&D 5e: Тур по листу и Энциклопедия правил"
+                aria-expanded={showGuideMenu}
+              >
+                <ScrollIcon size={16} />
+                <span>Обучение D&D</span>
+                <span className="text-[10px] opacity-75">▾</span>
+              </button>
+            </div>
+
+            {showGuideMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-[110]"
+                  onClick={() => setShowGuideMenu(false)}
+                />
+                <div
+                  className="absolute left-0 top-full mt-1.5 w-60 parchment-menu-dropdown z-[120] py-1.5 rounded shadow-xl"
+                  role="menu"
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowGuideMenu(false);
+                      onStartTour();
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                    role="menuitem"
+                  >
+                    <D20Icon size={16} />
+                    <div>
+                      <div className="font-bold">🎯 Экскурсия по листу</div>
+                      <div className="text-[10px] text-[#8B6914]">Интерактивный тур за 2 минуты</div>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowGuideMenu(false);
+                      onOpenEncyclopedia();
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs text-[#3D2012] hover:bg-[#C9A84C]/20 flex items-center gap-2 font-medium transition-colors cursor-pointer"
+                    role="menuitem"
+                  >
+                    <ScrollIcon size={16} />
+                    <div>
+                      <div className="font-bold">📖 Большая Энциклопедия</div>
+                      <div className="text-[10px] text-[#8B6914]">7 глав правил, ДМ и разбор цифр</div>
+                    </div>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Sheet Actions Dropdown Menu */}
@@ -459,6 +528,30 @@ export const SheetHeader = React.memo(function SheetHeader({
               >
                 <CrossedSwordsIcon size={15} />
                 <span>Экипировка (кукла снаряжения)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  onStartTour();
+                }}
+                className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
+              >
+                <D20Icon size={15} />
+                <span>🎯 Экскурсия по листу</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  onOpenEncyclopedia();
+                }}
+                className="parchment-btn-secondary flex items-center gap-2 p-2.5 text-xs justify-start"
+              >
+                <ScrollIcon size={15} />
+                <span>📖 Энциклопедия правил</span>
               </button>
 
               <button

@@ -55,6 +55,7 @@ import {
   TargetAimIcon,
   CompendiumBookIcon,
 } from '@/components/dnd-icons';
+import { BlockHelpButton } from '@/components/encyclopedia/BlockHelpButton';
 
 export interface MainSheetPageProps {
   char: CharacterData;
@@ -103,6 +104,7 @@ export interface MainSheetPageProps {
   showToast: (title: string, message: string) => void;
   compClass?: CompendiumClass | ClassTemplate | null;
   onToggleMainHandGrip?: () => void;
+  onOpenEncyclopedia?: (chapterId: string, sectionId?: string) => void;
 }
 
 export const MainSheetPage = React.memo(function MainSheetPage({
@@ -152,14 +154,18 @@ export const MainSheetPage = React.memo(function MainSheetPage({
   showToast,
   compClass,
   onToggleMainHandGrip,
+  onOpenEncyclopedia,
 }: MainSheetPageProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-5 space-y-4">
 
         {/* Basic Info */}
-        <div className="parchment-card">
-          <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><UserHeroIcon size={20} /><span>Основная информация</span></h3></div>
+        <div className="parchment-card" data-tour-id="tour-identity">
+          <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+            <h3 className="parchment-heading flex items-center gap-2 mb-0"><UserHeroIcon size={20} /><span>Основная информация</span></h3>
+            <BlockHelpButton chapterId="intro-dnd-basics" sectionId="roles-dm-and-players" label="Кто такой персонаж и как играть" onOpen={onOpenEncyclopedia} />
+          </div>
           <div className="px-4 pb-4 space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
@@ -282,13 +288,16 @@ export const MainSheetPage = React.memo(function MainSheetPage({
         </div>
 
         {/* Abilities */}
-        <div className="parchment-card">
+        <div className="parchment-card" data-tour-id="tour-abilities">
           <div className="px-4 pt-4 pb-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <h3 className="parchment-heading flex items-center gap-2">
-                <SparklesDndIcon size={20} />
-                <span>Характеристики</span>
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="parchment-heading flex items-center gap-2 mb-0">
+                  <SparklesDndIcon size={20} />
+                  <span>Характеристики</span>
+                </h3>
+                <BlockHelpButton chapterId="sheet-anatomy" sectionId="abilities-and-modifiers" label="Разбор характеристик" onOpen={onOpenEncyclopedia} />
+              </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -315,14 +324,17 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                 >
                   База: {baseAbilitySum}/72
                 </span>
-                <span className="text-xs font-normal" style={{ color: '#8B6914' }}>
-                  Мастерство: {formatModifier(profBonus)}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-normal" style={{ color: '#8B6914' }}>
+                    Мастерство: {formatModifier(profBonus)}
+                  </span>
+                  <BlockHelpButton chapterId="sheet-anatomy" sectionId="saving-throws" label="Разбор спасбросков и мастерства" onOpen={onOpenEncyclopedia} />
+                </div>
               </div>
             </div>
           </div>
           <div className="px-4 pb-4">
-            <div className="space-y-2">
+            <div className="space-y-2" data-tour-id="tour-saves">
               <div className="hidden sm:grid gap-1 text-xs font-medium px-1" style={{ color: '#8B6914', gridTemplateColumns: '2fr repeat(6, 1fr)' }}>
                 <span>Характ.</span><span className="text-center">База</span><span className="text-center">Раса</span><span className="text-center">АСИ</span><span className="text-center">Итого</span><span className="text-center">Мод.</span><span className="text-center">Спасбр.</span>
               </div>
@@ -437,12 +449,15 @@ export const MainSheetPage = React.memo(function MainSheetPage({
         </div>
 
         {/* Combat */}
-        <div className="parchment-card">
+        <div className="parchment-card" data-tour-id="tour-combat">
           <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-            <h3 className="parchment-heading flex items-center gap-2">
-              <EngravedShieldIcon size={20} />
-              <span>Боевые параметры</span>
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="parchment-heading flex items-center gap-2 mb-0">
+                <EngravedShieldIcon size={20} />
+                <span>Боевые параметры</span>
+              </h3>
+              <BlockHelpButton chapterId="sheet-anatomy" sectionId="ac-and-vitals" label="Разбор боевых параметров" onOpen={onOpenEncyclopedia} />
+            </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -661,8 +676,14 @@ export const MainSheetPage = React.memo(function MainSheetPage({
       <div className="lg:col-span-7 space-y-4">
 
         {/* Skills */}
-        <div className="parchment-card">
-          <div className="px-4 pt-4 pb-3"><h3 className="parchment-heading flex items-center gap-2"><SparklesDndIcon size={20} /><span>Навыки</span> <span className="ml-auto text-xs font-normal" style={{ color: '#8B6914' }}>☑ = владение · ☑☑ = экспертиза · Нажмите для броска</span></h3></div>
+        <div className="parchment-card" data-tour-id="tour-skills">
+          <div className="px-4 pt-4 pb-3 flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <h3 className="parchment-heading flex items-center gap-2 mb-0"><SparklesDndIcon size={20} /><span>Навыки</span></h3>
+              <BlockHelpButton chapterId="sheet-anatomy" sectionId="skills-and-expertise" label="Разбор навыков" onOpen={onOpenEncyclopedia} />
+            </div>
+            <span className="text-xs font-normal" style={{ color: '#8B6914' }}>☑ = владение · ☑☑ = экспертиза · Нажмите для броска</span>
+          </div>
           <div className="px-4 pb-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
               {ALL_SKILLS.map(skill => {
@@ -691,12 +712,15 @@ export const MainSheetPage = React.memo(function MainSheetPage({
         </div>
 
         {/* Attacks and Weapons Card */}
-        <div className="parchment-card">
+        <div className="parchment-card" data-tour-id="tour-attacks">
           <div className="px-4 pt-4 pb-3 flex items-center justify-between flex-wrap gap-2">
-            <h3 className="parchment-heading flex items-center gap-2 mb-0">
-              <CrossedSwordsIcon size={20} />
-              <span>Атаки и оружие</span>
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="parchment-heading flex items-center gap-2 mb-0">
+                <CrossedSwordsIcon size={20} />
+                <span>Атаки и оружие</span>
+              </h3>
+              <BlockHelpButton chapterId="sheet-anatomy" sectionId="attacks-and-damage" label="Разбор атак и урона" onOpen={onOpenEncyclopedia} />
+            </div>
             <button
               type="button"
               onClick={() => setShowEquipmentModal(true)}
@@ -987,12 +1011,15 @@ export const MainSheetPage = React.memo(function MainSheetPage({
         </div>
 
         {/* Equipment */}
-        <div className="parchment-card">
+        <div className="parchment-card" data-tour-id="tour-equipment">
           <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-            <h3 className="parchment-heading flex items-center gap-2">
-              <BackpackPackIcon size={18} />
-              <span>Снаряжение</span>
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="parchment-heading flex items-center gap-2 mb-0">
+                <BackpackPackIcon size={18} />
+                <span>Снаряжение</span>
+              </h3>
+              <BlockHelpButton chapterId="sheet-anatomy" sectionId="ac-and-vitals" label="Разбор снаряжения и инвентаря" onOpen={onOpenEncyclopedia} />
+            </div>
             <button
               type="button"
               onClick={() => setShowEquipmentModal(true)}
@@ -1021,13 +1048,16 @@ export const MainSheetPage = React.memo(function MainSheetPage({
         </div>
 
         {/* Features & Traits Table */}
-        <div className="parchment-card">
+        <div className="parchment-card" data-tour-id="tour-features">
           <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-            <h3 className="parchment-heading flex items-center gap-2">
-              <SparklesDndIcon size={18} />
-              <span>Умения и особенности</span>
-              <span className="text-xs font-normal opacity-70">({effectiveTraitsList.length})</span>
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="parchment-heading flex items-center gap-2 mb-0">
+                <SparklesDndIcon size={18} />
+                <span>Умения и особенности</span>
+                <span className="text-xs font-normal opacity-70">({effectiveTraitsList.length})</span>
+              </h3>
+              <BlockHelpButton chapterId="level1-and-level-up" sectionId="asi-vs-feats" label="Разбор умений, черт и развития" onOpen={onOpenEncyclopedia} />
+            </div>
           </div>
           <div className="px-4 pb-4 space-y-3">
             {/* Search & Quick Add Trait */}

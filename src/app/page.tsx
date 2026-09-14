@@ -38,6 +38,8 @@ const ItemDetailModal = dynamic(() => import('@/components/compendium/ItemDetail
 const LevelUpModal = dynamic(() => import('@/components/levelup/LevelUpModal').then(mod => mod.LevelUpModal), { ssr: false });
 const RestModal = dynamic(() => import('@/components/gameplay/RestModal').then(mod => mod.RestModal), { ssr: false });
 const EquipmentPaperDoll = dynamic(() => import('@/components/equipment/EquipmentPaperDoll').then(mod => mod.EquipmentPaperDoll), { ssr: false });
+const DndEncyclopediaModal = dynamic(() => import('@/components/encyclopedia/DndEncyclopediaModal').then(mod => mod.DndEncyclopediaModal), { ssr: false });
+const InteractiveSheetTour = dynamic(() => import('@/components/encyclopedia/InteractiveSheetTour').then(mod => mod.InteractiveSheetTour), { ssr: false });
 import {
   getActiveCharacterAttacks,
   type ActiveAttackOption,
@@ -211,6 +213,46 @@ export default function DnDCharacterSheet() {
   const [showCreationWizard, setShowCreationWizard] = useState(false);
   const [showCreateChoiceModal, setShowCreateChoiceModal] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+
+  // ── Newbie Onboarding & D&D Encyclopedia State ──
+  const [showEncyclopedia, setShowEncyclopedia] = useState(false);
+  const [encyclopediaChapterId, setEncyclopediaChapterId] = useState<string | undefined>(undefined);
+  const [encyclopediaSectionId, setEncyclopediaSectionId] = useState<string | undefined>(undefined);
+  const [isTourActive, setIsTourActive] = useState(false);
+  const [tourStepIndex, setTourStepIndex] = useState(0);
+  const [showOnboardingPrompt, setShowOnboardingPrompt] = useState(false);
+
+  useEffect(() => {
+    try {
+      const shown = localStorage.getItem('dnd_sheet_onboarding_shown');
+      if (!shown) {
+        setShowOnboardingPrompt(true);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  const handleOpenEncyclopedia = useCallback((chapterId?: string, sectionId?: string) => {
+    setEncyclopediaChapterId(chapterId);
+    setEncyclopediaSectionId(sectionId);
+    setShowEncyclopedia(true);
+  }, []);
+
+  const handleStartTour = useCallback(() => {
+    setActiveTab('page1');
+    setTourStepIndex(0);
+    setIsTourActive(true);
+    setShowOnboardingPrompt(false);
+    try {
+      localStorage.setItem('dnd_sheet_onboarding_shown', 'true');
+    } catch { /* ignore */ }
+  }, []);
+
+  const handleDismissOnboardingPrompt = useCallback(() => {
+    setShowOnboardingPrompt(false);
+    try {
+      localStorage.setItem('dnd_sheet_onboarding_shown', 'true');
+    } catch { /* ignore */ }
+  }, []);
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -2107,6 +2149,28 @@ export default function DnDCharacterSheet() {
         />
       )}
 
+      {showEncyclopedia && (
+        <DndEncyclopediaModal
+          isOpen={showEncyclopedia}
+          onClose={() => setShowEncyclopedia(false)}
+          initialChapterId={encyclopediaChapterId}
+          initialSectionId={encyclopediaSectionId}
+        />
+      )}
+
+      {isTourActive && (
+        <InteractiveSheetTour
+          isActive={isTourActive}
+          currentStepIndex={tourStepIndex}
+          onStepChange={setTourStepIndex}
+          onClose={() => setIsTourActive(false)}
+          onOpenEncyclopedia={(chapId, secId) => {
+            setIsTourActive(false);
+            handleOpenEncyclopedia(chapId, secId);
+          }}
+        />
+      )}
+
       <SheetHeader
         user={user}
         cloudSaveStatus={cloudSaveStatus}
@@ -2126,6 +2190,8 @@ export default function DnDCharacterSheet() {
         onOpenSignOut={() => setShowSignOutModal(true)}
         onOpenAuth={() => setShowAuth(true)}
         onExportDocx={handleExport}
+        onStartTour={handleStartTour}
+        onOpenEncyclopedia={handleOpenEncyclopedia}
       />
 
       <main className="max-w-7xl mx-auto px-4 py-6 relative z-10">
@@ -2184,6 +2250,7 @@ export default function DnDCharacterSheet() {
             showToast={showToast}
             compClass={compClass}
             onToggleMainHandGrip={handleToggleMainHandGrip}
+            onOpenEncyclopedia={handleOpenEncyclopedia}
           />
         )}
 
@@ -2214,10 +2281,85 @@ export default function DnDCharacterSheet() {
             handleRoll={handleRoll}
             showToast={showToast}
             setPendingForeignSpell={setPendingForeignSpell}
+            onOpenEncyclopedia={handleOpenEncyclopedia}
           />
         )}
 
         <SheetFooter onExportDocx={handleExport} />
+
+        {/* First-time Onboarding Prompt Banner */}
+        <AnimatePresence>
+          {showOnboardingPrompt && !isTourActive && !showEncyclopedia && (
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ duration: 0.25 }}
+              className="fixed bottom-5 right-5 z-[200] max-w-sm rounded-lg p-4 shadow-2xl backdrop-blur-md"
+              style={{
+                background: 'rgba(251, 240, 220, 0.96)',
+                border: '2px solid #C9A84C',
+                boxShadow: '0 10px 25px -5px rgba(61, 32, 18, 0.3), 0 0 0 1px rgba(201, 168, 76, 0.4)',
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                  style={{
+                    background: 'radial-gradient(circle, #FFE58F 0%, #D4AF37 60%, #8B6914 100%)',
+                    border: '1px solid #7A5813',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  <ScrollIcon size={22} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h4 className="font-bold text-sm" style={{ color: '#3D2012', fontFamily: 'Georgia, serif' }}>
+                      Впервые в D&D 5e?
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={handleDismissOnboardingPrompt}
+                      className="text-xs px-1.5 py-0.5 rounded opacity-60 hover:opacity-100 hover:bg-[#E8D3A2]/50 transition-colors cursor-pointer"
+                      style={{ color: '#5C341F' }}
+                      title="Закрыть подсказку"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <p className="text-xs leading-relaxed mb-3" style={{ color: '#5C341F' }}>
+                    Пройдите быстрый интерактивный тур по листу за 1 минуту или изучите Большую Энциклопедию правил с нуля!
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleStartTour}
+                      className="parchment-btn text-xs px-3 py-1.5 flex items-center gap-1.5 font-bold shadow-sm"
+                    >
+                      <D20Icon size={14} />
+                      <span>Начать тур</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowOnboardingPrompt(false);
+                        try {
+                          localStorage.setItem('dnd_sheet_onboarding_shown', 'true');
+                        } catch { /* ignore */ }
+                        handleOpenEncyclopedia();
+                      }}
+                      className="parchment-btn-secondary text-xs px-2.5 py-1.5 flex items-center gap-1"
+                    >
+                      <SpellbookIcon size={14} />
+                      <span>Энциклопедия</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );

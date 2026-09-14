@@ -30,6 +30,7 @@ import {
   LockSealIcon,
   WarningSignIcon,
 } from '@/components/dnd-icons';
+import { BlockHelpButton } from '@/components/encyclopedia/BlockHelpButton';
 
 export interface SpellsSheetPageProps {
   char: CharacterData;
@@ -55,6 +56,7 @@ export interface SpellsSheetPageProps {
   setSpellAddSuccess?: (val: string | null) => void;
   maxAvailableSlot?: number;
   setPendingForeignSpell?: (data: { spell: DndSpell; level: number; callback: () => void } | null) => void;
+  onOpenEncyclopedia?: (chapterId: string, sectionId?: string) => void;
 }
 
 export const SpellsSheetPage = React.memo(function SpellsSheetPage({
@@ -80,6 +82,7 @@ export const SpellsSheetPage = React.memo(function SpellsSheetPage({
   handleRoll,
   showToast,
   setPendingForeignSpell,
+  onOpenEncyclopedia,
 }: SpellsSheetPageProps) {
   const [internalFilter, setInternalFilter] = useState(true);
   const [internalQuery, setInternalQuery] = useState('');
@@ -178,11 +181,12 @@ export const SpellsSheetPage = React.memo(function SpellsSheetPage({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="parchment-card">
-        <div className="px-4 pt-4 pb-3">
-          <h3 className="parchment-heading flex items-center gap-2">
+        <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+          <h3 className="parchment-heading flex items-center gap-2 mb-0">
             <SpellbookIcon size={20} />
             <span>Параметры заклинателя</span>
           </h3>
+          <BlockHelpButton chapterId="magic-and-spells" sectionId="cantrips-vs-leveled" label="Разбор магии и ячеек" onOpen={onOpenEncyclopedia} />
         </div>
         <div className="px-4 pb-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">

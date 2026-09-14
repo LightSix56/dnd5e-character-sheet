@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { CharacterData, AbilityName } from '@/lib/dnd-types';
+import { isNamedCharacter } from '@/lib/character-validation';
 import {
   MysticCloudIcon,
   ArcaneLinkIcon,
@@ -432,29 +433,24 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [deletingId, onClose]);
 
-  // Combine characters from cloud and local storage fallback
+  // Combine characters from cloud and local storage fallback, filtering out nameless / placeholder characters
   const allCharacters = useMemo<SavedCharacter[]>(() => {
     const list: SavedCharacter[] = [];
     const seenIds = new Set<string>();
 
-    if (characters && characters.length > 0) {
-      for (const c of characters) {
-        if (!seenIds.has(c.id)) {
-          seenIds.add(c.id);
-          list.push(c);
-        }
-      }
-    } else if (cloudCharacters && cloudCharacters.length > 0) {
-      for (const c of cloudCharacters) {
-        if (!seenIds.has(c.id)) {
-          seenIds.add(c.id);
-          list.push(c);
-        }
+    const sourceList = characters && characters.length > 0
+      ? characters
+      : (cloudCharacters && cloudCharacters.length > 0 ? cloudCharacters : []);
+
+    for (const c of sourceList) {
+      if (!seenIds.has(c.id) && isNamedCharacter(c)) {
+        seenIds.add(c.id);
+        list.push(c);
       }
     }
 
-    // Include local character fallback if available and not redundant
-    if (localCharacter && !seenIds.has(localCharacter.id)) {
+    // Include local character fallback if available, named, and not redundant
+    if (localCharacter && !seenIds.has(localCharacter.id) && isNamedCharacter(localCharacter)) {
       list.push(localCharacter);
     }
 

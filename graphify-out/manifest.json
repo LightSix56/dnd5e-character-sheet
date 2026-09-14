@@ -90,9 +90,9 @@
     "semantic_hash": "79bbf07205f286e7eb796cfa27029dd5"
   },
   "src/app/api/characters/route.ts": {
-    "mtime": 1789038209.24334,
-    "seen": 1789038550.3685176,
-    "ast_hash": "68e04198963b10c6213b648261a63e36",
+    "mtime": 1789376045.511274,
+    "seen": 1789376306.1902137,
+    "ast_hash": "37d372e4363f01421d14b81c5d39b2f5",
     "semantic_hash": ""
   },
   "src/app/api/export-docx/route.ts": {
@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "src/app/page.tsx": {
-    "mtime": 1789310227.7477262,
-    "seen": 1789310521.8924255,
-    "ast_hash": "e6c2563406388d8f0c72ea929b39a9cb",
+    "mtime": 1789376112.7366261,
+    "seen": 1789376306.1921582,
+    "ast_hash": "cdcba8ac1cc0b1550defd9b0ea25bfbb",
     "semantic_hash": ""
   },
   "src/app/share/[code]/page.tsx": {
@@ -186,9 +186,9 @@
     "semantic_hash": ""
   },
   "src/components/tools/CharacterGridModal.tsx": {
-    "mtime": 1789307133.893356,
-    "seen": 1789307565.7446096,
-    "ast_hash": "8dabb85eaaee1ffa937f5c2d31275520",
+    "mtime": 1789376061.444119,
+    "seen": 1789376306.1994214,
+    "ast_hash": "3067d210a75843cd6e8877528a557318",
     "semantic_hash": ""
   },
   "src/components/tools/NameGeneratorModal.tsx": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "test/supabase-characters-api.test.ts": {
-    "mtime": 1789038521.2681658,
-    "seen": 1789038550.3892324,
-    "ast_hash": "37efc25acf9a100221dbc70f769671bf",
+    "mtime": 1789376008.756132,
+    "seen": 1789376306.235445,
+    "ast_hash": "17090a84c0f6dabfe24819499be3b96c",
     "semantic_hash": ""
   },
   "test/share-import.test.ts": {
@@ -1365,6 +1365,12 @@
     "mtime": 1789311870.322628,
     "seen": 1789312153.0958104,
     "ast_hash": "cdf1421928efa9def50694858151ced0",
+    "semantic_hash": ""
+  },
+  "src/lib/character-validation.ts": {
+    "mtime": 1789375996.7907846,
+    "seen": 1789376306.2130582,
+    "ast_hash": "e0e67d2abf341d851090008ac5bfd462",
     "semantic_hash": ""
   }
 }

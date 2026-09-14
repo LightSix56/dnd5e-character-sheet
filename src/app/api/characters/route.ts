@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { validateCharacterName, isNamelessCharacter } from '@/lib/character-validation';
 
 function createClient(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
@@ -40,6 +41,17 @@ export async function GET(request: NextRequest) {
   const { user, error: authError } = await getAuthenticatedUser(supabase, request);
   if (!user) return NextResponse.json({ error: authError?.message || 'Unauthorized' }, { status: 401 });
 
+  // Automatically delete nameless / placeholder characters for this user from the database
+  try {
+    await supabase
+      .from('characters')
+      .delete()
+      .eq('user_id', user.id)
+      .or('name.eq.Безымянный,name.eq.безымянный,name.eq.nameless,name.eq.,name.is.null');
+  } catch (purgeErr) {
+    console.warn('[API Characters GET] Auto-purge nameless characters warning:', purgeErr);
+  }
+
   const { data, error } = await supabase
     .from('characters')
     .select('id, name, data, portrait_url, created_at, updated_at')
@@ -50,7 +62,9 @@ export async function GET(request: NextRequest) {
     console.error('[API Characters GET] Error:', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ characters: data });
+
+  const validCharacters = (data || []).filter(c => !isNamelessCharacter(c.name));
+  return NextResponse.json({ characters: validCharacters });
 }
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -92,7 +106,19 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const safeName = typeof name === 'string' && name.trim() ? name.trim().slice(0, 200) : 'Безымянный';
+  const nameValidation = validateCharacterName(name);
+  if (!nameValidation.isValid) {
+    return NextResponse.json({ error: nameValidation.error }, { status: 400 });
+  }
+  const safeName = nameValidation.safeName!;
+
+  if (data && typeof data === 'object' && 'name' in (data as any)) {
+    const dataNameValidation = validateCharacterName((data as any).name);
+    if (!dataNameValidation.isValid) {
+      return NextResponse.json({ error: dataNameValidation.error }, { status: 400 });
+    }
+  }
+
   const safePortraitUrl = typeof portrait_url === 'string' && portrait_url.length <= 2048 ? portrait_url : (portrait_url === null ? null : undefined);
 
   // If ID provided — try to UPDATE existing character first
@@ -172,7 +198,19 @@ export async function PUT(request: NextRequest) {
     }
   }
 
-  const safeName = typeof name === 'string' && name.trim() ? name.trim().slice(0, 200) : 'Безымянный';
+  const nameValidation = validateCharacterName(name);
+  if (!nameValidation.isValid) {
+    return NextResponse.json({ error: nameValidation.error }, { status: 400 });
+  }
+  const safeName = nameValidation.safeName!;
+
+  if (data && typeof data === 'object' && 'name' in (data as any)) {
+    const dataNameValidation = validateCharacterName((data as any).name);
+    if (!dataNameValidation.isValid) {
+      return NextResponse.json({ error: dataNameValidation.error }, { status: 400 });
+    }
+  }
+
   const safePortraitUrl = typeof portrait_url === 'string' && portrait_url.length <= 2048 ? portrait_url : (portrait_url === null ? null : undefined);
 
   const { data: character, error } = await supabase

@@ -17,6 +17,7 @@ import {
   getCarryingCapacity, getJumpDistances, setAttackProficiency, calculateWizardAC,
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
+import { isNamelessCharacter } from '@/lib/character-validation';
 import type { User } from '@supabase/supabase-js';
 import type { DndSpell } from '@/data/compendium/spells/types';
 import { DND_WEAPONS, findWeaponByName, type DndWeapon } from '@/data/dnd-weapons';
@@ -331,6 +332,12 @@ export default function DnDCharacterSheet() {
 
   // Helper: save to cloud (POST with id = upsert, server handles update/insert)
   const saveToCloud = useCallback(async (forcedNew = false): Promise<{ ok: boolean; error?: string; id?: string }> => {
+    // Forbid saving nameless characters
+    if (isNamelessCharacter(char.name)) {
+      setCloudSaveStatus('idle');
+      return { ok: false, error: 'Персонаж должен иметь имя для сохранения в облаке' };
+    }
+
     // If a save is already in progress, mark as pending and skip
     if (cloudSaveInProgressRef.current) {
       pendingCloudSaveRef.current = true;
@@ -345,7 +352,7 @@ export default function DnDCharacterSheet() {
         headers,
         body: JSON.stringify({
           id: targetId,
-          name: char.name || 'Безымянный',
+          name: char.name.trim(),
           data: char,
           portrait_url: portraitUrl,
         }),
@@ -394,6 +401,13 @@ export default function DnDCharacterSheet() {
   useEffect(() => {
     if (!user || isCloudSyncingRef.current) return;
 
+    // Do NOT auto-save characters without a valid name or with placeholder names
+    if (isNamelessCharacter(char.name)) {
+      if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current);
+      setCloudSaveStatus('idle');
+      return;
+    }
+
     const snapshot = JSON.stringify({ ...char, _portraitUrl: portraitUrl });
     // Skip if data hasn't actually changed since last save
     if (snapshot === lastCloudSaveRef.current) return;
@@ -436,8 +450,9 @@ export default function DnDCharacterSheet() {
           }
           const res = await fetch('/api/characters', { headers });
           const data = await res.json();
-          if (data.characters && data.characters.length > 0) {
-            const latest = data.characters[0];
+          const validCharacters = (data.characters || []).filter((c: any) => !isNamelessCharacter(c.name));
+          if (validCharacters.length > 0) {
+            const latest = validCharacters[0];
             if (latest.data) {
               const normalized = normalizeCharacterData(latest.data);
               setChar(normalized);
@@ -451,8 +466,9 @@ export default function DnDCharacterSheet() {
               setCloudSaveError(null);
             }
           } else {
-            // No characters in cloud yet
-            lastCloudSaveRef.current = '';
+            // No valid named characters in cloud yet
+            lastCloudSaveRef.current = JSON.stringify({ ...createDefaultCharacter(), _portraitUrl: null });
+            setCloudSaveStatus('idle');
           }
         } catch {
           /* keep localStorage version */
@@ -1439,12 +1455,16 @@ export default function DnDCharacterSheet() {
   }, [showToast]);
 
   const handleReset = useCallback(() => {
-    setChar(createDefaultCharacter());
+    const defaultChar = createDefaultCharacter();
+    setChar(defaultChar);
     setPortraitUrl(null);
     localStorage.removeItem('dnd5e_portrait');
     cloudCharIdRef.current = null;
     setActiveCloudCharId(null);
-    lastCloudSaveRef.current = '';
+    lastCloudSaveRef.current = JSON.stringify({ ...defaultChar, _portraitUrl: null });
+    setCloudSaveStatus('idle');
+    setCloudSaveError(null);
+    if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current);
     showToast('Сброшено', 'Данные очищены');
   }, [showToast]);
 
@@ -1706,7 +1726,7 @@ export default function DnDCharacterSheet() {
         console.error('[Supabase Load Error]', res.status, data.error);
         showToast('Ошибка базы данных', data.error || 'Не удалось загрузить персонажей');
       } else if (data.characters) {
-        setCloudCharacters(data.characters);
+        setCloudCharacters(data.characters.filter((c: any) => !isNamelessCharacter(c.name)));
       }
       setShowCloudSaves(true);
     } catch (err: any) {
@@ -1931,10 +1951,10 @@ export default function DnDCharacterSheet() {
         <CharacterGridModal
           cloudCharacters={cloudCharacters}
           localCharacter={
-            (!user || !activeCloudCharId) && (char.name || char.className || portraitUrl)
+            (!user || !activeCloudCharId) && !isNamelessCharacter(char.name)
               ? {
                   id: 'local-active',
-                  name: char.name || 'Текущий герой (на устройстве)',
+                  name: char.name.trim(),
                   data: char,
                   portrait_url: portraitUrl,
                   updated_at: new Date().toISOString(),

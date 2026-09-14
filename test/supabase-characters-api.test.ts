@@ -65,3 +65,60 @@ test('Safe portrait url sanitization avoids overflow while accepting clean URLs'
   const hugeData = 'data:image/png;base64,' + 'A'.repeat(3000);
   assert.equal(sanitizePortraitUrl(hugeData), undefined);
 });
+
+test('Character Name Validator: Rejects nameless, whitespace, and placeholder "Безымянный" characters', async () => {
+  const { validateCharacterName, isNamelessCharacter } = await import('../src/lib/character-validation.js');
+
+  // Valid names
+  assert.deepEqual(validateCharacterName('Торин Дубощит'), { isValid: true, safeName: 'Торин Дубощит' });
+  assert.deepEqual(validateCharacterName('  Astarion  '), { isValid: true, safeName: 'Astarion' });
+  assert.deepEqual(validateCharacterName('Гэндальф'), { isValid: true, safeName: 'Гэндальф' });
+
+  // Invalid nameless cases
+  assert.equal(validateCharacterName('').isValid, false);
+  assert.equal(validateCharacterName('   ').isValid, false);
+  assert.equal(validateCharacterName(null).isValid, false);
+  assert.equal(validateCharacterName(undefined).isValid, false);
+  assert.equal(validateCharacterName(12345).isValid, false);
+  assert.equal(validateCharacterName({}).isValid, false);
+
+  // Invalid placeholder "Безымянный" cases
+  assert.equal(validateCharacterName('Безымянный').isValid, false);
+  assert.equal(validateCharacterName('безымянный').isValid, false);
+  assert.equal(validateCharacterName('  БЕЗЫМЯННЫЙ  ').isValid, false);
+  assert.equal(validateCharacterName('Безымянная').isValid, false);
+  assert.equal(validateCharacterName('Nameless').isValid, false);
+  assert.equal(validateCharacterName('Безымянный герой').isValid, false);
+  assert.equal(validateCharacterName('Новый герой').isValid, false);
+
+  // isNamelessCharacter helper
+  assert.equal(isNamelessCharacter(''), true);
+  assert.equal(isNamelessCharacter('   '), true);
+  assert.equal(isNamelessCharacter(null), true);
+  assert.equal(isNamelessCharacter(undefined), true);
+  assert.equal(isNamelessCharacter('Безымянный'), true);
+  assert.equal(isNamelessCharacter('Торин'), false);
+
+  // Overflow case (> 200 chars)
+  assert.equal(validateCharacterName('A'.repeat(201)).isValid, false);
+});
+
+test('Character Grid Filter: Filters out nameless and placeholder "Безымянный" characters', async () => {
+  const { isNamedCharacter } = await import('../src/lib/character-validation.js');
+
+  const list = [
+    { id: '1', name: 'Торин' },
+    { id: '2', name: 'Безымянный' },
+    { id: '3', name: '' },
+    { id: '4', name: '   ' },
+    { id: '5', name: undefined },
+    { id: '6', name: 'Арагорн' },
+    { id: '7', name: 'безымянный' },
+    { id: '8', name: 'Новый герой' },
+    { id: '9', name: 'Гэндальф' },
+  ];
+
+  const filtered = list.filter(c => isNamedCharacter(c));
+  assert.equal(filtered.length, 3);
+  assert.deepEqual(filtered.map(c => c.id), ['1', '6', '9']);
+});

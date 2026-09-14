@@ -279,3 +279,54 @@ test('EquipmentSlotModal Contract: Does not contain raw inventory parsing or "И
   );
 });
 
+test('Equipment Paper Doll Layout: Defines 6 left, 6 right and 1 center-bottom slots with accurate anatomy', async () => {
+  const {
+    LEFT_EQUIPMENT_SLOTS,
+    RIGHT_EQUIPMENT_SLOTS,
+    CENTER_EQUIPMENT_SLOTS,
+    MANNEQUIN_ANCHORS,
+    EQUIPMENT_SLOTS,
+  } = await import('../src/lib/equipment-types.js');
+
+  // Must total all 13 standard slots without omission or duplicates
+  assert.equal(LEFT_EQUIPMENT_SLOTS.length, 6);
+  assert.equal(RIGHT_EQUIPMENT_SLOTS.length, 6);
+  assert.equal(CENTER_EQUIPMENT_SLOTS.length, 1);
+  const combined = [...LEFT_EQUIPMENT_SLOTS, ...RIGHT_EQUIPMENT_SLOTS, ...CENTER_EQUIPMENT_SLOTS];
+  assert.equal(combined.length, 13);
+  assert.equal(new Set(combined).size, 13);
+
+  // All 13 slots must exist in EQUIPMENT_SLOTS
+  for (const s of combined) {
+    assert.ok(EQUIPMENT_SLOTS.some(slot => slot.id === s), `Slot ${s} must exist in EQUIPMENT_SLOTS`);
+  }
+
+  // Anatomical correctness:
+  // 1. Head and Neck must be at top (y < 0.15)
+  assert.ok(MANNEQUIN_ANCHORS.head.y < 0.15, 'Head must be at top');
+  assert.ok(MANNEQUIN_ANCHORS.neck.y < 0.18, 'Neck must be near top');
+
+  // 2. Gloves (forearm) must be above the hand (offHand)
+  assert.ok(
+    MANNEQUIN_ANCHORS.gloves.y < MANNEQUIN_ANCHORS.offHand.y,
+    'Gloves (forearm) anchor must be higher than offHand (hand) anchor'
+  );
+
+  // 3. Rings must be on the fingers (outermost x, y around hand level)
+  assert.ok(MANNEQUIN_ANCHORS.ring1.x < MANNEQUIN_ANCHORS.mainHand.x, 'Ring 1 must be at the left fingertips');
+  assert.ok(MANNEQUIN_ANCHORS.ring2.x > MANNEQUIN_ANCHORS.offHand.x, 'Ring 2 must be at the right fingertips');
+
+  // 4. Belt and Pouch must be at waist level (y ~ 0.40 - 0.46)
+  assert.ok(MANNEQUIN_ANCHORS.belt.y >= 0.40 && MANNEQUIN_ANCHORS.belt.y <= 0.46, 'Belt must be at waist level');
+  assert.ok(MANNEQUIN_ANCHORS.pouch.y >= 0.40 && MANNEQUIN_ANCHORS.pouch.y <= 0.46, 'Pouch must be at waist level');
+
+  // 5. Boots must be at the feet (y > 0.90) and centered (x ~ 0.50)
+  assert.ok(MANNEQUIN_ANCHORS.boots.y > 0.90, 'Boots must be at the feet (bottom of mannequin)');
+  assert.ok(Math.abs(MANNEQUIN_ANCHORS.boots.x - 0.50) < 0.05, 'Boots must be centered between the feet');
+
+  // 6. Main Hand (left side of viewer) and Off Hand (right side of viewer)
+  assert.ok(MANNEQUIN_ANCHORS.mainHand.x < 0.35, 'Main Hand anchor must be on viewer left arm');
+  assert.ok(MANNEQUIN_ANCHORS.offHand.x > 0.65, 'Off Hand anchor must be on viewer right arm');
+});
+
+

@@ -42,6 +42,58 @@ export const EQUIPMENT_SLOTS: EquipmentSlotConfig[] = [
   { id: 'pouch', name: 'Поясной карман', description: 'Флаконы зелий, свитки, кошель', category: 'pouch', icon: '🧪' },
   { id: 'boots', name: 'Ноги / Сапоги', description: 'Сапоги скороходов, обувь', category: 'boots', icon: '🥾' },
 ];
+export const LEFT_EQUIPMENT_SLOTS: EquipmentSlotId[] = [
+  'head',
+  'neck',
+  'armor',
+  'belt',
+  'mainHand',
+  'ring1',
+];
+
+export const RIGHT_EQUIPMENT_SLOTS: EquipmentSlotId[] = [
+  'cloak',
+  'quiver',
+  'gloves',
+  'pouch',
+  'offHand',
+  'ring2',
+];
+
+export const CENTER_EQUIPMENT_SLOTS: EquipmentSlotId[] = [
+  'boots',
+];
+
+export interface MannequinAnchor {
+  x: number; // 0..1 fraction of mannequin container width
+  y: number; // 0..1 fraction of mannequin container height
+  label: string;
+  points?: Array<{ x: number; y: number }>;
+}
+
+export const MANNEQUIN_ANCHORS: Record<EquipmentSlotId, MannequinAnchor> = {
+  head: { x: 0.50, y: 0.06, label: 'Голова' },
+  neck: { x: 0.50, y: 0.12, label: 'Шея / Амулет' },
+  armor: { x: 0.48, y: 0.24, label: 'Доспех / Тело' },
+  belt: { x: 0.42, y: 0.41, label: 'Пояс (талия)' },
+  mainHand: { x: 0.08, y: 0.46, label: 'Основная рука (кисть/хват)' },
+  ring1: { x: 0.04, y: 0.52, label: 'Кольцо 1 (пальцы левой руки)' },
+  cloak: { x: 0.63, y: 0.16, label: 'Плечи / Плащ' },
+  quiver: { x: 0.57, y: 0.23, label: 'Колчан / Спина (лопатка)' },
+  gloves: { x: 0.82, y: 0.36, label: 'Руки / Перчатки (предплечье)' },
+  pouch: { x: 0.58, y: 0.41, label: 'Поясной карман (пояс)' },
+  offHand: { x: 0.91, y: 0.46, label: 'Вторая рука (кисть/щит)' },
+  ring2: { x: 0.95, y: 0.52, label: 'Кольцо 2 (пальцы правой руки)' },
+  boots: {
+    x: 0.50,
+    y: 0.96,
+    label: 'Ноги / Сапоги (стопы)',
+    points: [
+      { x: 0.35, y: 0.93 },
+      { x: 0.64, y: 0.93 },
+    ],
+  },
+};
 
 export type ItemEffectType =
   | 'ac'             // Класс Доспеха (+1, +2, -1)

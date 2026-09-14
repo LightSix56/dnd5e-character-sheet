@@ -1122,9 +1122,9 @@
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentPaperDoll.tsx": {
-    "mtime": 1789310270.9381893,
-    "seen": 1789310521.8950987,
-    "ast_hash": "2b25d6acd04689ad1601b51c99497ab3",
+    "mtime": 1789374196.6604,
+    "seen": 1789374364.3418121,
+    "ast_hash": "c9d54fe93df660bd3ceddd5cd67a6c3c",
     "semantic_hash": ""
   },
   "src/components/equipment/EquipmentSlotModal.tsx": {
@@ -1134,15 +1134,15 @@
     "semantic_hash": ""
   },
   "src/lib/equipment-types.ts": {
-    "mtime": 1789310082.0062184,
-    "seen": 1789310521.910601,
-    "ast_hash": "ef54cd0d228a65a11fae9e2a16ac845e",
+    "mtime": 1789374181.996543,
+    "seen": 1789374364.3615336,
+    "ast_hash": "635c2cd6c1a4b28d8882e6035ac1159d",
     "semantic_hash": ""
   },
   "test/equipment-slots.test.ts": {
-    "mtime": 1789303686.8957992,
-    "seen": 1789303930.3396928,
-    "ast_hash": "5da015c8f6293c91c38c5ec42716d8ba",
+    "mtime": 1789373440.6897316,
+    "seen": 1789374364.3719454,
+    "ast_hash": "20299a4dca81ac48e10c6401ab88f84d",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-12-equipment-system.md": {
@@ -1152,9 +1152,9 @@
     "semantic_hash": ""
   },
   "public/mannequin.png": {
-    "mtime": 1789229607.4817774,
-    "seen": 1789230709.434819,
-    "ast_hash": "8980a7abab5a0167c2d1aafecbb0fb39",
+    "mtime": 1789373307.2146485,
+    "seen": 1789374364.3997047,
+    "ast_hash": "0b93c9521b25219e3dcc1525af50cff5",
     "semantic_hash": ""
   },
   "test/dual-wield-attacks.test.ts": {
@@ -1365,6 +1365,12 @@
     "mtime": 1789311870.322628,
     "seen": 1789312153.0958104,
     "ast_hash": "cdf1421928efa9def50694858151ced0",
+    "semantic_hash": ""
+  },
+  "public/mannequin_transparent.png": {
+    "mtime": 1789373295.8678658,
+    "seen": 1789374364.3997104,
+    "ast_hash": "0b93c9521b25219e3dcc1525af50cff5",
     "semantic_hash": ""
   }
 }

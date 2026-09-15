@@ -16500,7 +16500,7 @@
       "file_type": "code",
       "norm_label": "sheet_tour_steps",
       "source_file": "src/data/encyclopedia/encyclopedia-content.ts",
-      "source_location": "L242"
+      "source_location": "L280"
     },
     {
       "id": "src_data_encyclopedia_encyclopedia_types",
@@ -19857,7 +19857,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L1102",
+      "source_location": "L1105",
       "weight": 1.0
     },
     {
@@ -19869,7 +19869,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L329",
+      "source_location": "L332",
       "weight": 1.0
     },
     {
@@ -19881,7 +19881,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L345",
+      "source_location": "L348",
       "weight": 1.0
     },
     {
@@ -19893,7 +19893,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L346",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -19905,7 +19905,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L347",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -19917,7 +19917,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L530",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -19929,7 +19929,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L581",
+      "source_location": "L584",
       "weight": 1.0
     },
     {
@@ -19941,7 +19941,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L599",
+      "source_location": "L602",
       "weight": 1.0
     },
     {
@@ -19953,7 +19953,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L693",
+      "source_location": "L696",
       "weight": 1.0
     },
     {
@@ -19965,7 +19965,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L790",
+      "source_location": "L793",
       "weight": 1.0
     },
     {
@@ -52628,7 +52628,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/encyclopedia/encyclopedia-content.ts",
-      "source_location": "L242",
+      "source_location": "L280",
       "weight": 1.0
     },
     {
@@ -55322,5 +55322,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e742faebba19076e76a266e604355f9e0f1d8305"
+  "built_at_commit": "df68f52c69149d84dc9bcbdc23bd5a075fd2ee24"
 }

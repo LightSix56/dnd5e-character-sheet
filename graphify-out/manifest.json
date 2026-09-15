@@ -1242,9 +1242,9 @@
     "semantic_hash": ""
   },
   "src/components/sheet/pages/MainSheetPage.tsx": {
-    "mtime": 1789389353.2394767,
-    "seen": 1789389721.6192465,
-    "ast_hash": "7b6ae3c370e033a0d22a60c0231cdced",
+    "mtime": 1789479138.0740128,
+    "seen": 1789479505.7391982,
+    "ast_hash": "87bdc3b5eb5323697d220b244beee03c",
     "semantic_hash": ""
   },
   "src/components/sheet/pages/SpellsSheetPage.tsx": {
@@ -1428,9 +1428,9 @@
     "semantic_hash": ""
   },
   "src/data/encyclopedia/encyclopedia-content.ts": {
-    "mtime": 1789388977.3951845,
-    "seen": 1789389721.6316917,
-    "ast_hash": "810ffdb64c22b779e0fe0343ef44ec91",
+    "mtime": 1789479095.4183972,
+    "seen": 1789479505.7525322,
+    "ast_hash": "38ab86c870a082b2c7809964766d3ed1",
     "semantic_hash": ""
   },
   "src/data/encyclopedia/encyclopedia-types.ts": {
@@ -1440,9 +1440,9 @@
     "semantic_hash": ""
   },
   "test/encyclopedia-data.test.ts": {
-    "mtime": 1789388929.5127518,
-    "seen": 1789389721.641908,
-    "ast_hash": "0ae2c53f89536515f9e4959a4496c0bb",
+    "mtime": 1789478865.7270956,
+    "seen": 1789479505.7645817,
+    "ast_hash": "c528fa2fcfc7a70a976dacf3be7c3c8e",
     "semantic_hash": ""
   },
   "test/interactive-tour.test.ts": {

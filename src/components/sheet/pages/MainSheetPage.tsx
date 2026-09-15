@@ -196,7 +196,10 @@ export const MainSheetPage = React.memo(function MainSheetPage({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
                 <div className="h-5 flex items-center justify-between">
-                  <label className="parchment-label" htmlFor="char-input-class">Класс</label>
+                  <div className="flex items-center gap-1">
+                    <label className="parchment-label" htmlFor="char-input-class">Класс</label>
+                    <BlockHelpButton chapterId="classes-and-archetypes" sectionId="what-is-class" label="Гид по классам, архетипам и мультиклассированию" onOpen={onOpenEncyclopedia} />
+                  </div>
                   {char.level <= 1 && (
                     <button
                       type="button"

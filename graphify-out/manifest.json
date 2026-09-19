@@ -234,9 +234,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/class-progression.ts": {
-    "mtime": 1789030389.6055064,
-    "seen": 1789031726.6622524,
-    "ast_hash": "af5c23b02ace24d34885797e089d2e85",
+    "mtime": 1789832091.6983333,
+    "seen": 1789832355.1705556,
+    "ast_hash": "290b54d239c55bf4fabdf4a611923dd4",
     "semantic_hash": ""
   },
   "src/data/compendium/class-spells.ts": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/classes.ts": {
-    "mtime": 1789129758.5803175,
-    "seen": 1789130249.4941912,
-    "ast_hash": "99f5272b7a9cc04e1aa7e825de6057f6",
+    "mtime": 1789832042.9590638,
+    "seen": 1789832355.1707108,
+    "ast_hash": "bc469438cd8148c7a4de82988392962b",
     "semantic_hash": ""
   },
   "src/data/compendium/feats.ts": {
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1789377131.4488406,
-    "seen": 1789378136.19568,
-    "ast_hash": "b822f2cebf6676a361d796824936e452",
+    "mtime": 1789832105.6087062,
+    "seen": 1789832355.175357,
+    "ast_hash": "72d3cb3ae9ed3e2fe7dcfdd26ac5f012",
     "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
@@ -900,9 +900,9 @@
     "semantic_hash": ""
   },
   "test/class-starting-equipment.test.ts": {
-    "mtime": 1789129707.4616601,
-    "seen": 1789130249.5018415,
-    "ast_hash": "37b9e32703b177ddca2ae50eeed9fdcd",
+    "mtime": 1789832225.0288918,
+    "seen": 1789832355.1780882,
+    "ast_hash": "e38cae0a121ed735df480d718a086df9",
     "semantic_hash": ""
   },
   "test/fetch-class-equipment.test.ts": {
@@ -966,9 +966,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/races/supplements.ts": {
-    "mtime": 1789311014.8312588,
-    "seen": 1789311405.2515752,
-    "ast_hash": "44be42bc5f3f3e305e331ac884400f74",
+    "mtime": 1789832015.6722553,
+    "seen": 1789832355.172169,
+    "ast_hash": "198db33ac28c315e9422be47bc932c7a",
     "semantic_hash": ""
   },
   "src/data/compendium/races/types.ts": {
@@ -1461,6 +1461,24 @@
     "mtime": 1789388810.467781,
     "seen": 1789389721.6677043,
     "ast_hash": "6429d5ff1a97b203bbc65184699572dc",
+    "semantic_hash": ""
+  },
+  "scripts/extract-clean.cjs": {
+    "mtime": 1789831629.3732243,
+    "seen": 1789832355.161892,
+    "ast_hash": "89746b9001548c9a5ba0c3c30bdce7bf",
+    "semantic_hash": ""
+  },
+  "src/data/compendium/barbarian-exploits.ts": {
+    "mtime": 1789831971.0742624,
+    "seen": 1789832355.1705527,
+    "ast_hash": "2b636bc2b857e539f78ec501bb35cff4",
+    "semantic_hash": ""
+  },
+  "test/alternate-barbarian-and-scourgeborne.test.ts": {
+    "mtime": 1789831933.4166627,
+    "seen": 1789832355.1768413,
+    "ast_hash": "1cf4e2aa9e4e289a6bb60b5a4c1a5852",
     "semantic_hash": ""
   }
 }

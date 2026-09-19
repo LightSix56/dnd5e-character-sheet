@@ -3,8 +3,8 @@ import * as assert from 'node:assert/strict';
 import { DND_COMPENDIUM_CLASSES, findClassById } from '../src/data/compendium/classes';
 
 describe('Class Starting Equipment Compendium Integrity', () => {
-  it('all 13 official classes have startingEquipment defined', () => {
-    assert.equal(DND_COMPENDIUM_CLASSES.length, 13);
+  it('all classes have startingEquipment defined', () => {
+    assert.ok(DND_COMPENDIUM_CLASSES.length >= 13, `Expected at least 13 classes, found ${DND_COMPENDIUM_CLASSES.length}`);
     for (const cls of DND_COMPENDIUM_CLASSES) {
       assert.ok(cls.startingEquipment, `Class ${cls.name} (${cls.id}) must have startingEquipment defined`);
       assert.ok(Array.isArray(cls.startingEquipment.choices), `Class ${cls.name} must have choices array`);

@@ -51,6 +51,7 @@ import {
   filterAvailableSpells,
   normalizeSpellName,
 } from './level-up-choices';
+import { BARBARIAN_EXPLOITS } from '@/data/compendium/barbarian-exploits';
 import { DND_COMPENDIUM_SPELLS } from '@/data/compendium/spells';
 import {
   WARLOCK_INVOCATIONS,
@@ -257,6 +258,9 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     () => choicesConfig.totemOptions?.[0]?.id || ''
   );
   const [selectedManeuvers, setSelectedManeuvers] = useState<string[]>([]);
+  const [selectedExploits, setSelectedExploits] = useState<string[]>([]);
+  const [exploitDegreeFilter, setExploitDegreeFilter] = useState<number | 'all'>('all');
+  const [exploitSearchQuery, setExploitSearchQuery] = useState<string>('');
 
   // Warlock specific choices states
   const [selectedPactBoon, setSelectedPactBoon] = useState<string>(
@@ -656,6 +660,10 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     choicesConfig.maneuverCount || 0,
     choicesConfig.maneuverOptions?.length || 0
   );
+  const requiredExploitsCount = Math.min(
+    choicesConfig.barbarianExploitCount || 0,
+    choicesConfig.barbarianExploitOptions?.length || 0
+  );
 
   const validationErrors: string[] = useMemo(() => {
     const errs: string[] = [];
@@ -725,6 +733,14 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     ) {
       errs.push(
         `Выберите ${requiredManeuversCount} маневра (выбрано: ${selectedManeuvers.length}).`
+      );
+    }
+    if (
+      choicesConfig.needsBarbarianExploits &&
+      selectedExploits.length < requiredExploitsCount
+    ) {
+      errs.push(
+        `Выберите ${requiredExploitsCount} боевых приёма (выбрано: ${selectedExploits.length}).`
       );
     }
     if (choicesConfig.needsPactBoon && !selectedPactBoon) {
@@ -811,6 +827,8 @@ export const LevelUpModal = React.memo(function LevelUpModal({
     selectedGiantCantrip,
     selectedManeuvers,
     requiredManeuversCount,
+    selectedExploits,
+    requiredExploitsCount,
     selectedPactBoon,
     selectedTomeCantrips,
     selectedArcanumSpell,
@@ -1096,6 +1114,23 @@ export const LevelUpModal = React.memo(function LevelUpModal({
       }
     }
 
+    // Savage Exploits traits (Alternate Barbarian)
+    if (choicesConfig.needsBarbarianExploits && selectedExploits.length > 0) {
+      for (const expId of selectedExploits) {
+        const exp = BARBARIAN_EXPLOITS.find(opt => opt.id === expId);
+        if (exp) {
+          const prereqStr = exp.prerequisite ? ` (Требование: ${exp.prerequisite})` : '';
+          addedTraits.push({
+            id: `exploit-${exp.id}`,
+            name: `Боевой приём: ${exp.name}`,
+            source: `Альтернативный варвар (${newLevel} ур.)`,
+            summary: `${exp.degree} ступень${prereqStr}. ${exp.description.slice(0, 100)}...`,
+            description: `${exp.name} [${exp.degree} ступень]${prereqStr}\n\n${exp.description}`,
+          });
+        }
+      }
+    }
+
     // Feat trait
     let featName: string | undefined = undefined;
     let featBonusStat: AbilityName | undefined = undefined;
@@ -1226,6 +1261,12 @@ export const LevelUpModal = React.memo(function LevelUpModal({
         .map(id => BATTLE_MASTER_MANEUVERS.find(m => m.id === id)?.name || id)
         .join(', ');
       extraNotes.push(`[Маневры]: ${names}`);
+    }
+    if (selectedExploits.length > 0) {
+      const expNames = selectedExploits
+        .map(id => BARBARIAN_EXPLOITS.find(e => e.id === id)?.name || id)
+        .join(', ');
+      extraNotes.push(`[Боевые приёмы]: ${expNames}`);
     }
     if (choicesConfig.needsPactBoon && selectedPactBoon) {
       const pb = (choicesConfig.pactBoonOptions || WARLOCK_PACT_BOONS_LIST).find(b => b.id === selectedPactBoon);
@@ -3130,6 +3171,171 @@ export const LevelUpModal = React.memo(function LevelUpModal({
             </div>
           )}
 
+          {/* 6.g2. Alternate Barbarian Savage Exploits */}
+          {choicesConfig.needsBarbarianExploits && (
+            <div className="parchment-modal-section space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2" style={{ borderColor: 'rgba(201, 168, 76, 0.3)' }}>
+                <h3
+                  className="text-sm font-bold flex items-center gap-1.5"
+                  style={{ color: '#3C2415' }}
+                >
+                  <CrossedSwordsIcon size={16} />
+                  <span>Выбор боевых приёмов (Savage Exploits):</span>
+                </h3>
+                <span
+                  className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                  style={{
+                    background: '#E8D3A2',
+                    border: '1px solid #C9A84C',
+                    color: '#5C341F',
+                  }}
+                >
+                  Выбрано {selectedExploits.length} из{' '}
+                  {requiredExploitsCount}
+                </span>
+              </div>
+
+              <p className="text-[11px] leading-relaxed" style={{ color: '#8B6914' }}>
+                Выберите дикарские боевые приёмы альтернативного варвара. Выбранные приёмы будут автоматически записаны в «Особенности и черты» вашего персонажа.
+              </p>
+
+              {/* Filters and search */}
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="Поиск приёма по названию или описанию..."
+                  value={exploitSearchQuery}
+                  onChange={e => setExploitSearchQuery(e.target.value)}
+                  className="parchment-input-boxed text-xs flex-1 min-w-[180px]"
+                />
+                <div className="flex items-center gap-1 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => setExploitDegreeFilter('all')}
+                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                      exploitDegreeFilter === 'all'
+                        ? 'shadow-sm'
+                        : 'opacity-70 hover:opacity-100'
+                    }`}
+                    style={
+                      exploitDegreeFilter === 'all'
+                        ? { background: '#5C341F', color: '#FFE58F', border: '1px solid #C9A84C' }
+                        : { background: 'rgba(232, 211, 162, 0.4)', color: '#3D2012', border: '1px solid rgba(201, 168, 76, 0.3)' }
+                    }
+                  >
+                    Все ступени
+                  </button>
+                  {[1, 2, 3, 4, 5].map(deg => {
+                    const hasDegree = (choicesConfig.barbarianExploitOptions || []).some(o => o.degree === deg);
+                    if (!hasDegree) return null;
+                    return (
+                      <button
+                        key={deg}
+                        type="button"
+                        onClick={() => setExploitDegreeFilter(deg)}
+                        className={`px-2 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                          exploitDegreeFilter === deg
+                            ? 'shadow-sm'
+                            : 'opacity-70 hover:opacity-100'
+                        }`}
+                        style={
+                          exploitDegreeFilter === deg
+                            ? { background: '#5C341F', color: '#FFE58F', border: '1px solid #C9A84C' }
+                            : { background: 'rgba(232, 211, 162, 0.4)', color: '#3D2012', border: '1px solid rgba(201, 168, 76, 0.3)' }
+                        }
+                      >
+                        {deg} ступень
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Exploits List */}
+              <div className="max-h-80 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5 custom-scrollbar">
+                {(choicesConfig.barbarianExploitOptions || [])
+                  .filter(opt => {
+                    if (exploitDegreeFilter !== 'all' && opt.degree !== exploitDegreeFilter) return false;
+                    if (exploitSearchQuery.trim()) {
+                      const q = exploitSearchQuery.toLowerCase();
+                      return (
+                        opt.name.toLowerCase().includes(q) ||
+                        opt.description.toLowerCase().includes(q) ||
+                        (opt.prerequisite && opt.prerequisite.toLowerCase().includes(q))
+                      );
+                    }
+                    return true;
+                  })
+                  .map(opt => {
+                    const isSel = selectedExploits.includes(opt.id);
+                    const canSelect = isSel || selectedExploits.length < requiredExploitsCount;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        disabled={!canSelect}
+                        onClick={() => {
+                          if (isSel) {
+                            setSelectedExploits(prev => prev.filter(id => id !== opt.id));
+                          } else {
+                            setSelectedExploits(prev => [...prev, opt.id]);
+                          }
+                        }}
+                        className="text-left p-2.5 rounded-lg transition-all flex flex-col justify-between gap-1.5 disabled:opacity-40 cursor-pointer"
+                        style={{
+                          background: isSel
+                            ? 'rgba(232, 211, 162, 0.7)'
+                            : 'rgba(232, 211, 162, 0.25)',
+                          border: isSel
+                            ? '2px solid #C9A84C'
+                            : '1px solid rgba(201, 168, 76, 0.4)',
+                          boxShadow: isSel
+                            ? '0 0 10px rgba(201, 168, 76, 0.4)'
+                            : 'none',
+                        }}
+                      >
+                        <div className="flex items-start justify-between w-full gap-2">
+                          <span className="font-bold text-xs" style={{ color: '#3D2012' }}>
+                            {opt.name}
+                          </span>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <span
+                              className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold"
+                              style={{ background: '#5C341F', color: '#FFE58F' }}
+                            >
+                              {opt.degree} ступень
+                            </span>
+                            {isSel ? (
+                              <GoldSealCheckIcon size={16} />
+                            ) : (
+                              <span className="w-4 h-4 rounded-full border border-[#C9A84C]/60" />
+                            )}
+                          </div>
+                        </div>
+
+                        {opt.prerequisite && (
+                          <div
+                            className="text-[10px] px-1.5 py-0.5 rounded font-mono"
+                            style={{
+                              background: 'rgba(201, 168, 76, 0.15)',
+                              border: '1px solid rgba(201, 168, 76, 0.3)',
+                              color: '#6B3A2A',
+                            }}
+                          >
+                            Требование: {opt.prerequisite}
+                          </div>
+                        )}
+
+                        <p className="text-[11px] leading-relaxed line-clamp-3" style={{ color: '#5C341F' }}>
+                          {opt.description}
+                        </p>
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
           {/* 6.h. Saving Throw Proficiency Choice (e.g. Gloom Stalker Iron Mind) */}
           {choicesConfig.needsSavingThrowProficiency && (
             <div className="parchment-modal-section space-y-2.5">
@@ -4444,6 +4650,20 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                     .map(
                       id =>
                         BATTLE_MASTER_MANEUVERS.find(m => m.id === id)?.name ||
+                        id
+                    )
+                    .join(', ')}
+                </strong>
+              </p>
+            )}
+            {selectedExploits.length > 0 && (
+              <p>
+                • Боевые приёмы:{' '}
+                <strong>
+                  {selectedExploits
+                    .map(
+                      id =>
+                        BARBARIAN_EXPLOITS.find(e => e.id === id)?.name ||
                         id
                     )
                     .join(', ')}

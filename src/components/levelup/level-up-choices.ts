@@ -1,7 +1,8 @@
-import { CharacterData, AbilityName } from '@/lib/dnd-types';
+import { CharacterData, AbilityName, getTotalScore } from '@/lib/dnd-types';
 import { DndSpell } from '@/data/compendium/spells';
 import { FightingStyleOption, FIGHTING_STYLES } from '@/components/wizard/wizard-helpers';
 import { normalizeClassName } from '@/data/compendium/class-progression';
+import { BARBARIAN_EXPLOITS, BarbarianExploit } from '@/data/compendium/barbarian-exploits';
 import {
   WARLOCK_INVOCATIONS,
   WARLOCK_PACT_BOONS,
@@ -450,6 +451,9 @@ export interface LevelUpChoicesConfig {
   needsManeuvers?: boolean;
   maneuverCount?: number;
   maneuverOptions?: { id: string; name: string; description: string }[];
+  needsBarbarianExploits?: boolean;
+  barbarianExploitCount?: number;
+  barbarianExploitOptions?: BarbarianExploit[];
   needsBladesingingWeapon?: boolean;
   bladesingingWeaponOptions?: string[];
   needsSpellMastery?: boolean;
@@ -843,7 +847,164 @@ export function getLevelUpChoicesConfig(
     config.maneuverOptions = BATTLE_MASTER_MANEUVERS;
   }
 
+  // 8. Alternate Barbarian Savage Exploits
+  if (normClass === 'Альтернативный варвар') {
+    let count = 0;
+    if (newLevel === 2) count = 2;
+    else if ([5, 7, 9, 11, 13, 17].includes(newLevel)) count = 1;
+
+    if (count > 0) {
+      config.needsBarbarianExploits = true;
+      config.barbarianExploitCount = count;
+      const maxDegree = newLevel >= 17 ? 5 : newLevel >= 13 ? 4 : newLevel >= 9 ? 3 : newLevel >= 5 ? 2 : 1;
+
+      // Filter out already known exploits
+      const knownIds = new Set<string>();
+      const existingTraits = ((char.traitsList || (char as any).traits || []) as any[]);
+      existingTraits.forEach(t => {
+        if (t.id && t.id.startsWith('exploit-')) {
+          knownIds.add(t.id.replace('exploit-', ''));
+        }
+        BARBARIAN_EXPLOITS.forEach(e => {
+          if (t.name?.toLowerCase().includes(e.name.toLowerCase())) {
+            knownIds.add(e.id);
+          }
+        });
+      });
+      if (typeof char.featuresTraits === 'string' && char.featuresTraits) {
+        BARBARIAN_EXPLOITS.forEach(e => {
+          if (char.featuresTraits.toLowerCase().includes(e.name.toLowerCase())) {
+            knownIds.add(e.id);
+          }
+        });
+      }
+
+      config.barbarianExploitOptions = BARBARIAN_EXPLOITS.filter(e => {
+        if (e.degree > maxDegree) return false;
+        if (knownIds.has(e.id)) return false;
+        const check = isBarbarianExploitEligible(e, char, newLevel);
+        return check.eligible;
+      });
+    } else {
+      config.needsBarbarianExploits = false;
+    }
+  }
+
   return config;
+}
+
+export function isBarbarianExploitEligible(
+  exploit: BarbarianExploit,
+  char: CharacterData,
+  level: number
+): { eligible: boolean; reason?: string } {
+  const prereq = exploit.prerequisite ? exploit.prerequisite.toLowerCase() : '';
+  if (!prereq) return { eligible: true };
+
+  // 1. Level check
+  const lvlMatch = prereq.match(/(\d+)\s*уровень/);
+  if (lvlMatch) {
+    const requiredLevel = parseInt(lvlMatch[1], 10);
+    if (level < requiredLevel) {
+      return { eligible: false, reason: `Требуется ${requiredLevel} уровень` };
+    }
+  }
+
+  // 2. Skill checks (case-insensitive, checking proficiencies, expertise and skills record)
+  const hasSkill = (skillName: string) => {
+    const target = skillName.toLowerCase();
+    const checkObj = (obj?: Record<string, any>) => {
+      if (!obj) return false;
+      for (const [k, v] of Object.entries(obj)) {
+        if (k.toLowerCase() === target && Boolean(v)) return true;
+        if (typeof v === 'object' && v !== null && k.toLowerCase() === target && (v.proficient || v.expertise)) return true;
+      }
+      return false;
+    };
+    return (
+      checkObj(char.skillProficiencies) ||
+      checkObj(char.skillExpertise) ||
+      checkObj((char as any).skills)
+    );
+  };
+
+  if (prereq.includes('владение навыком атлетика') && !hasSkill('Атлетика')) {
+    return { eligible: false, reason: 'Требуется владение навыком Атлетика' };
+  }
+  if (prereq.includes('владение навыком уход за животными') && !hasSkill('Уход за животными')) {
+    return { eligible: false, reason: 'Требуется владение навыком Уход за животными' };
+  }
+  if (prereq.includes('запугивание или уход за животными')) {
+    if (!hasSkill('Запугивание') && !hasSkill('Уход за животными')) {
+      return { eligible: false, reason: 'Требуется владение навыком Запугивание или Уход за животными' };
+    }
+  }
+
+  // 3. Ability score checks
+  const getScore = (stat: AbilityName) => getTotalScore(char, stat);
+
+  if (prereq.includes('сила или телосложение')) {
+    const m = prereq.match(/сила или телосложение\s*(\d+)/);
+    const val = m ? parseInt(m[1], 10) : 11;
+    if (getScore('СИЛ') < val && getScore('ТЕЛ') < val) {
+      return { eligible: false, reason: `Требуется Сила или Телосложение ${val}+` };
+    }
+  } else if (prereq.includes('телосложение или сила')) {
+    const m = prereq.match(/телосложение или сила\s*(\d+)/);
+    const val = m ? parseInt(m[1], 10) : 15;
+    if (getScore('СИЛ') < val && getScore('ТЕЛ') < val) {
+      return { eligible: false, reason: `Требуется Сила или Телосложение ${val}+` };
+    }
+  } else if (prereq.includes('сила или ловкость')) {
+    const m = prereq.match(/сила или ловкость\s*(\d+)/);
+    const val = m ? parseInt(m[1], 10) : 13;
+    if (getScore('СИЛ') < val && getScore('ЛОВ') < val) {
+      return { eligible: false, reason: `Требуется Сила или Ловкость ${val}+` };
+    }
+  } else if (prereq.includes('харизма или сила')) {
+    const m = prereq.match(/харизма или сила\s*(\d+)/);
+    const val = m ? parseInt(m[1], 10) : 11;
+    if (getScore('ХАР') < val && getScore('СИЛ') < val) {
+      return { eligible: false, reason: `Требуется Харизма или Сила ${val}+` };
+    }
+  } else if (prereq.includes('телосложение или харизма')) {
+    const m = prereq.match(/телосложение или харизма\s*(\d+)/);
+    const val = m ? parseInt(m[1], 10) : 13;
+    if (getScore('ТЕЛ') < val && getScore('ХАР') < val) {
+      return { eligible: false, reason: `Требуется Телосложение или Харизма ${val}+` };
+    }
+  } else if (prereq.includes('телосложение или мудрость')) {
+    const m = prereq.match(/телосложение или мудрость\s*(\d+)/);
+    const val = m ? parseInt(m[1], 10) : 13;
+    if (getScore('ТЕЛ') < val && getScore('МДР') < val) {
+      return { eligible: false, reason: `Требуется Телосложение или Мудрость ${val}+` };
+    }
+  } else if (prereq.includes('сила или мудрость')) {
+    const m = prereq.match(/сила или мудрость\s*(\d+)/);
+    const val = m ? parseInt(m[1], 10) : 15;
+    if (getScore('СИЛ') < val && getScore('МДР') < val) {
+      return { eligible: false, reason: `Требуется Сила или Мудрость ${val}+` };
+    }
+  } else {
+    const singleChecks: [RegExp, AbilityName, string][] = [
+      [/сила\s*(\d+)/, 'СИЛ', 'Сила'],
+      [/ловкость\s*(\d+)/, 'ЛОВ', 'Ловкость'],
+      [/телосложение\s*(\d+)/, 'ТЕЛ', 'Телосложение'],
+      [/мудрость\s*(\d+)/, 'МДР', 'Мудрость'],
+      [/харизма\s*(\d+)/, 'ХАР', 'Харизма'],
+    ];
+    for (const [regex, stat, name] of singleChecks) {
+      const m = prereq.match(regex);
+      if (m) {
+        const val = parseInt(m[1], 10);
+        if (getScore(stat) < val) {
+          return { eligible: false, reason: `Требуется ${name} ${val}+` };
+        }
+      }
+    }
+  }
+
+  return { eligible: true };
 }
 
 // ── Third-Casters Spell Slots (Eldritch Knight / Arcane Trickster) ──

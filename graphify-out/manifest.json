@@ -234,9 +234,9 @@
     "semantic_hash": ""
   },
   "src/data/compendium/class-progression.ts": {
-    "mtime": 1789832091.6983333,
-    "seen": 1789832355.1705556,
-    "ast_hash": "290b54d239c55bf4fabdf4a611923dd4",
+    "mtime": 1789836559.1085505,
+    "seen": 1789836612.2565975,
+    "ast_hash": "72b8364be7a4cc6c05316d0ceafdd5e4",
     "semantic_hash": ""
   },
   "src/data/compendium/class-spells.ts": {
@@ -300,9 +300,9 @@
     "semantic_hash": "35d56e460ec49b28d70c23f64127d65b"
   },
   "src/data/dnd-traits.ts": {
-    "mtime": 1789835576.0906417,
-    "seen": 1789835623.9691703,
-    "ast_hash": "2452fbf5fe45874aead31ade4f042c24",
+    "mtime": 1789836565.8866062,
+    "seen": 1789836612.2650476,
+    "ast_hash": "ff7daa4e8d4a75ae9d6a33ccd5eba032",
     "semantic_hash": ""
   },
   "src/data/dnd-weapons.ts": {

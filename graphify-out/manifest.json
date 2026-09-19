@@ -300,10 +300,10 @@
     "semantic_hash": "35d56e460ec49b28d70c23f64127d65b"
   },
   "src/data/dnd-traits.ts": {
-    "mtime": 1788424195.727004,
-    "seen": 1788767676.2556787,
-    "ast_hash": "9deefcbb51ad5ccfc627a17655b4425c",
-    "semantic_hash": "9deefcbb51ad5ccfc627a17655b4425c"
+    "mtime": 1789835576.0906417,
+    "seen": 1789835623.9691703,
+    "ast_hash": "2452fbf5fe45874aead31ade4f042c24",
+    "semantic_hash": ""
   },
   "src/data/dnd-weapons.ts": {
     "mtime": 1789310002.7809765,
@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/level-up-choices.ts": {
-    "mtime": 1789833248.1925282,
-    "seen": 1789833477.9411347,
-    "ast_hash": "8bdab38ad532ba68366e1815be35e813",
+    "mtime": 1789835535.7634952,
+    "seen": 1789835623.9622655,
+    "ast_hash": "8b2cb4994809d56e7ef16119c3ebb3b5",
     "semantic_hash": ""
   },
   "src/data/compendium/auto-spells-engine.ts": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "src/components/levelup/LevelUpModal.tsx": {
-    "mtime": 1789833431.9983847,
-    "seen": 1789833477.941131,
-    "ast_hash": "f02c729cce5e85ae5e9c0e6142dd3be1",
+    "mtime": 1789835552.1289191,
+    "seen": 1789835623.9622602,
+    "ast_hash": "c337c57e72fda6d0e27dea4e69d1be06",
     "semantic_hash": ""
   },
   "src/hooks/useEscapeKey.ts": {
@@ -1476,9 +1476,15 @@
     "semantic_hash": ""
   },
   "test/level-up-alternate-barbarian-exploits.test.ts": {
-    "mtime": 1789833313.5755634,
-    "seen": 1789833477.958066,
-    "ast_hash": "ec23cd347c2cfff6853a8e7727b476b4",
+    "mtime": 1789835521.904046,
+    "seen": 1789835623.9765968,
+    "ast_hash": "3d4f29bca1c6630968d042afd95973e7",
+    "semantic_hash": ""
+  },
+  "test/alternate-barbarian-traits.test.ts": {
+    "mtime": 1789835511.9405632,
+    "seen": 1789835623.9716656,
+    "ast_hash": "e02072385552569d6ce3331f76de823f",
     "semantic_hash": ""
   }
 }

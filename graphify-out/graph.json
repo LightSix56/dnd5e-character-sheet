@@ -4,32 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "id": "src_components_tools_namegeneratormodal_namegeneratormodalprops",
-      "label": "NameGeneratorModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "names-data.ts",
-      "file_type": "code",
-      "norm_label": "namegeneratormodalprops",
-      "source_file": "src/components/tools/NameGeneratorModal.tsx",
-      "source_location": "L14"
-    },
-    {
-      "id": "src_data_compendium_names_data_fantasynameresult",
-      "label": "FantasyNameResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "names-data.ts",
-      "file_type": "code",
-      "norm_label": "fantasynameresult",
-      "source_file": "src/data/compendium/names-data.ts",
-      "source_location": "L28"
-    },
-    {
       "id": "src_data_compendium_names_data_racefantasynamegenresult",
       "label": "RaceFantasyNameGenResult",
       "_callable": true,
@@ -69,95 +43,17 @@
       "source_location": "L14"
     },
     {
-      "id": "src_components_sheet_pages_detailssheetpage_detailssheetpageprops",
-      "label": "DetailsSheetPageProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "../src/components/sheet/pages/DetailsSheetPage.js",
-      "file_type": "code",
-      "norm_label": "detailssheetpageprops",
-      "source_file": "src/components/sheet/pages/DetailsSheetPage.tsx",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_lib_dnd_types_basegenderchoice",
-      "label": "BaseGenderChoice",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "../src/components/sheet/pages/DetailsSheetPage.js",
-      "file_type": "code",
-      "norm_label": "basegenderchoice",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1196"
-    },
-    {
-      "id": "src_components_compendium_raceselectormodal_raceselectormodalprops",
-      "label": "RaceSelectorModalProps",
+      "id": "src_data_compendium_races_types_compendiumrace",
+      "label": "CompendiumRace",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
+      "community_name": "races/index.ts",
       "file_type": "code",
-      "norm_label": "raceselectormodalprops",
-      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
-      "source_location": "L9"
-    },
-    {
-      "id": "src_data_compendium_races_types_compendiumsubrace",
-      "label": "CompendiumSubrace",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
-      "file_type": "code",
-      "norm_label": "compendiumsubrace",
+      "norm_label": "compendiumrace",
       "source_file": "src/data/compendium/races/types.ts",
-      "source_location": "L52"
-    },
-    {
-      "id": "src_data_compendium_races_types_racecategory",
-      "label": "RaceCategory",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
-      "file_type": "code",
-      "norm_label": "racecategory",
-      "source_file": "src/data/compendium/races/types.ts",
-      "source_location": "L3"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_calculatortab",
-      "label": "CalculatorTab",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "calculatortab",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_statscalculatormodalprops",
-      "label": "StatsCalculatorModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "statscalculatormodalprops",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L15"
+      "source_location": "L63"
     },
     {
       "id": "src_components_encyclopedia_interactivesheettour_interactivesheettourprops",
@@ -166,24 +62,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 109,
-      "community_name": "ScrollIcon",
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
       "norm_label": "interactivesheettourprops",
       "source_file": "src/components/encyclopedia/InteractiveSheetTour.tsx",
       "source_location": "L12"
-    },
-    {
-      "id": "src_components_sheet_sheetfooter_sheetfooterprops",
-      "label": "SheetFooterProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 109,
-      "community_name": "ScrollIcon",
-      "file_type": "code",
-      "norm_label": "sheetfooterprops",
-      "source_file": "src/components/sheet/SheetFooter.tsx",
-      "source_location": "L6"
     },
     {
       "id": "src_components_equipment_equipmentpaperdoll_equipmentpaperdollprops",
@@ -275,6 +158,19 @@
       "norm_label": "equippeditem",
       "source_file": "src/lib/equipment-types.ts",
       "source_location": "L125"
+    },
+    {
+      "id": "src_lib_equipment_types_itemeffect",
+      "label": "ItemEffect",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "equipment-types.ts",
+      "file_type": "code",
+      "norm_label": "itemeffect",
+      "source_file": "src/lib/equipment-types.ts",
+      "source_location": "L116"
     },
     {
       "id": "src_lib_equipment_types_mannequinanchor",
@@ -485,6 +381,19 @@
       "source_location": "L19"
     },
     {
+      "id": "src_components_levelup_levelupmodal_levelupmodalprops",
+      "label": "LevelUpModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "levelupmodalprops",
+      "source_file": "src/components/levelup/LevelUpModal.tsx",
+      "source_location": "L84"
+    },
+    {
       "id": "src_components_wizard_wizard_helpers_fightingstyleoption",
       "label": "FightingStyleOption",
       "_callable": true,
@@ -498,6 +407,19 @@
       "source_location": "L541"
     },
     {
+      "id": "src_data_compendium_auto_spells_engine_autograntedspell",
+      "label": "AutoGrantedSpell",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "autograntedspell",
+      "source_file": "src/data/compendium/auto-spells-engine.ts",
+      "source_location": "L12"
+    },
+    {
       "id": "src_data_compendium_warlock_choices_geniekinddefinition",
       "label": "GenieKindDefinition",
       "_callable": true,
@@ -509,19 +431,6 @@
       "norm_label": "geniekinddefinition",
       "source_file": "src/data/compendium/warlock-choices.ts",
       "source_location": "L28"
-    },
-    {
-      "id": "src_data_compendium_warlock_choices_geniekindid",
-      "label": "GenieKindId",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "LevelUpModal.tsx",
-      "file_type": "code",
-      "norm_label": "geniekindid",
-      "source_file": "src/data/compendium/warlock-choices.ts",
-      "source_location": "L26"
     },
     {
       "id": "src_data_compendium_warlock_choices_invocationdefinition",
@@ -561,6 +470,19 @@
       "norm_label": "pactboontype",
       "source_file": "src/data/compendium/warlock-choices.ts",
       "source_location": "L4"
+    },
+    {
+      "id": "src_lib_dnd_types_armormodeoption",
+      "label": "ArmorModeOption",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "armormodeoption",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L680"
     },
     {
       "id": "src_lib_dnd_types_attack",
@@ -628,6 +550,58 @@
       "source_location": "L49"
     },
     {
+      "id": "src_lib_pdf_export_codexitem",
+      "label": "CodexItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "codexitem",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L646"
+    },
+    {
+      "id": "src_lib_pdf_export_pdfexportoptions",
+      "label": "PdfExportOptions",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "pdfexportoptions",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_lib_pdf_export_spelllevelmapping",
+      "label": "SpellLevelMapping",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "spelllevelmapping",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L30"
+    },
+    {
+      "id": "src_lib_pdf_export_spellrowmapping",
+      "label": "SpellRowMapping",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "spellrowmapping",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L25"
+    },
+    {
       "id": "src_lib_character_validation_characternamevalidationresult",
       "label": "CharacterNameValidationResult",
       "_callable": true,
@@ -667,32 +641,6 @@
       "source_location": "L3"
     },
     {
-      "id": "src_components_encyclopedia_dndencyclopediamodal_dndencyclopediamodalprops",
-      "label": "DndEncyclopediaModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "dndencyclopediamodalprops",
-      "source_file": "src/components/encyclopedia/DndEncyclopediaModal.tsx",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_components_gameplay_restmodal_restmodalprops",
-      "label": "RestModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "restmodalprops",
-      "source_file": "src/components/gameplay/RestModal.tsx",
-      "source_location": "L27"
-    },
-    {
       "id": "src_components_gameplay_restmodal_rollhistoryentry",
       "label": "RollHistoryEntry",
       "_callable": true,
@@ -704,32 +652,6 @@
       "norm_label": "rollhistoryentry",
       "source_file": "src/components/gameplay/RestModal.tsx",
       "source_location": "L33"
-    },
-    {
-      "id": "src_components_sheet_sheetheader_sheetheaderprops",
-      "label": "SheetHeaderProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "sheetheaderprops",
-      "source_file": "src/components/sheet/SheetHeader.tsx",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_components_tools_sharemodal_sharemodalprops",
-      "label": "ShareModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "sharemodalprops",
-      "source_file": "src/components/tools/ShareModal.tsx",
-      "source_location": "L17"
     },
     {
       "id": "src_data_compendium_class_progression_classfeatureentry",
@@ -784,82 +706,69 @@
       "source_location": "L17"
     },
     {
-      "id": "src_lib_pdf_export_codexitem",
-      "label": "CodexItem",
+      "id": "src_components_compendium_itemdetailmodal_itemdetailmodalprops",
+      "label": "ItemDetailModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 64,
-      "community_name": "pdf-export.ts",
+      "community_name": "ItemDetailModal.tsx",
       "file_type": "code",
-      "norm_label": "codexitem",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L646"
+      "norm_label": "itemdetailmodalprops",
+      "source_file": "src/components/compendium/ItemDetailModal.tsx",
+      "source_location": "L8"
     },
     {
-      "id": "src_lib_pdf_export_pdfexportoptions",
-      "label": "PdfExportOptions",
+      "id": "src_data_compendium_items_compendiumitem",
+      "label": "CompendiumItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 64,
-      "community_name": "pdf-export.ts",
+      "community_name": "ItemDetailModal.tsx",
       "file_type": "code",
-      "norm_label": "pdfexportoptions",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L18"
+      "norm_label": "compendiumitem",
+      "source_file": "src/data/compendium/items.ts",
+      "source_location": "L6"
     },
     {
-      "id": "src_lib_pdf_export_spelllevelmapping",
-      "label": "SpellLevelMapping",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "spelllevelmapping",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L30"
-    },
-    {
-      "id": "src_lib_pdf_export_spellrowmapping",
-      "label": "SpellRowMapping",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "spellrowmapping",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L25"
-    },
-    {
-      "id": "src_components_levelup_levelupmodal_levelupmodalprops",
-      "label": "LevelUpModalProps",
+      "id": "src_components_gameplay_restmodal_restmodalprops",
+      "label": "RestModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 65,
       "community_name": "CharacterData",
       "file_type": "code",
-      "norm_label": "levelupmodalprops",
-      "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L84"
+      "norm_label": "restmodalprops",
+      "source_file": "src/components/gameplay/RestModal.tsx",
+      "source_location": "L27"
     },
     {
-      "id": "src_data_compendium_auto_spells_engine_autograntedspell",
-      "label": "AutoGrantedSpell",
+      "id": "src_components_sheet_pages_detailssheetpage_detailssheetpageprops",
+      "label": "DetailsSheetPageProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 65,
       "community_name": "CharacterData",
       "file_type": "code",
-      "norm_label": "autograntedspell",
-      "source_file": "src/data/compendium/auto-spells-engine.ts",
-      "source_location": "L12"
+      "norm_label": "detailssheetpageprops",
+      "source_file": "src/components/sheet/pages/DetailsSheetPage.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_components_tools_sharemodal_sharemodalprops",
+      "label": "ShareModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "CharacterData",
+      "file_type": "code",
+      "norm_label": "sharemodalprops",
+      "source_file": "src/components/tools/ShareModal.tsx",
+      "source_location": "L17"
     },
     {
       "id": "src_data_compendium_class_spells_spellcheckresult",
@@ -907,7 +816,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
+      "community_name": "alternate-barbarian-and-scourgeborne.test.ts",
       "file_type": "code",
       "norm_label": "barbarianexploit",
       "source_file": "src/data/compendium/barbarian-exploits.ts",
@@ -940,19 +849,6 @@
       "source_location": "L114"
     },
     {
-      "id": "src_lib_equipment_types_itemeffect",
-      "label": "ItemEffect",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 67,
-      "community_name": "EquipmentSlotModal.tsx",
-      "file_type": "code",
-      "norm_label": "itemeffect",
-      "source_file": "src/lib/equipment-types.ts",
-      "source_location": "L116"
-    },
-    {
       "id": "src_lib_equipment_types_itemeffecttype",
       "label": "ItemEffectType",
       "_callable": true,
@@ -966,13 +862,26 @@
       "source_location": "L98"
     },
     {
+      "id": "src_components_compendium_classselectormodal_classselectormodalprops",
+      "label": "ClassSelectorModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "classselectormodalprops",
+      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L8"
+    },
+    {
       "id": "src_components_compendium_compendiummodals_spellmodalprops",
       "label": "SpellModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "spellmodalprops",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
@@ -985,7 +894,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "traitmodalprops",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
@@ -998,24 +907,50 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "weaponmodalprops",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
       "source_location": "L155"
     },
     {
-      "id": "src_components_sheet_pages_mainsheetpage_mainsheetpageprops",
-      "label": "MainSheetPageProps",
+      "id": "src_components_compendium_subclassselectormodal_subclassselectormodalprops",
+      "label": "SubclassSelectorModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
-      "norm_label": "mainsheetpageprops",
-      "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
-      "source_location": "L60"
+      "norm_label": "subclassselectormodalprops",
+      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_data_compendium_classes_compendiumclass",
+      "label": "CompendiumClass",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "compendiumclass",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L22"
+    },
+    {
+      "id": "src_data_compendium_classes_compendiumsubclass",
+      "label": "CompendiumSubclass",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "compendiumsubclass",
+      "source_file": "src/data/compendium/classes.ts",
+      "source_location": "L3"
     },
     {
       "id": "src_data_dnd_traits_dndtrait",
@@ -1024,37 +959,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "dndtrait",
       "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_data_dnd_weapons_dndweapon",
-      "label": "DndWeapon",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "CompendiumModals.tsx",
-      "file_type": "code",
-      "norm_label": "dndweapon",
-      "source_file": "src/data/dnd-weapons.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_equipment_types_activeattackoption",
-      "label": "ActiveAttackOption",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 68,
-      "community_name": "CompendiumModals.tsx",
-      "file_type": "code",
-      "norm_label": "activeattackoption",
-      "source_file": "src/lib/equipment-types.ts",
-      "source_location": "L451"
+      "source_location": "L5"
     },
     {
       "id": "scripts_fetch_dndsu_races_parsedrace",
@@ -1213,6 +1122,19 @@
       "source_location": "L6"
     },
     {
+      "id": "src_components_sheet_pages_mainsheetpage_mainsheetpageprops",
+      "label": "MainSheetPageProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
+      "file_type": "code",
+      "norm_label": "mainsheetpageprops",
+      "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
+      "source_location": "L60"
+    },
+    {
       "id": "src_components_sheet_pages_spellssheetpage_spellssheetpageprops",
       "label": "SpellsSheetPageProps",
       "_callable": true,
@@ -1239,6 +1161,32 @@
       "source_location": "L34"
     },
     {
+      "id": "src_data_dnd_weapons_dndweapon",
+      "label": "DndWeapon",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
+      "file_type": "code",
+      "norm_label": "dndweapon",
+      "source_file": "src/data/dnd-weapons.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_dnd_types_classtemplate",
+      "label": "ClassTemplate",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
+      "file_type": "code",
+      "norm_label": "classtemplate",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1292"
+    },
+    {
       "id": "src_lib_dnd_types_spellentry",
       "label": "SpellEntry",
       "_callable": true,
@@ -1252,43 +1200,17 @@
       "source_location": "L54"
     },
     {
-      "id": "src_components_compendium_classselectormodal_classselectormodalprops",
-      "label": "ClassSelectorModalProps",
+      "id": "src_lib_equipment_types_activeattackoption",
+      "label": "ActiveAttackOption",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
+      "community": 77,
+      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
       "file_type": "code",
-      "norm_label": "classselectormodalprops",
-      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_components_compendium_itemdetailmodal_itemdetailmodalprops",
-      "label": "ItemDetailModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "itemdetailmodalprops",
-      "source_file": "src/components/compendium/ItemDetailModal.tsx",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_components_compendium_subclassselectormodal_subclassselectormodalprops",
-      "label": "SubclassSelectorModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "subclassselectormodalprops",
-      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
-      "source_location": "L8"
+      "norm_label": "activeattackoption",
+      "source_file": "src/lib/equipment-types.ts",
+      "source_location": "L451"
     },
     {
       "id": "src_components_sheet_sheetnavbar_sheetnavbarprops",
@@ -1297,7 +1219,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "sheetnavbarprops",
       "source_file": "src/components/sheet/SheetNavbar.tsx",
@@ -1310,63 +1232,63 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "sheettab",
       "source_file": "src/components/sheet/SheetNavbar.tsx",
       "source_location": "L6"
     },
     {
-      "id": "src_data_compendium_classes_compendiumclass",
-      "label": "CompendiumClass",
+      "id": "src_components_tools_namegeneratormodal_namegeneratormodalprops",
+      "label": "NameGeneratorModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "compendiumclass",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L22"
+      "norm_label": "namegeneratormodalprops",
+      "source_file": "src/components/tools/NameGeneratorModal.tsx",
+      "source_location": "L14"
     },
     {
-      "id": "src_data_compendium_classes_compendiumsubclass",
-      "label": "CompendiumSubclass",
+      "id": "src_components_tools_statscalculatormodal_calculatortab",
+      "label": "CalculatorTab",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "compendiumsubclass",
-      "source_file": "src/data/compendium/classes.ts",
-      "source_location": "L3"
+      "norm_label": "calculatortab",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L23"
     },
     {
-      "id": "src_data_compendium_items_compendiumitem",
-      "label": "CompendiumItem",
+      "id": "src_components_tools_statscalculatormodal_statscalculatormodalprops",
+      "label": "StatsCalculatorModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "compendiumitem",
-      "source_file": "src/data/compendium/items.ts",
-      "source_location": "L6"
+      "norm_label": "statscalculatormodalprops",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L15"
     },
     {
-      "id": "src_lib_dnd_types_armormodeoption",
-      "label": "ArmorModeOption",
+      "id": "src_data_compendium_names_data_fantasynameresult",
+      "label": "FantasyNameResult",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "armormodeoption",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L680"
+      "norm_label": "fantasynameresult",
+      "source_file": "src/data/compendium/names-data.ts",
+      "source_location": "L28"
     },
     {
       "id": "src_components_sheet_modals_sheetmodals_nonclassspellconfirmmodalprops",
@@ -1460,13 +1382,26 @@
       "source_location": "L481"
     },
     {
+      "id": "src_components_encyclopedia_dndencyclopediamodal_dndencyclopediamodalprops",
+      "label": "DndEncyclopediaModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "dndencyclopediamodalprops",
+      "source_file": "src/components/encyclopedia/DndEncyclopediaModal.tsx",
+      "source_location": "L17"
+    },
+    {
       "id": "src_components_sheet_modals_sheetmodals_authmodalprops",
       "label": "AuthModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "authmodalprops",
       "source_file": "src/components/sheet/modals/SheetModals.tsx",
@@ -1479,7 +1414,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "createchoicemodalprops",
       "source_file": "src/components/sheet/modals/SheetModals.tsx",
@@ -1492,7 +1427,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "leveldownmodalprops",
       "source_file": "src/components/sheet/modals/SheetModals.tsx",
@@ -1505,7 +1440,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "levelhistorymodalprops",
       "source_file": "src/components/sheet/modals/SheetModals.tsx",
@@ -1518,7 +1453,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "resetmodalprops",
       "source_file": "src/components/sheet/modals/SheetModals.tsx",
@@ -1531,7 +1466,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "signoutmodalprops",
       "source_file": "src/components/sheet/modals/SheetModals.tsx",
@@ -1544,11 +1479,37 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "templatemodalprops",
       "source_file": "src/components/sheet/modals/SheetModals.tsx",
       "source_location": "L489"
+    },
+    {
+      "id": "src_components_sheet_sheetfooter_sheetfooterprops",
+      "label": "SheetFooterProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "sheetfooterprops",
+      "source_file": "src/components/sheet/SheetFooter.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_components_sheet_sheetheader_sheetheaderprops",
+      "label": "SheetHeaderProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "sheetheaderprops",
+      "source_file": "src/components/sheet/SheetHeader.tsx",
+      "source_location": "L24"
     },
     {
       "id": "scripts_parse_dndsu_feats_compendiumfeat",
@@ -1577,13 +1538,65 @@
       "source_location": "L25"
     },
     {
+      "id": "src_components_wizard_wizard_helpers_classskillconfig",
+      "label": "ClassSkillConfig",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "classskillconfig",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L278"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_classspellcastinglimits",
+      "label": "ClassSpellcastingLimits",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "classspellcastinglimits",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L324"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_dragonancestryoption",
+      "label": "DragonAncestryOption",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "dragonancestryoption",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L587"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_racialbonusconfig",
+      "label": "RacialBonusConfig",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "racialbonusconfig",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L207"
+    },
+    {
       "id": "src_data_compendium_feat_prerequisites_characterprereqcontext",
       "label": "CharacterPrereqContext",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "characterprereqcontext",
       "source_file": "src/data/compendium/feat-prerequisites.ts",
@@ -1596,7 +1609,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "prerequisitecheckresult",
       "source_file": "src/data/compendium/feat-prerequisites.ts",
@@ -1609,10 +1622,36 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "compendiumfeat",
       "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_lib_dnd_types_abilityname",
+      "label": "AbilityName",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "abilityname",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_lib_feat_bonus_engine_featabilitybonusconfig",
+      "label": "FeatAbilityBonusConfig",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "featabilitybonusconfig",
+      "source_file": "src/lib/feat-bonus-engine.ts",
       "source_location": "L5"
     },
     {
@@ -1746,6 +1785,32 @@
       "source_location": "L5"
     },
     {
+      "id": "src_components_compendium_raceselectormodal_raceselectormodalprops",
+      "label": "RaceSelectorModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 93,
+      "community_name": "merge-races-compendium.ts",
+      "file_type": "code",
+      "norm_label": "raceselectormodalprops",
+      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_data_compendium_races_types_compendiumsubrace",
+      "label": "CompendiumSubrace",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 93,
+      "community_name": "merge-races-compendium.ts",
+      "file_type": "code",
+      "norm_label": "compendiumsubrace",
+      "source_file": "src/data/compendium/races/types.ts",
+      "source_location": "L52"
+    },
+    {
       "id": "src_data_compendium_races_types_racechoicesconfig",
       "label": "RaceChoicesConfig",
       "_callable": true,
@@ -1850,6 +1915,32 @@
       "source_location": "L58"
     },
     {
+      "id": "src_data_compendium_warlock_choices_geniekindid",
+      "label": "GenieKindId",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "geniekindid",
+      "source_file": "src/data/compendium/warlock-choices.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_lib_dnd_types_basegenderchoice",
+      "label": "BaseGenderChoice",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "basegenderchoice",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1196"
+    },
+    {
       "id": "src_components_tools_charactergridmodal_charactergridmodalprops",
       "label": "CharacterGridModalProps",
       "_callable": true,
@@ -1902,19 +1993,6 @@
       "source_location": "L766"
     },
     {
-      "id": "src_data_compendium_races_types_compendiumrace",
-      "label": "CompendiumRace",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "races/types.ts",
-      "file_type": "code",
-      "norm_label": "compendiumrace",
-      "source_file": "src/data/compendium/races/types.ts",
-      "source_location": "L63"
-    },
-    {
       "id": "src_data_compendium_races_types_magicclass",
       "label": "MagicClass",
       "_callable": true,
@@ -1939,6 +2017,19 @@
       "norm_label": "racecantripchoiceconfig",
       "source_file": "src/data/compendium/races/types.ts",
       "source_location": "L8"
+    },
+    {
+      "id": "src_data_compendium_races_types_racecategory",
+      "label": "RaceCategory",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "races/types.ts",
+      "file_type": "code",
+      "norm_label": "racecategory",
+      "source_file": "src/data/compendium/races/types.ts",
+      "source_location": "L3"
     },
     {
       "id": "src_data_compendium_races_types_racecustomfeaturechoiceconfig",
@@ -2032,58 +2123,6 @@
       "source_location": "L904"
     },
     {
-      "id": "src_components_wizard_wizard_helpers_classskillconfig",
-      "label": "ClassSkillConfig",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "classskillconfig",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L278"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_classspellcastinglimits",
-      "label": "ClassSpellcastingLimits",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "classspellcastinglimits",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L324"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_dragonancestryoption",
-      "label": "DragonAncestryOption",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "dragonancestryoption",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L587"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_racialbonusconfig",
-      "label": "RacialBonusConfig",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "racialbonusconfig",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L207"
-    },
-    {
       "id": "src_components_wizard_wizard_helpers_racialskilldata",
       "label": "RacialSkillData",
       "_callable": true,
@@ -2097,45 +2136,6 @@
       "source_location": "L27"
     },
     {
-      "id": "src_lib_dnd_types_abilityname",
-      "label": "AbilityName",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "abilityname",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L6"
-    },
-    {
-      "id": "src_lib_dnd_types_classtemplate",
-      "label": "ClassTemplate",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "classtemplate",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1292"
-    },
-    {
-      "id": "src_lib_feat_bonus_engine_featabilitybonusconfig",
-      "label": "FeatAbilityBonusConfig",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "featabilitybonusconfig",
-      "source_file": "src/lib/feat-bonus-engine.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "src_components_tools_namegeneratormodal_namegeneratormodal",
       "label": "NameGeneratorModal()",
       "_callable": true,
@@ -2146,6 +2146,18 @@
       "norm_label": "namegeneratormodal()",
       "source_file": "src/components/tools/NameGeneratorModal.tsx",
       "source_location": "L20"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_generatefantasyname",
+      "label": "generateFantasyName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "names-data.ts",
+      "file_type": "code",
+      "norm_label": "generatefantasyname()",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L21"
     },
     {
       "id": "src_data_compendium_names_data_generatefantasyname",
@@ -2172,6 +2184,18 @@
       "source_location": "L807"
     },
     {
+      "id": "src_data_compendium_names_data_generateracefantasyname",
+      "label": "generateRaceFantasyName()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "names-data.ts",
+      "file_type": "code",
+      "norm_label": "generateracefantasyname()",
+      "source_file": "src/data/compendium/names-data.ts",
+      "source_location": "L905"
+    },
+    {
       "id": "src_data_compendium_names_data_getavailablecultures",
       "label": "getAvailableCultures()",
       "_callable": true,
@@ -2182,6 +2206,18 @@
       "norm_label": "getavailablecultures()",
       "source_file": "src/data/compendium/names-data.ts",
       "source_location": "L713"
+    },
+    {
+      "id": "src_data_compendium_names_data_lookupracenamingentry",
+      "label": "lookupRaceNamingEntry()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "names-data.ts",
+      "file_type": "code",
+      "norm_label": "lookupracenamingentry()",
+      "source_file": "src/data/compendium/names-data.ts",
+      "source_location": "L859"
     },
     {
       "id": "src_data_compendium_names_data_normalizeracekey",
@@ -2206,6 +2242,30 @@
       "norm_label": "pickrandom()",
       "source_file": "src/data/compendium/names-data.ts",
       "source_location": "L724"
+    },
+    {
+      "id": "src_lib_dnd_types_parsecharactergender",
+      "label": "parseCharacterGender()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "names-data.ts",
+      "file_type": "code",
+      "norm_label": "parsecharactergender()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1205"
+    },
+    {
+      "id": "src_lib_dnd_types_resolvecharactergender",
+      "label": "resolveCharacterGender()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "names-data.ts",
+      "file_type": "code",
+      "norm_label": "resolvecharactergender()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1198"
     },
     {
       "id": "test_performance_assets_test_readfile",
@@ -2244,196 +2304,52 @@
       "source_location": "L11"
     },
     {
-      "id": "src_components_dnd_icons_arcanelinkicon",
-      "label": "ArcaneLinkIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "../src/components/sheet/pages/DetailsSheetPage.js",
-      "file_type": "code",
-      "norm_label": "arcanelinkicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L144"
-    },
-    {
-      "id": "src_components_dnd_icons_cameraportraiticon",
-      "label": "CameraPortraitIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "../src/components/sheet/pages/DetailsSheetPage.js",
-      "file_type": "code",
-      "norm_label": "cameraportraiticon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L240"
-    },
-    {
-      "id": "src_components_dnd_icons_coinschesticon",
-      "label": "CoinsChestIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "../src/components/sheet/pages/DetailsSheetPage.js",
-      "file_type": "code",
-      "norm_label": "coinschesticon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L195"
-    },
-    {
-      "id": "src_components_compendium_raceselectormodal_raceselectormodal",
-      "label": "RaceSelectorModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
-      "file_type": "code",
-      "norm_label": "raceselectormodal()",
-      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
-      "source_location": "L25"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_getracialbonusconfig",
-      "label": "getRacialBonusConfig()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
-      "file_type": "code",
-      "norm_label": "getracialbonusconfig()",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L216"
-    },
-    {
       "id": "src_data_compendium_races_index_findracebyname",
       "label": "findRaceByName()",
       "_callable": true,
       "_origin": "ast",
       "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
+      "community_name": "races/index.ts",
       "file_type": "code",
       "norm_label": "findracebyname()",
       "source_file": "src/data/compendium/races/index.ts",
       "source_location": "L17"
     },
     {
-      "id": "src_lib_dnd_types_formatabilitybonus",
-      "label": "formatAbilityBonus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
-      "file_type": "code",
-      "norm_label": "formatabilitybonus()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L207"
-    },
-    {
-      "id": "src_components_dnd_icons_sparklesdndicon",
-      "label": "SparklesDndIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "sparklesdndicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L185"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_died6",
-      "label": "DieD6()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "died6()",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L40"
-    },
-    {
-      "id": "src_components_dnd_icons_quillicon",
-      "label": "QuillIcon()",
+      "id": "src_components_dnd_icons_d20icon",
+      "label": "D20Icon()",
       "_callable": true,
       "_origin": "ast",
       "community": 109,
-      "community_name": "ScrollIcon",
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
-      "norm_label": "quillicon()",
+      "norm_label": "d20icon()",
       "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L118"
+      "source_location": "L10"
     },
     {
-      "id": "src_components_dnd_icons_scrollicon",
-      "label": "ScrollIcon()",
+      "id": "src_components_dnd_icons_masksdramaicon",
+      "label": "MasksDramaIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 109,
-      "community_name": "ScrollIcon",
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
-      "norm_label": "scrollicon()",
+      "norm_label": "masksdramaicon()",
       "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L26"
+      "source_location": "L206"
     },
     {
-      "id": "src_components_wizard_wizard_helpers_generatefantasyname",
-      "label": "generateFantasyName()",
+      "id": "src_lib_supabase_client_createclient",
+      "label": "createClient()",
       "_callable": true,
       "_origin": "ast",
-      "community": 110,
-      "community_name": "generateRaceFantasyName",
+      "community": 109,
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
-      "norm_label": "generatefantasyname()",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L21"
-    },
-    {
-      "id": "src_data_compendium_names_data_generateracefantasyname",
-      "label": "generateRaceFantasyName()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "generateRaceFantasyName",
-      "file_type": "code",
-      "norm_label": "generateracefantasyname()",
-      "source_file": "src/data/compendium/names-data.ts",
-      "source_location": "L905"
-    },
-    {
-      "id": "src_data_compendium_names_data_lookupracenamingentry",
-      "label": "lookupRaceNamingEntry()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "generateRaceFantasyName",
-      "file_type": "code",
-      "norm_label": "lookupracenamingentry()",
-      "source_file": "src/data/compendium/names-data.ts",
-      "source_location": "L859"
-    },
-    {
-      "id": "src_lib_dnd_types_parsecharactergender",
-      "label": "parseCharacterGender()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "generateRaceFantasyName",
-      "file_type": "code",
-      "norm_label": "parsecharactergender()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1205"
-    },
-    {
-      "id": "src_lib_dnd_types_resolvecharactergender",
-      "label": "resolveCharacterGender()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "generateRaceFantasyName",
-      "file_type": "code",
-      "norm_label": "resolvecharactergender()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1198"
+      "norm_label": "createclient()",
+      "source_file": "src/lib/supabase/client.ts",
+      "source_location": "L3"
     },
     {
       "id": "src_components_equipment_equipmentpaperdoll_equipmentpaperdoll",
@@ -2566,6 +2482,18 @@
       "norm_label": "getoffhandblockedreason()",
       "source_file": "src/lib/equipment-types.ts",
       "source_location": "L162"
+    },
+    {
+      "id": "src_lib_equipment_types_getweaponstats",
+      "label": "getWeaponStats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "equipment-types.ts",
+      "file_type": "code",
+      "norm_label": "getweaponstats()",
+      "source_file": "src/lib/equipment-types.ts",
+      "source_location": "L545"
     },
     {
       "id": "src_lib_equipment_types_hastwoweaponfightingstyle",
@@ -2913,7 +2841,7 @@
       "file_type": "code",
       "norm_label": "filteravailablespells()",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1085"
+      "source_location": "L1087"
     },
     {
       "id": "src_components_levelup_level_up_choices_getknownspellnames",
@@ -2925,7 +2853,7 @@
       "file_type": "code",
       "norm_label": "getknownspellnames()",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1034"
+      "source_location": "L1036"
     },
     {
       "id": "src_components_levelup_level_up_choices_getthirdcasterspellslots",
@@ -2937,7 +2865,7 @@
       "file_type": "code",
       "norm_label": "getthirdcasterspellslots()",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1011"
+      "source_location": "L1013"
     },
     {
       "id": "src_components_levelup_level_up_choices_normalizespellname",
@@ -2949,7 +2877,7 @@
       "file_type": "code",
       "norm_label": "normalizespellname()",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1025"
+      "source_location": "L1027"
     },
     {
       "id": "src_data_compendium_warlock_choices_isinvocationavailable",
@@ -3024,6 +2952,30 @@
       "source_location": "L18"
     },
     {
+      "id": "src_app_api_export_pdf_route_normalizecharacter",
+      "label": "normalizeCharacter()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "normalizecharacter()",
+      "source_file": "src/app/api/export-pdf/route.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_app_api_export_pdf_route_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/app/api/export-pdf/route.ts",
+      "source_location": "L24"
+    },
+    {
       "id": "src_app_page_dndcharactersheet",
       "label": "DnDCharacterSheet()",
       "_callable": true,
@@ -3048,28 +3000,28 @@
       "source_location": "L101"
     },
     {
-      "id": "src_components_tools_statscalculatormodal_statscalculatormodal",
-      "label": "StatsCalculatorModal()",
+      "id": "src_app_share_code_page_normalizecharacterdata",
+      "label": "normalizeCharacterData()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
       "community_name": "dnd-types.ts",
       "file_type": "code",
-      "norm_label": "statscalculatormodal()",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L99"
+      "norm_label": "normalizecharacterdata()",
+      "source_file": "src/app/share/[code]/page.tsx",
+      "source_location": "L47"
     },
     {
-      "id": "src_data_dnd_weapons_getweapondamagediceforgrip",
-      "label": "getWeaponDamageDiceForGrip()",
+      "id": "src_app_share_code_page_sharedcharacterpage_fetchshare",
+      "label": "fetchShare()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
       "community_name": "dnd-types.ts",
       "file_type": "code",
-      "norm_label": "getweapondamagediceforgrip()",
-      "source_file": "src/data/dnd-weapons.ts",
-      "source_location": "L679"
+      "norm_label": "fetchshare()",
+      "source_file": "src/app/share/[code]/page.tsx",
+      "source_location": "L103"
     },
     {
       "id": "src_lib_dnd_types_applyclasstemplate",
@@ -3120,18 +3072,6 @@
       "source_location": "L591"
     },
     {
-      "id": "src_lib_dnd_types_calcmodifier",
-      "label": "calcModifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "calcmodifier()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L199"
-    },
-    {
       "id": "src_lib_dnd_types_createdefaultcharacter",
       "label": "createDefaultCharacter()",
       "_callable": true,
@@ -3142,6 +3082,18 @@
       "norm_label": "createdefaultcharacter()",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L1216"
+    },
+    {
+      "id": "src_lib_dnd_types_createemptylevelupentry",
+      "label": "createEmptyLevelUpEntry()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "createemptylevelupentry()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L1177"
     },
     {
       "id": "src_lib_dnd_types_createexamplewarrior",
@@ -3240,6 +3192,18 @@
       "source_location": "L419"
     },
     {
+      "id": "src_lib_dnd_types_getmilestonesatlevel",
+      "label": "getMilestonesAtLevel()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "getmilestonesatlevel()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L262"
+    },
+    {
       "id": "src_lib_dnd_types_haspowerfulbuild",
       "label": "hasPowerfulBuild()",
       "_callable": true,
@@ -3300,16 +3264,16 @@
       "source_location": "L543"
     },
     {
-      "id": "src_lib_equipment_types_getweaponstats",
-      "label": "getWeaponStats()",
+      "id": "scripts_generate_sheet_main",
+      "label": "main()",
       "_callable": true,
       "_origin": "ast",
-      "community": 3,
-      "community_name": "dnd-types.ts",
+      "community": 4,
+      "community_name": "pdf-export.ts",
       "file_type": "code",
-      "norm_label": "getweaponstats()",
-      "source_file": "src/lib/equipment-types.ts",
-      "source_location": "L545"
+      "norm_label": "main()",
+      "source_file": "scripts/generate-sheet.ts",
+      "source_location": "L6"
     },
     {
       "id": "src_app_api_export_docx_route_borders",
@@ -3317,7 +3281,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "borders()",
       "source_file": "src/app/api/export-docx/route.ts",
@@ -3329,7 +3293,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "dcell()",
       "source_file": "src/app/api/export-docx/route.ts",
@@ -3341,7 +3305,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "hcell()",
       "source_file": "src/app/api/export-docx/route.ts",
@@ -3353,7 +3317,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "issafeimageurl()",
       "source_file": "src/app/api/export-docx/route.ts",
@@ -3365,7 +3329,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "normalizecharacter()",
       "source_file": "src/app/api/export-docx/route.ts",
@@ -3377,7 +3341,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/app/api/export-docx/route.ts",
@@ -3389,7 +3353,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "sectionheader()",
       "source_file": "src/app/api/export-docx/route.ts",
@@ -3401,23 +3365,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "textpara()",
       "source_file": "src/app/api/export-docx/route.ts",
       "source_location": "L90"
-    },
-    {
-      "id": "src_app_share_code_page_normalizecharacterdata",
-      "label": "normalizeCharacterData()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "[code]/page.tsx",
-      "file_type": "code",
-      "norm_label": "normalizecharacterdata()",
-      "source_file": "src/app/share/[code]/page.tsx",
-      "source_location": "L47"
     },
     {
       "id": "src_app_share_code_page_sharedcharacterpage",
@@ -3425,23 +3377,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "sharedcharacterpage()",
       "source_file": "src/app/share/[code]/page.tsx",
       "source_location": "L70"
-    },
-    {
-      "id": "src_app_share_code_page_sharedcharacterpage_fetchshare",
-      "label": "fetchShare()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "[code]/page.tsx",
-      "file_type": "code",
-      "norm_label": "fetchshare()",
-      "source_file": "src/app/share/[code]/page.tsx",
-      "source_location": "L103"
     },
     {
       "id": "src_lib_dnd_types_calcproficiencybonus",
@@ -3449,7 +3389,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "calcproficiencybonus()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3461,7 +3401,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "gethpmax()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3473,7 +3413,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "getinitiative()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3485,7 +3425,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "getmodifier()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3497,7 +3437,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "getpassiveperception()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3509,7 +3449,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "getsavingthrow()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3521,7 +3461,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "getskillbonus()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3533,7 +3473,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "getspellabilitymod()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3545,7 +3485,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "getspellattackbonus()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3557,7 +3497,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "getspellsavedc()",
       "source_file": "src/lib/dnd-types.ts",
@@ -3569,11 +3509,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "gettotalscore()",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L293"
+    },
+    {
+      "id": "src_lib_pdf_export_createparchmentpage",
+      "label": "createParchmentPage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "createparchmentpage()",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L798"
+    },
+    {
+      "id": "src_lib_pdf_export_drawpagefooter",
+      "label": "drawPageFooter()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "drawpagefooter()",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L875"
     },
     {
       "id": "src_lib_pdf_export_exportcharactertopdf",
@@ -3581,23 +3545,47 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "exportcharactertopdf()",
       "source_file": "src/lib/pdf-export.ts",
       "source_location": "L224"
     },
     {
-      "id": "src_lib_supabase_client_createclient",
-      "label": "createClient()",
+      "id": "src_lib_pdf_export_rendercodexpages",
+      "label": "renderCodexPages()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
-      "norm_label": "createclient()",
-      "source_file": "src/lib/supabase/client.ts",
-      "source_location": "L3"
+      "norm_label": "rendercodexpages()",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L661"
+    },
+    {
+      "id": "src_lib_pdf_export_rendertraitscodexpages",
+      "label": "renderTraitsCodexPages()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "rendertraitscodexpages()",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L652"
+    },
+    {
+      "id": "src_lib_pdf_export_wraptext",
+      "label": "wrapText()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "wraptext()",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L902"
     },
     {
       "id": "test_share_import_test_handleauthsession",
@@ -3924,16 +3912,16 @@
       "source_location": "L55"
     },
     {
-      "id": "src_components_dnd_icons_chesticon",
-      "label": "ChestIcon()",
+      "id": "src_components_dnd_icons_arcanelinkicon",
+      "label": "ArcaneLinkIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 52,
       "community_name": "dnd-icons.tsx",
       "file_type": "code",
-      "norm_label": "chesticon()",
+      "norm_label": "arcanelinkicon()",
       "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L50"
+      "source_location": "L144"
     },
     {
       "id": "src_components_dnd_icons_compendiumbookicon",
@@ -3960,18 +3948,6 @@
       "source_location": "L380"
     },
     {
-      "id": "src_components_dnd_icons_crystalballdndicon",
-      "label": "CrystalBallDndIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "crystalballdndicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L229"
-    },
-    {
       "id": "src_components_dnd_icons_devicestoneicon",
       "label": "DeviceStoneIcon()",
       "_callable": true,
@@ -3982,6 +3958,18 @@
       "norm_label": "devicestoneicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L407"
+    },
+    {
+      "id": "src_components_dnd_icons_engravedshieldicon",
+      "label": "EngravedShieldIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "dnd-icons.tsx",
+      "file_type": "code",
+      "norm_label": "engravedshieldicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L165"
     },
     {
       "id": "src_components_dnd_icons_eyemysticicon",
@@ -4020,18 +4008,6 @@
       "source_location": "L346"
     },
     {
-      "id": "src_components_dnd_icons_hourglassicon",
-      "label": "HourglassIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "hourglassicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L61"
-    },
-    {
       "id": "src_components_dnd_icons_lightningstrikeicon",
       "label": "LightningStrikeIcon()",
       "_callable": true,
@@ -4068,18 +4044,6 @@
       "source_location": "L334"
     },
     {
-      "id": "src_components_dnd_icons_mysticcloudicon",
-      "label": "MysticCloudIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "mysticcloudicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L92"
-    },
-    {
       "id": "src_components_dnd_icons_mysticspinnericon",
       "label": "MysticSpinnerIcon()",
       "_callable": true,
@@ -4102,30 +4066,6 @@
       "norm_label": "parchmentmenuicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L393"
-    },
-    {
-      "id": "src_components_dnd_icons_portalicon",
-      "label": "PortalIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "portalicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L107"
-    },
-    {
-      "id": "src_components_dnd_icons_runedkeyicon",
-      "label": "RunedKeyIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "runedkeyicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L133"
     },
     {
       "id": "src_components_dnd_icons_scrolldownloadicon",
@@ -4164,18 +4104,6 @@
       "source_location": "L418"
     },
     {
-      "id": "src_components_dnd_icons_spellbookicon",
-      "label": "SpellbookIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "spellbookicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L39"
-    },
-    {
       "id": "src_components_dnd_icons_targetaimicon",
       "label": "TargetAimIcon()",
       "_callable": true,
@@ -4198,18 +4126,6 @@
       "norm_label": "trashbinicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L264"
-    },
-    {
-      "id": "src_components_dnd_icons_userheroicon",
-      "label": "UserHeroIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "userheroicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L175"
     },
     {
       "id": "src_components_dnd_icons_warningsignicon",
@@ -4440,100 +4356,40 @@
       "source_location": "L5662"
     },
     {
-      "id": "scripts_generate_sheet_main",
-      "label": "main()",
+      "id": "src_components_compendium_itemdetailmodal_itemdetailmodal",
+      "label": "ItemDetailModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 64,
-      "community_name": "pdf-export.ts",
+      "community_name": "ItemDetailModal.tsx",
       "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "scripts/generate-sheet.ts",
-      "source_location": "L6"
+      "norm_label": "itemdetailmodal()",
+      "source_file": "src/components/compendium/ItemDetailModal.tsx",
+      "source_location": "L15"
     },
     {
-      "id": "src_app_api_export_pdf_route_normalizecharacter",
-      "label": "normalizeCharacter()",
+      "id": "src_components_dnd_icons_backpackpackicon",
+      "label": "BackpackPackIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 64,
-      "community_name": "pdf-export.ts",
+      "community_name": "ItemDetailModal.tsx",
       "file_type": "code",
-      "norm_label": "normalizecharacter()",
-      "source_file": "src/app/api/export-pdf/route.ts",
-      "source_location": "L5"
+      "norm_label": "backpackpackicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L218"
     },
     {
-      "id": "src_app_api_export_pdf_route_post",
-      "label": "POST()",
+      "id": "src_components_levelup_level_up_choices_getlevelupchoicesconfig",
+      "label": "getLevelUpChoicesConfig()",
       "_callable": true,
       "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
+      "community": 65,
+      "community_name": "CharacterData",
       "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/app/api/export-pdf/route.ts",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_lib_pdf_export_createparchmentpage",
-      "label": "createParchmentPage()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "createparchmentpage()",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L798"
-    },
-    {
-      "id": "src_lib_pdf_export_drawpagefooter",
-      "label": "drawPageFooter()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "drawpagefooter()",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L875"
-    },
-    {
-      "id": "src_lib_pdf_export_rendercodexpages",
-      "label": "renderCodexPages()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "rendercodexpages()",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L661"
-    },
-    {
-      "id": "src_lib_pdf_export_rendertraitscodexpages",
-      "label": "renderTraitsCodexPages()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "rendertraitscodexpages()",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L652"
-    },
-    {
-      "id": "src_lib_pdf_export_wraptext",
-      "label": "wrapText()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "wraptext()",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L902"
+      "norm_label": "getlevelupchoicesconfig()",
+      "source_file": "src/components/levelup/level-up-choices.ts",
+      "source_location": "L466"
     },
     {
       "id": "src_data_compendium_auto_spells_engine_getautograntedspellsforlevel",
@@ -4644,28 +4500,16 @@
       "source_location": "L97"
     },
     {
-      "id": "src_components_levelup_level_up_choices_getlevelupchoicesconfig",
-      "label": "getLevelUpChoicesConfig()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
-      "file_type": "code",
-      "norm_label": "getlevelupchoicesconfig()",
-      "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L465"
-    },
-    {
       "id": "src_components_levelup_level_up_choices_isbarbarianexploiteligible",
       "label": "isBarbarianExploitEligible()",
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
+      "community_name": "alternate-barbarian-and-scourgeborne.test.ts",
       "file_type": "code",
       "norm_label": "isbarbarianexploiteligible()",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L896"
+      "source_location": "L898"
     },
     {
       "id": "src_data_compendium_barbarian_exploits_getexploitbyid",
@@ -4673,7 +4517,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
+      "community_name": "alternate-barbarian-and-scourgeborne.test.ts",
       "file_type": "code",
       "norm_label": "getexploitbyid()",
       "source_file": "src/data/compendium/barbarian-exploits.ts",
@@ -4685,7 +4529,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
+      "community_name": "alternate-barbarian-and-scourgeborne.test.ts",
       "file_type": "code",
       "norm_label": "getexploitsbydegree()",
       "source_file": "src/data/compendium/barbarian-exploits.ts",
@@ -4764,6 +4608,18 @@
       "source_location": "L538"
     },
     {
+      "id": "src_data_dnd_weapons_getweapondamagediceforgrip",
+      "label": "getWeaponDamageDiceForGrip()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 67,
+      "community_name": "EquipmentSlotModal.tsx",
+      "file_type": "code",
+      "norm_label": "getweapondamagediceforgrip()",
+      "source_file": "src/data/dnd-weapons.ts",
+      "source_location": "L679"
+    },
+    {
       "id": "src_data_dnd_weapons_weapontocompendiumitem",
       "label": "weaponToCompendiumItem()",
       "_callable": true,
@@ -4788,12 +4644,24 @@
       "source_location": "L513"
     },
     {
+      "id": "src_components_compendium_classselectormodal_classselectormodal",
+      "label": "ClassSelectorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "classselectormodal()",
+      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L15"
+    },
+    {
       "id": "src_components_compendium_compendiummodals_spelldetailmodal",
       "label": "SpellDetailModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "spelldetailmodal()",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
@@ -4805,7 +4673,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "traitdetailmodal()",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
@@ -4817,11 +4685,71 @@
       "_callable": true,
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "weapondetailmodal()",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
       "source_location": "L163"
+    },
+    {
+      "id": "src_components_compendium_subclassselectormodal_subclassselectormodal",
+      "label": "SubclassSelectorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "subclassselectormodal()",
+      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_components_dnd_icons_crossedswordsicon",
+      "label": "CrossedSwordsIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "crossedswordsicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L153"
+    },
+    {
+      "id": "src_components_dnd_icons_sparklesdndicon",
+      "label": "SparklesDndIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "sparklesdndicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L185"
+    },
+    {
+      "id": "src_components_sheet_modals_sheetmodals_nonclassspellconfirmmodal",
+      "label": "NonClassSpellConfirmModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "nonclassspellconfirmmodal()",
+      "source_file": "src/components/sheet/modals/SheetModals.tsx",
+      "source_location": "L388"
+    },
+    {
+      "id": "src_hooks_useescapekey_useescapekey",
+      "label": "useEscapeKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "useescapekey()",
+      "source_file": "src/hooks/useEscapeKey.ts",
+      "source_location": "L3"
     },
     {
       "id": "scripts_modularize_races_serializeraces",
@@ -5136,16 +5064,28 @@
       "source_location": "L27"
     },
     {
-      "id": "src_components_dnd_icons_d20icon",
-      "label": "D20Icon()",
+      "id": "src_components_dnd_icons_cameraportraiticon",
+      "label": "CameraPortraitIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 77,
       "community_name": "../src/components/sheet/pages/MainSheetPage.js",
       "file_type": "code",
-      "norm_label": "d20icon()",
+      "norm_label": "cameraportraiticon()",
       "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L10"
+      "source_location": "L240"
+    },
+    {
+      "id": "src_components_dnd_icons_coinschesticon",
+      "label": "CoinsChestIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
+      "file_type": "code",
+      "norm_label": "coinschesticon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L195"
     },
     {
       "id": "src_components_dnd_icons_infosealicon",
@@ -5158,18 +5098,6 @@
       "norm_label": "infosealicon()",
       "source_file": "src/components/dnd-icons.tsx",
       "source_location": "L252"
-    },
-    {
-      "id": "src_components_dnd_icons_masksdramaicon",
-      "label": "MasksDramaIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 77,
-      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
-      "file_type": "code",
-      "norm_label": "masksdramaicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L206"
     },
     {
       "id": "src_components_sheet_sheetuiprimitives_calcbadge",
@@ -5232,100 +5160,16 @@
       "source_location": "L1136"
     },
     {
-      "id": "src_components_compendium_classselectormodal_classselectormodal",
-      "label": "ClassSelectorModal()",
+      "id": "src_components_tools_statscalculatormodal_died6",
+      "label": "DieD6()",
       "_callable": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "classselectormodal()",
-      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_components_compendium_itemdetailmodal_itemdetailmodal",
-      "label": "ItemDetailModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "itemdetailmodal()",
-      "source_file": "src/components/compendium/ItemDetailModal.tsx",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_components_compendium_subclassselectormodal_subclassselectormodal",
-      "label": "SubclassSelectorModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "subclassselectormodal()",
-      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_components_dnd_icons_backpackpackicon",
-      "label": "BackpackPackIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "backpackpackicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L218"
-    },
-    {
-      "id": "src_components_dnd_icons_crossedswordsicon",
-      "label": "CrossedSwordsIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "crossedswordsicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L153"
-    },
-    {
-      "id": "src_components_dnd_icons_engravedshieldicon",
-      "label": "EngravedShieldIcon()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "engravedshieldicon()",
-      "source_file": "src/components/dnd-icons.tsx",
-      "source_location": "L165"
-    },
-    {
-      "id": "src_lib_dnd_types_createemptylevelupentry",
-      "label": "createEmptyLevelUpEntry()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "createemptylevelupentry()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L1177"
-    },
-    {
-      "id": "src_lib_dnd_types_getmilestonesatlevel",
-      "label": "getMilestonesAtLevel()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "getmilestonesatlevel()",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L262"
+      "norm_label": "died6()",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L40"
     },
     {
       "id": "src_components_gameplay_restmodal_restmodal",
@@ -5472,28 +5316,136 @@
       "source_location": "L28"
     },
     {
-      "id": "src_components_sheet_modals_sheetmodals_nonclassspellconfirmmodal",
-      "label": "NonClassSpellConfirmModal()",
+      "id": "src_components_compendium_raceselectormodal_raceselectormodal",
+      "label": "RaceSelectorModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "nonclassspellconfirmmodal()",
-      "source_file": "src/components/sheet/modals/SheetModals.tsx",
-      "source_location": "L388"
+      "norm_label": "raceselectormodal()",
+      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "source_location": "L25"
     },
     {
-      "id": "src_hooks_useescapekey_useescapekey",
-      "label": "useEscapeKey()",
+      "id": "src_components_dnd_icons_chesticon",
+      "label": "ChestIcon()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "useescapekey()",
-      "source_file": "src/hooks/useEscapeKey.ts",
-      "source_location": "L3"
+      "norm_label": "chesticon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L50"
+    },
+    {
+      "id": "src_components_dnd_icons_crystalballdndicon",
+      "label": "CrystalBallDndIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "crystalballdndicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L229"
+    },
+    {
+      "id": "src_components_dnd_icons_hourglassicon",
+      "label": "HourglassIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "hourglassicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L61"
+    },
+    {
+      "id": "src_components_dnd_icons_mysticcloudicon",
+      "label": "MysticCloudIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "mysticcloudicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L92"
+    },
+    {
+      "id": "src_components_dnd_icons_portalicon",
+      "label": "PortalIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "portalicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L107"
+    },
+    {
+      "id": "src_components_dnd_icons_quillicon",
+      "label": "QuillIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "quillicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L118"
+    },
+    {
+      "id": "src_components_dnd_icons_runedkeyicon",
+      "label": "RunedKeyIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "runedkeyicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L133"
+    },
+    {
+      "id": "src_components_dnd_icons_scrollicon",
+      "label": "ScrollIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "scrollicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_components_dnd_icons_spellbookicon",
+      "label": "SpellbookIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "spellbookicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L39"
+    },
+    {
+      "id": "src_components_dnd_icons_userheroicon",
+      "label": "UserHeroIcon()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "userheroicon()",
+      "source_file": "src/components/dnd-icons.tsx",
+      "source_location": "L175"
     },
     {
       "id": "scripts_parse_dndsu_feats_cleantext",
@@ -5616,40 +5568,16 @@
       "source_location": "L377"
     },
     {
-      "id": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
-      "label": "checkFeatPrerequisites()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 86,
-      "community_name": "feats.ts",
-      "file_type": "code",
-      "norm_label": "checkfeatprerequisites()",
-      "source_file": "src/data/compendium/feat-prerequisites.ts",
-      "source_location": "L26"
-    },
-    {
       "id": "src_data_compendium_feats_findfeatbyname",
       "label": "findFeatByName()",
       "_callable": true,
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "findfeatbyname()",
       "source_file": "src/data/compendium/feats.ts",
       "source_location": "L1244"
-    },
-    {
-      "id": "src_data_compendium_feats_getfeats",
-      "label": "getFeats()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 86,
-      "community_name": "feats.ts",
-      "file_type": "code",
-      "norm_label": "getfeats()",
-      "source_file": "src/data/compendium/feats.ts",
-      "source_location": "L1253"
     },
     {
       "id": "src_data_compendium_feats_gettraits",
@@ -5657,7 +5585,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "gettraits()",
       "source_file": "src/data/compendium/feats.ts",
@@ -5669,11 +5597,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "findtraitbyname()",
       "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L20"
+      "source_location": "L234"
     },
     {
       "id": "src_lib_feat_bonus_engine_getfeatabilitybonusfromfeat",
@@ -5681,7 +5609,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "getfeatabilitybonusfromfeat()",
       "source_file": "src/lib/feat-bonus-engine.ts",
@@ -5693,7 +5621,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "parsefeatabilitybonus()",
       "source_file": "src/lib/feat-bonus-engine.ts",
@@ -5904,6 +5832,18 @@
       "source_location": "L316"
     },
     {
+      "id": "src_components_tools_statscalculatormodal_statscalculatormodal",
+      "label": "StatsCalculatorModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "statscalculatormodal()",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L99"
+    },
+    {
       "id": "src_components_wizard_charactercreationwizardmodal_charactercreationwizardmodal",
       "label": "CharacterCreationWizardModal()",
       "_callable": true,
@@ -5940,18 +5880,6 @@
       "source_location": "L489"
     },
     {
-      "id": "src_components_wizard_wizard_helpers_getclasslevel1choicesconfig",
-      "label": "getClassLevel1ChoicesConfig()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "getclasslevel1choicesconfig()",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L915"
-    },
-    {
       "id": "src_components_wizard_wizard_helpers_getclassskillconfig",
       "label": "getClassSkillConfig()",
       "_callable": true,
@@ -5976,16 +5904,16 @@
       "source_location": "L334"
     },
     {
-      "id": "src_components_wizard_wizard_helpers_getracialchoicesconfig",
-      "label": "getRacialChoicesConfig()",
+      "id": "src_components_wizard_wizard_helpers_getracialbonusconfig",
+      "label": "getRacialBonusConfig()",
       "_callable": true,
       "_origin": "ast",
       "community": 95,
       "community_name": "CharacterCreationWizardModal.tsx",
       "file_type": "code",
-      "norm_label": "getracialchoicesconfig()",
+      "norm_label": "getracialbonusconfig()",
       "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L787"
+      "source_location": "L216"
     },
     {
       "id": "src_components_wizard_wizard_helpers_getracialskilldata",
@@ -6024,6 +5952,30 @@
       "source_location": "L475"
     },
     {
+      "id": "src_data_compendium_feat_prerequisites_checkfeatprerequisites",
+      "label": "checkFeatPrerequisites()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "checkfeatprerequisites()",
+      "source_file": "src/data/compendium/feat-prerequisites.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_data_compendium_feats_getfeats",
+      "label": "getFeats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "getfeats()",
+      "source_file": "src/data/compendium/feats.ts",
+      "source_location": "L1253"
+    },
+    {
       "id": "src_data_dnd_weapons_detectweaponcategoryplaceholder",
       "label": "detectWeaponCategoryPlaceholder()",
       "_callable": true,
@@ -6058,6 +6010,30 @@
       "norm_label": "getweaponsbycategory()",
       "source_file": "src/data/dnd-weapons.ts",
       "source_location": "L642"
+    },
+    {
+      "id": "src_lib_dnd_types_calcmodifier",
+      "label": "calcModifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "calcmodifier()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L199"
+    },
+    {
+      "id": "src_lib_dnd_types_formatabilitybonus",
+      "label": "formatAbilityBonus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "formatabilitybonus()",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L207"
     },
     {
       "id": "src_components_tools_charactergridmodal_classemblem",
@@ -6130,6 +6106,30 @@
       "norm_label": "isnamedcharacter()",
       "source_file": "src/lib/character-validation.ts",
       "source_location": "L49"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_getclasslevel1choicesconfig",
+      "label": "getClassLevel1ChoicesConfig()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "getclasslevel1choicesconfig()",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L915"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_getracialchoicesconfig",
+      "label": "getRacialChoicesConfig()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "getracialchoicesconfig()",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L787"
     },
     {
       "id": "src_lib_ac_calculator_calculatewizardac",
@@ -6373,6 +6373,17 @@
       "norm_label": "next-themes",
       "source_file": "package.json",
       "source_location": "L72"
+    },
+    {
+      "id": "ref_pdf_lib_fontkit",
+      "label": "@pdf-lib/fontkit",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "package.json",
+      "file_type": "concept",
+      "norm_label": "@pdf-lib/fontkit",
+      "source_file": "package.json",
+      "source_location": "L24"
     },
     {
       "id": "ref_prisma",
@@ -6791,17 +6802,6 @@
       "norm_label": "sonner",
       "source_file": "package.json",
       "source_location": "L84"
-    },
-    {
-      "id": "ref_supabase_supabase_js",
-      "label": "@supabase/supabase-js",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "package.json",
-      "file_type": "concept",
-      "norm_label": "@supabase/supabase-js",
-      "source_file": "package.json",
-      "source_location": "L55"
     },
     {
       "id": "ref_tailwindcss_postcss",
@@ -7772,37 +7772,15 @@
       "source_location": "L91"
     },
     {
-      "id": "src_app_page_namegeneratormodal",
-      "label": "NameGeneratorModal",
+      "id": "src_components_sheet_pages_detailssheetpage_detailssheetpage",
+      "label": "DetailsSheetPage",
       "_origin": "ast",
       "community": 10,
       "community_name": "names-data.ts",
       "file_type": "code",
-      "norm_label": "namegeneratormodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_components_tools_index",
-      "label": "tools/index.ts",
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "names-data.ts",
-      "file_type": "code",
-      "norm_label": "tools/index.ts",
-      "source_file": "src/components/tools/index.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_tools_namegeneratormodal",
-      "label": "NameGeneratorModal.tsx",
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "names-data.ts",
-      "file_type": "code",
-      "norm_label": "namegeneratormodal.tsx",
-      "source_file": "src/components/tools/NameGeneratorModal.tsx",
-      "source_location": "L1"
+      "norm_label": "detailssheetpage",
+      "source_file": "src/components/sheet/pages/DetailsSheetPage.tsx",
+      "source_location": "L24"
     },
     {
       "id": "src_data_compendium_names_data",
@@ -7847,6 +7825,17 @@
       "norm_label": "universal_fantasy_names",
       "source_file": "src/data/compendium/names-data.ts",
       "source_location": "L833"
+    },
+    {
+      "id": "test_race_names_generator_test",
+      "label": "race-names-generator.test.ts",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "names-data.ts",
+      "file_type": "code",
+      "norm_label": "race-names-generator.test.ts",
+      "source_file": "test/race-names-generator.test.ts",
+      "source_location": "L1"
     },
     {
       "id": "test_performance_assets_test",
@@ -8124,89 +8113,110 @@
       "source_location": "L3"
     },
     {
-      "id": "src_components_sheet_pages_detailssheetpage",
-      "label": "../src/components/sheet/pages/DetailsSheetPage.js",
+      "id": "src_data_compendium_races",
+      "label": "races.ts",
       "_origin": "ast",
-      "community": 106,
-      "community_name": "../src/components/sheet/pages/DetailsSheetPage.js",
-      "confidence": "EXTRACTED",
+      "community": 107,
+      "community_name": "races/index.ts",
       "file_type": "code",
-      "norm_label": "../src/components/sheet/pages/detailssheetpage.js",
-      "source_file": "src/components/sheet/pages/DetailsSheetPage.js",
+      "norm_label": "races.ts",
+      "source_file": "src/data/compendium/races.ts",
       "source_location": "L1"
     },
     {
-      "id": "src_app_page_detailssheetpage",
-      "label": "DetailsSheetPage",
+      "id": "src_data_compendium_races_core",
+      "label": "core.ts",
       "_origin": "ast",
-      "community": 106,
-      "community_name": "../src/components/sheet/pages/DetailsSheetPage.js",
+      "community": 107,
+      "community_name": "races/index.ts",
       "file_type": "code",
-      "norm_label": "detailssheetpage",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L86"
-    },
-    {
-      "id": "test_sheet_pages_test",
-      "label": "sheet-pages.test.ts",
-      "_origin": "ast",
-      "community": 106,
-      "community_name": "../src/components/sheet/pages/DetailsSheetPage.js",
-      "file_type": "code",
-      "norm_label": "sheet-pages.test.ts",
-      "source_file": "test/sheet-pages.test.ts",
+      "norm_label": "core.ts",
+      "source_file": "src/data/compendium/races/core.ts",
       "source_location": "L1"
     },
     {
-      "id": "src_app_page_raceselectormodal",
-      "label": "RaceSelectorModal",
+      "id": "src_data_compendium_races_core_core_races",
+      "label": "CORE_RACES",
       "_origin": "ast",
       "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
+      "community_name": "races/index.ts",
       "file_type": "code",
-      "norm_label": "raceselectormodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L35"
+      "norm_label": "core_races",
+      "source_file": "src/data/compendium/races/core.ts",
+      "source_location": "L4"
     },
     {
-      "id": "src_components_compendium_raceselectormodal",
-      "label": "RaceSelectorModal.tsx",
+      "id": "src_data_compendium_races_index",
+      "label": "races/index.ts",
       "_origin": "ast",
       "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
+      "community_name": "races/index.ts",
       "file_type": "code",
-      "norm_label": "raceselectormodal.tsx",
-      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "norm_label": "races/index.ts",
+      "source_file": "src/data/compendium/races/index.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "src_components_compendium_raceselectormodal_categories",
-      "label": "CATEGORIES",
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
-      "file_type": "code",
-      "norm_label": "categories",
-      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
-      "source_location": "L16"
     },
     {
       "id": "src_data_compendium_races_index_dnd_compendium_races",
       "label": "DND_COMPENDIUM_RACES",
       "_origin": "ast",
       "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
+      "community_name": "races/index.ts",
       "file_type": "code",
       "norm_label": "dnd_compendium_races",
       "source_file": "src/data/compendium/races/index.ts",
       "source_location": "L11"
     },
     {
+      "id": "src_data_compendium_races_multiverse",
+      "label": "multiverse.ts",
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "races/index.ts",
+      "file_type": "code",
+      "norm_label": "multiverse.ts",
+      "source_file": "src/data/compendium/races/multiverse.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_races_multiverse_multiverse_races",
+      "label": "MULTIVERSE_RACES",
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "races/index.ts",
+      "file_type": "code",
+      "norm_label": "multiverse_races",
+      "source_file": "src/data/compendium/races/multiverse.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_data_compendium_races_supplements",
+      "label": "supplements.ts",
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "races/index.ts",
+      "file_type": "code",
+      "norm_label": "supplements.ts",
+      "source_file": "src/data/compendium/races/supplements.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_data_compendium_races_supplements_supplement_races",
+      "label": "SUPPLEMENT_RACES",
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "races/index.ts",
+      "file_type": "code",
+      "norm_label": "supplement_races",
+      "source_file": "src/data/compendium/races/supplements.ts",
+      "source_location": "L4"
+    },
+    {
       "id": "test_races_compendium_adversarial_test",
       "label": "races-compendium-adversarial.test.ts",
       "_origin": "ast",
       "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
+      "community_name": "races/index.ts",
       "file_type": "code",
       "norm_label": "races-compendium-adversarial.test.ts",
       "source_file": "test/races-compendium-adversarial.test.ts",
@@ -8217,95 +8227,40 @@
       "label": "races-mousefolk-ratfolk.test.ts",
       "_origin": "ast",
       "community": 107,
-      "community_name": "RaceSelectorModal.tsx",
+      "community_name": "races/index.ts",
       "file_type": "code",
       "norm_label": "races-mousefolk-ratfolk.test.ts",
       "source_file": "test/races-mousefolk-ratfolk.test.ts",
       "source_location": "L1"
     },
     {
-      "id": "src_app_page_statscalculatormodal",
-      "label": "StatsCalculatorModal",
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "statscalculatormodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L32"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal",
-      "label": "StatsCalculatorModal.tsx",
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "statscalculatormodal.tsx",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_point_buy_cost",
-      "label": "POINT_BUY_COST",
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "point_buy_cost",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L26"
-    },
-    {
-      "id": "src_components_tools_statscalculatormodal_standard_array_values",
-      "label": "STANDARD_ARRAY_VALUES",
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "standard_array_values",
-      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
-      "source_location": "L37"
-    },
-    {
-      "id": "src_lib_dnd_types_ability_full",
-      "label": "ABILITY_FULL",
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "ability_full",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_lib_dnd_types_ability_names",
-      "label": "ABILITY_NAMES",
-      "_origin": "ast",
-      "community": 108,
-      "community_name": "StatsCalculatorModal.tsx",
-      "file_type": "code",
-      "norm_label": "ability_names",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "src_app_page_interactivesheettour",
       "label": "InteractiveSheetTour",
       "_origin": "ast",
       "community": 109,
-      "community_name": "ScrollIcon",
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
       "norm_label": "interactivesheettour",
       "source_file": "src/app/page.tsx",
       "source_location": "L42"
     },
     {
+      "id": "src_app_share_code_page",
+      "label": "[code]/page.tsx",
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "[code]/page.tsx",
+      "file_type": "code",
+      "norm_label": "[code]/page.tsx",
+      "source_file": "src/app/share/[code]/page.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "src_components_encyclopedia_interactivesheettour",
       "label": "InteractiveSheetTour.tsx",
       "_origin": "ast",
       "community": 109,
-      "community_name": "ScrollIcon",
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
       "norm_label": "interactivesheettour.tsx",
       "source_file": "src/components/encyclopedia/InteractiveSheetTour.tsx",
@@ -8316,33 +8271,44 @@
       "label": "InteractiveSheetTour",
       "_origin": "ast",
       "community": 109,
-      "community_name": "ScrollIcon",
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
       "norm_label": "interactivesheettour",
       "source_file": "src/components/encyclopedia/InteractiveSheetTour.tsx",
       "source_location": "L20"
     },
     {
-      "id": "src_components_sheet_sheetfooter",
-      "label": "SheetFooter.tsx",
+      "id": "src_lib_dnd_types_all_skills",
+      "label": "ALL_SKILLS",
       "_origin": "ast",
       "community": 109,
-      "community_name": "ScrollIcon",
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
-      "norm_label": "sheetfooter.tsx",
-      "source_file": "src/components/sheet/SheetFooter.tsx",
-      "source_location": "L1"
+      "norm_label": "all_skills",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L38"
     },
     {
-      "id": "src_components_sheet_sheetfooter_sheetfooter",
-      "label": "SheetFooter",
+      "id": "src_lib_dnd_types_skill_map",
+      "label": "SKILL_MAP",
       "_origin": "ast",
       "community": 109,
-      "community_name": "ScrollIcon",
+      "community_name": "[code]/page.tsx",
       "file_type": "code",
-      "norm_label": "sheetfooter",
-      "source_file": "src/components/sheet/SheetFooter.tsx",
-      "source_location": "L10"
+      "norm_label": "skill_map",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_lib_supabase_client",
+      "label": "client.ts",
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "[code]/page.tsx",
+      "file_type": "code",
+      "norm_label": "client.ts",
+      "source_file": "src/lib/supabase/client.ts",
+      "source_location": "L1"
     },
     {
       "id": "docs_superpowers_plans_2026_09_10_warlock_level_up_and_subclasses_plan",
@@ -8450,28 +8416,6 @@
       "node_kind": "heading",
       "norm_label": "warlock (\u043a\u043e\u043b\u0434\u0443\u043d) 1\u201320 level-up & subclasses deepening implementation plan",
       "source_file": "docs/superpowers/plans/2026-09-10-warlock-level-up-and-subclasses-plan.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_sheet_pages_detailssheetpage_detailssheetpage",
-      "label": "DetailsSheetPage",
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "generateRaceFantasyName",
-      "file_type": "code",
-      "norm_label": "detailssheetpage",
-      "source_file": "src/components/sheet/pages/DetailsSheetPage.tsx",
-      "source_location": "L24"
-    },
-    {
-      "id": "test_race_names_generator_test",
-      "label": "race-names-generator.test.ts",
-      "_origin": "ast",
-      "community": 110,
-      "community_name": "generateRaceFantasyName",
-      "file_type": "code",
-      "norm_label": "race-names-generator.test.ts",
-      "source_file": "test/race-names-generator.test.ts",
       "source_location": "L1"
     },
     {
@@ -8605,6 +8549,17 @@
       "source_file": "node:path"
     },
     {
+      "id": "src_app_page_equipmentpaperdoll",
+      "label": "EquipmentPaperDoll",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "equipment-types.ts",
+      "file_type": "code",
+      "norm_label": "equipmentpaperdoll",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L40"
+    },
+    {
       "id": "src_components_equipment_equipmentpaperdoll",
       "label": "EquipmentPaperDoll.tsx",
       "_origin": "ast",
@@ -8693,6 +8648,17 @@
       "source_location": "L54"
     },
     {
+      "id": "test_autocomplete_overflow_positioning_test",
+      "label": "autocomplete-overflow-positioning.test.ts",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "equipment-types.ts",
+      "file_type": "code",
+      "norm_label": "autocomplete-overflow-positioning.test.ts",
+      "source_file": "test/autocomplete-overflow-positioning.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "test_custom_items_effects_test",
       "label": "custom-items-effects.test.ts",
       "_origin": "ast",
@@ -8712,6 +8678,17 @@
       "file_type": "code",
       "norm_label": "custom-items-integration.test.ts",
       "source_file": "test/custom-items-integration.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_dual_wield_attacks_test",
+      "label": "dual-wield-attacks.test.ts",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "equipment-types.ts",
+      "file_type": "code",
+      "norm_label": "dual-wield-attacks.test.ts",
+      "source_file": "test/dual-wield-attacks.test.ts",
       "source_location": "L1"
     },
     {
@@ -8745,17 +8722,6 @@
       "file_type": "code",
       "norm_label": "separated-effects.test.ts",
       "source_file": "test/separated-effects.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_weapon_grip_test",
-      "label": "weapon-grip.test.ts",
-      "_origin": "ast",
-      "community": 13,
-      "community_name": "equipment-types.ts",
-      "file_type": "code",
-      "norm_label": "weapon-grip.test.ts",
-      "source_file": "test/weapon-grip.test.ts",
       "source_location": "L1"
     },
     {
@@ -9562,6 +9528,17 @@
       "source_location": "L102"
     },
     {
+      "id": "src_app_page_levelupmodal",
+      "label": "LevelUpModal",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "levelupmodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L38"
+    },
+    {
       "id": "src_components_levelup_level_up_choices",
       "label": "level-up-choices.ts",
       "_origin": "ast",
@@ -9670,6 +9647,17 @@
       "norm_label": "hunter_superior_defense_options",
       "source_file": "src/components/levelup/level-up-choices.ts",
       "source_location": "L249"
+    },
+    {
+      "id": "src_components_levelup_level_up_choices_metamagic_options",
+      "label": "METAMAGIC_OPTIONS",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "LevelUpModal.tsx",
+      "file_type": "code",
+      "norm_label": "metamagic_options",
+      "source_file": "src/components/levelup/level-up-choices.ts",
+      "source_location": "L26"
     },
     {
       "id": "src_components_levelup_level_up_choices_totem_aspect_options",
@@ -10068,15 +10056,15 @@
       "source_location": "L2"
     },
     {
-      "id": "src_components_sheet_modals_sheetmodals_templatemodal",
-      "label": "TemplateModal",
+      "id": "src_app_api_export_pdf_route",
+      "label": "export-pdf/route.ts",
       "_origin": "ast",
       "community": 3,
       "community_name": "dnd-types.ts",
       "file_type": "code",
-      "norm_label": "templatemodal",
-      "source_file": "src/components/sheet/modals/SheetModals.tsx",
-      "source_location": "L494"
+      "norm_label": "export-pdf/route.ts",
+      "source_file": "src/app/api/export-pdf/route.ts",
+      "source_location": "L1"
     },
     {
       "id": "src_lib_dnd_types",
@@ -10090,6 +10078,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_lib_dnd_types_armor_ac_map",
+      "label": "ARMOR_AC_MAP",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "dnd-types.ts",
+      "file_type": "code",
+      "norm_label": "armor_ac_map",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L651"
+    },
+    {
       "id": "src_lib_dnd_types_standard_asi_levels",
       "label": "STANDARD_ASI_LEVELS",
       "_origin": "ast",
@@ -10099,17 +10098,6 @@
       "norm_label": "standard_asi_levels",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L223"
-    },
-    {
-      "id": "src_lib_dnd_types_universal_milestones",
-      "label": "UNIVERSAL_MILESTONES",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "universal_milestones",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L239"
     },
     {
       "id": "test_ac_calculations_test",
@@ -10131,17 +10119,6 @@
       "file_type": "code",
       "norm_label": "attack-auto-scaling.test.ts",
       "source_file": "test/attack-auto-scaling.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_dual_wield_attacks_test",
-      "label": "dual-wield-attacks.test.ts",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "dnd-types.ts",
-      "file_type": "code",
-      "norm_label": "dual-wield-attacks.test.ts",
-      "source_file": "test/dual-wield-attacks.test.ts",
       "source_location": "L1"
     },
     {
@@ -10913,25 +10890,47 @@
       "source_location": "L23"
     },
     {
+      "id": "fs",
+      "label": "fs",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "confidence": "EXTRACTED",
+      "file_type": "code",
+      "norm_label": "fs",
+      "source_file": "fs"
+    },
+    {
+      "id": "path",
+      "label": "path",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "confidence": "EXTRACTED",
+      "file_type": "code",
+      "norm_label": "path",
+      "source_file": "path"
+    },
+    {
+      "id": "scripts_generate_sheet",
+      "label": "generate-sheet.ts",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "generate-sheet.ts",
+      "source_file": "scripts/generate-sheet.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_app_api_export_docx_route",
       "label": "export-docx/route.ts",
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "export-docx/route.ts",
       "source_file": "src/app/api/export-docx/route.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_app_share_code_page",
-      "label": "[code]/page.tsx",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "[code]/page.tsx",
-      "file_type": "code",
-      "norm_label": "[code]/page.tsx",
-      "source_file": "src/app/share/[code]/page.tsx",
       "source_location": "L1"
     },
     {
@@ -10939,32 +10938,54 @@
       "label": "MainSheetPage",
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
       "norm_label": "mainsheetpage",
       "source_file": "src/components/sheet/pages/MainSheetPage.tsx",
       "source_location": "L110"
     },
     {
-      "id": "src_lib_dnd_types_skill_map",
-      "label": "SKILL_MAP",
+      "id": "src_lib_pdf_export",
+      "label": "pdf-export.ts",
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
-      "norm_label": "skill_map",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L17"
+      "norm_label": "pdf-export.ts",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L1"
     },
     {
-      "id": "src_lib_supabase_client",
-      "label": "client.ts",
+      "id": "src_lib_pdf_export_skill_row_mappings",
+      "label": "SKILL_ROW_MAPPINGS",
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "code",
-      "norm_label": "client.ts",
-      "source_file": "src/lib/supabase/client.ts",
+      "norm_label": "skill_row_mappings",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L199"
+    },
+    {
+      "id": "src_lib_pdf_export_spell_level_mappings",
+      "label": "SPELL_LEVEL_MAPPINGS",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "spell_level_mappings",
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L36"
+    },
+    {
+      "id": "test_export_pdf_test",
+      "label": "export-pdf.test.ts",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "code",
+      "norm_label": "export-pdf.test.ts",
+      "source_file": "test/export-pdf.test.ts",
       "source_location": "L1"
     },
     {
@@ -10972,11 +10993,22 @@
       "label": "docx",
       "_origin": "ast",
       "community": 4,
-      "community_name": "[code]/page.tsx",
+      "community_name": "pdf-export.ts",
       "file_type": "concept",
       "norm_label": "docx",
       "source_file": "package.json",
       "source_location": "L63"
+    },
+    {
+      "id": "ref_pdf_lib",
+      "label": "pdf-lib",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "pdf-export.ts",
+      "file_type": "concept",
+      "norm_label": "pdf-lib",
+      "source_file": "package.json",
+      "source_location": "L73"
     },
     {
       "id": "agents_agents_adversarial_fixer_agent",
@@ -12038,17 +12070,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_app_page_dndencyclopediamodal",
-      "label": "DndEncyclopediaModal",
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "dndencyclopediamodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L41"
-    },
-    {
       "id": "src_app_page_restmodal",
       "label": "RestModal",
       "_origin": "ast",
@@ -12082,39 +12103,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_encyclopedia_dndencyclopediamodal",
-      "label": "DndEncyclopediaModal.tsx",
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "dndencyclopediamodal.tsx",
-      "source_file": "src/components/encyclopedia/DndEncyclopediaModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_encyclopedia_dndencyclopediamodal_dndencyclopediamodal",
-      "label": "DndEncyclopediaModal",
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "dndencyclopediamodal",
-      "source_file": "src/components/encyclopedia/DndEncyclopediaModal.tsx",
-      "source_location": "L35"
-    },
-    {
-      "id": "src_components_encyclopedia_dndencyclopediamodal_icon_map",
-      "label": "ICON_MAP",
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "icon_map",
-      "source_file": "src/components/encyclopedia/DndEncyclopediaModal.tsx",
-      "source_location": "L25"
-    },
-    {
       "id": "src_components_gameplay_restmodal",
       "label": "RestModal.tsx",
       "_origin": "ast",
@@ -12124,28 +12112,6 @@
       "norm_label": "restmodal.tsx",
       "source_file": "src/components/gameplay/RestModal.tsx",
       "source_location": "L1"
-    },
-    {
-      "id": "src_components_sheet_sheetheader",
-      "label": "SheetHeader.tsx",
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "sheetheader.tsx",
-      "source_file": "src/components/sheet/SheetHeader.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_sheet_sheetheader_sheetheader",
-      "label": "SheetHeader",
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "dnd-icons.tsx",
-      "file_type": "code",
-      "norm_label": "sheetheader",
-      "source_file": "src/components/sheet/SheetHeader.tsx",
-      "source_location": "L47"
     },
     {
       "id": "src_components_tools_sharemodal",
@@ -12500,6 +12466,28 @@
       "source_location": "L2853"
     },
     {
+      "id": "test_bard_subclasses_test",
+      "label": "bard-subclasses.test.ts",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "bard-subclasses.test.ts",
+      "source_file": "test/bard-subclasses.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_bard_subclasses_test_expected_bard_subclasses",
+      "label": "EXPECTED_BARD_SUBCLASSES",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "class-progression.ts",
+      "file_type": "code",
+      "norm_label": "expected_bard_subclasses",
+      "source_file": "test/bard-subclasses.test.ts",
+      "source_location": "L10"
+    },
+    {
       "id": "test_class_spell_progression_test",
       "label": "class-spell-progression.test.ts",
       "_origin": "ast",
@@ -12509,28 +12497,6 @@
       "norm_label": "class-spell-progression.test.ts",
       "source_file": "test/class-spell-progression.test.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "test_cleric_subclasses_test",
-      "label": "cleric-subclasses.test.ts",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "cleric-subclasses.test.ts",
-      "source_file": "test/cleric-subclasses.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_cleric_subclasses_test_expected_cleric_subclasses",
-      "label": "EXPECTED_CLERIC_SUBCLASSES",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "class-progression.ts",
-      "file_type": "code",
-      "norm_label": "expected_cleric_subclasses",
-      "source_file": "test/cleric-subclasses.test.ts",
-      "source_location": "L10"
     },
     {
       "id": "test_rogue_subclasses_test",
@@ -12642,6 +12608,17 @@
       "source_location": "L31"
     },
     {
+      "id": "src_data_compendium_class_progression_warlock_pact_spell_slots",
+      "label": "WARLOCK_PACT_SPELL_SLOTS",
+      "_origin": "ast",
+      "community": 63,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "warlock_pact_spell_slots",
+      "source_file": "src/data/compendium/class-progression.ts",
+      "source_location": "L2622"
+    },
+    {
       "id": "src_data_compendium_classes",
       "label": "classes.ts",
       "_origin": "ast",
@@ -12708,28 +12685,6 @@
       "source_location": "L8"
     },
     {
-      "id": "test_bard_subclasses_test",
-      "label": "bard-subclasses.test.ts",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "classes.ts",
-      "file_type": "code",
-      "norm_label": "bard-subclasses.test.ts",
-      "source_file": "test/bard-subclasses.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_bard_subclasses_test_expected_bard_subclasses",
-      "label": "EXPECTED_BARD_SUBCLASSES",
-      "_origin": "ast",
-      "community": 63,
-      "community_name": "classes.ts",
-      "file_type": "code",
-      "norm_label": "expected_bard_subclasses",
-      "source_file": "test/bard-subclasses.test.ts",
-      "source_location": "L10"
-    },
-    {
       "id": "test_class_starting_equipment_test",
       "label": "class-starting-equipment.test.ts",
       "_origin": "ast",
@@ -12739,6 +12694,28 @@
       "norm_label": "class-starting-equipment.test.ts",
       "source_file": "test/class-starting-equipment.test.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "test_cleric_subclasses_test",
+      "label": "cleric-subclasses.test.ts",
+      "_origin": "ast",
+      "community": 63,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "cleric-subclasses.test.ts",
+      "source_file": "test/cleric-subclasses.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_cleric_subclasses_test_expected_cleric_subclasses",
+      "label": "EXPECTED_CLERIC_SUBCLASSES",
+      "_origin": "ast",
+      "community": 63,
+      "community_name": "classes.ts",
+      "file_type": "code",
+      "norm_label": "expected_cleric_subclasses",
+      "source_file": "test/cleric-subclasses.test.ts",
+      "source_location": "L10"
     },
     {
       "id": "test_druid_subclasses_test",
@@ -12851,125 +12828,26 @@
       "source_location": "L1"
     },
     {
-      "id": "fs",
-      "label": "fs",
+      "id": "src_app_page_itemdetailmodal",
+      "label": "ItemDetailModal",
       "_origin": "ast",
       "community": 64,
-      "community_name": "pdf-export.ts",
-      "confidence": "EXTRACTED",
+      "community_name": "ItemDetailModal.tsx",
       "file_type": "code",
-      "norm_label": "fs",
-      "source_file": "fs"
+      "norm_label": "itemdetailmodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L37"
     },
     {
-      "id": "path",
-      "label": "path",
+      "id": "src_components_compendium_itemdetailmodal",
+      "label": "ItemDetailModal.tsx",
       "_origin": "ast",
       "community": 64,
-      "community_name": "pdf-export.ts",
-      "confidence": "EXTRACTED",
+      "community_name": "ItemDetailModal.tsx",
       "file_type": "code",
-      "norm_label": "path",
-      "source_file": "path"
-    },
-    {
-      "id": "scripts_generate_sheet",
-      "label": "generate-sheet.ts",
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "generate-sheet.ts",
-      "source_file": "scripts/generate-sheet.ts",
+      "norm_label": "itemdetailmodal.tsx",
+      "source_file": "src/components/compendium/ItemDetailModal.tsx",
       "source_location": "L1"
-    },
-    {
-      "id": "src_app_api_export_pdf_route",
-      "label": "export-pdf/route.ts",
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "export-pdf/route.ts",
-      "source_file": "src/app/api/export-pdf/route.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_pdf_export",
-      "label": "pdf-export.ts",
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "pdf-export.ts",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_pdf_export_skill_row_mappings",
-      "label": "SKILL_ROW_MAPPINGS",
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "skill_row_mappings",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L199"
-    },
-    {
-      "id": "src_lib_pdf_export_spell_level_mappings",
-      "label": "SPELL_LEVEL_MAPPINGS",
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "spell_level_mappings",
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L36"
-    },
-    {
-      "id": "test_export_pdf_test",
-      "label": "export-pdf.test.ts",
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "code",
-      "norm_label": "export-pdf.test.ts",
-      "source_file": "test/export-pdf.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "ref_pdf_lib",
-      "label": "pdf-lib",
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "concept",
-      "norm_label": "pdf-lib",
-      "source_file": "package.json",
-      "source_location": "L73"
-    },
-    {
-      "id": "ref_pdf_lib_fontkit",
-      "label": "@pdf-lib/fontkit",
-      "_origin": "ast",
-      "community": 64,
-      "community_name": "pdf-export.ts",
-      "file_type": "concept",
-      "norm_label": "@pdf-lib/fontkit",
-      "source_file": "package.json",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_components_levelup_level_up_choices_metamagic_options",
-      "label": "METAMAGIC_OPTIONS",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "CharacterData",
-      "file_type": "code",
-      "norm_label": "metamagic_options",
-      "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L26"
     },
     {
       "id": "src_data_compendium_auto_spells_engine",
@@ -12981,17 +12859,6 @@
       "norm_label": "auto-spells-engine.ts",
       "source_file": "src/data/compendium/auto-spells-engine.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_class_progression_half_caster_spell_slots",
-      "label": "HALF_CASTER_SPELL_SLOTS",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "CharacterData",
-      "file_type": "code",
-      "norm_label": "half_caster_spell_slots",
-      "source_file": "src/data/compendium/class-progression.ts",
-      "source_location": "L2418"
     },
     {
       "id": "src_data_compendium_class_spells",
@@ -13174,7 +13041,7 @@
       "label": "barbarian-exploits.ts",
       "_origin": "ast",
       "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
+      "community_name": "alternate-barbarian-and-scourgeborne.test.ts",
       "file_type": "code",
       "norm_label": "barbarian-exploits.ts",
       "source_file": "src/data/compendium/barbarian-exploits.ts",
@@ -13185,7 +13052,7 @@
       "label": "BARBARIAN_EXPLOITS",
       "_origin": "ast",
       "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
+      "community_name": "alternate-barbarian-and-scourgeborne.test.ts",
       "file_type": "code",
       "norm_label": "barbarian_exploits",
       "source_file": "src/data/compendium/barbarian-exploits.ts",
@@ -13196,7 +13063,7 @@
       "label": "alternate-barbarian-and-scourgeborne.test.ts",
       "_origin": "ast",
       "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
+      "community_name": "alternate-barbarian-and-scourgeborne.test.ts",
       "file_type": "code",
       "norm_label": "alternate-barbarian-and-scourgeborne.test.ts",
       "source_file": "test/alternate-barbarian-and-scourgeborne.test.ts",
@@ -13207,7 +13074,7 @@
       "label": "level-up-alternate-barbarian-exploits.test.ts",
       "_origin": "ast",
       "community": 66,
-      "community_name": "getLevelUpChoicesConfig",
+      "community_name": "alternate-barbarian-and-scourgeborne.test.ts",
       "file_type": "code",
       "norm_label": "level-up-alternate-barbarian-exploits.test.ts",
       "source_file": "test/level-up-alternate-barbarian-exploits.test.ts",
@@ -13313,14 +13180,14 @@
       "source_location": "L19"
     },
     {
-      "id": "test_autocomplete_overflow_positioning_test",
-      "label": "autocomplete-overflow-positioning.test.ts",
+      "id": "test_weapon_grip_test",
+      "label": "weapon-grip.test.ts",
       "_origin": "ast",
       "community": 67,
       "community_name": "EquipmentSlotModal.tsx",
       "file_type": "code",
-      "norm_label": "autocomplete-overflow-positioning.test.ts",
-      "source_file": "test/autocomplete-overflow-positioning.test.ts",
+      "norm_label": "weapon-grip.test.ts",
+      "source_file": "test/weapon-grip.test.ts",
       "source_location": "L1"
     },
     {
@@ -13335,22 +13202,44 @@
       "source_location": "L1"
     },
     {
+      "id": "src_app_page_classselectormodal",
+      "label": "ClassSelectorModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "classselectormodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L34"
+    },
+    {
       "id": "src_app_page_spelldetailmodal",
       "label": "SpellDetailModal",
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "spelldetailmodal",
       "source_file": "src/app/page.tsx",
       "source_location": "L26"
     },
     {
+      "id": "src_app_page_subclassselectormodal",
+      "label": "SubclassSelectorModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "subclassselectormodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L36"
+    },
+    {
       "id": "src_app_page_traitdetailmodal",
       "label": "TraitDetailModal",
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "traitdetailmodal",
       "source_file": "src/app/page.tsx",
@@ -13361,22 +13250,132 @@
       "label": "WeaponDetailModal",
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "weapondetailmodal",
       "source_file": "src/app/page.tsx",
       "source_location": "L27"
     },
     {
+      "id": "src_components_compendium_classselectormodal",
+      "label": "ClassSelectorModal.tsx",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "classselectormodal.tsx",
+      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "src_components_compendium_compendiummodals",
       "label": "CompendiumModals.tsx",
       "_origin": "ast",
       "community": 68,
-      "community_name": "CompendiumModals.tsx",
+      "community_name": "useEscapeKey",
       "file_type": "code",
       "norm_label": "compendiummodals.tsx",
       "source_file": "src/components/compendium/CompendiumModals.tsx",
       "source_location": "L1"
+    },
+    {
+      "id": "src_components_compendium_subclassselectormodal",
+      "label": "SubclassSelectorModal.tsx",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "subclassselectormodal.tsx",
+      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_sheet_modals_sheetmodals_authmodal",
+      "label": "AuthModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "authmodal",
+      "source_file": "src/components/sheet/modals/SheetModals.tsx",
+      "source_location": "L753"
+    },
+    {
+      "id": "src_components_sheet_modals_sheetmodals_createchoicemodal",
+      "label": "CreateChoiceModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "createchoicemodal",
+      "source_file": "src/components/sheet/modals/SheetModals.tsx",
+      "source_location": "L1033"
+    },
+    {
+      "id": "src_components_sheet_modals_sheetmodals_leveldownmodal",
+      "label": "LevelDownModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "leveldownmodal",
+      "source_file": "src/components/sheet/modals/SheetModals.tsx",
+      "source_location": "L39"
+    },
+    {
+      "id": "src_components_sheet_modals_sheetmodals_levelhistorymodal",
+      "label": "LevelHistoryModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "levelhistorymodal",
+      "source_file": "src/components/sheet/modals/SheetModals.tsx",
+      "source_location": "L173"
+    },
+    {
+      "id": "src_components_sheet_modals_sheetmodals_resetmodal",
+      "label": "ResetModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "resetmodal",
+      "source_file": "src/components/sheet/modals/SheetModals.tsx",
+      "source_location": "L984"
+    },
+    {
+      "id": "src_components_sheet_modals_sheetmodals_signoutmodal",
+      "label": "SignOutModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "signoutmodal",
+      "source_file": "src/components/sheet/modals/SheetModals.tsx",
+      "source_location": "L919"
+    },
+    {
+      "id": "src_components_sheet_modals_sheetmodals_templatemodal",
+      "label": "TemplateModal",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "templatemodal",
+      "source_file": "src/components/sheet/modals/SheetModals.tsx",
+      "source_location": "L494"
+    },
+    {
+      "id": "src_components_sheet_sheetuiprimitives_rollresultpopup",
+      "label": "RollResultPopup",
+      "_origin": "ast",
+      "community": 68,
+      "community_name": "useEscapeKey",
+      "file_type": "code",
+      "norm_label": "rollresultpopup",
+      "source_file": "src/components/sheet/SheetUIPrimitives.tsx",
+      "source_location": "L43"
     },
     {
       "id": "docs_superpowers_plans_2026_09_11_races_compendium_merge",
@@ -14207,17 +14206,6 @@
       "source_location": "L31"
     },
     {
-      "id": "src_lib_dnd_types_all_skills",
-      "label": "ALL_SKILLS",
-      "_origin": "ast",
-      "community": 74,
-      "community_name": "backgrounds.ts",
-      "file_type": "code",
-      "norm_label": "all_skills",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L38"
-    },
-    {
       "id": "test_background_choices_test",
       "label": "background-choices.test.ts",
       "_origin": "ast",
@@ -14499,6 +14487,18 @@
       "source_location": "L1"
     },
     {
+      "id": "src_components_sheet_pages_detailssheetpage",
+      "label": "../src/components/sheet/pages/DetailsSheetPage.js",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
+      "confidence": "EXTRACTED",
+      "file_type": "code",
+      "norm_label": "../src/components/sheet/pages/detailssheetpage.js",
+      "source_file": "src/components/sheet/pages/DetailsSheetPage.js",
+      "source_location": "L1"
+    },
+    {
       "id": "src_components_sheet_pages_mainsheetpage",
       "label": "../src/components/sheet/pages/MainSheetPage.js",
       "_origin": "ast",
@@ -14521,6 +14521,17 @@
       "norm_label": "../src/components/sheet/pages/spellssheetpage.js",
       "source_file": "src/components/sheet/pages/SpellsSheetPage.js",
       "source_location": "L1"
+    },
+    {
+      "id": "src_app_page_detailssheetpage",
+      "label": "DetailsSheetPage",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
+      "file_type": "code",
+      "norm_label": "detailssheetpage",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L86"
     },
     {
       "id": "src_app_page_spellssheetpage",
@@ -14666,6 +14677,17 @@
       "source_location": "L5"
     },
     {
+      "id": "test_sheet_pages_test",
+      "label": "sheet-pages.test.ts",
+      "_origin": "ast",
+      "community": 77,
+      "community_name": "../src/components/sheet/pages/MainSheetPage.js",
+      "file_type": "code",
+      "norm_label": "sheet-pages.test.ts",
+      "source_file": "test/sheet-pages.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "ref_react_dom",
       "label": "react-dom",
       "_origin": "ast",
@@ -14677,121 +14699,33 @@
       "source_location": "L77"
     },
     {
-      "id": "src_app_page",
-      "label": "app/page.tsx",
+      "id": "src_app_page_namegeneratormodal",
+      "label": "NameGeneratorModal",
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "app/page.tsx",
+      "norm_label": "namegeneratormodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L1"
+      "source_location": "L31"
     },
     {
-      "id": "src_app_page_charactercreationwizardmodal",
-      "label": "CharacterCreationWizardModal",
+      "id": "src_app_page_statscalculatormodal",
+      "label": "StatsCalculatorModal",
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "charactercreationwizardmodal",
+      "norm_label": "statscalculatormodal",
       "source_file": "src/app/page.tsx",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_app_page_classselectormodal",
-      "label": "ClassSelectorModal",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "classselectormodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L34"
-    },
-    {
-      "id": "src_app_page_equipmentpaperdoll",
-      "label": "EquipmentPaperDoll",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "equipmentpaperdoll",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L40"
-    },
-    {
-      "id": "src_app_page_itemdetailmodal",
-      "label": "ItemDetailModal",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "itemdetailmodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L37"
-    },
-    {
-      "id": "src_app_page_levelupmodal",
-      "label": "LevelUpModal",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "levelupmodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L38"
-    },
-    {
-      "id": "src_app_page_subclassselectormodal",
-      "label": "SubclassSelectorModal",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "subclassselectormodal",
-      "source_file": "src/app/page.tsx",
-      "source_location": "L36"
-    },
-    {
-      "id": "src_components_compendium_classselectormodal",
-      "label": "ClassSelectorModal.tsx",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "classselectormodal.tsx",
-      "source_file": "src/components/compendium/ClassSelectorModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_compendium_itemdetailmodal",
-      "label": "ItemDetailModal.tsx",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "itemdetailmodal.tsx",
-      "source_file": "src/components/compendium/ItemDetailModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_compendium_subclassselectormodal",
-      "label": "SubclassSelectorModal.tsx",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "subclassselectormodal.tsx",
-      "source_file": "src/components/compendium/SubclassSelectorModal.tsx",
-      "source_location": "L1"
+      "source_location": "L32"
     },
     {
       "id": "src_components_sheet_sheetnavbar",
       "label": "SheetNavbar.tsx",
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "sheetnavbar.tsx",
       "source_file": "src/components/sheet/SheetNavbar.tsx",
@@ -14802,40 +14736,84 @@
       "label": "SheetNavbar",
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "sheetnavbar",
       "source_file": "src/components/sheet/SheetNavbar.tsx",
       "source_location": "L13"
     },
     {
+      "id": "src_components_tools_index",
+      "label": "tools/index.ts",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "tools/index.ts",
+      "source_file": "src/components/tools/index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_tools_namegeneratormodal",
+      "label": "NameGeneratorModal.tsx",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "namegeneratormodal.tsx",
+      "source_file": "src/components/tools/NameGeneratorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal",
+      "label": "StatsCalculatorModal.tsx",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "statscalculatormodal.tsx",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal_point_buy_cost",
+      "label": "POINT_BUY_COST",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "point_buy_cost",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_components_tools_statscalculatormodal_standard_array_values",
+      "label": "STANDARD_ARRAY_VALUES",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "standard_array_values",
+      "source_file": "src/components/tools/StatsCalculatorModal.tsx",
+      "source_location": "L37"
+    },
+    {
       "id": "src_hooks_useescapekey",
       "label": "useEscapeKey.ts",
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "useescapekey.ts",
       "source_file": "src/hooks/useEscapeKey.ts",
       "source_location": "L1"
     },
     {
-      "id": "src_lib_dnd_types_armor_ac_map",
-      "label": "ARMOR_AC_MAP",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "app/page.tsx",
-      "file_type": "code",
-      "norm_label": "armor_ac_map",
-      "source_file": "src/lib/dnd-types.ts",
-      "source_location": "L651"
-    },
-    {
       "id": "test_sheet_header_navbar_test",
       "label": "sheet-header-navbar.test.ts",
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "sheet-header-navbar.test.ts",
       "source_file": "test/sheet-header-navbar.test.ts",
@@ -14846,7 +14824,7 @@
       "label": "framer-motion",
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "concept",
       "norm_label": "framer-motion",
       "source_file": "package.json",
@@ -14857,7 +14835,7 @@
       "label": "react",
       "_origin": "ast",
       "community": 78,
-      "community_name": "app/page.tsx",
+      "community_name": "react",
       "file_type": "concept",
       "norm_label": "react",
       "source_file": "package.json",
@@ -15522,15 +15500,15 @@
       "source_location": "L2267"
     },
     {
-      "id": "src_data_compendium_class_progression_warlock_pact_spell_slots",
-      "label": "WARLOCK_PACT_SPELL_SLOTS",
+      "id": "src_data_compendium_class_progression_half_caster_spell_slots",
+      "label": "HALF_CASTER_SPELL_SLOTS",
       "_origin": "ast",
       "community": 83,
       "community_name": "level-up-arcane.test.ts",
       "file_type": "code",
-      "norm_label": "warlock_pact_spell_slots",
+      "norm_label": "half_caster_spell_slots",
       "source_file": "src/data/compendium/class-progression.ts",
-      "source_location": "L2622"
+      "source_location": "L2418"
     },
     {
       "id": "src_lib_dnd_types_class_templates",
@@ -15542,6 +15520,17 @@
       "norm_label": "class_templates",
       "source_file": "src/lib/dnd-types.ts",
       "source_location": "L1323"
+    },
+    {
+      "id": "src_lib_dnd_types_universal_milestones",
+      "label": "UNIVERSAL_MILESTONES",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "level-up-arcane.test.ts",
+      "file_type": "code",
+      "norm_label": "universal_milestones",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L239"
     },
     {
       "id": "test_level_up_arcane_test",
@@ -15588,11 +15577,22 @@
       "source_location": "L1"
     },
     {
+      "id": "src_app_page",
+      "label": "app/page.tsx",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "app/page.tsx",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "src_app_page_authmodal",
       "label": "AuthModal",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "authmodal",
       "source_file": "src/app/page.tsx",
@@ -15603,18 +15603,29 @@
       "label": "CreateChoiceModal",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "createchoicemodal",
       "source_file": "src/app/page.tsx",
       "source_location": "L98"
     },
     {
+      "id": "src_app_page_dndencyclopediamodal",
+      "label": "DndEncyclopediaModal",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "dndencyclopediamodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L41"
+    },
+    {
       "id": "src_app_page_leveldownmodal",
       "label": "LevelDownModal",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "leveldownmodal",
       "source_file": "src/app/page.tsx",
@@ -15625,7 +15636,7 @@
       "label": "LevelHistoryModal",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "levelhistorymodal",
       "source_file": "src/app/page.tsx",
@@ -15636,18 +15647,29 @@
       "label": "NonClassSpellConfirmModal",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "nonclassspellconfirmmodal",
       "source_file": "src/app/page.tsx",
       "source_location": "L93"
     },
     {
+      "id": "src_app_page_raceselectormodal",
+      "label": "RaceSelectorModal",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "raceselectormodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L35"
+    },
+    {
       "id": "src_app_page_resetmodal",
       "label": "ResetModal",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "resetmodal",
       "source_file": "src/app/page.tsx",
@@ -15658,7 +15680,7 @@
       "label": "SignOutModal",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "signoutmodal",
       "source_file": "src/app/page.tsx",
@@ -15669,110 +15691,154 @@
       "label": "TemplateModal",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "templatemodal",
       "source_file": "src/app/page.tsx",
       "source_location": "L94"
     },
     {
+      "id": "src_components_compendium_raceselectormodal",
+      "label": "RaceSelectorModal.tsx",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "raceselectormodal.tsx",
+      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_compendium_raceselectormodal_categories",
+      "label": "CATEGORIES",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "categories",
+      "source_file": "src/components/compendium/RaceSelectorModal.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_components_encyclopedia_dndencyclopediamodal",
+      "label": "DndEncyclopediaModal.tsx",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "dndencyclopediamodal.tsx",
+      "source_file": "src/components/encyclopedia/DndEncyclopediaModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_encyclopedia_dndencyclopediamodal_dndencyclopediamodal",
+      "label": "DndEncyclopediaModal",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "dndencyclopediamodal",
+      "source_file": "src/components/encyclopedia/DndEncyclopediaModal.tsx",
+      "source_location": "L35"
+    },
+    {
+      "id": "src_components_encyclopedia_dndencyclopediamodal_icon_map",
+      "label": "ICON_MAP",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "code",
+      "norm_label": "icon_map",
+      "source_file": "src/components/encyclopedia/DndEncyclopediaModal.tsx",
+      "source_location": "L25"
+    },
+    {
       "id": "src_components_sheet_modals_sheetmodals",
       "label": "SheetModals.tsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "sheetmodals.tsx",
       "source_file": "src/components/sheet/modals/SheetModals.tsx",
       "source_location": "L1"
     },
     {
-      "id": "src_components_sheet_modals_sheetmodals_authmodal",
-      "label": "AuthModal",
+      "id": "src_components_sheet_sheetfooter",
+      "label": "SheetFooter.tsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "authmodal",
-      "source_file": "src/components/sheet/modals/SheetModals.tsx",
-      "source_location": "L753"
+      "norm_label": "sheetfooter.tsx",
+      "source_file": "src/components/sheet/SheetFooter.tsx",
+      "source_location": "L1"
     },
     {
-      "id": "src_components_sheet_modals_sheetmodals_createchoicemodal",
-      "label": "CreateChoiceModal",
+      "id": "src_components_sheet_sheetfooter_sheetfooter",
+      "label": "SheetFooter",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "createchoicemodal",
-      "source_file": "src/components/sheet/modals/SheetModals.tsx",
-      "source_location": "L1033"
+      "norm_label": "sheetfooter",
+      "source_file": "src/components/sheet/SheetFooter.tsx",
+      "source_location": "L10"
     },
     {
-      "id": "src_components_sheet_modals_sheetmodals_leveldownmodal",
-      "label": "LevelDownModal",
+      "id": "src_components_sheet_sheetheader",
+      "label": "SheetHeader.tsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "leveldownmodal",
-      "source_file": "src/components/sheet/modals/SheetModals.tsx",
-      "source_location": "L39"
+      "norm_label": "sheetheader.tsx",
+      "source_file": "src/components/sheet/SheetHeader.tsx",
+      "source_location": "L1"
     },
     {
-      "id": "src_components_sheet_modals_sheetmodals_levelhistorymodal",
-      "label": "LevelHistoryModal",
+      "id": "src_components_sheet_sheetheader_sheetheader",
+      "label": "SheetHeader",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "levelhistorymodal",
-      "source_file": "src/components/sheet/modals/SheetModals.tsx",
-      "source_location": "L173"
+      "norm_label": "sheetheader",
+      "source_file": "src/components/sheet/SheetHeader.tsx",
+      "source_location": "L47"
     },
     {
-      "id": "src_components_sheet_modals_sheetmodals_resetmodal",
-      "label": "ResetModal",
+      "id": "src_lib_dnd_types_ability_full",
+      "label": "ABILITY_FULL",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
-      "norm_label": "resetmodal",
-      "source_file": "src/components/sheet/modals/SheetModals.tsx",
-      "source_location": "L984"
-    },
-    {
-      "id": "src_components_sheet_modals_sheetmodals_signoutmodal",
-      "label": "SignOutModal",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "SheetModals.tsx",
-      "file_type": "code",
-      "norm_label": "signoutmodal",
-      "source_file": "src/components/sheet/modals/SheetModals.tsx",
-      "source_location": "L919"
-    },
-    {
-      "id": "src_components_sheet_sheetuiprimitives_rollresultpopup",
-      "label": "RollResultPopup",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "SheetModals.tsx",
-      "file_type": "code",
-      "norm_label": "rollresultpopup",
-      "source_file": "src/components/sheet/SheetUIPrimitives.tsx",
-      "source_location": "L43"
+      "norm_label": "ability_full",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L8"
     },
     {
       "id": "test_sheet_modals_test",
       "label": "sheet-modals.test.ts",
       "_origin": "ast",
       "community": 84,
-      "community_name": "SheetModals.tsx",
+      "community_name": "app/page.tsx",
       "file_type": "code",
       "norm_label": "sheet-modals.test.ts",
       "source_file": "test/sheet-modals.test.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "ref_supabase_supabase_js",
+      "label": "@supabase/supabase-js",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "app/page.tsx",
+      "file_type": "concept",
+      "norm_label": "@supabase/supabase-js",
+      "source_file": "package.json",
+      "source_location": "L55"
     },
     {
       "id": "scripts_parse_dndsu_feats",
@@ -15834,7 +15900,7 @@
       "label": "feat-prerequisites.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "feat-prerequisites.ts",
       "source_file": "src/data/compendium/feat-prerequisites.ts",
@@ -15845,7 +15911,7 @@
       "label": "feats.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "feats.ts",
       "source_file": "src/data/compendium/feats.ts",
@@ -15856,7 +15922,7 @@
       "label": "DND_COMPENDIUM_FEATS",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "dnd_compendium_feats",
       "source_file": "src/data/compendium/feats.ts",
@@ -15867,29 +15933,51 @@
       "label": "dnd-traits.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "dnd-traits.ts",
       "source_file": "src/data/dnd-traits.ts",
       "source_location": "L1"
     },
     {
+      "id": "src_data_dnd_traits_alternate_barbarian_traits",
+      "label": "ALTERNATE_BARBARIAN_TRAITS",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "alternate_barbarian_traits",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_data_dnd_traits_barbarian_exploit_traits",
+      "label": "BARBARIAN_EXPLOIT_TRAITS",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "barbarian_exploit_traits",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L203"
+    },
+    {
       "id": "src_data_dnd_traits_dnd_traits",
       "label": "DND_TRAITS",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "dnd_traits",
       "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L12"
+      "source_location": "L222"
     },
     {
       "id": "src_lib_feat_bonus_engine",
       "label": "feat-bonus-engine.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "feat-bonus-engine.ts",
       "source_file": "src/lib/feat-bonus-engine.ts",
@@ -15900,18 +15988,29 @@
       "label": "ALL_DND_ABILITIES",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "all_dnd_abilities",
       "source_file": "src/lib/feat-bonus-engine.ts",
       "source_location": "L3"
     },
     {
+      "id": "test_alternate_barbarian_traits_test",
+      "label": "alternate-barbarian-traits.test.ts",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "AbilityName",
+      "file_type": "code",
+      "norm_label": "alternate-barbarian-traits.test.ts",
+      "source_file": "test/alternate-barbarian-traits.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "test_feat_bonus_engine_test",
       "label": "feat-bonus-engine.test.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "feat-bonus-engine.test.ts",
       "source_file": "test/feat-bonus-engine.test.ts",
@@ -15922,7 +16021,7 @@
       "label": "feat-prerequisites.test.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "feat-prerequisites.test.ts",
       "source_file": "test/feat-prerequisites.test.ts",
@@ -15933,7 +16032,7 @@
       "label": "feats-compendium-adversarial.test.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "feats-compendium-adversarial.test.ts",
       "source_file": "test/feats-compendium-adversarial.test.ts",
@@ -15944,7 +16043,7 @@
       "label": "level-up-feat-choice.test.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "level-up-feat-choice.test.ts",
       "source_file": "test/level-up-feat-choice.test.ts",
@@ -15955,7 +16054,7 @@
       "label": "wizard-feat-choice.test.ts",
       "_origin": "ast",
       "community": 86,
-      "community_name": "feats.ts",
+      "community_name": "AbilityName",
       "file_type": "code",
       "norm_label": "wizard-feat-choice.test.ts",
       "source_file": "test/wizard-feat-choice.test.ts",
@@ -16563,6 +16662,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_app_page_charactercreationwizardmodal",
+      "label": "CharacterCreationWizardModal",
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "charactercreationwizardmodal",
+      "source_file": "src/app/page.tsx",
+      "source_location": "L33"
+    },
+    {
       "id": "src_components_wizard_charactercreationwizardmodal",
       "label": "CharacterCreationWizardModal.tsx",
       "_origin": "ast",
@@ -16572,61 +16682,6 @@
       "norm_label": "charactercreationwizardmodal.tsx",
       "source_file": "src/components/wizard/CharacterCreationWizardModal.tsx",
       "source_location": "L1"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_all_dnd_languages",
-      "label": "ALL_DND_LANGUAGES",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "all_dnd_languages",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L736"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_dragon_ancestries",
-      "label": "DRAGON_ANCESTRIES",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "dragon_ancestries",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L595"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_dwarf_tool_options",
-      "label": "DWARF_TOOL_OPTIONS",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "dwarf_tool_options",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L668"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_exotic_languages",
-      "label": "EXOTIC_LANGUAGES",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "exotic_languages",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L725"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_fighting_styles",
-      "label": "FIGHTING_STYLES",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "fighting_styles",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L548"
     },
     {
       "id": "src_components_wizard_wizard_helpers_point_buy_budget",
@@ -16651,26 +16706,37 @@
       "source_location": "L450"
     },
     {
-      "id": "src_components_wizard_wizard_helpers_standard_languages",
-      "label": "STANDARD_LANGUAGES",
+      "id": "src_components_wizard_wizard_helpers_ranger_favored_enemies",
+      "label": "RANGER_FAVORED_ENEMIES",
       "_origin": "ast",
       "community": 95,
       "community_name": "CharacterCreationWizardModal.tsx",
       "file_type": "code",
-      "norm_label": "standard_languages",
+      "norm_label": "ranger_favored_enemies",
       "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L714"
+      "source_location": "L738"
     },
     {
-      "id": "src_data_compendium_races",
-      "label": "races.ts",
+      "id": "src_components_wizard_wizard_helpers_ranger_favored_terrains",
+      "label": "RANGER_FAVORED_TERRAINS",
       "_origin": "ast",
       "community": 95,
       "community_name": "CharacterCreationWizardModal.tsx",
       "file_type": "code",
-      "norm_label": "races.ts",
-      "source_file": "src/data/compendium/races.ts",
-      "source_location": "L1"
+      "norm_label": "ranger_favored_terrains",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L755"
+    },
+    {
+      "id": "src_lib_dnd_types_ability_names",
+      "label": "ABILITY_NAMES",
+      "_origin": "ast",
+      "community": 95,
+      "community_name": "CharacterCreationWizardModal.tsx",
+      "file_type": "code",
+      "norm_label": "ability_names",
+      "source_file": "src/lib/dnd-types.ts",
+      "source_location": "L5"
     },
     {
       "id": "test_wizard_engine_adversarial_test",
@@ -16681,17 +16747,6 @@
       "file_type": "code",
       "norm_label": "wizard-engine-adversarial.test.ts",
       "source_file": "test/wizard-engine-adversarial.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "test_wizard_level1_choices_test",
-      "label": "wizard-level1-choices.test.ts",
-      "_origin": "ast",
-      "community": 95,
-      "community_name": "CharacterCreationWizardModal.tsx",
-      "file_type": "code",
-      "norm_label": "wizard-level1-choices.test.ts",
-      "source_file": "test/wizard-level1-choices.test.ts",
       "source_location": "L1"
     },
     {
@@ -16824,83 +16879,6 @@
       "source_location": "L408"
     },
     {
-      "id": "src_data_compendium_races_core",
-      "label": "core.ts",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "races/types.ts",
-      "file_type": "code",
-      "norm_label": "core.ts",
-      "source_file": "src/data/compendium/races/core.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_races_core_core_races",
-      "label": "CORE_RACES",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "races/types.ts",
-      "file_type": "code",
-      "norm_label": "core_races",
-      "source_file": "src/data/compendium/races/core.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_data_compendium_races_index",
-      "label": "races/index.ts",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "races/types.ts",
-      "file_type": "code",
-      "norm_label": "races/index.ts",
-      "source_file": "src/data/compendium/races/index.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_races_multiverse",
-      "label": "multiverse.ts",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "races/types.ts",
-      "file_type": "code",
-      "norm_label": "multiverse.ts",
-      "source_file": "src/data/compendium/races/multiverse.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_races_multiverse_multiverse_races",
-      "label": "MULTIVERSE_RACES",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "races/types.ts",
-      "file_type": "code",
-      "norm_label": "multiverse_races",
-      "source_file": "src/data/compendium/races/multiverse.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_data_compendium_races_supplements",
-      "label": "supplements.ts",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "races/types.ts",
-      "file_type": "code",
-      "norm_label": "supplements.ts",
-      "source_file": "src/data/compendium/races/supplements.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_data_compendium_races_supplements_supplement_races",
-      "label": "SUPPLEMENT_RACES",
-      "_origin": "ast",
-      "community": 98,
-      "community_name": "races/types.ts",
-      "file_type": "code",
-      "norm_label": "supplement_races",
-      "source_file": "src/data/compendium/races/supplements.ts",
-      "source_location": "L4"
-    },
-    {
       "id": "src_data_compendium_races_types",
       "label": "races/types.ts",
       "_origin": "ast",
@@ -16934,6 +16912,61 @@
       "source_location": "L674"
     },
     {
+      "id": "src_components_wizard_wizard_helpers_all_dnd_languages",
+      "label": "ALL_DND_LANGUAGES",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "all_dnd_languages",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L736"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_dragon_ancestries",
+      "label": "DRAGON_ANCESTRIES",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "dragon_ancestries",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L595"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_dwarf_tool_options",
+      "label": "DWARF_TOOL_OPTIONS",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "dwarf_tool_options",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L668"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_exotic_languages",
+      "label": "EXOTIC_LANGUAGES",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "exotic_languages",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L725"
+    },
+    {
+      "id": "src_components_wizard_wizard_helpers_fighting_styles",
+      "label": "FIGHTING_STYLES",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "fighting_styles",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L548"
+    },
+    {
       "id": "src_components_wizard_wizard_helpers_gaming_sets",
       "label": "GAMING_SETS",
       "_origin": "ast",
@@ -16956,28 +16989,6 @@
       "source_location": "L694"
     },
     {
-      "id": "src_components_wizard_wizard_helpers_ranger_favored_enemies",
-      "label": "RANGER_FAVORED_ENEMIES",
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "ranger_favored_enemies",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L738"
-    },
-    {
-      "id": "src_components_wizard_wizard_helpers_ranger_favored_terrains",
-      "label": "RANGER_FAVORED_TERRAINS",
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "wizard-helpers.ts",
-      "file_type": "code",
-      "norm_label": "ranger_favored_terrains",
-      "source_file": "src/components/wizard/wizard-helpers.ts",
-      "source_location": "L755"
-    },
-    {
       "id": "src_components_wizard_wizard_helpers_standard_array_values",
       "label": "STANDARD_ARRAY_VALUES",
       "_origin": "ast",
@@ -16989,6 +17000,17 @@
       "source_location": "L473"
     },
     {
+      "id": "src_components_wizard_wizard_helpers_standard_languages",
+      "label": "STANDARD_LANGUAGES",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "standard_languages",
+      "source_file": "src/components/wizard/wizard-helpers.ts",
+      "source_location": "L714"
+    },
+    {
       "id": "src_lib_ac_calculator",
       "label": "ac-calculator.ts",
       "_origin": "ast",
@@ -16997,6 +17019,17 @@
       "file_type": "code",
       "norm_label": "ac-calculator.ts",
       "source_file": "src/lib/ac-calculator.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_wizard_level1_choices_test",
+      "label": "wizard-level1-choices.test.ts",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "wizard-helpers.ts",
+      "file_type": "code",
+      "norm_label": "wizard-level1-choices.test.ts",
+      "source_file": "test/wizard-level1-choices.test.ts",
       "source_location": "L1"
     }
   ],
@@ -19410,7 +19443,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1090",
+      "source_location": "L1092",
       "weight": 1.0
     },
     {
@@ -19422,7 +19455,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1042",
+      "source_location": "L1044",
       "weight": 1.0
     },
     {
@@ -19434,7 +19467,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L471",
+      "source_location": "L472",
       "weight": 1.0
     },
     {
@@ -19446,7 +19479,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L632",
+      "source_location": "L633",
       "weight": 1.0
     },
     {
@@ -19458,7 +19491,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L885",
+      "source_location": "L887",
       "weight": 1.0
     },
     {
@@ -19470,7 +19503,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L944",
+      "source_location": "L946",
       "weight": 1.0
     },
     {
@@ -19662,7 +19695,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/levelup/LevelUpModal.tsx",
-      "source_location": "L3910",
+      "source_location": "L3923",
       "weight": 1.0
     },
     {
@@ -33170,6 +33203,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_data_dnd_traits",
+      "target": "src_data_compendium_barbarian_exploits_barbarian_exploits",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_data_encyclopedia_encyclopedia_content",
       "target": "src_data_encyclopedia_encyclopedia_types_encyclopediachapter",
       "relation": "imports",
@@ -33707,6 +33752,30 @@
       "context": "import",
       "source_file": "test/alternate-barbarian-and-scourgeborne.test.ts",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "test_alternate_barbarian_traits_test",
+      "target": "src_data_dnd_traits_dnd_traits",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/alternate-barbarian-traits.test.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "test_alternate_barbarian_traits_test",
+      "target": "src_data_dnd_traits_findtraitbyname",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/alternate-barbarian-traits.test.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -41103,6 +41172,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_data_dnd_traits",
+      "target": "src_data_compendium_barbarian_exploits",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "src_data_encyclopedia_encyclopedia_content",
       "target": "src_data_encyclopedia_encyclopedia_types",
       "relation": "imports_from",
@@ -41380,6 +41461,18 @@
       "context": "import",
       "source_file": "test/alternate-barbarian-and-scourgeborne.test.ts",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "test_alternate_barbarian_traits_test",
+      "target": "src_data_dnd_traits",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "test/alternate-barbarian-traits.test.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -50223,7 +50316,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1011",
+      "source_location": "L1013",
       "weight": 1.0
     },
     {
@@ -50234,7 +50327,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1025",
+      "source_location": "L1027",
       "weight": 1.0
     },
     {
@@ -50245,7 +50338,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1034",
+      "source_location": "L1036",
       "weight": 1.0
     },
     {
@@ -50267,7 +50360,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L1085",
+      "source_location": "L1087",
       "weight": 1.0
     },
     {
@@ -50432,7 +50525,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L465",
+      "source_location": "L466",
       "weight": 1.0
     },
     {
@@ -50465,7 +50558,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/levelup/level-up-choices.ts",
-      "source_location": "L896",
+      "source_location": "L898",
       "weight": 1.0
     },
     {
@@ -53011,13 +53104,35 @@
     },
     {
       "source": "src_data_dnd_traits",
+      "target": "src_data_dnd_traits_alternate_barbarian_traits",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_data_dnd_traits",
+      "target": "src_data_dnd_traits_barbarian_exploit_traits",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/data/dnd-traits.ts",
+      "source_location": "L203",
+      "weight": 1.0
+    },
+    {
+      "source": "src_data_dnd_traits",
       "target": "src_data_dnd_traits_dnd_traits",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L12",
+      "source_location": "L222",
       "weight": 1.0
     },
     {
@@ -53028,7 +53143,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L20",
+      "source_location": "L234",
       "weight": 1.0
     },
     {
@@ -53039,7 +53154,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/data/dnd-traits.ts",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -55854,5 +55969,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d467dbf86cfb9bfb0092bca9f2f4c4b2ce5ad4a4"
+  "built_at_commit": "97298f4265cd436353d4d33a59e456e339e82e36"
 }

@@ -3268,6 +3268,7 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                   })
                   .map(opt => {
                     const isSel = selectedExploits.includes(opt.id);
+                    const isKnown = Boolean(choicesConfig.knownExploitIds?.includes(opt.id));
                     const canSelect = isSel || selectedExploits.length < requiredExploitsCount;
                     return (
                       <button
@@ -3299,6 +3300,18 @@ export const LevelUpModal = React.memo(function LevelUpModal({
                             {opt.name}
                           </span>
                           <div className="flex items-center gap-1 shrink-0">
+                            {isKnown && (
+                              <span
+                                className="text-[9px] px-1.5 py-0.5 rounded font-bold"
+                                style={{
+                                  background: 'rgba(217, 119, 6, 0.2)',
+                                  color: '#78350f',
+                                  border: '1px solid rgba(217, 119, 6, 0.4)',
+                                }}
+                              >
+                                уже изучен
+                              </span>
+                            )}
                             <span
                               className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold"
                               style={{ background: '#5C341F', color: '#FFE58F' }}

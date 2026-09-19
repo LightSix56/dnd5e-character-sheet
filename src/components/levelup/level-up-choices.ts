@@ -454,6 +454,7 @@ export interface LevelUpChoicesConfig {
   needsBarbarianExploits?: boolean;
   barbarianExploitCount?: number;
   barbarianExploitOptions?: BarbarianExploit[];
+  knownExploitIds?: string[];
   needsBladesingingWeapon?: boolean;
   bladesingingWeaponOptions?: string[];
   needsSpellMastery?: boolean;
@@ -858,7 +859,7 @@ export function getLevelUpChoicesConfig(
       config.barbarianExploitCount = count;
       const maxDegree = newLevel >= 17 ? 5 : newLevel >= 13 ? 4 : newLevel >= 9 ? 3 : newLevel >= 5 ? 2 : 1;
 
-      // Filter out already known exploits
+      // Track already known exploits (for warning badges without blocking selection)
       const knownIds = new Set<string>();
       const existingTraits = ((char.traitsList || (char as any).traits || []) as any[]);
       existingTraits.forEach(t => {
@@ -879,9 +880,10 @@ export function getLevelUpChoicesConfig(
         });
       }
 
+      config.knownExploitIds = Array.from(knownIds);
+
       config.barbarianExploitOptions = BARBARIAN_EXPLOITS.filter(e => {
         if (e.degree > maxDegree) return false;
-        if (knownIds.has(e.id)) return false;
         const check = isBarbarianExploitEligible(e, char, newLevel);
         return check.eligible;
       });

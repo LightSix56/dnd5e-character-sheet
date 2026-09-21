@@ -1492,5 +1492,11 @@
     "seen": 1789985834.5248013,
     "ast_hash": "1ae892b13cc9646826959a072ab7002f",
     "semantic_hash": ""
+  },
+  "public/map_annotator.html": {
+    "mtime": 1790024944.929453,
+    "seen": 1790025182.9026818,
+    "ast_hash": "ef11b826b4ba30f6ade89a2b6bc3e768",
+    "semantic_hash": ""
   }
 }

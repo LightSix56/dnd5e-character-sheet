@@ -37,7 +37,8 @@ import {
   FIGHTING_STYLES,
   RANGER_FAVORED_ENEMIES,
   RANGER_FAVORED_TERRAINS,
-  resolveBackgroundSkills
+  resolveBackgroundSkills,
+  getBackgroundLanguageChoiceConfig
 } from './wizard-helpers';
 import {
   D20Icon, ScrollIcon, SpellbookIcon, CrossedSwordsIcon,
@@ -79,6 +80,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [raceSearch, setRaceSearch] = useState<string>('');
   // For races with customizable ability bonuses (Half-Elf, Variant Human)
   const [customRacialBonuses, setCustomRacialBonuses] = useState<AbilityName[]>([]);
+  // Flexible ASI choices for Lineages (Dhampir, Hexblood, Reborn, etc.)
+  const [flexibleASIMode, setFlexibleASIMode] = useState<'two_plus_one' | 'three_plus_one'>('two_plus_one');
+  const [flexiblePlus2Ability, setFlexiblePlus2Ability] = useState<AbilityName | null>(null);
+  const [flexiblePlus1Ability, setFlexiblePlus1Ability] = useState<AbilityName | null>(null);
+  const [flexibleThreeAbilities, setFlexibleThreeAbilities] = useState<AbilityName[]>([]);
   // For races with skill choice (Variant Human, Half-Elf, Kenku, etc.)
   const [customRacialSkills, setCustomRacialSkills] = useState<string[]>([]);
   // Additional racial choices (Variant Human Feat, High Elf Cantrip, Dwarf Tool, Dragon Ancestry, Languages)
@@ -123,6 +129,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
   const [selectedBackgroundSkills, setSelectedBackgroundSkills] = useState<string[]>([]);
   // If background skills overlap with race/class, user picks replacements
   const [backgroundSkillReplacements, setBackgroundSkillReplacements] = useState<Record<string, string>>({});
+  // Background languages on choice
+  const [selectedBackgroundLanguages, setSelectedBackgroundLanguages] = useState<string[]>([]);
 
   // ── Step 4: Ability Scores ──
   const [scoreMethod, setScoreMethod] = useState<'point-buy' | 'standard' | 'roll'>('standard');
@@ -248,10 +256,25 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         if (typeof v === 'number') map[k as AbilityName] = v;
       }
     }
-    // Add custom picked bonuses (e.g. Variant Human, Half-Elf)
+    // Add custom picked bonuses (e.g. Variant Human, Half-Elf or Lineage flexible ASI)
     if (racialBonusConfig.hasCustomBonus) {
-      for (const ab of customRacialBonuses) {
-        map[ab] = (map[ab] || 0) + racialBonusConfig.bonusAmount;
+      if (racialBonusConfig.isFlexibleASI) {
+        if (flexibleASIMode === 'two_plus_one') {
+          if (flexiblePlus2Ability) {
+            map[flexiblePlus2Ability] = (map[flexiblePlus2Ability] || 0) + 2;
+          }
+          if (flexiblePlus1Ability) {
+            map[flexiblePlus1Ability] = (map[flexiblePlus1Ability] || 0) + 1;
+          }
+        } else {
+          for (const ab of flexibleThreeAbilities) {
+            map[ab] = (map[ab] || 0) + 1;
+          }
+        }
+      } else {
+        for (const ab of customRacialBonuses) {
+          map[ab] = (map[ab] || 0) + racialBonusConfig.bonusAmount;
+        }
       }
     }
     // Add racial feat ability bonus (e.g. Athlete, Resilient, Heavy Armor Master)
@@ -259,7 +282,16 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       map[selectedRacialFeatAbilityBonus] = (map[selectedRacialFeatAbilityBonus] || 0) + 1;
     }
     return map;
-  }, [racialBonusConfig, customRacialBonuses, racialChoicesConfig?.needsFeat, selectedRacialFeatAbilityBonus]);
+  }, [
+    racialBonusConfig,
+    customRacialBonuses,
+    racialChoicesConfig?.needsFeat,
+    selectedRacialFeatAbilityBonus,
+    flexibleASIMode,
+    flexiblePlus2Ability,
+    flexiblePlus1Ability,
+    flexibleThreeAbilities
+  ]);
 
   // Racial skills
   const racialSkillData = useMemo(() => {
@@ -440,6 +472,11 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     return backgroundSkillResolution.finalSkills;
   }, [backgroundSkillResolution]);
 
+  // Background language choice configuration
+  const backgroundLangConfig = useMemo(() => {
+    return getBackgroundLanguageChoiceConfig(selectedBackground);
+  }, [selectedBackground]);
+
   // All combined proficient skills
   const allProficientSkills = useMemo(() => {
     const set = new Set<string>();
@@ -470,13 +507,17 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     } else {
       setSelectedSubraceId('');
     }
-    // Reset custom bonus
+    // Reset custom bonus and flexible ASI
     const cfg = getRacialBonusConfig(race, firstSubrace);
     if (cfg.hasCustomBonus) {
       setCustomRacialBonuses(cfg.availableAbilities.slice(0, cfg.choiceCount));
     } else {
       setCustomRacialBonuses([]);
     }
+    setFlexibleASIMode('two_plus_one');
+    setFlexiblePlus2Ability(null);
+    setFlexiblePlus1Ability(null);
+    setFlexibleThreeAbilities([]);
     const sData = getRacialSkillData(race, firstSubrace);
     setCustomRacialSkills([]);
     // Prune class skills that conflict with new race's fixed skills
@@ -504,6 +545,10 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     } else {
       setCustomRacialBonuses([]);
     }
+    setFlexibleASIMode('two_plus_one');
+    setFlexiblePlus2Ability(null);
+    setFlexiblePlus1Ability(null);
+    setFlexibleThreeAbilities([]);
     const sData = getRacialSkillData(selectedRace, subrace);
     setCustomRacialSkills([]);
     setSelectedClassSkills(prev => prev.filter(s => !sData.fixedSkills.includes(s)));
@@ -536,6 +581,30 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       return [...prev, lang];
     });
   }, [baseRaceLanguages, racialChoicesConfig]);
+
+  // Languages known before background selection
+  const languagesKnownBeforeBackground = useMemo(() => {
+    const set = new Set<string>();
+    for (const l of baseRaceLanguages) set.add(l);
+    for (const l of selectedExtraLanguages) set.add(l);
+    for (const l of backgroundLangConfig.fixedLanguages) set.add(l);
+    if (classChoicesConfig?.needsDraconicAncestor) set.add('Драконий');
+    return set;
+  }, [baseRaceLanguages, selectedExtraLanguages, backgroundLangConfig.fixedLanguages, classChoicesConfig?.needsDraconicAncestor]);
+
+  // Toggle background language choice (with strict limit enforcement)
+  const handleToggleBackgroundLanguage = useCallback((lang: string) => {
+    if (languagesKnownBeforeBackground.has(lang)) return;
+    setSelectedBackgroundLanguages(prev => {
+      if (prev.includes(lang)) {
+        return prev.filter(l => l !== lang);
+      }
+      if (prev.length >= backgroundLangConfig.choiceCount) {
+        return prev;
+      }
+      return [...prev, lang];
+    });
+  }, [languagesKnownBeforeBackground, backgroundLangConfig.choiceCount]);
 
   // On selecting class: initialize default recommended skills and scores
   const handleSelectClass = useCallback((cls: CompendiumClass) => {
@@ -637,6 +706,29 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     });
   }, [racialBonusConfig]);
 
+  // Select flexible +2 ability for lineage
+  const handleSelectFlexiblePlus2 = useCallback((ab: AbilityName) => {
+    setFlexiblePlus2Ability(ab);
+    if (flexiblePlus1Ability === ab) {
+      setFlexiblePlus1Ability(null);
+    }
+  }, [flexiblePlus1Ability]);
+
+  // Select flexible +1 ability for lineage
+  const handleSelectFlexiblePlus1 = useCallback((ab: AbilityName) => {
+    if (ab === flexiblePlus2Ability) return;
+    setFlexiblePlus1Ability(prev => (prev === ab ? null : ab));
+  }, [flexiblePlus2Ability]);
+
+  // Toggle flexible +1 abilities (for 3 different abilities mode)
+  const handleToggleFlexibleThree = useCallback((ab: AbilityName) => {
+    setFlexibleThreeAbilities(prev => {
+      if (prev.includes(ab)) return prev.filter(a => a !== ab);
+      if (prev.length >= 3) return prev;
+      return [...prev, ab];
+    });
+  }, []);
+
   // Point Buy handlers
   const handlePointBuyChange = useCallback((ab: AbilityName, delta: number) => {
     setBaseScores(prev => {
@@ -711,11 +803,29 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
         return { valid: false, error: 'Пожалуйста, введите имя персонажа или воспользуйтесь генератором 🎲.' };
       }
       if (racialBonusConfig.hasCustomBonus) {
-        if (customRacialBonuses.length < racialBonusConfig.choiceCount) {
-          return { valid: false, error: `Пожалуйста, выберите ${racialBonusConfig.choiceCount} характеристики для расового бонуса.` };
-        }
-        if (new Set(customRacialBonuses).size !== customRacialBonuses.length) {
-          return { valid: false, error: 'Расовые бонусы должны быть назначены к разным характеристикам.' };
+        if (racialBonusConfig.isFlexibleASI) {
+          if (flexibleASIMode === 'two_plus_one') {
+            if (!flexiblePlus2Ability || !flexiblePlus1Ability) {
+              return { valid: false, error: 'Пожалуйста, выберите характеристики для бонусов (+2 к одной и +1 к другой).' };
+            }
+            if (flexiblePlus2Ability === flexiblePlus1Ability) {
+              return { valid: false, error: 'Бонусы +2 и +1 должны быть назначены к разным характеристикам.' };
+            }
+          } else {
+            if (flexibleThreeAbilities.length < 3) {
+              return { valid: false, error: 'Пожалуйста, выберите 3 разные характеристики для бонуса +1 к каждой.' };
+            }
+            if (new Set(flexibleThreeAbilities).size !== 3) {
+              return { valid: false, error: 'Характеристики для бонуса +1 не должны повторяться.' };
+            }
+          }
+        } else {
+          if (customRacialBonuses.length < racialBonusConfig.choiceCount) {
+            return { valid: false, error: `Пожалуйста, выберите ${racialBonusConfig.choiceCount} характеристики для расового бонуса.` };
+          }
+          if (new Set(customRacialBonuses).size !== customRacialBonuses.length) {
+            return { valid: false, error: 'Расовые бонусы должны быть назначены к разным характеристикам.' };
+          }
         }
       }
       if (racialSkillData.choiceCount > 0) {
@@ -792,6 +902,12 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
     if (step === 3) {
       if (!backgroundSkillResolution.isValid) {
         return { valid: false, error: backgroundSkillResolution.error || 'Пожалуйста, завершите настройку навыков предыстории.' };
+      }
+      if (backgroundLangConfig.needsChoice && selectedBackgroundLanguages.length < backgroundLangConfig.choiceCount) {
+        return {
+          valid: false,
+          error: `Пожалуйста, выберите ещё ${backgroundLangConfig.choiceCount - selectedBackgroundLanguages.length} язык(а) от предыстории.`
+        };
       }
       return { valid: true };
     }
@@ -938,10 +1054,13 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
 
     // Languages: Base Race languages + Selected Extra languages + Background languages (+ Draconic for Draconic Sorcerer)
     const baseLangs = (selectedRace?.languages || []).filter(l => !l.toLowerCase().includes('выбор'));
+    const bgLangs = backgroundLangConfig.needsChoice
+      ? [...backgroundLangConfig.fixedLanguages, ...selectedBackgroundLanguages]
+      : (selectedBackground.languages || []).filter(l => !l.toLowerCase().includes('выбор'));
     const languagesList = Array.from(new Set([
       ...baseLangs,
       ...selectedExtraLanguages,
-      ...(selectedBackground.languages || []),
+      ...bgLangs,
       ...(classChoicesConfig.needsDraconicAncestor ? ['Драконий'] : [])
     ]));
     const toolsList: string[] = [...(selectedBackground.toolProficiencies || [])];
@@ -1774,38 +1893,217 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                         </div>
                       )}
 
-                      {/* Customizable Racial Ability Bonuses (Half-Elf, Variant Human) */}
+                      {/* Customizable Racial Ability Bonuses (Lineages, Half-Elf, Variant Human) */}
                       {racialBonusConfig.hasCustomBonus && (
-                        <div className="p-3 rounded-lg space-y-2" style={{ background: 'rgba(254, 243, 199, 0.6)', border: '1px dashed #D97706' }}>
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="font-bold text-[#92400E]">✨ Настройка расовых бонусов:</span>
-                            <span className="text-[11px] font-medium text-[#B45309]">
-                              Выбрано {customRacialBonuses.length} из {racialBonusConfig.choiceCount} (+{racialBonusConfig.bonusAmount} к каждой)
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-[#78350F]">{racialBonusConfig.description}</p>
-                          <div className="flex flex-wrap gap-2 pt-1">
-                            {racialBonusConfig.availableAbilities.map(ab => {
-                              const isChecked = customRacialBonuses.includes(ab);
-                              return (
-                                <button
-                                  key={ab}
-                                  type="button"
-                                  onClick={() => handleToggleCustomBonus(ab)}
-                                  className={`px-3 py-1 rounded text-xs font-semibold cursor-pointer transition-all ${
-                                    isChecked ? 'shadow-sm' : 'opacity-70 hover:opacity-100'
-                                  }`}
-                                  style={
-                                    isChecked
-                                      ? { background: '#D97706', color: '#FFFBEB', border: '1px solid #B45309' }
-                                      : { background: 'rgba(245, 230, 200, 0.75)', color: '#92400E', border: '1px solid #D97706' }
-                                  }
-                                >
-                                  {isChecked ? '✓ ' : '+1 '}{ABILITY_FULL[ab]} ({ab})
-                                </button>
-                              );
-                            })}
-                          </div>
+                        <div
+                          className="p-3.5 rounded-lg space-y-3"
+                          style={{
+                            background: 'rgba(232, 211, 162, 0.3)',
+                            border: '1px solid rgba(201, 168, 76, 0.5)'
+                          }}
+                        >
+                          {racialBonusConfig.isFlexibleASI ? (
+                            <>
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                                  ✨ Увеличение характеристик происхождения (Lineage ASI):
+                                </label>
+                                {/* Mode toggle pills */}
+                                <div className="flex gap-1.5 p-1 rounded-md" style={{ background: 'rgba(251, 240, 220, 0.7)', border: '1px solid rgba(201, 168, 76, 0.4)' }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => setFlexibleASIMode('two_plus_one')}
+                                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                                      flexibleASIMode === 'two_plus_one'
+                                        ? 'bg-[#8B4513] text-[#FFE58F] shadow-xs'
+                                        : 'text-[#5C341F] hover:bg-[rgba(201,168,76,0.2)]'
+                                    }`}
+                                  >
+                                    +2 к одной и +1 к другой
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setFlexibleASIMode('three_plus_one')}
+                                    className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                                      flexibleASIMode === 'three_plus_one'
+                                        ? 'bg-[#8B4513] text-[#FFE58F] shadow-xs'
+                                        : 'text-[#5C341F] hover:bg-[rgba(201,168,76,0.2)]'
+                                    }`}
+                                  >
+                                    +1 к трем разным
+                                  </button>
+                                </div>
+                              </div>
+
+                              <p className="text-[11px] text-[#5C341F]">
+                                {flexibleASIMode === 'two_plus_one'
+                                  ? 'Выберите одну характеристику для увеличения на 2 и другую отдельную характеристику для увеличения на 1.'
+                                  : 'Выберите три разные характеристики для увеличения каждой на 1.'}
+                              </p>
+
+                              {flexibleASIMode === 'two_plus_one' ? (
+                                <div className="space-y-3 pt-1">
+                                  {/* Select +2 */}
+                                  <div>
+                                    <div className="flex items-center justify-between text-[11px] mb-1">
+                                      <span className="font-bold text-[#3D2012]">Характеристика для бонуса +2:</span>
+                                      <span className="font-semibold text-[#4a7c3f]">
+                                        {flexiblePlus2Ability ? `✓ Выбрано: ${ABILITY_FULL[flexiblePlus2Ability]} (+2)` : '— Не выбрано'}
+                                      </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-6 gap-1.5">
+                                      {racialBonusConfig.availableAbilities.map(ab => {
+                                        const isSelected = flexiblePlus2Ability === ab;
+                                        return (
+                                          <button
+                                            key={`plus2-${ab}`}
+                                            type="button"
+                                            onClick={() => handleSelectFlexiblePlus2(ab)}
+                                            className={`p-2 rounded text-xs text-center cursor-pointer transition-all ${
+                                              isSelected ? 'font-bold shadow-xs' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
+                                            }`}
+                                            style={
+                                              isSelected
+                                                ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                                : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#5C341F' }
+                                            }
+                                          >
+                                            <div className="font-bold">{isSelected ? '+2 ✓' : '+2'} {ab}</div>
+                                            <div className="text-[10px] opacity-75">{ABILITY_FULL[ab]}</div>
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+
+                                  {/* Select +1 */}
+                                  <div>
+                                    <div className="flex items-center justify-between text-[11px] mb-1">
+                                      <span className="font-bold text-[#3D2012]">Характеристика для бонуса +1:</span>
+                                      <span className="font-semibold text-[#4a7c3f]">
+                                        {flexiblePlus1Ability ? `✓ Выбрано: ${ABILITY_FULL[flexiblePlus1Ability]} (+1)` : '— Не выбрано'}
+                                      </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-6 gap-1.5">
+                                      {racialBonusConfig.availableAbilities.map(ab => {
+                                        const isSelected = flexiblePlus1Ability === ab;
+                                        const isPlus2 = flexiblePlus2Ability === ab;
+                                        return (
+                                          <button
+                                            key={`plus1-${ab}`}
+                                            type="button"
+                                            disabled={isPlus2}
+                                            onClick={() => handleSelectFlexiblePlus1(ab)}
+                                            className={`p-2 rounded text-xs text-center transition-all ${
+                                              isPlus2
+                                                ? 'opacity-40 cursor-not-allowed'
+                                                : isSelected
+                                                  ? 'font-bold shadow-xs cursor-pointer'
+                                                  : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F] cursor-pointer'
+                                            }`}
+                                            style={
+                                              isSelected
+                                                ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                                : isPlus2
+                                                  ? { background: 'rgba(232, 211, 162, 0.15)', border: '1px dashed rgba(139, 105, 20, 0.2)', color: '#8C7A6B' }
+                                                  : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#5C341F' }
+                                            }
+                                          >
+                                            <div className="font-bold">
+                                              {isPlus2 ? `(+2)` : isSelected ? `+1 ✓` : `+1`} {ab}
+                                            </div>
+                                            <div className="text-[10px] opacity-75">
+                                              {isPlus2 ? '(Занято +2)' : ABILITY_FULL[ab]}
+                                            </div>
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                /* Three different abilities (+1 each) */
+                                <div className="space-y-2 pt-1">
+                                  <div className="flex items-center justify-between text-[11px]">
+                                    <span className="font-bold text-[#3D2012]">Выберите 3 характеристики (+1 к каждой):</span>
+                                    <span
+                                      className={`font-semibold px-2 py-0.5 rounded ${
+                                        flexibleThreeAbilities.length === 3
+                                          ? 'bg-[rgba(74,124,63,0.15)] text-[#4a7c3f] font-bold'
+                                          : 'bg-[rgba(180,83,9,0.1)] text-[#B45309]'
+                                      }`}
+                                    >
+                                      Выбрано {flexibleThreeAbilities.length} из 3
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-2 sm:grid-cols-6 gap-1.5">
+                                    {racialBonusConfig.availableAbilities.map(ab => {
+                                      const isSelected = flexibleThreeAbilities.includes(ab);
+                                      const isDisabled = !isSelected && flexibleThreeAbilities.length >= 3;
+                                      return (
+                                        <button
+                                          key={`three-${ab}`}
+                                          type="button"
+                                          disabled={isDisabled}
+                                          onClick={() => handleToggleFlexibleThree(ab)}
+                                          className={`p-2 rounded text-xs text-center transition-all ${
+                                            isDisabled
+                                              ? 'opacity-40 cursor-not-allowed'
+                                              : isSelected
+                                                ? 'font-bold shadow-xs cursor-pointer'
+                                                : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F] cursor-pointer'
+                                          }`}
+                                          style={
+                                            isSelected
+                                              ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                              : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#5C341F' }
+                                          }
+                                        >
+                                          <div className="font-bold">{isSelected ? '✓ +1' : '+1'} {ab}</div>
+                                          <div className="text-[10px] opacity-75">{ABILITY_FULL[ab]}</div>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            /* Standard custom racial bonuses (Variant Human, Half-Elf) */
+                            <>
+                              <div className="flex items-center justify-between text-xs">
+                                <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                                  ✨ Настройка расовых бонусов:
+                                </label>
+                                <span className="text-[11px] font-medium text-[#8B6914]">
+                                  Выбрано {customRacialBonuses.length} из {racialBonusConfig.choiceCount} (+{racialBonusConfig.bonusAmount} к каждой)
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-[#5C341F]">{racialBonusConfig.description}</p>
+                              <div className="flex flex-wrap gap-2 pt-1">
+                                {racialBonusConfig.availableAbilities.map(ab => {
+                                  const isChecked = customRacialBonuses.includes(ab);
+                                  return (
+                                    <button
+                                      key={ab}
+                                      type="button"
+                                      onClick={() => handleToggleCustomBonus(ab)}
+                                      className={`px-3 py-1.5 rounded text-xs font-semibold cursor-pointer transition-all ${
+                                        isChecked ? 'font-bold shadow-xs' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
+                                      }`}
+                                      style={
+                                        isChecked
+                                          ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                          : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.25)', color: '#5C341F' }
+                                      }
+                                    >
+                                      {isChecked ? '✓ ' : '+1 '}{ABILITY_FULL[ab]} ({ab})
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </>
+                          )}
                         </div>
                       )}
 
@@ -3377,6 +3675,7 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                             setSelectedBackgroundId(bg.id);
                             setSelectedBackgroundSkills([]);
                             setBackgroundSkillReplacements({});
+                            setSelectedBackgroundLanguages([]);
                           }}
                           className={`p-2.5 rounded-lg text-left text-xs cursor-pointer transition-all ${
                             isSel ? 'font-bold shadow-sm' : 'hover:bg-[rgba(201,168,76,0.15)] text-[#5C341F]'
@@ -3616,6 +3915,145 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   </div>
                 )}
 
+                {/* Background Language Selector (if background grants choices) */}
+                {backgroundLangConfig.needsChoice && (
+                  <div
+                    className="p-3.5 rounded-lg space-y-3"
+                    style={{
+                      background: 'rgba(232, 211, 162, 0.3)',
+                      border: '1px solid rgba(201, 168, 76, 0.4)'
+                    }}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                      <label className="parchment-label text-xs font-bold block" style={{ color: '#3D2012' }}>
+                        🗣️ Языки предыстории (выберите {backgroundLangConfig.choiceCount}):
+                      </label>
+                      <span
+                        className={`text-[11px] font-medium px-2 py-0.5 rounded ${
+                          selectedBackgroundLanguages.length === backgroundLangConfig.choiceCount
+                            ? 'bg-[rgba(74,124,63,0.15)] text-[#4a7c3f] font-bold'
+                            : 'bg-[rgba(180,83,9,0.1)] text-[#B45309]'
+                        }`}
+                      >
+                        Выбрано {selectedBackgroundLanguages.length} из {backgroundLangConfig.choiceCount}
+                      </span>
+                    </div>
+
+                    {backgroundLangConfig.description && (
+                      <p className="text-[11px] text-[#5C341F]">{backgroundLangConfig.description}</p>
+                    )}
+
+                    {/* Fixed languages already given by background */}
+                    {backgroundLangConfig.fixedLanguages.length > 0 && (
+                      <div className="text-[11px] text-[#8B6914]">
+                        <strong>Фиксированные языки:</strong> {backgroundLangConfig.fixedLanguages.join(', ')}
+                      </div>
+                    )}
+
+                    {/* Standard Languages */}
+                    <div className="space-y-1.5">
+                      <span className="text-[11px] font-semibold text-[#8B6914] block">Обычные языки:</span>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        {STANDARD_LANGUAGES.map(lang => {
+                          const isAlreadyKnown = languagesKnownBeforeBackground.has(lang);
+                          const isSelected = selectedBackgroundLanguages.includes(lang);
+                          const isMaxReached = selectedBackgroundLanguages.length >= backgroundLangConfig.choiceCount;
+                          const isDisabled = isAlreadyKnown || (!isSelected && isMaxReached);
+
+                          return (
+                            <label
+                              key={`bg-${lang}`}
+                              onClick={e => {
+                                e.preventDefault();
+                                if (!isAlreadyKnown) handleToggleBackgroundLanguage(lang);
+                              }}
+                              className={`flex items-center gap-1.5 p-1.5 rounded text-xs select-none transition-all ${
+                                isAlreadyKnown
+                                  ? 'cursor-default opacity-85'
+                                  : isDisabled
+                                    ? 'cursor-not-allowed opacity-50'
+                                    : 'cursor-pointer hover:bg-[rgba(201,168,76,0.2)]'
+                              } ${isSelected ? 'font-bold' : ''}`}
+                              style={
+                                isSelected
+                                  ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                  : isAlreadyKnown
+                                    ? { background: 'rgba(232, 211, 162, 0.25)', border: '1px dashed rgba(139, 105, 20, 0.3)', color: '#5C341F' }
+                                    : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.2)', color: '#3D2012' }
+                              }
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isAlreadyKnown || isSelected}
+                                disabled={isDisabled}
+                                readOnly
+                                className="accent-[#8B4513] rounded cursor-pointer"
+                              />
+                              <span className="truncate flex-1">{lang}</span>
+                              {isAlreadyKnown && (
+                                <span className="text-[9px] px-1 py-0.5 rounded font-semibold text-[#8B6914] bg-[rgba(201,168,76,0.25)]">
+                                  ✓ Известен
+                                </span>
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Exotic Languages */}
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-[11px] font-semibold text-[#8B6914] block">Экзотические языки:</span>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        {EXOTIC_LANGUAGES.map(lang => {
+                          const isAlreadyKnown = languagesKnownBeforeBackground.has(lang);
+                          const isSelected = selectedBackgroundLanguages.includes(lang);
+                          const isMaxReached = selectedBackgroundLanguages.length >= backgroundLangConfig.choiceCount;
+                          const isDisabled = isAlreadyKnown || (!isSelected && isMaxReached);
+
+                          return (
+                            <label
+                              key={`bg-${lang}`}
+                              onClick={e => {
+                                e.preventDefault();
+                                if (!isAlreadyKnown) handleToggleBackgroundLanguage(lang);
+                              }}
+                              className={`flex items-center gap-1.5 p-1.5 rounded text-xs select-none transition-all ${
+                                isAlreadyKnown
+                                  ? 'cursor-default opacity-85'
+                                  : isDisabled
+                                    ? 'cursor-not-allowed opacity-50'
+                                    : 'cursor-pointer hover:bg-[rgba(201,168,76,0.2)]'
+                              } ${isSelected ? 'font-bold' : ''}`}
+                              style={
+                                isSelected
+                                  ? { background: '#E8D3A2', border: '1px solid #C9A84C', color: '#3D2012' }
+                                  : isAlreadyKnown
+                                    ? { background: 'rgba(232, 211, 162, 0.25)', border: '1px dashed rgba(139, 105, 20, 0.3)', color: '#5C341F' }
+                                    : { background: 'rgba(251, 240, 220, 0.6)', border: '1px solid rgba(139, 105, 20, 0.2)', color: '#3D2012' }
+                              }
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isAlreadyKnown || isSelected}
+                                disabled={isDisabled}
+                                readOnly
+                                className="accent-[#8B4513] rounded cursor-pointer"
+                              />
+                              <span className="truncate flex-1">{lang}</span>
+                              {isAlreadyKnown && (
+                                <span className="text-[9px] px-1 py-0.5 rounded font-semibold text-[#8B6914] bg-[rgba(201,168,76,0.25)]">
+                                  ✓ Известен
+                                </span>
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Background Feature */}
                 <div className="p-3 rounded-lg space-y-1" style={{ background: 'rgba(232, 211, 162, 0.25)', border: '1px solid rgba(201, 168, 76, 0.3)' }}>
                   <div className="text-xs font-bold text-[#3D2012]">
@@ -3632,7 +4070,14 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
                   </div>
                   <div className="p-2.5 rounded" style={{ background: 'rgba(232, 211, 162, 0.2)' }}>
                     <div className="font-semibold text-[#8B6914]">Языки:</div>
-                    <div className="text-[#3D2012] mt-0.5">{selectedBackground.languages.join(', ') || 'Нет'}</div>
+                    <div className="text-[#3D2012] mt-0.5">
+                      {backgroundLangConfig.needsChoice
+                        ? [
+                            ...backgroundLangConfig.fixedLanguages,
+                            ...selectedBackgroundLanguages
+                          ].join(', ') || `(Требуется выбрать: ${backgroundLangConfig.choiceCount})`
+                        : selectedBackground.languages.join(', ') || 'Нет'}
+                    </div>
                   </div>
                   <div className="p-2.5 rounded" style={{ background: 'rgba(232, 211, 162, 0.2)' }}>
                     <div className="font-semibold text-[#8B6914]">Стартовое золото:</div>

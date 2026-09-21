@@ -202,10 +202,11 @@ export function getRacialSkillData(race: CompendiumRace, subrace?: CompendiumSub
   };
 }
 
-// ── Racial Ability Customization (Half-Elf, Variant Human) ──
+// ── Racial Ability Customization (Half-Elf, Variant Human, Lineages / Flexible ASI) ──
 
 export interface RacialBonusConfig {
   hasCustomBonus: boolean;
+  isFlexibleASI?: boolean; // Tasha / Lineages mode: allows toggling between +2/+1 and +1/+1/+1
   fixedBonuses: Partial<Record<AbilityName, number>>;
   choiceCount: number;
   bonusAmount: number;
@@ -216,6 +217,7 @@ export interface RacialBonusConfig {
 export function getRacialBonusConfig(race: CompendiumRace, subrace?: CompendiumSubrace): RacialBonusConfig {
   const raceId = (race?.id || '').toLowerCase();
   const subraceId = (subrace?.id || '').toLowerCase();
+  const raceName = (race?.name || '').toLowerCase();
   const choice = subrace?.choices || race?.choices;
 
   // Combine base and subrace bonuses
@@ -224,15 +226,41 @@ export function getRacialBonusConfig(race: CompendiumRace, subrace?: CompendiumS
     ...(subrace?.abilityBonuses || {})
   };
 
-  // Declarative flexible ASI (e.g. Custom Lineage or Tasha/MPMM flexible rules)
-  if (choice?.isFlexibleASI) {
+  const totalFixedBonus = Object.values(combined).reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+
+  // Lineages (VRGtR: Dhampir, Hexblood, Reborn) and declarative flexible ASI (Custom Lineage, Tasha/MPMM)
+  const isLineageRace =
+    raceId === 'dhampir' ||
+    raceId === 'hexblood' ||
+    raceId === 'reborn' ||
+    raceId === 'custom-lineage' ||
+    raceName.includes('дампир') ||
+    raceName.includes('ведьмовская кровь') ||
+    raceName.includes('возрожденный');
+
+  const hasFlexibleTrait =
+    race?.traits?.some(t => {
+      const desc = (t.description || '').toLowerCase();
+      const name = (t.name || '').toLowerCase();
+      return (name.includes('характеристик') || desc.includes('характеристик')) &&
+        (desc.includes('увеличивается на 2') || desc.includes('трёх различных') || desc.includes('выбору'));
+    }) ||
+    subrace?.traits?.some(t => {
+      const desc = (t.description || '').toLowerCase();
+      const name = (t.name || '').toLowerCase();
+      return (name.includes('характеристик') || desc.includes('характеристик')) &&
+        (desc.includes('увеличивается на 2') || desc.includes('трёх различных') || desc.includes('выбору'));
+    });
+
+  if (choice?.isFlexibleASI || isLineageRace || (totalFixedBonus === 0 && hasFlexibleTrait)) {
     return {
       hasCustomBonus: true,
+      isFlexibleASI: true,
       fixedBonuses: {},
       choiceCount: 2,
       bonusAmount: 1,
       availableAbilities: ABILITY_NAMES.slice() as AbilityName[],
-      description: 'Свободное распределение бонусов характеристик (+1 к двум различным характеристикам на выбор).'
+      description: 'Гибкое увеличение характеристик: либо +2 к одной характеристике и +1 к другой, либо +1 к трём различным характеристикам на выбор.'
     };
   }
 
@@ -868,14 +896,39 @@ export function getRacialChoicesConfig(
 
   // Extra languages
   let extraLanguageCount = 0;
+  const isLineageRace =
+    raceId === 'dhampir' ||
+    raceId === 'hexblood' ||
+    raceId === 'reborn' ||
+    raceName.includes('дампир') ||
+    raceName.includes('ведьмовская кровь') ||
+    raceName.includes('возрожденный');
+
   if (choice?.extraLanguagesCount !== undefined) {
     extraLanguageCount = choice.extraLanguagesCount;
-  } else if (isVariantHuman || isCustomLineage || isHighElf || raceId === 'half-elf' || raceName.includes('полуэльф')) {
+  } else if (isVariantHuman || isCustomLineage || isHighElf || raceId === 'half-elf' || raceName.includes('полуэльф') || isLineageRace) {
     extraLanguageCount = 1;
-  } else if (subrace?.traits?.some(t => t.name.toLowerCase().includes('язык') && t.description.toLowerCase().includes('выбор'))) {
-    extraLanguageCount = 1;
-  } else if (race?.languages?.some(l => l.toLowerCase().includes('выбор'))) {
-    const choiceStr = race.languages.find(l => l.toLowerCase().includes('выбор'))!.toLowerCase();
+  } else if (
+    race?.traits?.some(t => {
+      const desc = (t.description || '').toLowerCase();
+      const name = (t.name || '').toLowerCase();
+      return (name.includes('язык') || desc.includes('язык')) &&
+        (desc.includes('ещё одном') || desc.includes('ещё один') || desc.includes('другой язык') || desc.includes('дополнительный') || desc.includes('выбор'));
+    }) ||
+    subrace?.traits?.some(t => {
+      const desc = (t.description || '').toLowerCase();
+      const name = (t.name || '').toLowerCase();
+      return (name.includes('язык') || desc.includes('язык')) &&
+        (desc.includes('ещё одном') || desc.includes('ещё один') || desc.includes('другой язык') || desc.includes('дополнительный') || desc.includes('выбор'));
+    })
+  ) {
+    const traitText = [
+      ...(race?.traits || []),
+      ...(subrace?.traits || [])
+    ].map(t => (t.name + ' ' + t.description).toLowerCase()).join(' ');
+    extraLanguageCount = (traitText.includes('два других') || traitText.includes('двух других') || traitText.includes('два языка на выбор')) ? 2 : 1;
+  } else if (race?.languages?.some(l => l.toLowerCase().includes('выбор') || l.toLowerCase().includes('дополнительн'))) {
+    const choiceStr = race.languages.find(l => l.toLowerCase().includes('выбор') || l.toLowerCase().includes('дополнительн'))!.toLowerCase();
     extraLanguageCount = (choiceStr.includes('два') || choiceStr.includes('2')) ? 2 : 1;
   }
 
@@ -898,6 +951,53 @@ export function getRacialChoicesConfig(
     weaponProfConfig,
     needsCustomFeature,
     customFeature
+  };
+}
+
+// ── Background Language Choice Rules ──
+
+export interface BackgroundLanguageChoiceConfig {
+  needsChoice: boolean;
+  choiceCount: number;
+  fixedLanguages: string[];
+  description: string;
+}
+
+export function getBackgroundLanguageChoiceConfig(
+  bg: CompendiumBackground | null | undefined
+): BackgroundLanguageChoiceConfig {
+  if (!bg || !bg.languages || bg.languages.length === 0) {
+    return {
+      needsChoice: false,
+      choiceCount: 0,
+      fixedLanguages: [],
+      description: ''
+    };
+  }
+
+  const fixedLanguages: string[] = [];
+  let choiceCount = 0;
+
+  for (const lang of bg.languages) {
+    const lower = lang.toLowerCase();
+    if (lower.includes('выбор') || lower.includes('дополнительн') || lower.includes('любой')) {
+      if (lower.includes('два') || lower.includes('двух') || lower.includes('2')) {
+        choiceCount += 2;
+      } else {
+        choiceCount += 1;
+      }
+    } else {
+      fixedLanguages.push(lang);
+    }
+  }
+
+  return {
+    needsChoice: choiceCount > 0,
+    choiceCount,
+    fixedLanguages,
+    description: choiceCount > 0
+      ? `Предыстория «${bg.name}» позволяет выбрать ${choiceCount === 1 ? '1 дополнительный язык' : `${choiceCount} дополнительных языка`}.`
+      : ''
   };
 }
 

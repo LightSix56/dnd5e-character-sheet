@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { CharacterData } from '@/lib/dnd-types';
+import { serializeCharacterForExport, type CharacterData } from '@/lib/dnd-types';
 import {
   ArcaneLinkIcon,
   GoldSealCheckIcon,
@@ -33,9 +33,9 @@ export function ShareModal({
   onOpenAuth,
   onToast,
   onExportPdf,
-  isExportingPdf,
+  isExportingPdf = false,
 }: ShareModalProps) {
-  useEscapeKey(onClose, isOpen);
+  useEscapeKey(onClose);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +53,7 @@ export function ShareModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: char.name || 'Безымянный',
-          data: char,
+          data: serializeCharacterForExport(char),
           portraitUrl: portraitUrl || undefined,
           expiresInDays: 30,
         }),

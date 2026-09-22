@@ -5,6 +5,8 @@ import {
   getAC,
   getCalculatedAC,
   getAvailableArmorModes,
+  serializeCharacterForExport,
+  normalizeCharacterData,
   type CharacterData,
 } from '../src/lib/dnd-types.js';
 
@@ -161,4 +163,41 @@ test('AC Engine: getAvailableArmorModes returns relevant options for character',
 
   const tortleOption = modes.find(m => m.key === 'unarmored:tortle');
   assert.equal(tortleOption?.ac, 17); // flat 17
+});
+
+test('AC Engine: Barbarian Kroug AC export and normalization flow', () => {
+  const kroug = createDefaultCharacter();
+  kroug.name = 'Кроуг';
+  kroug.className = 'Варвар';
+  kroug.abilityScores['СИЛ'] = 16; // +3
+  kroug.abilityScores['ЛОВ'] = 12; // +1
+  kroug.abilityScores['ТЕЛ'] = 14; // +2
+
+  // Unarmored Defense: 10 + 1 (DEX) + 2 (CON) = 13
+  assert.equal(kroug.armorClass, null);
+  assert.equal(getCalculatedAC(kroug), 13);
+  assert.equal(getAC(kroug), 13);
+
+  // Serialized for export (JSON/share/combat)
+  const exported = serializeCharacterForExport(kroug);
+  assert.equal(exported.calculatedAC, 13);
+  assert.equal(exported.armorClass, 13);
+
+  // Normalizing back into character sheet keeps armorClass as null so stats remain dynamic
+  const restored = normalizeCharacterData(exported);
+  assert.equal(restored.armorClass, null);
+  assert.equal(getAC(restored), 13);
+
+  // If CON increases to 16 (+3), AC dynamically increases to 14
+  restored.abilityScores['ТЕЛ'] = 16;
+  assert.equal(getAC(restored), 14);
+
+  // When manual override is explicitly specified (e.g. magic item / house rule)
+  kroug.armorClass = 15;
+  const manualExported = serializeCharacterForExport(kroug);
+  assert.equal(manualExported.armorClass, 15);
+  assert.equal(manualExported.calculatedAC, 13);
+
+  const restoredManual = normalizeCharacterData(manualExported);
+  assert.equal(restoredManual.armorClass, 15);
 });

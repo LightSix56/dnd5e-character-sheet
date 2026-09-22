@@ -24,6 +24,7 @@ import {
   getSpellSaveDC,
   getSpellAttackBonus,
   createDefaultCharacter,
+  normalizeCharacterData,
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -42,30 +43,6 @@ import {
   MysticSpinnerIcon,
   CrystalBallDndIcon,
 } from '@/components/dnd-icons';
-
-// ── Normalize helper for safely filling defaults ──
-function normalizeCharacterData(raw: Partial<CharacterData> | null | undefined): CharacterData {
-  const defaults = createDefaultCharacter();
-  if (!raw) return defaults;
-  return {
-    ...defaults,
-    ...raw,
-    abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
-    abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
-    asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
-    savingThrowProficiencies: {
-      ...defaults.savingThrowProficiencies,
-      ...(raw.savingThrowProficiencies || {}),
-    },
-    skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
-    skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
-    spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
-    spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
-    attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
-    cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
-    levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
-  };
-}
 
 export default function SharedCharacterPage({
   params,

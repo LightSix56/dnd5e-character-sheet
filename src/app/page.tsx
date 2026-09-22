@@ -15,6 +15,7 @@ import {
   CLASS_TEMPLATES, ClassTemplate, applyClassTemplate, applyRaceTemplate, ARMOR_AC_MAP,
   recalculateAttacksOnStatsChange,
   getCarryingCapacity, getJumpDistances, setAttackProficiency, calculateWizardAC,
+  normalizeCharacterData, serializeCharacterForExport,
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
 import { isNamelessCharacter } from '@/lib/character-validation';
@@ -96,27 +97,6 @@ const AuthModal = dynamic(() => import('@/components/sheet/modals/SheetModals').
 const SignOutModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.SignOutModal), { ssr: false });
 const ResetModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.ResetModal), { ssr: false });
 const CreateChoiceModal = dynamic(() => import('@/components/sheet/modals/SheetModals').then(mod => mod.CreateChoiceModal), { ssr: false });
-
-// ── Universal Deep Merge Character Normalizer ──
-function normalizeCharacterData(raw: Partial<CharacterData> | null | undefined): CharacterData {
-  const defaults = createDefaultCharacter();
-  if (!raw) return defaults;
-  return {
-    ...defaults,
-    ...raw,
-    abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
-    abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
-    asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
-    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
-    skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
-    skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
-    spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
-    spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
-    attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
-    cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
-    levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
-  };
-}
 
 // ── Main Component ──
 
@@ -345,6 +325,25 @@ export default function DnDCharacterSheet() {
     }
   }, [char]);
 
+  // ── Real-time BroadcastChannel sync for active Battle / AI DM sessions ──
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof BroadcastChannel === 'undefined') return;
+    try {
+      const channel = new BroadcastChannel('dnd5e_character_sync');
+      const exportPayload = serializeCharacterForExport(char);
+      channel.postMessage({
+        type: 'CHARACTER_SHEET_UPDATED',
+        character: exportPayload,
+        timestamp: Date.now(),
+      });
+      return () => {
+        channel.close();
+      };
+    } catch {
+      // Ignore broadcast errors in non-supporting contexts
+    }
+  }, [char]);
+
   // ── Auto-save to cloud (debounced 400ms with instant saving status) when logged in ──
   const cloudSaveTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCloudSaveRef = React.useRef<string>('');
@@ -395,7 +394,7 @@ export default function DnDCharacterSheet() {
         body: JSON.stringify({
           id: targetId,
           name: char.name.trim(),
-          data: char,
+          data: serializeCharacterForExport(char),
           portrait_url: portraitUrl,
         }),
       });
@@ -408,7 +407,7 @@ export default function DnDCharacterSheet() {
         setCloudSaveStatus('saved');
         setCloudCharacters(prev => {
           const idx = prev.findIndex((c: any) => c.id === result.character.id);
-          const updatedEntry = { ...result.character, data: char };
+          const updatedEntry = { ...result.character, data: serializeCharacterForExport(char) };
           if (idx >= 0) {
             const next = [...prev];
             next[idx] = updatedEntry;
@@ -1844,12 +1843,13 @@ export default function DnDCharacterSheet() {
   const handleShareCharacter = useCallback(async (targetChar: any) => {
     try {
       const charData = targetChar.data || targetChar;
+      const exportData = serializeCharacterForExport(charData);
       const charName = targetChar.name || charData?.name || 'Безымянный';
       const charId = targetChar.id && !targetChar.isLocal && targetChar.id !== 'local-active' ? targetChar.id : undefined;
       const res = await fetch('/api/share', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: charId, name: charName, data: charData, expiresInDays: 30 }),
+        body: JSON.stringify({ id: charId, name: charName, data: exportData, expiresInDays: 30 }),
       });
       const payload = await res.json();
       if (!res.ok) {
@@ -1899,7 +1899,8 @@ export default function DnDCharacterSheet() {
 
   // ── Save / Load JSON ──
   const handleSaveJSON = useCallback(() => {
-    const data = JSON.stringify(char, null, 2);
+    const exportData = serializeCharacterForExport(char);
+    const data = JSON.stringify(exportData, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

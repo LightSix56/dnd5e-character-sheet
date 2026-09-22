@@ -1287,7 +1287,53 @@ export function createDefaultCharacter(): CharacterData {
   };
 }
 
+/**
+ * Universal character normalizer ensuring all required fields, sub-objects, and arrays exist.
+ * If armorClass was serialized as the calculatedAC, it preserves armorClass as null so that
+ * live stat, trait, and equipment changes continue to recalculate AC dynamically on the sheet.
+ */
+export function normalizeCharacterData(raw: Partial<CharacterData> | null | undefined): CharacterData {
+  const defaults = createDefaultCharacter();
+  if (!raw) return defaults;
+
+  const rawAC = raw.armorClass;
+  const rawCalcAC = (raw as Record<string, unknown>).calculatedAC;
+  const isAutoAC = typeof rawCalcAC === 'number' && rawAC === rawCalcAC;
+  const normalizedArmorClass = isAutoAC ? null : (rawAC ?? null);
+
+  return {
+    ...defaults,
+    ...raw,
+    armorClass: normalizedArmorClass,
+    abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
+    abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
+    asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
+    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
+    skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
+    skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
+    spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
+    spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
+    attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
+    cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
+    levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
+  };
+}
+
+/**
+ * Prepares character object for export (JSON, cloud sync, public share, combat engine).
+ * Evaluates getCalculatedAC and getAC so downstream consumers (combat engine, AI DM)
+ * receive the exact calculated AC without needing to duplicate complex D&D 5e unarmored logic.
+ */
+export function serializeCharacterForExport(char: CharacterData): CharacterData & { calculatedAC: number } {
+  return {
+    ...char,
+    calculatedAC: getCalculatedAC(char),
+    armorClass: getAC(char),
+  };
+}
+
 // ── Class Templates (Level 1) ──
+
 
 export interface ClassTemplate {
   id: string;

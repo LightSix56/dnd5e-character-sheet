@@ -216,9 +216,9 @@
     "semantic_hash": "11810eb189ef1a9f8a04c1521c9c8bba"
   },
   "src/components/wizard/CharacterCreationWizardModal.tsx": {
-    "mtime": 1789985518.8519323,
-    "seen": 1789985834.4862878,
-    "ast_hash": "4215822e3962c5052ccb8ca09d8aa476",
+    "mtime": 1790178879.9863646,
+    "seen": 1790179274.7869284,
+    "ast_hash": "a321b4234d2bee19b26a71c453e19825",
     "semantic_hash": ""
   },
   "src/components/wizard/wizard-helpers.ts": {
@@ -1548,15 +1548,15 @@
     "semantic_hash": ""
   },
   "src/lib/inventory/index.ts": {
-    "mtime": 1790178271.0285647,
-    "seen": 1790178565.482349,
-    "ast_hash": "388c13e3dc5796bea367ed8d33b9eacf",
+    "mtime": 1790178823.784437,
+    "seen": 1790179274.7930548,
+    "ast_hash": "836ae8bffc8e02860b35fd2fc2c37b02",
     "semantic_hash": ""
   },
   "src/lib/inventory/item-registry.ts": {
-    "mtime": 1790178268.6390324,
-    "seen": 1790178565.4823503,
-    "ast_hash": "09654eca04cd89115441a3b85f8c93b4",
+    "mtime": 1790179061.3971946,
+    "seen": 1790179274.793057,
+    "ast_hash": "d6c292cc139cf20372702b534337c06b",
     "semantic_hash": ""
   },
   "src/lib/inventory/potion-item.ts": {
@@ -1569,6 +1569,18 @@
     "mtime": 1790178358.8989437,
     "seen": 1790178565.488499,
     "ast_hash": "772b4c463f91c7e7142c41e63121daed",
+    "semantic_hash": ""
+  },
+  "src/lib/inventory/background-equipment-parser.ts": {
+    "mtime": 1790178832.2630503,
+    "seen": 1790179274.7926722,
+    "ast_hash": "25ba3f22975ec7a505467670382607d3",
+    "semantic_hash": ""
+  },
+  "test/background-equipment-granting.test.ts": {
+    "mtime": 1790178897.7584665,
+    "seen": 1790179274.7957492,
+    "ast_hash": "73d01c9648c6413db595ef62e7d2eccf",
     "semantic_hash": ""
   }
 }

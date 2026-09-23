@@ -3,3 +3,4 @@ export * from './gear-item';
 export * from './potion-item';
 export * from './equipment-pack';
 export * from './item-registry';
+export * from './background-equipment-parser';

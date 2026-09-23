@@ -55,6 +55,13 @@ import {
   type DndWeapon
 } from '@/data/dnd-weapons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import {
+  parseBackgroundEquipment,
+  mergeGearItems,
+  itemRegistry,
+  detectPackInText,
+  type GearItemModel,
+} from '@/lib/inventory';
 
 interface CharacterCreationWizardModalProps {
   isOpen: boolean;
@@ -1450,6 +1457,45 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       }
     }
 
+    // ── Unpack Class Packs & Background Equipment ──
+    let classGearModels: GearItemModel[] = [];
+    const classEquipCandidates: string[] = [];
+
+    if (selectedClass.startingEquipment?.choices) {
+      selectedClass.startingEquipment.choices.forEach((choice, idx) => {
+        const optIdx = selectedClassEquipmentChoices[idx] ?? 0;
+        const opt = choice.options[optIdx] ?? choice.options[0];
+        if (opt) classEquipCandidates.push(opt);
+      });
+    }
+    if (selectedClass.startingEquipment?.fixed) {
+      classEquipCandidates.push(...selectedClass.startingEquipment.fixed);
+    }
+    if (classEquipmentSummary) {
+      classEquipCandidates.push(...classEquipmentSummary.split(','));
+    }
+    if (selectedClass.equipmentDefault) {
+      classEquipCandidates.push(...selectedClass.equipmentDefault.split(','));
+    }
+
+    const unpackedPackIds = new Set<string>();
+    for (const cand of classEquipCandidates) {
+      const trimmed = cand.trim();
+      if (!trimmed) continue;
+      const pack = detectPackInText(trimmed) || itemRegistry.getPack(trimmed);
+      if (pack && !unpackedPackIds.has(pack.id)) {
+        unpackedPackIds.add(pack.id);
+        classGearModels = mergeGearItems(classGearModels, pack.unpack());
+      }
+    }
+
+    // Unpack background equipment
+    const bgGearModels = parseBackgroundEquipment(selectedBackground.equipment);
+
+    // Merge class pack gear with background equipment
+    const allGearModels = mergeGearItems(classGearModels, bgGearModels);
+    const finalInventoryGear = allGearModels.map(g => g.toJSON());
+
     const newChar: CharacterData = {
       name: charName.trim() || 'Герой',
       className: selectedClass.name,
@@ -1504,6 +1550,8 @@ export function CharacterCreationWizardModal({ isOpen, onClose, onComplete }: Ch
       featuresTraits: featureTextLines.join('\n\n'),
       traitsList,
       equipment: equipmentText,
+      inventoryGear: finalInventoryGear,
+      potions: [],
 
       gender: resolveCharacterGender(genderChoice, customGender),
       age,

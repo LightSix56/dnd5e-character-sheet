@@ -280,6 +280,26 @@ export function calculateConcentrationDC(damage?: number): number {
   return Math.max(10, Math.floor((damage || 0) / 2));
 }
 
+export interface PotionItem {
+  id: string;
+  name: string;
+  nameEn?: string;
+  type: 'heal' | 'buff' | 'utility';
+  rarity: 'обычное' | 'необычное' | 'редкое' | 'очень редкое' | 'легендарное' | 'артефакт';
+  quantity: number;
+  formula?: string;
+  effectSummary: string;
+  description: string;
+  actionCost: 'bonus_action';
+}
+
+export interface GearItem {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: 'шт.' | 'фт.' | 'дн.' | 'фнт.';
+}
+
 export interface CharacterData {
   // Conditions & Concentration
   conditions?: string[];
@@ -351,6 +371,8 @@ export interface CharacterData {
   featuresTraits: string;
   traitsList?: TraitItem[];
   equipment: string;
+  potions?: PotionItem[];
+  inventoryGear?: GearItem[];
 
   // Page 2
   gender?: string;
@@ -1452,6 +1474,8 @@ export function createDefaultCharacter(): CharacterData {
     featuresTraits: '',
     traitsList: [],
     equipment: '',
+    potions: [],
+    inventoryGear: [],
     gender: 'Мужской',
     age: '',
     height: '',
@@ -1506,6 +1530,8 @@ export function normalizeCharacterData(raw: Partial<CharacterData> | null | unde
     levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
     conditions: Array.isArray(raw.conditions) ? raw.conditions : defaults.conditions,
     concentration: raw.concentration !== undefined ? raw.concentration : defaults.concentration,
+    potions: Array.isArray(raw.potions) ? raw.potions : (defaults.potions || []),
+    inventoryGear: Array.isArray(raw.inventoryGear) ? raw.inventoryGear : (defaults.inventoryGear || []),
   };
 }
 

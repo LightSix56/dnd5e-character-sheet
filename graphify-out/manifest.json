@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1790071484.1442275,
-    "seen": 1790072406.3831441,
-    "ast_hash": "e70ea86482a1f1346adae1eee18858df",
+    "mtime": 1790175958.2531352,
+    "seen": 1790176335.0138934,
+    "ast_hash": "1b2f9a3b147dd40a05599f8ad9727e3c",
     "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
@@ -1242,9 +1242,9 @@
     "semantic_hash": ""
   },
   "src/components/sheet/pages/MainSheetPage.tsx": {
-    "mtime": 1789479138.0740128,
-    "seen": 1789479505.7391982,
-    "ast_hash": "87bdc3b5eb5323697d220b244beee03c",
+    "mtime": 1790176058.6957223,
+    "seen": 1790176335.006263,
+    "ast_hash": "5f07b9f660497f43b02a141b5be8be09",
     "semantic_hash": ""
   },
   "src/components/sheet/pages/SpellsSheetPage.tsx": {
@@ -1503,6 +1503,18 @@
     "mtime": 1790174505.4863982,
     "seen": 1790174847.4599137,
     "ast_hash": "9b97342b2244a9f20db23b2cceb0d110",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/ConditionsTracker.tsx": {
+    "mtime": 1790176038.9735856,
+    "seen": 1790176335.0053422,
+    "ast_hash": "d80c1b0b94d463b1286f0a9b4403fada",
+    "semantic_hash": ""
+  },
+  "test/conditions-and-concentration.test.ts": {
+    "mtime": 1790176138.809481,
+    "seen": 1790176335.0169957,
+    "ast_hash": "5726932af870e248e112a75448899ccf",
     "semantic_hash": ""
   }
 }

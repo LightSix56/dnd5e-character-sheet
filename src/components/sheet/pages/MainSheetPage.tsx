@@ -56,6 +56,7 @@ import {
   CompendiumBookIcon,
 } from '@/components/dnd-icons';
 import { BlockHelpButton } from '@/components/encyclopedia/BlockHelpButton';
+import { ConditionsTracker } from '@/components/sheet/ConditionsTracker';
 
 export interface MainSheetPageProps {
   char: CharacterData;
@@ -661,6 +662,9 @@ export const MainSheetPage = React.memo(function MainSheetPage({
             </div>
           </div>
         </div>
+
+        {/* Conditions & Concentration Tracker */}
+        <ConditionsTracker char={char} onChange={update} />
 
         {/* Currency */}
         <div className="parchment-card">

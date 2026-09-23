@@ -1,18 +1,12 @@
 @echo off
-echo ========================================
-echo   DnD 5e Character Sheet Generator
-echo ========================================
-echo.
-echo   On this PC:
-echo     http://localhost:3000
-echo.
-echo   From phone (same WiFi, find your IP with ipconfig):
-echo     http://YOUR_IP:3000
-echo.
-echo ========================================
-echo   Press Ctrl+C to stop
-echo ========================================
-echo.
+setlocal
+cd /d "%~dp0"
+
+if exist "scripts\network-banner.js" (
+    node scripts\network-banner.js 3000
+)
+
+echo Starting DnD 5e Character Sheet Server...
 call npm.cmd run dev
 if %errorlevel% neq 0 (
     echo.

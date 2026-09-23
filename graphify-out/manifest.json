@@ -6,9 +6,9 @@
     "semantic_hash": "c011988f3f49e03f84c466119ba73683"
   },
   "next.config.ts": {
-    "mtime": 1789305455.6278994,
-    "seen": 1789306243.1019878,
-    "ast_hash": "498086ff583ec5664643f74843c7f262",
+    "mtime": 1790184614.9053235,
+    "seen": 1790184991.185298,
+    "ast_hash": "058225ea1989a588d6515eea6fd2be92",
     "semantic_hash": ""
   },
   "package.json": {
@@ -1593,6 +1593,18 @@
     "mtime": 1790179624.7018769,
     "seen": 1790180123.278722,
     "ast_hash": "60c157cc047be19ddb41a2409af5a617",
+    "semantic_hash": ""
+  },
+  "scripts/firewall-helper.js": {
+    "mtime": 1790184558.4155436,
+    "seen": 1790184991.1880703,
+    "ast_hash": "b3a7f84726ae7d006650954f239ed729",
+    "semantic_hash": ""
+  },
+  "scripts/network-banner.js": {
+    "mtime": 1790184537.6857793,
+    "seen": 1790184991.1885884,
+    "ast_hash": "1b3d8f8b76ea750db71518c413f3cd0a",
     "semantic_hash": ""
   }
 }

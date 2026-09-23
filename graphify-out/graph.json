@@ -807,7 +807,7 @@
       "file_type": "code",
       "norm_label": "codexitem",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L646"
+      "source_location": "L759"
     },
     {
       "id": "src_lib_pdf_export_pdfexportoptions",
@@ -833,7 +833,7 @@
       "file_type": "code",
       "norm_label": "spelllevelmapping",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "src_lib_pdf_export_spellrowmapping",
@@ -846,7 +846,7 @@
       "file_type": "code",
       "norm_label": "spellrowmapping",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "src_data_compendium_class_progression_classfeatureentry",
@@ -3718,7 +3718,7 @@
       "file_type": "code",
       "norm_label": "createparchmentpage()",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L798"
+      "source_location": "L911"
     },
     {
       "id": "src_lib_pdf_export_drawpagefooter",
@@ -3730,7 +3730,7 @@
       "file_type": "code",
       "norm_label": "drawpagefooter()",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L875"
+      "source_location": "L988"
     },
     {
       "id": "src_lib_pdf_export_exportcharactertopdf",
@@ -3742,7 +3742,7 @@
       "file_type": "code",
       "norm_label": "exportcharactertopdf()",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L224"
+      "source_location": "L225"
     },
     {
       "id": "src_lib_pdf_export_rendercodexpages",
@@ -3754,7 +3754,7 @@
       "file_type": "code",
       "norm_label": "rendercodexpages()",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L661"
+      "source_location": "L774"
     },
     {
       "id": "src_lib_pdf_export_rendertraitscodexpages",
@@ -3766,7 +3766,7 @@
       "file_type": "code",
       "norm_label": "rendertraitscodexpages()",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L652"
+      "source_location": "L765"
     },
     {
       "id": "src_lib_pdf_export_wraptext",
@@ -3778,7 +3778,7 @@
       "file_type": "code",
       "norm_label": "wraptext()",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L902"
+      "source_location": "L1015"
     },
     {
       "id": "src_lib_supabase_client_createclient",
@@ -10244,7 +10244,7 @@
       "file_type": "code",
       "norm_label": "skill_row_mappings",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L199"
+      "source_location": "L200"
     },
     {
       "id": "src_lib_pdf_export_spell_level_mappings",
@@ -10255,7 +10255,7 @@
       "file_type": "code",
       "norm_label": "spell_level_mappings",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L36"
+      "source_location": "L37"
     },
     {
       "id": "src_lib_supabase_client",
@@ -21831,7 +21831,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L302",
+      "source_location": "L317",
       "weight": 1.0
     },
     {
@@ -21843,7 +21843,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L303",
+      "source_location": "L318",
       "weight": 1.0
     },
     {
@@ -21855,7 +21855,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L323",
+      "source_location": "L338",
       "weight": 1.0
     },
     {
@@ -21867,7 +21867,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L331",
+      "source_location": "L346",
       "weight": 1.0
     },
     {
@@ -21879,7 +21879,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L344",
+      "source_location": "L359",
       "weight": 1.0
     },
     {
@@ -21891,7 +21891,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L364",
+      "source_location": "L379",
       "weight": 1.0
     },
     {
@@ -21903,7 +21903,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L371",
+      "source_location": "L386",
       "weight": 1.0
     },
     {
@@ -21915,7 +21915,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L375",
+      "source_location": "L390",
       "weight": 1.0
     },
     {
@@ -21927,7 +21927,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L549",
+      "source_location": "L662",
       "weight": 1.0
     },
     {
@@ -21939,7 +21939,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L550",
+      "source_location": "L663",
       "weight": 1.0
     },
     {
@@ -21951,7 +21951,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L640",
+      "source_location": "L753",
       "weight": 1.0
     },
     {
@@ -21963,7 +21963,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L679",
+      "source_location": "L792",
       "weight": 1.0
     },
     {
@@ -21975,7 +21975,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L707",
+      "source_location": "L820",
       "weight": 1.0
     },
     {
@@ -21987,7 +21987,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L736",
+      "source_location": "L849",
       "weight": 1.0
     },
     {
@@ -21999,7 +21999,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L794",
+      "source_location": "L907",
       "weight": 1.0
     },
     {
@@ -22011,7 +22011,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L658",
+      "source_location": "L771",
       "weight": 1.0
     },
     {
@@ -54658,6 +54658,17 @@
     },
     {
       "source": "src_lib_pdf_export",
+      "target": "src_lib_pdf_export_wraptext",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/pdf-export.ts",
+      "source_location": "L1015",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_pdf_export",
       "target": "src_lib_pdf_export_pdfexportoptions",
       "relation": "contains",
       "_origin": "ast",
@@ -54675,7 +54686,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L199",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -54686,7 +54697,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L224",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -54697,7 +54708,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -54708,7 +54719,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -54719,7 +54730,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -54730,7 +54741,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L646",
+      "source_location": "L759",
       "weight": 1.0
     },
     {
@@ -54741,7 +54752,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L652",
+      "source_location": "L765",
       "weight": 1.0
     },
     {
@@ -54752,7 +54763,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L661",
+      "source_location": "L774",
       "weight": 1.0
     },
     {
@@ -54763,7 +54774,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L798",
+      "source_location": "L911",
       "weight": 1.0
     },
     {
@@ -54774,18 +54785,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L875",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_pdf_export",
-      "target": "src_lib_pdf_export_wraptext",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/pdf-export.ts",
-      "source_location": "L902",
+      "source_location": "L988",
       "weight": 1.0
     },
     {
@@ -56159,5 +56159,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "383cce14064854ff44c7aacc4785cb0fc6c92715"
+  "built_at_commit": "01e262b1238cd31575a3220d256e0b5c8a658a60"
 }

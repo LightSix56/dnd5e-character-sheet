@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, PDFFont } from 'pdf-lib';
+import { PDFDocument, rgb, PDFFont, PDFImage } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import {
   CharacterData,
@@ -20,6 +20,7 @@ export interface PdfExportOptions {
   fontBytes?: Uint8Array | ArrayBuffer;
   boldFontBytes?: Uint8Array | ArrayBuffer;
   includeFullCodex?: boolean;
+  portraitUrl?: string | null;
 }
 
 export interface SpellRowMapping {
@@ -249,7 +250,12 @@ export async function exportCharacterToPdf(
       const fsModule = await import('fs');
       const pathModule = await import('path');
       const fontPath = pathModule.join(process.cwd(), 'public', 'fonts', 'arial.ttf');
-      fontBytes = fsModule.existsSync(fontPath) ? fsModule.readFileSync(fontPath) : fsModule.readFileSync('C:/Windows/Fonts/arial.ttf');
+      const winFont = 'C:/Windows/Fonts/arial.ttf';
+      if (fsModule.existsSync(fontPath)) {
+        fontBytes = fsModule.readFileSync(fontPath);
+      } else if (fsModule.existsSync(winFont)) {
+        fontBytes = fsModule.readFileSync(winFont);
+      }
     }
   }
 
@@ -265,10 +271,19 @@ export async function exportCharacterToPdf(
       const fsModule = await import('fs');
       const pathModule = await import('path');
       const fontPath = pathModule.join(process.cwd(), 'public', 'fonts', 'arialbd.ttf');
-      boldFontBytes = fsModule.existsSync(fontPath) ? fsModule.readFileSync(fontPath) : (
-        fsModule.existsSync('C:/Windows/Fonts/arialbd.ttf') ? fsModule.readFileSync('C:/Windows/Fonts/arialbd.ttf') : fontBytes
-      );
+      const winFont = 'C:/Windows/Fonts/arialbd.ttf';
+      if (fsModule.existsSync(fontPath)) {
+        boldFontBytes = fsModule.readFileSync(fontPath);
+      } else if (fsModule.existsSync(winFont)) {
+        boldFontBytes = fsModule.readFileSync(winFont);
+      } else {
+        boldFontBytes = fontBytes;
+      }
     }
+  }
+
+  if (!fontBytes) {
+    throw new Error('Arial font file not found for PDF export.');
   }
 
   const doc = await PDFDocument.load(templateBytes);
@@ -517,11 +532,109 @@ export async function exportCharacterToPdf(
   if (char.skin) setText('text_12kfvu', char.skin);
   if (char.hair) setText('text_13lzpo', char.hair);
 
-  setText('textarea_1uxvl', char.appearance || '');
   setText('textarea_2fzes', char.alliesOrganizations || '');
   setText('textarea_3wrh', char.backstory || '');
   setText('textarea_4hgfg', char.additionalFeaturesTraits || '');
   setText('textarea_5wbeq', char.treasure || '');
+
+  // Portrait on Page 2
+  const rawPortrait = options.portraitUrl || (char as any).portraitUrl || (char as any)._portraitUrl;
+  let portraitDrawn = false;
+
+  if (rawPortrait && typeof rawPortrait === 'string') {
+    try {
+      let imageBytes: Uint8Array | null = null;
+      let isPng = false;
+      let isJpg = false;
+      const trimmed = rawPortrait.trim();
+
+      if (trimmed.startsWith('data:image/')) {
+        const commaIdx = trimmed.indexOf(',');
+        if (commaIdx !== -1) {
+          const meta = trimmed.slice(0, commaIdx).toLowerCase();
+          const base64Data = trimmed.slice(commaIdx + 1).replace(/\s/g, '');
+          if (meta.includes('png')) isPng = true;
+          else if (meta.includes('jpeg') || meta.includes('jpg')) isJpg = true;
+
+          if (typeof Buffer !== 'undefined') {
+            imageBytes = Buffer.from(base64Data, 'base64');
+          } else {
+            const binaryString = atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+            imageBytes = bytes;
+          }
+        }
+      } else if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
+        const resp = await fetch(trimmed);
+        if (resp.ok) {
+          const contentType = (resp.headers.get('content-type') || '').toLowerCase();
+          const arrayBuf = await resp.arrayBuffer();
+          imageBytes = new Uint8Array(arrayBuf);
+          if (contentType.includes('png') || trimmed.toLowerCase().includes('.png')) {
+            isPng = true;
+          } else if (
+            contentType.includes('jpeg') ||
+            contentType.includes('jpg') ||
+            trimmed.toLowerCase().includes('.jpg') ||
+            trimmed.toLowerCase().includes('.jpeg')
+          ) {
+            isJpg = true;
+          }
+        }
+      }
+
+      if (imageBytes && imageBytes.length > 0) {
+        if (!isPng && !isJpg && imageBytes.length >= 4) {
+          if (imageBytes[0] === 0x89 && imageBytes[1] === 0x50 && imageBytes[2] === 0x4e && imageBytes[3] === 0x47) {
+            isPng = true;
+          } else if (imageBytes[0] === 0xff && imageBytes[1] === 0xd8) {
+            isJpg = true;
+          }
+        }
+
+        let embeddedImage: PDFImage | null = null;
+        if (isPng) {
+          embeddedImage = await doc.embedPng(imageBytes);
+        } else if (isJpg) {
+          embeddedImage = await doc.embedJpg(imageBytes);
+        } else {
+          try {
+            embeddedImage = await doc.embedPng(imageBytes);
+          } catch {
+            embeddedImage = await doc.embedJpg(imageBytes);
+          }
+        }
+
+        if (embeddedImage) {
+          const pages = doc.getPages();
+          if (pages.length > 1) {
+            const page2 = pages[1];
+            const imgDims = embeddedImage.scaleToFit(162, 213);
+            const drawX = 32 + (162 - imgDims.width) / 2;
+            const drawY = 467 + (213 - imgDims.height) / 2;
+            page2.drawImage(embeddedImage, {
+              x: drawX,
+              y: drawY,
+              width: imgDims.width,
+              height: imgDims.height,
+            });
+            portraitDrawn = true;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to embed portrait into PDF:', err);
+    }
+  }
+
+  if (portraitDrawn) {
+    setText('textarea_1uxvl', '');
+  } else {
+    setText('textarea_1uxvl', char.appearance || '');
+  }
 
   // 12. Page 3 Spellcasting
   const hasSpells = Boolean(

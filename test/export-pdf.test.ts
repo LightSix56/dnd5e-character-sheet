@@ -156,3 +156,54 @@ test('PDF Export: renders overflow spells exceeding page 3 row limits into codex
   assert.ok(pdfDoc.getPageCount() >= 4, 'Must have at least 4 pages to contain overflow spells');
 });
 
+test('PDF Export: renders character with valid base64 PNG portrait and leaves textarea_1uxvl empty', async () => {
+  const char = createDefaultCharacter();
+  char.name = 'Портретный Герой';
+  char.className = 'Следопыт';
+  char.level = 3;
+  char.appearance = 'Высокий воин с капюшоном';
+
+  const tinyPng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAoptuPAAAAAElFTkSuQmCC';
+
+  const pdfBytes = await exportCharacterToPdf(char, {
+    includeFullCodex: false,
+    portraitUrl: tinyPng,
+  });
+
+  assert.ok(pdfBytes instanceof Uint8Array, 'Returns Uint8Array');
+  assert.ok(pdfBytes.length > 1000, 'PDF size should be substantial');
+
+  // Verify header
+  const header = Buffer.from(pdfBytes.slice(0, 5)).toString('ascii');
+  assert.equal(header, '%PDF-', 'Starts with %PDF- header');
+
+  const pdfDoc = await PDFDocument.load(pdfBytes);
+  assert.equal(pdfDoc.getPageCount(), 3, 'Must have 3 pages');
+
+  const form = pdfDoc.getForm();
+  assert.equal(form.getTextField('CharacterName').getText(), 'Портретный Герой');
+  // When portrait is drawn, textarea_1uxvl must be empty
+  assert.equal(form.getTextField('textarea_1uxvl').getText() || '', '');
+});
+
+test('PDF Export: handles corrupted portraitUrl gracefully without crashing', async () => {
+  const char = createDefaultCharacter();
+  char.name = 'Сломанный Портрет';
+  char.appearance = 'Обычный вид';
+
+  const corruptDataUrl = 'data:image/png;base64,NOT_A_REAL_BASE64_IMAGE!!!';
+
+  const pdfBytes = await exportCharacterToPdf(char, {
+    includeFullCodex: false,
+    portraitUrl: corruptDataUrl,
+  });
+
+  assert.ok(pdfBytes instanceof Uint8Array);
+  const pdfDoc = await PDFDocument.load(pdfBytes);
+  assert.equal(pdfDoc.getPageCount(), 3);
+
+  const form = pdfDoc.getForm();
+  // Since portrait failed to embed, appearance text should fallback into textarea_1uxvl
+  assert.equal(form.getTextField('textarea_1uxvl').getText(), 'Обычный вид');
+});
+

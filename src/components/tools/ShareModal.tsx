@@ -13,6 +13,7 @@ import {
   HourglassIcon,
 } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { copyToClipboard } from '@/lib/utils';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -90,25 +91,25 @@ export function ShareModal({
 
   const handleCopyUrl = async () => {
     if (!shareUrl) return;
-    try {
-      await navigator.clipboard.writeText(shareUrl);
+    const ok = await copyToClipboard(shareUrl);
+    if (ok) {
       setCopiedUrl(true);
       onToast?.('Ссылка скопирована', 'Адрес листа персонажа сохранён в буфер обмена');
       setTimeout(() => setCopiedUrl(false), 2500);
-    } catch {
-      onToast?.('Ошибка копирования', 'Скопируйте ссылку вручную из поля ввода');
+    } else {
+      onToast?.('Ссылка для копирования', shareUrl);
     }
   };
 
   const handleCopyCode = async () => {
     if (!shareCode) return;
-    try {
-      await navigator.clipboard.writeText(shareCode);
+    const ok = await copyToClipboard(shareCode);
+    if (ok) {
       setCopiedCode(true);
       onToast?.('Код скопирован', `${shareCode} сохранён в буфер обмена`);
       setTimeout(() => setCopiedCode(false), 2500);
-    } catch {
-      onToast?.('Ошибка копирования', 'Скопируйте код вручную');
+    } else {
+      onToast?.('Код для копирования', shareCode);
     }
   };
 

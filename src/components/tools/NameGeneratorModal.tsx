@@ -10,6 +10,7 @@ import {
 } from '@/data/compendium/names-data';
 import { QuillIcon, SparklesDndIcon } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { copyToClipboard } from '@/lib/utils';
 
 export interface NameGeneratorModalProps {
   currentRace?: string;
@@ -54,24 +55,12 @@ export function NameGeneratorModal({ currentRace, onSelectName, onClose }: NameG
 
   // Copy to clipboard with visual indicator
   const handleCopy = async (name: string, index: number) => {
-    try {
-      if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(name);
-      } else {
-        // Fallback for older browsers / iframe environments
-        const textArea = document.createElement('textarea');
-        textArea.value = name;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-      }
+    const ok = await copyToClipboard(name);
+    if (ok) {
       setCopiedIndex(index);
       setTimeout(() => {
         setCopiedIndex(prev => (prev === index ? null : prev));
       }, 2000);
-    } catch {
-      // Ignore copy error silently
     }
   };
 

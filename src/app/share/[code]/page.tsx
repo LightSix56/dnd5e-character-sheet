@@ -3,6 +3,7 @@
 import React, { useState, useEffect, use, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { copyToClipboard } from '@/lib/utils';
 import {
   CharacterData,
   AbilityName,
@@ -131,15 +132,14 @@ export default function SharedCharacterPage({
 
   // Action: Copy URL to clipboard
   const handleCopyLink = async () => {
-    try {
-      if (typeof window !== 'undefined') {
-        await navigator.clipboard.writeText(window.location.href);
-        setCopiedUrl(true);
-        showToast('Ссылка скопирована', 'Адрес листа персонажа сохранён в буфер обмена');
-        setTimeout(() => setCopiedUrl(false), 2500);
-      }
-    } catch {
-      showToast('Ошибка копирования', 'Скопируйте URL из адресной строки браузера');
+    if (typeof window === 'undefined') return;
+    const ok = await copyToClipboard(window.location.href);
+    if (ok) {
+      setCopiedUrl(true);
+      showToast('Ссылка скопирована', 'Адрес листа персонажа сохранён в буфер обмена');
+      setTimeout(() => setCopiedUrl(false), 2500);
+    } else {
+      showToast('Ссылка для копирования', window.location.href);
     }
   };
 

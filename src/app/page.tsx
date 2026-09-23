@@ -18,6 +18,7 @@ import {
   normalizeCharacterData, serializeCharacterForExport,
 } from '@/lib/dnd-types';
 import { createClient } from '@/lib/supabase/client';
+import { copyToClipboard } from '@/lib/utils';
 import { isNamelessCharacter } from '@/lib/character-validation';
 import type { User } from '@supabase/supabase-js';
 import type { DndSpell } from '@/data/compendium/spells/types';
@@ -1857,10 +1858,10 @@ export default function DnDCharacterSheet() {
         return;
       }
       const { code } = payload;
-      try {
-        await navigator.clipboard.writeText(code);
+      const ok = await copyToClipboard(code);
+      if (ok) {
         showToast('Код скопирован', `${code} — вставьте его в AI Dungeon Master`);
-      } catch {
+      } else {
         showToast('Код для импорта', code);
       }
     } catch (err: any) {

@@ -29,7 +29,7 @@ export interface PotionItemModelOptions {
 }
 
 export function rollDiceFormula(formula: string): { total: number; rolls: number[]; modifier: number } {
-  const clean = formula.replace(/\s+/g, '');
+  const clean = formula.replace(/\s+/g, '').replace(/[кК]/g, 'd');
   const match = clean.match(/^(\d+)d(\d+)(?:([+-])(\d+))?$/i);
   if (!match) {
     const directNum = parseInt(clean, 10);

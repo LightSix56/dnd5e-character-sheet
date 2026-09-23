@@ -648,9 +648,9 @@
     "semantic_hash": ""
   },
   "test/empty-states.test.ts": {
-    "mtime": 1789294034.2898295,
-    "seen": 1789295336.0875032,
-    "ast_hash": "9f5e77b12c196709c89621abf78a3a36",
+    "mtime": 1790179922.273302,
+    "seen": 1790180123.276515,
+    "ast_hash": "ef0fc0b8dfbae079ab4890da54e9e0ce",
     "semantic_hash": ""
   },
   "test/header-menu.test.ts": {
@@ -1242,9 +1242,9 @@
     "semantic_hash": ""
   },
   "src/components/sheet/pages/MainSheetPage.tsx": {
-    "mtime": 1790176058.6957223,
-    "seen": 1790176335.006263,
-    "ast_hash": "5f07b9f660497f43b02a141b5be8be09",
+    "mtime": 1790179918.8651237,
+    "seen": 1790180123.263186,
+    "ast_hash": "f0691a12dd6d9f0f53c420dbe3106729",
     "semantic_hash": ""
   },
   "src/components/sheet/pages/SpellsSheetPage.tsx": {
@@ -1560,9 +1560,9 @@
     "semantic_hash": ""
   },
   "src/lib/inventory/potion-item.ts": {
-    "mtime": 1790178240.3378644,
-    "seen": 1790178565.4823518,
-    "ast_hash": "a10f704f5649656e2c788f5b4246ed29",
+    "mtime": 1790179603.8401809,
+    "seen": 1790180123.2721622,
+    "ast_hash": "965760a0f2e503de4f7752ec10ee38a7",
     "semantic_hash": ""
   },
   "test/inventory-oop-and-potions.test.ts": {
@@ -1581,6 +1581,18 @@
     "mtime": 1790178897.7584665,
     "seen": 1790179274.7957492,
     "ast_hash": "73d01c9648c6413db595ef62e7d2eccf",
+    "semantic_hash": ""
+  },
+  "src/components/sheet/InventoryManager.tsx": {
+    "mtime": 1790179661.764789,
+    "seen": 1790180123.262322,
+    "ast_hash": "c9f171c01f86a23e442826db04e48e2a",
+    "semantic_hash": ""
+  },
+  "test/inventory-ui-and-manager.test.ts": {
+    "mtime": 1790179624.7018769,
+    "seen": 1790180123.278722,
+    "ast_hash": "60c157cc047be19ddb41a2409af5a617",
     "semantic_hash": ""
   }
 }

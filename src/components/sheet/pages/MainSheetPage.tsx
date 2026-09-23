@@ -57,6 +57,7 @@ import {
 } from '@/components/dnd-icons';
 import { BlockHelpButton } from '@/components/encyclopedia/BlockHelpButton';
 import { ConditionsTracker } from '@/components/sheet/ConditionsTracker';
+import { InventoryManager } from '@/components/sheet/InventoryManager';
 
 export interface MainSheetPageProps {
   char: CharacterData;
@@ -1042,15 +1043,8 @@ export const MainSheetPage = React.memo(function MainSheetPage({
               <span>Экипировка</span>
             </button>
           </div>
-          <div className="px-4 pb-4 space-y-2">
-            {!char.equipment?.trim() && (
-              <div className="parchment-empty-state">
-                <BackpackPackIcon size={24} />
-                <p className="text-xs text-[#5C341F] font-semibold">Рюкзак пуст</p>
-                <p className="text-[11px] text-[#8B6914]">Снаряжение не записано. Запишите предметы походного набора или экипировку.</p>
-              </div>
-            )}
-            <textarea value={char.equipment} onChange={e => update('equipment', e.target.value)} rows={3} placeholder="Набор путешественника, факелы (10), рационы (10 дн.), верёвка..." className={textareaClass} />
+          <div className="px-4 pb-4" aria-label="Снаряжение не записано">
+            <InventoryManager char={char} update={update} />
           </div>
         </div>
 

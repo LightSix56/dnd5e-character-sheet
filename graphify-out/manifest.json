@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "src/lib/dnd-types.ts": {
-    "mtime": 1790178223.7351444,
-    "seen": 1790178565.4820864,
-    "ast_hash": "5e072b0992a0a68e6df54ee2b79c3f8a",
+    "mtime": 1790339556.2745814,
+    "seen": 1790340423.148827,
+    "ast_hash": "1ab9a1d426c31e4b05141cdd9a353956",
     "semantic_hash": ""
   },
   "src/lib/supabase/client.ts": {
@@ -1605,6 +1605,18 @@
     "mtime": 1790184537.6857793,
     "seen": 1790184991.1885884,
     "ast_hash": "1b3d8f8b76ea750db71518c413f3cd0a",
+    "semantic_hash": ""
+  },
+  "test/character-normalization-resilience.test.ts": {
+    "mtime": 1790339532.8048658,
+    "seen": 1790340423.158296,
+    "ast_hash": "018b2a47b6f6f4b5e8898fa4c75448ec",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-09-25-core-fixes-character-sheet-and-battle-ai.md": {
+    "mtime": 1790339500.624891,
+    "seen": 1790340423.1918347,
+    "ast_hash": "0384ae095f868949fdff7b8dfb636486",
     "semantic_hash": ""
   }
 }

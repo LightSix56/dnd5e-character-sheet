@@ -1508,30 +1508,35 @@ export function normalizeCharacterData(raw: Partial<CharacterData> | null | unde
   const defaults = createDefaultCharacter();
   if (!raw) return defaults;
 
-  const rawAC = raw.armorClass;
-  const rawCalcAC = (raw as Record<string, unknown>).calculatedAC;
+  // Defensive unwrap: if raw is wrapped inside a room/combat snapshot ({ id, name, ..., data: { ... } })
+  const source = (raw && typeof (raw as any).data === 'object' && (raw as any).data !== null && ((raw as any).data.abilityScores || (raw as any).data.className))
+    ? { ...raw, ...(raw as any).data }
+    : raw;
+
+  const rawAC = source.armorClass;
+  const rawCalcAC = (source as Record<string, unknown>).calculatedAC;
   const isAutoAC = typeof rawCalcAC === 'number' && rawAC === rawCalcAC;
   const normalizedArmorClass = isAutoAC ? null : (rawAC ?? null);
 
   return {
     ...defaults,
-    ...raw,
+    ...source,
     armorClass: normalizedArmorClass,
-    abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
-    abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
-    asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
-    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
-    skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
-    skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
-    spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
-    spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
-    attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
-    cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
-    levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
-    conditions: Array.isArray(raw.conditions) ? raw.conditions : defaults.conditions,
-    concentration: raw.concentration !== undefined ? raw.concentration : defaults.concentration,
-    potions: Array.isArray(raw.potions) ? raw.potions : (defaults.potions || []),
-    inventoryGear: Array.isArray(raw.inventoryGear) ? raw.inventoryGear : (defaults.inventoryGear || []),
+    abilityScores: { ...defaults.abilityScores, ...(source.abilityScores || {}) },
+    abilityBonuses: { ...defaults.abilityBonuses, ...(source.abilityBonuses || {}) },
+    asiBonuses: { ...defaults.asiBonuses, ...(source.asiBonuses || {}) },
+    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(source.savingThrowProficiencies || {}) },
+    skillProficiencies: { ...defaults.skillProficiencies, ...(source.skillProficiencies || {}) },
+    skillExpertise: { ...defaults.skillExpertise, ...(source.skillExpertise || {}) },
+    spellSlots: { ...defaults.spellSlots, ...(source.spellSlots || {}) },
+    spellsByLevel: { ...defaults.spellsByLevel, ...(source.spellsByLevel || {}) },
+    attacks: Array.isArray(source.attacks) ? source.attacks : defaults.attacks,
+    cantrips: Array.isArray(source.cantrips) ? source.cantrips : defaults.cantrips,
+    levelHistory: Array.isArray(source.levelHistory) ? source.levelHistory : defaults.levelHistory,
+    conditions: Array.isArray(source.conditions) ? source.conditions : defaults.conditions,
+    concentration: source.concentration !== undefined ? source.concentration : defaults.concentration,
+    potions: Array.isArray(source.potions) ? source.potions : (defaults.potions || []),
+    inventoryGear: Array.isArray(source.inventoryGear) ? source.inventoryGear : (defaults.inventoryGear || []),
   };
 }
 

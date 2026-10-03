@@ -25,10 +25,35 @@ CREATE INDEX IF NOT EXISTS character_shares_user_id_idx ON character_shares (use
 ALTER TABLE character_shares ENABLE ROW LEVEL SECURITY;
 
 -- Чтение по коду доступно всем (в т.ч. анонимам): код и есть секрет.
--- Истёкшие ссылки не отдаются.
+-- Прямой SELECT из таблицы открыт только владельцу ссылки — иначе с публичным anon-ключом
+-- можно было бы выгрузить все снимки. Остальные читают через функцию, которой нужен код.
 DROP POLICY IF EXISTS "Anyone can read active shares" ON character_shares;
-CREATE POLICY "Anyone can read active shares" ON character_shares
-  FOR SELECT USING (expires_at IS NULL OR expires_at > NOW());
+DROP POLICY IF EXISTS "Owners can read own shares" ON character_shares;
+CREATE POLICY "Owners can read own shares" ON character_shares
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE OR REPLACE FUNCTION public.get_character_share(p_code TEXT)
+RETURNS TABLE (
+  code TEXT,
+  name TEXT,
+  data JSONB,
+  created_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ
+)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT s.code, s.name, s.data, s.created_at, s.expires_at
+  FROM public.character_shares s
+  WHERE s.code = p_code
+    AND (s.expires_at IS NULL OR s.expires_at > NOW())
+  LIMIT 1;
+$$;
+
+REVOKE ALL ON FUNCTION public.get_character_share(TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.get_character_share(TEXT) TO anon, authenticated;
 
 -- Создавать ссылки могут как авторизованные пользователи, так и анонимные гости.
 DROP POLICY IF EXISTS "Users can create own shares" ON character_shares;

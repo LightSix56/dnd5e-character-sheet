@@ -9,31 +9,12 @@ import {
   formatModifier, calcProficiencyBonus, getTotalScore, getModifier,
   getSavingThrow, getSkillBonus, getInitiative, getPassivePerception, getAC,
   getHPMax, getSpellSaveDC, getSpellAttackBonus, getSpellAbilityMod,
-  createDefaultCharacter,
+  normalizeCharacterData,
 } from '@/lib/dnd-types';
+import { enforceRateLimit, readJsonBody } from '@/lib/request-guards';
 
-// Частичный лист (например, от внешнего приложения) дополняем значениями по
-// умолчанию: расчётные функции обращаются к вложенным полям напрямую и падают,
-// если пришёл только abilityScores без abilityBonuses/asiBonuses.
-function normalizeCharacter(raw: Partial<CharacterData>): CharacterData {
-  const defaults = createDefaultCharacter();
-  return {
-    ...defaults,
-    ...raw,
-    abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
-    abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
-    asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
-    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
-    skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
-    skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
-    spellSlots: { ...defaults.spellSlots, ...(raw.spellSlots || {}) },
-    spellsByLevel: { ...defaults.spellsByLevel, ...(raw.spellsByLevel || {}) },
-    attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
-    cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
-    levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
-    traitsList: Array.isArray(raw.traitsList) ? raw.traitsList : defaults.traitsList,
-  };
-}
+// Экспорт нагружает процессор и доступен без входа, поэтому ограничиваем размер и частоту.
+const MAX_EXPORT_BODY_BYTES = 6 * 1024 * 1024;
 
 const COLOR_HEADER = '2C3E50';
 const COLOR_SUBHEADER = '34495E';
@@ -103,6 +84,10 @@ function isSafeImageUrl(rawUrl: string): boolean {
       return false;
     }
     const hostname = parsed.hostname.toLowerCase();
+    // IPv6-литералы (в т.ч. ::1, fc00::/7, fe80::/10, IPv4-mapped) не разбираем — запрещаем целиком.
+    if (hostname.startsWith('[') || hostname.includes(':')) {
+      return false;
+    }
     // Disallow localhost and internal domains
     if (
       hostname === 'localhost' ||
@@ -132,10 +117,19 @@ function isSafeImageUrl(rawUrl: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  const limited = enforceRateLimit(request, 'export', 30, 5 * 60_000);
+  if (limited) return limited;
+
+  const parsed = await readJsonBody(request, MAX_EXPORT_BODY_BYTES);
+  if (!parsed.ok) return parsed.response;
+  if (!parsed.body || typeof parsed.body !== 'object' || Array.isArray(parsed.body)) {
+    return NextResponse.json({ error: 'Ожидались данные персонажа' }, { status: 400 });
+  }
+
   try {
-    const body = await request.json();
-    const char: CharacterData = normalizeCharacter(body);
-    const portraitUrl: string | undefined = body._portraitUrl;
+    const body = parsed.body as Record<string, unknown>;
+    const char: CharacterData = normalizeCharacterData(body as Partial<CharacterData>);
+    const portraitUrl = typeof body._portraitUrl === 'string' ? body._portraitUrl : undefined;
     const profBonus = calcProficiencyBonus(char.level);
     const content: (Paragraph | Table)[] = [];
 
@@ -165,6 +159,8 @@ export async function POST(request: NextRequest) {
           try {
             const imgRes = await fetch(portraitUrl, {
               signal: controller.signal,
+              // Редирект мог бы увести запрос на внутренний адрес в обход проверки isSafeImageUrl.
+              redirect: 'error',
               headers: { 'Accept': 'image/png,image/jpeg,image/webp' },
             });
             const contentType = (imgRes.headers.get('content-type') || '').toLowerCase();

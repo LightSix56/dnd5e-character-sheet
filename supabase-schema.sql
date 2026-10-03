@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS profiles (
 );
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view all profiles" ON profiles FOR SELECT USING (true);
+-- Только свой профиль: username по умолчанию содержит часть email.
+CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
@@ -83,6 +84,8 @@ CREATE POLICY "Users can delete own portraits"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'portraits' AND auth.uid()::text = (storage.foldername(name))[1]);
 
-CREATE POLICY "Anyone can view portraits"
+-- Бакет публичный, файлы открываются по прямой ссылке без политики SELECT.
+-- Листинг разрешён только владельцу папки.
+CREATE POLICY "Users can list own portraits"
   ON storage.objects FOR SELECT
-  USING (bucket_id = 'portraits');
+  USING (bucket_id = 'portraits' AND auth.uid()::text = (storage.foldername(name))[1]);

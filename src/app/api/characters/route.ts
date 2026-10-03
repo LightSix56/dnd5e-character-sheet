@@ -1,39 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { createRouteClient, getAuthenticatedUser } from '@/lib/supabase/route';
+import { utf8ByteLength } from '@/lib/request-guards';
 import { validateCharacterName, isNamelessCharacter } from '@/lib/character-validation';
 
+const MAX_CHARACTER_BYTES = 5 * 1024 * 1024;
+
 function createClient(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
-  const authHeader = request.headers.get('Authorization');
-  return createServerClient(
-    url,
-    anonKey,
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll(); },
-        setAll() {},
-      },
-      global: {
-        headers: authHeader ? { Authorization: authHeader } : {},
-      },
-    }
-  );
-}
-
-async function getAuthenticatedUser(supabase: ReturnType<typeof createClient>, request: NextRequest) {
-  const authHeader = request.headers.get('Authorization');
-  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
-
-  if (bearerToken) {
-    const { data: { user }, error } = await supabase.auth.getUser(bearerToken);
-    if (user) return { user, error: null };
-    if (error) console.warn('[Auth] Bearer token verification failed:', error.message);
-  }
-
-  // Fallback to cookie-based session
-  const { data: { user }, error } = await supabase.auth.getUser();
-  return { user, error };
+  return createRouteClient(request, { forwardAuth: true });
 }
 
 export async function GET(request: NextRequest) {
@@ -41,17 +14,8 @@ export async function GET(request: NextRequest) {
   const { user, error: authError } = await getAuthenticatedUser(supabase, request);
   if (!user) return NextResponse.json({ error: authError?.message || 'Unauthorized' }, { status: 401 });
 
-  // Automatically delete nameless / placeholder characters for this user from the database
-  try {
-    await supabase
-      .from('characters')
-      .delete()
-      .eq('user_id', user.id)
-      .or('name.eq.Безымянный,name.eq.безымянный,name.eq.nameless,name.eq.,name.is.null');
-  } catch (purgeErr) {
-    console.warn('[API Characters GET] Auto-purge nameless characters warning:', purgeErr);
-  }
-
+  // Безымянные черновики не удаляем: чтение списка не должно менять данные.
+  // Они не попадают в облако (POST/PUT их отклоняют) и просто отфильтровываются ниже.
   const { data, error } = await supabase
     .from('characters')
     .select('id, name, data, portrait_url, created_at, updated_at')
@@ -101,7 +65,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Данные персонажа должны быть объектом' }, { status: 400 });
     }
     const serialized = JSON.stringify(data);
-    if (serialized.length > 5 * 1024 * 1024) {
+    if (utf8ByteLength(serialized) > MAX_CHARACTER_BYTES) {
       return NextResponse.json({ error: 'Данные персонажа превышают лимит 5 МБ' }, { status: 400 });
     }
   }
@@ -193,7 +157,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Данные персонажа должны быть объектом' }, { status: 400 });
     }
     const serialized = JSON.stringify(data);
-    if (serialized.length > 5 * 1024 * 1024) {
+    if (utf8ByteLength(serialized) > MAX_CHARACTER_BYTES) {
       return NextResponse.json({ error: 'Данные персонажа превышают лимит 5 МБ' }, { status: 400 });
     }
   }

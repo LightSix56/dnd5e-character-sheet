@@ -1,30 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exportCharacterToPdf } from '@/lib/pdf-export';
-import { CharacterData, createDefaultCharacter } from '@/lib/dnd-types';
+import { type CharacterData, normalizeCharacterData } from '@/lib/dnd-types';
+import { enforceRateLimit, readJsonBody } from '@/lib/request-guards';
 
-function normalizeCharacter(raw: Partial<CharacterData>): CharacterData {
-  const defaults = createDefaultCharacter();
-  return {
-    ...defaults,
-    ...raw,
-    abilityScores: { ...defaults.abilityScores, ...(raw.abilityScores || {}) },
-    abilityBonuses: { ...defaults.abilityBonuses, ...(raw.abilityBonuses || {}) },
-    asiBonuses: { ...defaults.asiBonuses, ...(raw.asiBonuses || {}) },
-    savingThrowProficiencies: { ...defaults.savingThrowProficiencies, ...(raw.savingThrowProficiencies || {}) },
-    skillProficiencies: { ...defaults.skillProficiencies, ...(raw.skillProficiencies || {}) },
-    skillExpertise: { ...defaults.skillExpertise, ...(raw.skillExpertise || {}) },
-    attacks: Array.isArray(raw.attacks) ? raw.attacks : defaults.attacks,
-    cantrips: Array.isArray(raw.cantrips) ? raw.cantrips : defaults.cantrips,
-    spellsByLevel: typeof raw.spellsByLevel === 'object' && raw.spellsByLevel !== null ? raw.spellsByLevel : defaults.spellsByLevel,
-    traitsList: Array.isArray(raw.traitsList) ? raw.traitsList : defaults.traitsList,
-    levelHistory: Array.isArray(raw.levelHistory) ? raw.levelHistory : defaults.levelHistory,
-  };
-}
+// Экспорт нагружает процессор и доступен без входа, поэтому ограничиваем размер и частоту.
+const MAX_EXPORT_BODY_BYTES = 6 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
+  const limited = enforceRateLimit(req, 'export', 30, 5 * 60_000);
+  if (limited) return limited;
+
+  const parsed = await readJsonBody(req, MAX_EXPORT_BODY_BYTES);
+  if (!parsed.ok) return parsed.response;
+  if (!parsed.body || typeof parsed.body !== 'object' || Array.isArray(parsed.body)) {
+    return NextResponse.json({ error: 'Ожидались данные персонажа' }, { status: 400 });
+  }
+
   try {
-    const raw = await req.json();
-    const char = normalizeCharacter(raw);
+    const char = normalizeCharacterData(parsed.body as Partial<CharacterData>);
 
     const pdfBytes = await exportCharacterToPdf(char);
 

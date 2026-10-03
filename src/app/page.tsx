@@ -63,6 +63,7 @@ import {
 } from '@/data/compendium/class-progression';
 import { WARLOCK_INVOCATIONS } from '@/data/compendium/warlock-choices';
 import type { TraitItem } from '@/lib/dnd-types';
+import { readSyncMeta, writeSyncMeta, resolveLoginSync } from '@/lib/cloud-sync-state';
 
 import {
   D20Icon, ScrollIcon, SpellbookIcon, ChestIcon, HourglassIcon,
@@ -238,18 +239,30 @@ export default function DnDCharacterSheet() {
   const supabase = useMemo(() => createClient(), []);
 
   // ── Auto-save to localStorage on every change ──
+  // latestLocalRef — актуальный лист для асинхронных обработчиков (вход, сохранение в облако).
+  // cloudAppliedRef — что последним пришло из облака: такая замена не считается локальной правкой.
+  const latestLocalRef = React.useRef<{ char: CharacterData; portraitUrl: string | null }>({ char: initialChar, portraitUrl: initialPortrait });
+  const cloudAppliedRef = React.useRef<{ char: CharacterData; portraitUrl: string | null } | null>(null);
+
   useEffect(() => {
+    const previous = latestLocalRef.current;
+    const changed = previous.char !== char || previous.portraitUrl !== portraitUrl;
+    latestLocalRef.current = { char, portraitUrl };
+
     try {
       localStorage.setItem('dnd5e_character', JSON.stringify(char));
     } catch { /* quota exceeded — ignore */ }
-  }, [char]);
-
-  useEffect(() => {
     try {
       if (portraitUrl) localStorage.setItem('dnd5e_portrait', portraitUrl);
       else localStorage.removeItem('dnd5e_portrait');
     } catch { /* ignore */ }
-  }, [portraitUrl]);
+
+    if (!changed) return;
+    const applied = cloudAppliedRef.current;
+    const cameFromCloud = applied !== null && applied.char === char && applied.portraitUrl === portraitUrl;
+    // Помечаем лист как несинхронизированный: при следующем входе облако его не затрёт.
+    if (!cameFromCloud) writeSyncMeta(window.localStorage, { dirty: true });
+  }, [char, portraitUrl]);
 
   // ── Auto-scale weapon attacks when ability modifiers or proficiency bonus change ──
   const prevModifiersRef = React.useRef<{
@@ -355,6 +368,33 @@ export default function DnDCharacterSheet() {
   const cloudSaveInProgressRef = React.useRef(false);
   const pendingCloudSaveRef = React.useRef(false);
   const isCloudSyncingRef = React.useRef(false);
+  // Увеличивается, когда после входа нужно отправить в облако сохранённые локальные правки.
+  const [cloudSyncEpoch, setCloudSyncEpoch] = useState(0);
+  const saveToCloudRef = React.useRef<((forcedNew?: boolean) => Promise<{ ok: boolean; error?: string; id?: string; busy?: boolean }>) | null>(null);
+
+  // Лист из облака заменил локальный: запоминаем связь и снимаем отметку о несохранённых правках.
+  const markCloudApplied = useCallback((
+    appliedChar: CharacterData,
+    appliedPortrait: string | null,
+    cloudChar: { id: string; updated_at?: string | null },
+    ownerId: string | null,
+  ) => {
+    cloudAppliedRef.current = { char: appliedChar, portraitUrl: appliedPortrait };
+    writeSyncMeta(window.localStorage, {
+      dirty: false,
+      cloudId: cloudChar.id,
+      cloudUpdatedAt: cloudChar.updated_at ?? null,
+      userId: ownerId,
+    });
+  }, []);
+
+  // Локальный лист больше не связан с облачной записью (новый герой, сброс, импорт, удаление).
+  const unlinkCloudCharacter = useCallback(() => {
+    cloudCharIdRef.current = null;
+    setActiveCloudCharId(null);
+    writeSyncMeta(window.localStorage, { cloudId: null, cloudUpdatedAt: null });
+  }, []);
+
   const isSharedImportRef = React.useRef(
     typeof window !== 'undefined' &&
       (Boolean(localStorage.getItem('dnd5e_shared_import')) || window.location.search.includes('import=shared'))
@@ -373,7 +413,7 @@ export default function DnDCharacterSheet() {
   }, [supabase]);
 
   // Helper: save to cloud (POST with id = upsert, server handles update/insert)
-  const saveToCloud = useCallback(async (forcedNew = false): Promise<{ ok: boolean; error?: string; id?: string }> => {
+  const saveToCloud = useCallback(async (forcedNew = false): Promise<{ ok: boolean; error?: string; id?: string; busy?: boolean }> => {
     // Forbid saving nameless characters
     if (isNamelessCharacter(char.name)) {
       setCloudSaveStatus('idle');
@@ -383,7 +423,7 @@ export default function DnDCharacterSheet() {
     // If a save is already in progress, mark as pending and skip
     if (cloudSaveInProgressRef.current) {
       pendingCloudSaveRef.current = true;
-      return { ok: false, error: 'Сохранение уже выполняется' };
+      return { ok: false, error: 'Сохранение уже выполняется', busy: true };
     }
     cloudSaveInProgressRef.current = true;
     try {
@@ -404,6 +444,15 @@ export default function DnDCharacterSheet() {
       if (res.ok && result.character) {
         cloudCharIdRef.current = result.character.id;
         setActiveCloudCharId(result.character.id);
+        // Отметку о несохранённых правках снимаем, только если за время запроса лист не изменился.
+        const latestLocal = latestLocalRef.current;
+        const stillCurrent = latestLocal.char === char && latestLocal.portraitUrl === portraitUrl;
+        writeSyncMeta(window.localStorage, {
+          cloudId: result.character.id,
+          cloudUpdatedAt: result.character.updated_at ?? null,
+          userId: user?.id ?? null,
+          ...(stillCurrent ? { dirty: false } : {}),
+        });
         setCloudSaveError(null);
         setCloudSaveStatus('saved');
         setCloudCharacters(prev => {
@@ -435,10 +484,15 @@ export default function DnDCharacterSheet() {
       // If changes happened while we were saving, trigger another save
       if (pendingCloudSaveRef.current) {
         pendingCloudSaveRef.current = false;
-        setTimeout(() => saveToCloud(), 100);
+        // Через ref, а не через замыкание: иначе повторное сохранение отправило бы устаревший лист.
+        setTimeout(() => { void saveToCloudRef.current?.(); }, 100);
       }
     }
-  }, [char, portraitUrl, getAuthHeaders]);
+  }, [char, portraitUrl, getAuthHeaders, user]);
+
+  useEffect(() => {
+    saveToCloudRef.current = saveToCloud;
+  }, [saveToCloud]);
 
   useEffect(() => {
     if (!user || isCloudSyncingRef.current) return;
@@ -464,13 +518,14 @@ export default function DnDCharacterSheet() {
       if (res.ok) {
         lastCloudSaveRef.current = snapshot;
         setCloudSaveStatus('saved');
-      } else {
-        // Do NOT lock lastCloudSaveRef to snapshot on error so future edits retry
+      } else if (!res.busy) {
+        // Do NOT lock lastCloudSaveRef to snapshot on error so future edits retry.
+        // busy — не ошибка: идущее сохранение само запустит повторное с актуальным листом.
         setCloudSaveStatus('error');
       }
     }, 400);
     return () => { if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current); };
-  }, [user, char, portraitUrl, saveToCloud]);
+  }, [user, char, portraitUrl, saveToCloud, cloudSyncEpoch]);
 
   useEffect(() => {
     // Rely solely on onAuthStateChange which fires INITIAL_SESSION synchronously from cookies.
@@ -493,10 +548,32 @@ export default function DnDCharacterSheet() {
           const res = await fetch('/api/characters', { headers });
           const data = await res.json();
           const validCharacters = (data.characters || []).filter((c: any) => !isNamelessCharacter(c.name));
-          if (validCharacters.length > 0) {
+          const decision = resolveLoginSync<any>({
+            meta: readSyncMeta(window.localStorage),
+            localName: latestLocalRef.current.char.name,
+            userId: newUser.id,
+            cloudCharacters: validCharacters,
+          });
+
+          if (decision.action === 'keep-local') {
+            // На устройстве есть правки, не попавшие в облако, — оставляем их и отправляем.
+            // При конфликте (облачную версию меняли с другого устройства) пишем отдельной копией.
+            cloudCharIdRef.current = decision.cloudId;
+            setActiveCloudCharId(decision.cloudId);
+            if (!decision.cloudId) {
+              writeSyncMeta(window.localStorage, { cloudId: null, cloudUpdatedAt: null, userId: newUser.id });
+            }
+            lastCloudSaveRef.current = '';
+            setCloudSyncEpoch(epoch => epoch + 1);
+            setToast(decision.conflict
+              ? { title: 'Сохранено отдельной копией', description: 'В облаке есть более новая версия с другого устройства — она не тронута' }
+              : { title: 'Локальные правки сохранены', description: 'Несинхронизированные изменения отправляются в облако' });
+            setTimeout(() => setToast(null), 5000);
+          } else if (validCharacters.length > 0) {
             const latest = validCharacters[0];
             if (latest.data) {
               const normalized = normalizeCharacterData(latest.data);
+              markCloudApplied(normalized, latest.portrait_url || null, latest, newUser.id);
               setChar(normalized);
               if (latest.portrait_url) setPortraitUrl(latest.portrait_url);
               else setPortraitUrl(null);
@@ -522,7 +599,7 @@ export default function DnDCharacterSheet() {
       }
     });
     return () => subscription.unsubscribe();
-  }, [supabase]);
+  }, [supabase, markCloudApplied]);
 
   // Stable callbacks for modal close (prevents re-renders when using React.memo)
   const closeRollResult = useCallback(() => setRollResult(null), []);
@@ -553,8 +630,7 @@ export default function DnDCharacterSheet() {
           const port = parsed.portraitUrl || null;
           setPortraitUrl(port);
           // Ensure cloud IDs are cleared so this is treated as a separate/new character
-          cloudCharIdRef.current = null;
-          setActiveCloudCharId(null);
+          unlinkCloudCharacter();
           lastCloudSaveRef.current = '';
           setCloudSaveStatus('idle');
           setCloudSaveError(null);
@@ -572,7 +648,7 @@ export default function DnDCharacterSheet() {
     } catch (e) {
       console.error('[Shared Import Error]', e);
     }
-  }, [showToast]);
+  }, [showToast, unlinkCloudCharacter]);
 
   const handleRoll = useCallback((result: RollResult) => {
     setRollResult(result);
@@ -1507,14 +1583,13 @@ export default function DnDCharacterSheet() {
     setChar(defaultChar);
     setPortraitUrl(null);
     localStorage.removeItem('dnd5e_portrait');
-    cloudCharIdRef.current = null;
-    setActiveCloudCharId(null);
+    unlinkCloudCharacter();
     lastCloudSaveRef.current = JSON.stringify({ ...defaultChar, _portraitUrl: null });
     setCloudSaveStatus('idle');
     setCloudSaveError(null);
     if (cloudSaveTimerRef.current) clearTimeout(cloudSaveTimerRef.current);
     showToast('Сброшено', 'Данные очищены');
-  }, [showToast]);
+  }, [showToast, unlinkCloudCharacter]);
 
   const handleApplyTemplate = useCallback((templateId: string) => {
     const template = CLASS_TEMPLATES.find(t => t.id === templateId);
@@ -1792,6 +1867,7 @@ export default function DnDCharacterSheet() {
       else setPortraitUrl(null);
       // Remember cloud character ID for auto-save if real cloud ID
       if (cloudChar.id && !cloudChar.isLocal && cloudChar.id !== 'local-active') {
+        markCloudApplied(normalized, cloudChar.portrait_url || null, cloudChar, user?.id ?? null);
         cloudCharIdRef.current = cloudChar.id;
         setActiveCloudCharId(cloudChar.id);
         // Reset dedup tracker with the fresh snapshot
@@ -1799,8 +1875,7 @@ export default function DnDCharacterSheet() {
         setCloudSaveStatus('saved');
         setCloudSaveError(null);
       } else {
-        cloudCharIdRef.current = null;
-        setActiveCloudCharId(null);
+        unlinkCloudCharacter();
         lastCloudSaveRef.current = '';
         setCloudSaveStatus('idle');
         setCloudSaveError(null);
@@ -1808,7 +1883,7 @@ export default function DnDCharacterSheet() {
       setShowCloudSaves(false);
       showToast('Загружено', `"${cloudChar.name || normalized.name}" загружен`);
     }
-  }, [showToast]);
+  }, [showToast, markCloudApplied, unlinkCloudCharacter, user]);
 
   const deleteCloudCharacter = useCallback(async (id: string) => {
     if (id === 'local-active') {
@@ -1831,15 +1906,14 @@ export default function DnDCharacterSheet() {
       }
       setCloudCharacters(prev => prev.filter((c: any) => c.id !== id));
       if (cloudCharIdRef.current === id) {
-        cloudCharIdRef.current = null;
-        setActiveCloudCharId(null);
+        unlinkCloudCharacter();
         lastCloudSaveRef.current = '';
       }
       showToast('Удалено', 'Персонаж удалён из облака');
     } catch {
       showToast('Ошибка', 'Не удалось удалить');
     }
-  }, [handleReset, getAuthHeaders, showToast]);
+  }, [handleReset, getAuthHeaders, showToast, unlinkCloudCharacter]);
 
   const handleShareCharacter = useCallback(async (targetChar: any) => {
     try {
@@ -1878,8 +1952,7 @@ export default function DnDCharacterSheet() {
   const handleWizardComplete = useCallback((newChar: CharacterData) => {
     setChar(newChar);
     // CRITICAL: Reset cloud character ID so this new character doesn't overwrite a previous character!
-    cloudCharIdRef.current = null;
-    setActiveCloudCharId(null);
+    unlinkCloudCharacter();
     lastCloudSaveRef.current = '';
     setCloudSaveStatus('idle');
     setCloudSaveError(null);
@@ -1889,7 +1962,7 @@ export default function DnDCharacterSheet() {
       'Персонаж успешно создан!',
       `Добро пожаловать в игру, ${newChar.name || 'Герой'}! Все параметры, расовые и классовые особенности занесены в лист.`
     );
-  }, [showToast]);
+  }, [showToast, unlinkCloudCharacter]);
 
   const handleManualCreate = useCallback(() => {
     handleReset();

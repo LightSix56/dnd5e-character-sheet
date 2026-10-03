@@ -8,6 +8,7 @@ import {
   getSkillBonus,
   getInitiative,
   getPassivePerception,
+  getAC,
   calcProficiencyBonus,
   formatModifier,
   getSpellSaveDC,
@@ -222,6 +223,21 @@ export const SKILL_ROW_MAPPINGS: {
   { skillName: 'Уход за животными', textFieldName: 'Animal', checkBoxName: 'Check Box 40' },
 ];
 
+async function loadBundledFont(fileName: string): Promise<ArrayBuffer | Uint8Array | undefined> {
+  if (typeof window !== 'undefined') {
+    try {
+      const resp = await fetch(`/fonts/${fileName}`);
+      return resp.ok ? await resp.arrayBuffer() : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+  const fsModule = await import('fs');
+  const pathModule = await import('path');
+  const fontPath = pathModule.join(process.cwd(), 'public', 'fonts', fileName);
+  return fsModule.existsSync(fontPath) ? fsModule.readFileSync(fontPath) : undefined;
+}
+
 export async function exportCharacterToPdf(
   char: CharacterData,
   options: PdfExportOptions = {}
@@ -242,48 +258,13 @@ export async function exportCharacterToPdf(
   let fontBytes = options.fontBytes;
   let boldFontBytes = options.boldFontBytes;
 
-  if (!fontBytes) {
-    if (typeof window !== 'undefined') {
-      const resp = await fetch('/fonts/arial.ttf');
-      fontBytes = await resp.arrayBuffer();
-    } else {
-      const fsModule = await import('fs');
-      const pathModule = await import('path');
-      const fontPath = pathModule.join(process.cwd(), 'public', 'fonts', 'arial.ttf');
-      const winFont = 'C:/Windows/Fonts/arial.ttf';
-      if (fsModule.existsSync(fontPath)) {
-        fontBytes = fsModule.readFileSync(fontPath);
-      } else if (fsModule.existsSync(winFont)) {
-        fontBytes = fsModule.readFileSync(winFont);
-      }
-    }
-  }
-
-  if (!boldFontBytes) {
-    if (typeof window !== 'undefined') {
-      try {
-        const resp = await fetch('/fonts/arialbd.ttf');
-        boldFontBytes = await resp.arrayBuffer();
-      } catch {
-        boldFontBytes = fontBytes;
-      }
-    } else {
-      const fsModule = await import('fs');
-      const pathModule = await import('path');
-      const fontPath = pathModule.join(process.cwd(), 'public', 'fonts', 'arialbd.ttf');
-      const winFont = 'C:/Windows/Fonts/arialbd.ttf';
-      if (fsModule.existsSync(fontPath)) {
-        boldFontBytes = fsModule.readFileSync(fontPath);
-      } else if (fsModule.existsSync(winFont)) {
-        boldFontBytes = fsModule.readFileSync(winFont);
-      } else {
-        boldFontBytes = fontBytes;
-      }
-    }
-  }
+  // Liberation Sans (SIL OFL 1.1) — свободный шрифт с кириллицей и теми же метриками, что у Arial,
+  // поэтому раскладка текста в бланке не меняется.
+  if (!fontBytes) fontBytes = await loadBundledFont('LiberationSans-Regular.ttf');
+  if (!boldFontBytes) boldFontBytes = (await loadBundledFont('LiberationSans-Bold.ttf')) ?? fontBytes;
 
   if (!fontBytes) {
-    throw new Error('Arial font file not found for PDF export.');
+    throw new Error('Font file not found for PDF export (public/fonts/LiberationSans-Regular.ttf).');
   }
 
   const doc = await PDFDocument.load(templateBytes);
@@ -386,7 +367,8 @@ export async function exportCharacterToPdf(
   setText('Passive', String(getPassivePerception(char)));
 
   // 5. Combat Stats
-  setText('AC', char.armorClass !== null && char.armorClass !== undefined ? String(char.armorClass) : '10');
+  // getAC: ручное значение, а если его нет — расчётный КД (доспех, щит, защита без доспехов).
+  setText('AC', String(getAC(char)));
   setText('Initiative', formatModifier(getInitiative(char)));
   setText('Speed', (char.speed || 30) + ' фт');
   setText('HPMax', char.hpMax !== null && char.hpMax !== undefined ? String(char.hpMax) : '');

@@ -10,7 +10,7 @@ This block is written and re-added by next dev — verify at node_modules/next/d
 
 # 📜 D&D 5e Character Sheet — Правила и Стандарты Кодовой Базы
 
-Этот файл определяет обязательные архитектурные, дизайнерские и инженерные правила для всех агентов и разработчиков, работающих в репозитории `LightSix56/dnd5e-character-sheet` (`E:\my-project\SITE`).
+Этот файл определяет обязательные архитектурные, дизайнерские и инженерные правила для всех агентов и разработчиков, работающих в репозитории `LightSix56/dnd5e-character-sheet`.
 
 ---
 

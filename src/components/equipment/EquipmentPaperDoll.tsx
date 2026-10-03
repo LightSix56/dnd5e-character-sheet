@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import Image from 'next/image';
 import {
   CharacterData,
   getAC,
@@ -24,6 +23,8 @@ import {
 } from '@/lib/equipment-types';
 import { canToggleWeaponGrip, findWeaponByName } from '@/data/dnd-weapons';
 import { EquipmentSlotModal } from './EquipmentSlotModal';
+import { EquipmentMannequin } from './EquipmentMannequin';
+import { SlotIcon } from './slot-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import {
   LockSealIcon,
@@ -55,6 +56,14 @@ export function EquipmentPaperDoll({ char, onChange, onClose, onToggleMainHandGr
     }
     return map;
   }, []);
+
+  const equippedSlotIds = useMemo(() => {
+    const ids = new Set<EquipmentSlotId>();
+    for (const slot of EQUIPMENT_SLOTS) {
+      if (char.equippedSlots?.[slot.id]) ids.add(slot.id);
+    }
+    return ids;
+  }, [char.equippedSlots]);
 
   const offHandBlocked = useMemo(() => isOffHandBlocked(char), [char]);
   const offHandReason = useMemo(() => getOffHandBlockedReason(char), [char]);
@@ -111,15 +120,15 @@ export function EquipmentPaperDoll({ char, onChange, onClose, onToggleMainHandGr
           isLockedOffHand
             ? 'border-dashed border-amber-500/50 bg-[#E8DAC2]/50 hover:bg-[#E8DAC2]/80 opacity-85'
             : equipped
-            ? 'border-[#C9A84C] bg-[#FBF0DC]/95 hover:bg-[#FFF8EC] shadow-[0_2px_8px_rgba(201,168,76,0.2)]'
-            : 'border-dashed border-[#C9A84C]/50 bg-[#F5E6C8]/40 hover:bg-[#F5E6C8]/80 hover:border-[#C9A84C]'
+            ? 'border-2 border-[#C9A84C] bg-[#FBF0DC] hover:bg-[#FFF8EC] shadow-[0_2px_10px_rgba(139,105,20,0.28)]'
+            : 'border-dashed border-[#C9A84C]/45 bg-[#F5E6C8]/30 hover:bg-[#F5E6C8]/80 hover:border-[#C9A84C]'
         } ${isHovered ? 'ring-2 ring-[#C9A84C] shadow-[0_0_12px_rgba(201,168,76,0.35)] scale-[1.01]' : ''}`}
       >
         {/* Slot Header */}
         <div className="flex items-center justify-between gap-1.5 mb-1">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-base leading-none select-none">{config.icon}</span>
-            <span className="font-serif text-xs font-bold text-[#3D2012] truncate">
+            <SlotIcon slotId={slotId} size={20} className={equipped || isLockedOffHand ? '' : 'opacity-60'} />
+            <span className={`font-serif text-xs truncate ${equipped ? 'font-semibold text-[#6B3A2A]' : 'font-bold text-[#3D2012]'}`}>
               {config.name}
             </span>
           </div>
@@ -132,7 +141,7 @@ export function EquipmentPaperDoll({ char, onChange, onClose, onToggleMainHandGr
                 e.stopPropagation();
                 handleUnequip(slotId);
               }}
-              className="parchment-remove-btn w-5 h-5 rounded-full flex items-center justify-center text-xs opacity-80 hover:opacity-100 hover:scale-110 transition-transform"
+              className="parchment-remove-btn w-6 h-6 rounded-full flex items-center justify-center text-xs opacity-80 hover:opacity-100 hover:scale-110 transition-transform"
               title="Снять предмет"
             >
               ✕
@@ -153,7 +162,7 @@ export function EquipmentPaperDoll({ char, onChange, onClose, onToggleMainHandGr
           </div>
         ) : equipped ? (
           <div className="space-y-1">
-            <div className="font-serif text-xs font-bold text-[#3D2012] leading-tight truncate">
+            <div className="font-serif text-sm font-bold text-[#3D2012] leading-tight truncate" title={equipped.name}>
               {equipped.name}
             </div>
             <div className="flex items-center gap-1 flex-wrap">
@@ -213,7 +222,7 @@ export function EquipmentPaperDoll({ char, onChange, onClose, onToggleMainHandGr
                     ? 'Двуручный хват (увеличенный урон, вторая рука блокируется). Нажмите для 1H хвата'
                     : 'Одноручный хват (базовый урон, вторая рука свободна). Нажмите для 2H хвата'}
                 >
-                  <span>{equipped.twoHandGrip ? '👐 2H хват' : '✋ 1H хват'}</span>
+                  <span>{equipped.twoHandGrip ? 'Двуручный' : 'Одноручный'}</span>
                 </button>
               </div>
             )}
@@ -266,13 +275,12 @@ export function EquipmentPaperDoll({ char, onChange, onClose, onToggleMainHandGr
             {/* Ambient backlight glow */}
             <div className="absolute inset-4 rounded-full bg-[#FFE58F]/15 blur-2xl pointer-events-none" />
 
-            <Image
-              src="/mannequin.png"
-              alt="Манекен персонажа"
-              fill
-              sizes="(max-width: 768px) 270px, 280px"
-              className="object-contain filter drop-shadow-[0_4px_14px_rgba(61,32,18,0.3)] select-none pointer-events-none mix-blend-multiply"
-              priority
+            <EquipmentMannequin
+              equippedSlots={equippedSlotIds}
+              hoveredSlot={hoveredSlot}
+              onHoverSlot={setHoveredSlot}
+              onSelectSlot={setSelectedSlot}
+              className="relative w-full h-full drop-shadow-[0_4px_10px_rgba(61,32,18,0.22)]"
             />
           </div>
 

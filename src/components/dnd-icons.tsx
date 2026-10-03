@@ -466,3 +466,136 @@ export function CompendiumBookIcon({ size = 18, className = '', ...props }: Icon
   );
 }
 
+// ── Equipment slot icons (paper doll) ──
+// Open-face Helm (Head slot)
+export function HelmetIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M9 30C9 15 15 6 24 6s15 9 15 24v9H29V27H19v12H9v-9z" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M24 6v8" stroke="#FFE58F" strokeWidth="2" strokeLinecap="round" />
+      <path d="M9 24h30" stroke="#E5C158" strokeWidth="2" />
+      <path d="M24 24v12" stroke="#E5C158" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Amulet on a Chain (Neck slot)
+export function AmuletIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M9 6c0 14 7 21 15 21s15-7 15-21" stroke="#E5C158" strokeWidth="2.5" strokeLinecap="round" />
+      <polygon points="24,24 33,34 24,45 15,34" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <polygon points="24,30 28,34 24,39 20,34" fill="#FFE58F" />
+    </svg>
+  );
+}
+
+// Breastplate (Armor slot)
+export function CuirassIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M15 6l5 4h8l5-4 9 7-5 9v20H11V22l-5-9 9-7z" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M24 10v32" stroke="#E5C158" strokeWidth="2" />
+      <path d="M11 32h26" stroke="#E5C158" strokeWidth="2" />
+      <path d="M16 20c3 3 5 4 8 4s5-1 8-4" stroke="#FFE58F" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Buckled Belt (Belt slot)
+export function BeltIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <rect x="4" y="18" width="40" height="12" rx="2" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" />
+      <rect x="17" y="13" width="14" height="22" rx="3" fill="#7A4529" stroke="#E5C158" strokeWidth="2.5" />
+      <path d="M24 24h10" stroke="#FFE58F" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="38" cy="24" r="1.5" fill="#E5C158" />
+      <circle cx="10" cy="24" r="1.5" fill="#E5C158" />
+    </svg>
+  );
+}
+
+// Single Sword (Main hand slot)
+export function SwordIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <polygon points="42,6 42,13 21,34 14,27 35,6" fill="#7A4529" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M38 10L19 29" stroke="#FFE58F" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M10 23l15 15" stroke="#E5C158" strokeWidth="4" strokeLinecap="round" />
+      <path d="M16 32l-7 7" stroke="#5C341F" strokeWidth="5" strokeLinecap="round" />
+      <circle cx="8" cy="40" r="3" fill="#5C341F" stroke="#E5C158" strokeWidth="2" />
+    </svg>
+  );
+}
+
+// Gemmed Ring (Ring slots)
+export function RingIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <circle cx="24" cy="30" r="11" stroke="#5C341F" strokeWidth="7" />
+      <circle cx="24" cy="30" r="14.5" stroke="#E5C158" strokeWidth="2" />
+      <circle cx="24" cy="30" r="7.5" stroke="#E5C158" strokeWidth="2" />
+      <polygon points="24,3 32,11 24,20 16,11" fill="#7A4529" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M20 11h8" stroke="#FFE58F" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Clasped Cloak (Cloak slot)
+export function CloakIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M15 7c3 3 6 4 9 4s6-1 9-4l10 32c-6 4-12 2-19 5-7-3-13-1-19-5L15 7z" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M19 16l-5 23M29 16l5 23M24 15v28" stroke="#7A4529" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="24" cy="12" r="3.5" fill="#FFE58F" stroke="#3D2012" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+// Quiver with Arrows (Back slot)
+export function QuiverIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M17 4l-3 5 4 1 1-6zM25 3l-2 6h5l-3-6zM33 5l1 6 4-2-5-4z" fill="#FFE58F" stroke="#E5C158" strokeWidth="1" strokeLinejoin="round" />
+      <path d="M18 10l2 8M25 9v9M34 10l-3 8" stroke="#E5C158" strokeWidth="2" strokeLinecap="round" />
+      <path d="M14 18h22l-4 24a3 3 0 0 1-3 2h-8a3 3 0 0 1-3-2l-4-24z" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M15 25h20" stroke="#E5C158" strokeWidth="2" />
+      <path d="M17 36h14" stroke="#7A4529" strokeWidth="2" />
+    </svg>
+  );
+}
+
+// Armored Gauntlet (Gloves slot)
+export function GauntletIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M14 44V33l-4-7V14a3 3 0 0 1 6 0v-4a3 3 0 0 1 6 0V9a3 3 0 0 1 6 0v2a3 3 0 0 1 6 0v12l3-4a3 3 0 0 1 5 3l-7 12v10H14z" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M16 14v8M22 10v12M28 11v11" stroke="#E5C158" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M14 37h17" stroke="#FFE58F" strokeWidth="2" />
+    </svg>
+  );
+}
+
+// Drawstring Pouch (Belt pouch slot)
+export function PouchIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M17 17C8 25 7 43 24 43s16-18 7-26H17z" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M17 17l-4-9c4 2 7 2 11 0 4 2 7 2 11 0l-4 9H17z" fill="#7A4529" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M14 17h20" stroke="#FFE58F" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="24" cy="30" r="4" fill="#7A4529" stroke="#E5C158" strokeWidth="2" />
+    </svg>
+  );
+}
+
+// Leather Boot (Boots slot)
+export function BootIcon({ size = 18, className = '', ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={`shrink-0 ${className}`} {...props}>
+      <path d="M14 6v24c0 5 3 9 8 9h13c4 0 6-3 6-6s-2-5-5-5h-8V6H14z" fill="#5C341F" stroke="#E5C158" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M14 13h14" stroke="#E5C158" strokeWidth="2" />
+      <path d="M16 43h25" stroke="#E5C158" strokeWidth="3" strokeLinecap="round" />
+      <path d="M28 28l-5 5" stroke="#FFE58F" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}

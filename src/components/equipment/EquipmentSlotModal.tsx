@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { CharacterData, ABILITY_NAMES, ABILITY_FULL } from '@/lib/dnd-types';
 import {
   EquipmentSlotId,
@@ -15,6 +16,7 @@ import {
 import { findWeaponByName } from '@/data/dnd-weapons';
 import { DND_COMPENDIUM_ITEMS } from '@/data/compendium/items';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { SlotIcon } from './slot-icons';
 import {
   CrossedSwordsIcon,
   WarningSignIcon,
@@ -169,7 +171,7 @@ function formatEffectBadge(eff: ItemEffect): string {
     case 'ability':
       return `${eff.targetAbility || 'СИЛ'} ${sign}${eff.value}`;
     case 'customTrait':
-      return `✨ ${eff.customName || eff.value || 'Особое свойство'}`;
+      return `✦ ${eff.customName || eff.value || 'Особое свойство'}`;
     default:
       return `${eff.type}: ${eff.value}`;
   }
@@ -424,9 +426,11 @@ export function EquipmentSlotModal({
     onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
-  return (
+  // Портал в body: родительское окно экипировки имеет backdrop-filter и собственную прокрутку,
+  // из-за чего position: fixed считался бы от него и шапка уезжала за экран.
+  return createPortal(
     <div
       className="fixed inset-0 z-[350] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
       // Deliberately no backdrop dismiss to prevent accidental loss of selection
@@ -438,7 +442,7 @@ export function EquipmentSlotModal({
         {/* Header */}
         <div className="px-5 py-4 border-b border-[#C9A84C]/40 bg-[#EFE3CD]/80 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="text-2xl">{slotConfig.icon}</span>
+            <SlotIcon slotId={slotId} size={32} />
             <div>
               <h3 className="font-serif text-xl font-bold text-[#3D2012] leading-tight">
                 {slotConfig.name}
@@ -643,7 +647,8 @@ export function EquipmentSlotModal({
                                   className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-medium"
                                   title="Оружие без свойства «Лёгкое»: для боя двумя руками требуется черта «Обоерукий»"
                                 >
-                                  ⚠️ Требуется «Обоерукий»
+                                  <WarningSignIcon size={11} className="inline-block mr-1 align-[-1px]" />
+                                  Требуется «Обоерукий»
                                 </span>
                               ) : null;
                             })()}
@@ -748,7 +753,7 @@ export function EquipmentSlotModal({
                                     className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-medium"
                                     title="Длинное копье требует двух рук, если персонаж не верхом на скакуне"
                                   >
-                                    🐴 Только верхом
+                                    Только верхом
                                   </span>
                                 )}
                                 {!isLight && !hasDW && !item.isShield && (
@@ -756,7 +761,8 @@ export function EquipmentSlotModal({
                                     className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-300 font-medium"
                                     title="Оружие без свойства «Лёгкое»: для боя двумя руками требуется черта «Обоерукий»"
                                   >
-                                    ⚠️ Требуется «Обоерукий»
+                                    <WarningSignIcon size={11} className="inline-block mr-1 align-[-1px]" />
+                                    Требуется «Обоерукий»
                                   </span>
                                 )}
                               </>
@@ -1096,6 +1102,7 @@ export function EquipmentSlotModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

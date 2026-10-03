@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteClient } from '@/lib/supabase/route';
+import { createRouteClient, getAuthenticatedUser } from '@/lib/supabase/route';
 import { isSupabaseConfigured } from '@/lib/supabase/env';
 import { putLocalShare } from '@/lib/share-store';
 import { enforceRateLimit, readJsonBody } from '@/lib/request-guards';
@@ -7,6 +7,7 @@ import { enforceRateLimit, readJsonBody } from '@/lib/request-guards';
 // Короткий код без похожих символов (0/O, 1/I/l), чтобы его можно было продиктовать.
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const CODE_REGEX = /^[A-Za-z0-9_-]{4,64}$/;
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 // Снимок может содержать портрет в виде data-URL (до ~700 КБ), поэтому лимит с запасом.
 const MAX_SHARE_BODY_BYTES = 2 * 1024 * 1024;
@@ -35,7 +36,9 @@ function sanitizeName(raw: unknown): string {
 }
 
 // Создать публичную ссылку на снимок персонажа.
-// Поддерживает как авторизованных пользователей, так и гостей (анонимные ссылки).
+// Когда подключён Supabase, ссылки создают только вошедшие пользователи: политика RLS не даёт
+// гостю записать строку, а хранить ссылку в памяти serverless-инстанса ненадёжно — она пропадёт.
+// Резервное хранилище в памяти остаётся только для локального режима без Supabase.
 export async function POST(request: NextRequest) {
   const limited = enforceRateLimit(request, 'share-create', 20, 10 * 60_000);
   if (limited) return limited;
@@ -56,14 +59,19 @@ export async function POST(request: NextRequest) {
   };
 
   const supabaseReady = isSupabaseConfigured();
-  const supabase = createRouteClient(request);
+  const supabase = createRouteClient(request, { forwardAuth: true });
   let user: { id: string } | null = null;
   if (supabaseReady) {
     try {
-      const authRes = await supabase.auth.getUser();
-      user = authRes.data?.user || null;
+      user = (await getAuthenticatedUser(supabase, request)).user;
     } catch {
-      // Supabase unreachable or offline
+      return NextResponse.json({ error: 'Облако сейчас недоступно. Попробуйте ещё раз чуть позже.' }, { status: 503 });
+    }
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Чтобы поделиться персонажем, нужно войти в аккаунт', code: 'auth_required' },
+        { status: 401 }
+      );
     }
   }
 
@@ -108,24 +116,24 @@ export async function POST(request: NextRequest) {
   const shareName = snapshotName || 'Безымянный';
   const origin = request.nextUrl.origin;
 
-  // Попытка записать в Supabase (если подключена база)
   if (supabaseReady) {
+    let lastError = 'unknown';
+    // Привязка к сохранённому персонажу необязательна: локальный id или уже удалённая запись
+    // не должны мешать создать ссылку.
+    let linkedCharacterId = characterId && UUID_REGEX.test(characterId) ? characterId : null;
     try {
       for (let attempt = 0; attempt < 3; attempt++) {
         const code = generateCode();
 
-        const insertRecord: Record<string, unknown> = {
+        // Без .select(): всё, что нужно для ответа, мы и так знаем.
+        const { error } = await supabase.from('character_shares').insert({
           code,
-          character_id: user && characterId ? characterId : null,
+          user_id: user!.id,
+          character_id: linkedCharacterId,
           name: shareName,
           data: snapshot,
           expires_at: expiresAt,
-        };
-        if (user) insertRecord.user_id = user.id;
-
-        // Без .select(): читать чужие и анонимные строки RLS не разрешает,
-        // а всё, что нужно для ответа, мы и так знаем.
-        const { error } = await supabase.from('character_shares').insert(insertRecord);
+        });
 
         if (!error) {
           return NextResponse.json({
@@ -136,20 +144,33 @@ export async function POST(request: NextRequest) {
           });
         }
 
-        // 23505 — коллизия кода, пробуем ещё раз; любая другая ошибка — уходим в резервное хранилище.
+        lastError = `${error.code ?? ''} ${error.message}`.trim();
+        if (error.code === '23503' && linkedCharacterId) {
+          // Персонажа с таким id в облаке нет — создаём ссылку без привязки.
+          linkedCharacterId = null;
+          continue;
+        }
+        // 23505 — коллизия кода, пробуем ещё раз; любую другую ошибку повтор не исправит.
         if (error.code !== '23505') break;
       }
-    } catch {
-      // Supabase network / connection issue — fallback to local in-memory store
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
     }
+
+    // Честная ошибка вместо ссылки из памяти, которая перестала бы открываться.
+    console.error('[API Share POST] insert failed:', lastError);
+    return NextResponse.json(
+      { error: 'Не удалось сохранить ссылку. Попробуйте ещё раз чуть позже.' },
+      { status: 502 }
+    );
   }
 
-  // Локальное резервное хранилище (для работы офлайн, в разработке и без настроенного Supabase)
+  // Локальный режим без Supabase (разработка, запуск на своём компьютере): ссылка живёт в памяти процесса.
   const fallbackCode = generateCode();
   const fallbackRecord = {
     code: fallbackCode,
     name: shareName,
-    character_id: user && characterId ? characterId : null,
+    character_id: null,
     data: snapshot,
     created_at: createdAt,
     expires_at: expiresAt,

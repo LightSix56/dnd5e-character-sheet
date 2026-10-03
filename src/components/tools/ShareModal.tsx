@@ -14,6 +14,7 @@ import {
 } from '@/components/dnd-icons';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { copyToClipboard } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -49,9 +50,16 @@ export function ShareModal({
     setLoading(true);
     setError(null);
     try {
+      // Передаём токен сессии явно: ссылки создаются только для вошедших пользователей.
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      try {
+        const { data: { session } } = await createClient().auth.getSession();
+        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+      } catch { /* гость или облако недоступно — сервер ответит сам */ }
+
       const res = await fetch('/api/share', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           name: char.name || 'Безымянный',
           data: serializeCharacterForExport(char),

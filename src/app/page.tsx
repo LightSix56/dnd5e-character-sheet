@@ -1923,10 +1923,15 @@ export default function DnDCharacterSheet() {
       const charId = targetChar.id && !targetChar.isLocal && targetChar.id !== 'local-active' ? targetChar.id : undefined;
       const res = await fetch('/api/share', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ id: charId, name: charName, data: exportData, expiresInDays: 30 }),
       });
       const payload = await res.json();
+      if (res.status === 401) {
+        showToast('Нужен вход', 'Чтобы поделиться персонажем, войдите в аккаунт');
+        setShowAuth(true);
+        return;
+      }
       if (!res.ok) {
         showToast('Ошибка', payload?.error || 'Не удалось создать ссылку');
         return;
@@ -1941,7 +1946,7 @@ export default function DnDCharacterSheet() {
     } catch (err: any) {
       showToast('Ошибка', err?.message || 'Сеть недоступна');
     }
-  }, [showToast]);
+  }, [showToast, getAuthHeaders]);
 
   const handleCreateNewCharacter = useCallback(() => {
     handleReset();

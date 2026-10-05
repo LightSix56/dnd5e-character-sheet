@@ -86,3 +86,52 @@ test('game state field list is the agreed one', () => {
     'experiencePoints', 'hitDiceSpent', 'hpCurrent', 'hpTemp',
   ]);
 });
+
+test('player rest survives when the master only awarded experience', () => {
+  // лист, каким он был при последней синхронизации с облаком
+  const base = {
+    ...makeBase(), hpMax: 20, hpCurrent: 6, hitDiceSpent: 2, experiencePoints: 100,
+    spellSlots: { 1: { totalSlots: 4, expendedSlots: 3 } },
+  };
+  // игрок сделал долгий отдых
+  const local = { ...base, hpCurrent: 20, hitDiceSpent: 1, spellSlots: { 1: { totalSlots: 4, expendedSlots: 0 } } };
+  // мастер за это время начислил опыт; остальное на сервере прежнее
+  const server = { ...base, experiencePoints: 400 };
+
+  const merged = mergeServerGameState(local, server, base);
+
+  assert.equal(merged.hpCurrent, 20);
+  assert.equal(merged.hitDiceSpent, 1);
+  assert.deepEqual(merged.spellSlots[1], { totalSlots: 4, expendedSlots: 0 });
+  assert.equal(merged.experiencePoints, 400);
+});
+
+test('fields the player did not touch still come from the server', () => {
+  const base = { ...makeBase(), hpMax: 20, hpCurrent: 20, equipment: 'old', spellSlots: { 1: { totalSlots: 4, expendedSlots: 0 } } };
+  const local = { ...base, equipment: 'new sword' };
+  const server = { ...base, hpCurrent: 5, conditions: ['prone'], spellSlots: { 1: { totalSlots: 4, expendedSlots: 2 } } };
+
+  const merged = mergeServerGameState(local, server, base);
+
+  assert.equal(merged.equipment, 'new sword');
+  assert.equal(merged.hpCurrent, 5);
+  assert.deepEqual(merged.conditions, ['prone']);
+  assert.deepEqual(merged.spellSlots[1], { totalSlots: 4, expendedSlots: 2 });
+});
+
+test('both sides changed the same field: the player\'s value is kept', () => {
+  const base = { ...makeBase(), hpMax: 20, hpCurrent: 20 };
+  const merged = mergeServerGameState({ ...base, hpCurrent: 12 }, { ...base, hpCurrent: 5 }, base);
+  assert.equal(merged.hpCurrent, 12);
+});
+
+test('experience on a campaign version always comes from the server', () => {
+  const base = { ...makeBase(), experiencePoints: 100 };
+  const merged = mergeServerGameState({ ...base, experiencePoints: 999 }, { ...base, experiencePoints: 400 }, base, { serverOwnsExperience: true });
+  assert.equal(merged.experiencePoints, 400);
+});
+
+test('without a base the server still wins (old behaviour)', () => {
+  const merged = mergeServerGameState({ ...makeBase(), hpCurrent: 20 }, { hpCurrent: 7 });
+  assert.equal(merged.hpCurrent, 7);
+});

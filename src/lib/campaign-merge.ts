@@ -26,17 +26,29 @@ function toCount(value: unknown): number {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
+function sameValue(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+}
+
 function mergeSpellSlots(
   local: CharacterData['spellSlots'],
-  server: unknown
+  server: unknown,
+  base: CharacterData['spellSlots'] | null | undefined
 ): CharacterData['spellSlots'] {
   if (!server || typeof server !== 'object') return local;
   const serverSlots = server as Record<string, Partial<SpellSlotInfo> | undefined>;
+  const baseSlots = (base ?? null) as Record<string, Partial<SpellSlotInfo> | undefined> | null;
   const result: Record<number, SpellSlotInfo> = {};
   for (const [key, slot] of Object.entries(local || {})) {
     const level = Number(key);
     const fromServer = serverSlots[key];
     if (!slot || !fromServer || typeof fromServer !== 'object') {
+      result[level] = slot;
+      continue;
+    }
+    // Игрок сам менял потраченные ячейки этого уровня (отдых, пометка) — его значение остаётся
+    const touchedLocally = baseSlots !== null && toCount(slot.expendedSlots) !== toCount(baseSlots[key]?.expendedSlots);
+    if (touchedLocally) {
       result[level] = slot;
       continue;
     }
@@ -49,9 +61,21 @@ function mergeSpellSlots(
   return result;
 }
 
+/**
+ * Сливает игровое состояние с сервера в локальный лист.
+ *
+ * base — лист, каким он был при последней синхронизации с облаком. Если он известен,
+ * слияние трёхстороннее: серверное значение берётся только для тех полей, которые игрок
+ * сам не менял. Так долгий отдых, сделанный на листе, не отменяется тем, что мастер
+ * в это же время начислил опыт. Без base (после перезагрузки страницы) побеждает сервер.
+ *
+ * serverOwnsExperience — версия для кампании: опыт начисляет только мастер.
+ */
 export function mergeServerGameState(
   local: CharacterData,
-  server: Partial<CharacterData> | null | undefined
+  server: Partial<CharacterData> | null | undefined,
+  base?: CharacterData | null,
+  options: { serverOwnsExperience?: boolean } = {}
 ): CharacterData {
   if (!server || typeof server !== 'object') return local;
 
@@ -61,15 +85,20 @@ export function mergeServerGameState(
   const merged: CharacterData = { ...local };
   const target = merged as unknown as Record<string, unknown>;
   const source = server as unknown as Record<string, unknown>;
+  const baseline = (base ?? null) as unknown as Record<string, unknown> | null;
+  const localValues = local as unknown as Record<string, unknown>;
 
   for (const field of GAME_STATE_FIELDS) {
     if (!(field in source) || source[field] === undefined) continue;
     if (leveledUpLocally && RESET_BY_LEVEL_UP.includes(field)) continue;
+    const serverAlwaysWins = field === 'experiencePoints' && options.serverOwnsExperience;
+    const touchedLocally = baseline !== null && !sameValue(localValues[field], baseline[field]);
+    if (touchedLocally && !serverAlwaysWins) continue;
     target[field] = source[field];
   }
 
   if (!leveledUpLocally && 'spellSlots' in source) {
-    merged.spellSlots = mergeSpellSlots(local.spellSlots, source.spellSlots);
+    merged.spellSlots = mergeSpellSlots(local.spellSlots, source.spellSlots, base?.spellSlots);
   }
 
   return merged;

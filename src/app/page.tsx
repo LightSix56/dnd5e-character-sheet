@@ -370,6 +370,9 @@ export default function DnDCharacterSheet() {
   // Ревизия облачной строки, с которой работает лист: уходит на сервер при сохранении,
   // чтобы не затереть то, что за это время записал сайт мастера.
   const cloudRevisionRef = React.useRef<number | null>(null);
+  // Лист, каким он был при последней синхронизации с облаком (загрузка или удачное сохранение).
+  // По нему при конфликте видно, какие поля игрок менял сам, а какие — нет.
+  const cloudBaseRef = React.useRef<CharacterData | null>(null);
   const saveConflictRetriesRef = React.useRef(0);
   // Заполнено, когда открыт не оригинал, а версия персонажа для кампании.
   const [activeCampaign, setActiveCampaign] = useState<{ campaignId: string; campaignName: string | null } | null>(null);
@@ -390,6 +393,7 @@ export default function DnDCharacterSheet() {
     ownerId: string | null,
   ) => {
     cloudAppliedRef.current = { char: appliedChar, portraitUrl: appliedPortrait };
+    cloudBaseRef.current = appliedChar;
     const revision = typeof cloudChar.revision === 'number' ? cloudChar.revision : null;
     cloudRevisionRef.current = revision;
     saveConflictRetriesRef.current = 0;
@@ -410,6 +414,7 @@ export default function DnDCharacterSheet() {
     cloudCharIdRef.current = null;
     setActiveCloudCharId(null);
     cloudRevisionRef.current = null;
+    cloudBaseRef.current = null;
     saveConflictRetriesRef.current = 0;
     setActiveCampaign(null);
     writeSyncMeta(window.localStorage, { cloudId: null, cloudUpdatedAt: null, cloudRevision: null });
@@ -465,25 +470,36 @@ export default function DnDCharacterSheet() {
 
       if (res.status === 409 && result.conflict && result.character?.data) {
         // Лист за это время изменили на сервере (мастер записал итоги боя или опыт).
-        // Берём с сервера игровое состояние, свои правки оставляем и сохраняем заново.
-        const serverRevision = typeof result.character.revision === 'number' ? result.character.revision : null;
-        cloudRevisionRef.current = serverRevision;
-        writeSyncMeta(window.localStorage, {
-          cloudRevision: serverRevision,
-          cloudUpdatedAt: result.character.updated_at ?? null,
-        });
+        // Берём с сервера игровое состояние, которое игрок сам не менял, свои правки оставляем
+        // и сохраняем заново.
         saveConflictRetriesRef.current += 1;
         if (saveConflictRetriesRef.current <= 3) {
+          const serverSheet = normalizeCharacterData(result.character.data);
+          const serverRevision = typeof result.character.revision === 'number' ? result.character.revision : null;
+          cloudRevisionRef.current = serverRevision;
+          writeSyncMeta(window.localStorage, {
+            cloudRevision: serverRevision,
+            cloudUpdatedAt: result.character.updated_at ?? null,
+          });
           const latest = latestLocalRef.current.char;
-          setChar(mergeServerGameState(latest, normalizeCharacterData(result.character.data)));
+          const merged = mergeServerGameState(latest, serverSheet, cloudBaseRef.current, {
+            serverOwnsExperience: Boolean(result.character.campaign_id),
+          });
+          // Новая точка отсчёта — серверный лист: следующие конфликты сравниваются с ним
+          cloudBaseRef.current = serverSheet;
+          setChar(merged);
           pendingCloudSaveRef.current = true;
           return { ok: false, error: 'Лист обновлён с сервера, сохраняем заново', busy: true };
         }
-        // Три конфликта подряд — показываем обычную ошибку, а не крутимся бесконечно.
+        // Три конфликта подряд: показываем обычную ошибку. Ревизию не двигаем — иначе следующее
+        // сохранение прошло бы «вслепую» и затёрло серверные изменения. Счётчик сбрасываем,
+        // чтобы следующая правка снова попробовала слить изменения.
+        saveConflictRetriesRef.current = 0;
       }
 
       if (res.ok && result.character) {
         saveConflictRetriesRef.current = 0;
+        cloudBaseRef.current = char;
         cloudRevisionRef.current = typeof result.character.revision === 'number' ? result.character.revision : null;
         setActiveCampaign(result.character.campaign_id
           ? { campaignId: result.character.campaign_id, campaignName: result.character.campaign_name ?? null }

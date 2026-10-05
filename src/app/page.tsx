@@ -65,6 +65,7 @@ import { WARLOCK_INVOCATIONS } from '@/data/compendium/warlock-choices';
 import type { TraitItem } from '@/lib/dnd-types';
 import { readSyncMeta, writeSyncMeta, resolveLoginSync } from '@/lib/cloud-sync-state';
 import { mergeServerGameState } from '@/lib/campaign-merge';
+import { levelUpGate } from '@/lib/xp-thresholds';
 
 import {
   D20Icon, ScrollIcon, SpellbookIcon, ChestIcon, HourglassIcon,
@@ -372,6 +373,8 @@ export default function DnDCharacterSheet() {
   const saveConflictRetriesRef = React.useRef(0);
   // Заполнено, когда открыт не оригинал, а версия персонажа для кампании.
   const [activeCampaign, setActiveCampaign] = useState<{ campaignId: string; campaignName: string | null } | null>(null);
+  const activeCampaignRef = React.useRef(activeCampaign);
+  useEffect(() => { activeCampaignRef.current = activeCampaign; }, [activeCampaign]);
   const cloudSaveInProgressRef = React.useRef(false);
   const pendingCloudSaveRef = React.useRef(false);
   const isCloudSyncingRef = React.useRef(false);
@@ -1246,6 +1249,8 @@ export default function DnDCharacterSheet() {
 
   // ── Level Up ──
   const handleLevelUp = useCallback((entry: LevelUpEntry) => {
+    // Версия для кампании повышает уровень только при достаточном опыте (кнопка тоже закрыта).
+    if (!levelUpGate(latestLocalRef.current.char, activeCampaignRef.current).allowed) return;
     setChar(prev => {
       const newHP = (prev.hpMax || 0) + entry.hpGained;
       const newAsi = { ...prev.asiBonuses };
@@ -2379,6 +2384,7 @@ export default function DnDCharacterSheet() {
         {activeTab === 'page1' && (
           <MainSheetPage
             char={char}
+            campaign={activeCampaign}
             update={update}
             updateAbility={updateAbility}
             updateSaveProf={updateSaveProf}

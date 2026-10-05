@@ -41,3 +41,22 @@ export function xpMissingForNextLevel(level: number, xp: number): number {
   if (current >= MAX_LEVEL) return 0;
   return Math.max(0, XP_THRESHOLDS[current + 1] - safeXp(xp));
 }
+
+/**
+ * Можно ли сейчас повысить уровень.
+ * campaign === null — обычный персонаж: опыт не проверяется, как и раньше.
+ * Версия для кампании повышает уровень, только когда опыта хватает: его начисляет мастер.
+ */
+export function levelUpGate(
+  char: { level: number; experiencePoints: number },
+  campaign: { campaignName: string | null } | null
+): { allowed: boolean; reason: string | null } {
+  const level = safeLevel(char.level);
+  if (level >= MAX_LEVEL) return { allowed: false, reason: null };
+  if (!campaign) return { allowed: true, reason: null };
+  if (canLevelUpWithXp(level, char.experiencePoints)) return { allowed: true, reason: null };
+  return {
+    allowed: false,
+    reason: `До ${level + 1} уровня не хватает ${xpMissingForNextLevel(level, char.experiencePoints)} опыта`,
+  };
+}

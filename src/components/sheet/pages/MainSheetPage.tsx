@@ -1,5 +1,6 @@
 'use client';
 
+import { levelUpGate } from '@/lib/xp-thresholds';
 import React from 'react';
 import type {
   CharacterData,
@@ -61,6 +62,8 @@ import { InventoryManager } from '@/components/sheet/InventoryManager';
 
 export interface MainSheetPageProps {
   char: CharacterData;
+  /** Открыта версия персонажа для кампании: повышение уровня — по опыту, опыт начисляет мастер. */
+  campaign?: { campaignName: string | null } | null;
   update: <K extends keyof CharacterData>(key: K, value: CharacterData[K]) => void;
   updateAbility: (ability: AbilityName, field: 'abilityScores' | 'abilityBonuses', value: number) => void;
   updateSaveProf: (ability: AbilityName, val: boolean) => void;
@@ -157,10 +160,24 @@ export const MainSheetPage = React.memo(function MainSheetPage({
   compClass,
   onToggleMainHandGrip,
   onOpenEncyclopedia,
+  campaign = null,
 }: MainSheetPageProps) {
+  const levelGate = levelUpGate(char, campaign);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-5 space-y-4">
+
+        {campaign && (
+          <div
+            className="rounded-md px-3 py-2 text-sm flex items-start gap-2"
+            style={{ background: 'rgba(201, 168, 76, 0.18)', border: '1px solid rgba(139, 105, 20, 0.45)', color: '#3D2012', fontFamily: 'Georgia, "Times New Roman", serif' }}
+          >
+            <ScrollIcon size={16} />
+            <span>
+              Версия для кампании «{campaign.campaignName || 'без названия'}». Оригинал и другие кампании не меняются.
+            </span>
+          </div>
+        )}
 
         {/* Basic Info */}
         <div className="parchment-card" data-tour-id="tour-identity">
@@ -249,10 +266,13 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                   <span className="flex-1 text-center font-bold text-lg leading-none" style={{ color: '#6B3A2A', fontFamily: 'Georgia, "Times New Roman", serif' }}>{char.level}</span>
                   <button onClick={() => char.level > 1 && setShowLevelDown(true)} disabled={char.level <= 1}
                     className="parchment-level-btn" title="Понизить">−</button>
-                  <button onClick={() => char.level < 20 && setShowLevelUp(true)} disabled={char.level >= 20}
-                    className="parchment-level-btn" title="Повысить">+</button>
+                  <button onClick={() => levelGate.allowed && setShowLevelUp(true)} disabled={!levelGate.allowed}
+                    className="parchment-level-btn" title={levelGate.reason || 'Повысить'}>+</button>
                   <button onClick={() => setShowHistory(true)} className="parchment-level-btn" title="История уровней"><ScrollIcon size={14} /></button>
                 </div>
+                {levelGate.reason && (
+                  <p className="text-[11px] leading-tight" style={{ color: '#8B6914' }}>{levelGate.reason}</p>
+                )}
               </div>
               <StatInput label="Предыстория" value={char.background} onChange={v => update('background', v)} type="text" placeholder="Солдат" className="col-span-2 sm:col-span-1" />
             </div>
@@ -283,7 +303,21 @@ export const MainSheetPage = React.memo(function MainSheetPage({
                 />
               </div>
               <StatInput label="Мировоззрение" value={char.alignment} onChange={v => update('alignment', v)} type="text" placeholder="Законно-добрый" />
-              <StatInput label="Очки опыта" value={char.experiencePoints} onChange={v => update('experiencePoints', v)} placeholder="0" className="col-span-2 sm:col-span-1" />
+              {campaign ? (
+                <div className="space-y-1 col-span-2 sm:col-span-1" title="Опыт начисляет мастер">
+                  <div className="h-5 flex items-center">
+                    <label className="parchment-label">Очки опыта</label>
+                  </div>
+                  <div
+                    className="h-[28px] flex items-center justify-center rounded font-bold"
+                    style={{ color: '#6B3A2A', background: 'rgba(139, 105, 20, 0.10)', border: '1px solid rgba(139, 105, 20, 0.30)', fontFamily: 'Georgia, "Times New Roman", serif' }}
+                  >
+                    {Number(char.experiencePoints) || 0}
+                  </div>
+                </div>
+              ) : (
+                <StatInput label="Очки опыта" value={char.experiencePoints} onChange={v => update('experiencePoints', v)} placeholder="0" className="col-span-2 sm:col-span-1" />
+              )}
             </div>
             <div className="flex items-center gap-2">
               <label className="parchment-checkbox"><input type="checkbox" checked={char.inspiration} onChange={e => update('inspiration', e.target.checked)} /><span className="checkmark"></span></label>

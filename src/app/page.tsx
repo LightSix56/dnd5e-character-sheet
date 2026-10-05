@@ -64,6 +64,7 @@ import {
 import { WARLOCK_INVOCATIONS } from '@/data/compendium/warlock-choices';
 import type { TraitItem } from '@/lib/dnd-types';
 import { readSyncMeta, writeSyncMeta, resolveLoginSync } from '@/lib/cloud-sync-state';
+import { mergeServerGameState } from '@/lib/campaign-merge';
 
 import {
   D20Icon, ScrollIcon, SpellbookIcon, ChestIcon, HourglassIcon,
@@ -365,6 +366,12 @@ export default function DnDCharacterSheet() {
   const [cloudSaveError, setCloudSaveError] = useState<string | null>(null);
   const cloudCharIdRef = React.useRef<string | null>(null);
   const [activeCloudCharId, setActiveCloudCharId] = useState<string | null>(null);
+  // Ревизия облачной строки, с которой работает лист: уходит на сервер при сохранении,
+  // чтобы не затереть то, что за это время записал сайт мастера.
+  const cloudRevisionRef = React.useRef<number | null>(null);
+  const saveConflictRetriesRef = React.useRef(0);
+  // Заполнено, когда открыт не оригинал, а версия персонажа для кампании.
+  const [activeCampaign, setActiveCampaign] = useState<{ campaignId: string; campaignName: string | null } | null>(null);
   const cloudSaveInProgressRef = React.useRef(false);
   const pendingCloudSaveRef = React.useRef(false);
   const isCloudSyncingRef = React.useRef(false);
@@ -376,15 +383,22 @@ export default function DnDCharacterSheet() {
   const markCloudApplied = useCallback((
     appliedChar: CharacterData,
     appliedPortrait: string | null,
-    cloudChar: { id: string; updated_at?: string | null },
+    cloudChar: { id: string; updated_at?: string | null; revision?: number | null; campaign_id?: string | null; campaign_name?: string | null },
     ownerId: string | null,
   ) => {
     cloudAppliedRef.current = { char: appliedChar, portraitUrl: appliedPortrait };
+    const revision = typeof cloudChar.revision === 'number' ? cloudChar.revision : null;
+    cloudRevisionRef.current = revision;
+    saveConflictRetriesRef.current = 0;
+    setActiveCampaign(cloudChar.campaign_id
+      ? { campaignId: cloudChar.campaign_id, campaignName: cloudChar.campaign_name ?? null }
+      : null);
     writeSyncMeta(window.localStorage, {
       dirty: false,
       cloudId: cloudChar.id,
       cloudUpdatedAt: cloudChar.updated_at ?? null,
       userId: ownerId,
+      cloudRevision: revision,
     });
   }, []);
 
@@ -392,7 +406,10 @@ export default function DnDCharacterSheet() {
   const unlinkCloudCharacter = useCallback(() => {
     cloudCharIdRef.current = null;
     setActiveCloudCharId(null);
-    writeSyncMeta(window.localStorage, { cloudId: null, cloudUpdatedAt: null });
+    cloudRevisionRef.current = null;
+    saveConflictRetriesRef.current = 0;
+    setActiveCampaign(null);
+    writeSyncMeta(window.localStorage, { cloudId: null, cloudUpdatedAt: null, cloudRevision: null });
   }, []);
 
   const isSharedImportRef = React.useRef(
@@ -437,11 +454,37 @@ export default function DnDCharacterSheet() {
           name: char.name.trim(),
           data: serializeCharacterForExport(char),
           portrait_url: portraitUrl,
+          // Только при обновлении существующей записи и только если ревизия известна.
+          ...(targetId && cloudRevisionRef.current !== null ? { expectedRevision: cloudRevisionRef.current } : {}),
         }),
       });
       const result = await res.json().catch(() => ({}));
 
+      if (res.status === 409 && result.conflict && result.character?.data) {
+        // Лист за это время изменили на сервере (мастер записал итоги боя или опыт).
+        // Берём с сервера игровое состояние, свои правки оставляем и сохраняем заново.
+        const serverRevision = typeof result.character.revision === 'number' ? result.character.revision : null;
+        cloudRevisionRef.current = serverRevision;
+        writeSyncMeta(window.localStorage, {
+          cloudRevision: serverRevision,
+          cloudUpdatedAt: result.character.updated_at ?? null,
+        });
+        saveConflictRetriesRef.current += 1;
+        if (saveConflictRetriesRef.current <= 3) {
+          const latest = latestLocalRef.current.char;
+          setChar(mergeServerGameState(latest, normalizeCharacterData(result.character.data)));
+          pendingCloudSaveRef.current = true;
+          return { ok: false, error: 'Лист обновлён с сервера, сохраняем заново', busy: true };
+        }
+        // Три конфликта подряд — показываем обычную ошибку, а не крутимся бесконечно.
+      }
+
       if (res.ok && result.character) {
+        saveConflictRetriesRef.current = 0;
+        cloudRevisionRef.current = typeof result.character.revision === 'number' ? result.character.revision : null;
+        setActiveCampaign(result.character.campaign_id
+          ? { campaignId: result.character.campaign_id, campaignName: result.character.campaign_name ?? null }
+          : null);
         cloudCharIdRef.current = result.character.id;
         setActiveCloudCharId(result.character.id);
         // Отметку о несохранённых правках снимаем, только если за время запроса лист не изменился.
@@ -451,6 +494,7 @@ export default function DnDCharacterSheet() {
           cloudId: result.character.id,
           cloudUpdatedAt: result.character.updated_at ?? null,
           userId: user?.id ?? null,
+          cloudRevision: cloudRevisionRef.current,
           ...(stillCurrent ? { dirty: false } : {}),
         });
         setCloudSaveError(null);
@@ -560,8 +604,19 @@ export default function DnDCharacterSheet() {
             // При конфликте (облачную версию меняли с другого устройства) пишем отдельной копией.
             cloudCharIdRef.current = decision.cloudId;
             setActiveCloudCharId(decision.cloudId);
+            const linkedRow = decision.cloudId
+              ? validCharacters.find((c: any) => c.id === decision.cloudId) ?? null
+              : null;
+            cloudRevisionRef.current = typeof linkedRow?.revision === 'number' ? linkedRow.revision : null;
+            setActiveCampaign(linkedRow?.campaign_id
+              ? { campaignId: linkedRow.campaign_id, campaignName: linkedRow.campaign_name ?? null }
+              : null);
+            if (decision.mergeFrom?.data) {
+              // Версию кампании успел изменить мастер: его хиты, ячейки и опыт — поверх наших правок.
+              setChar(prev => mergeServerGameState(prev, normalizeCharacterData(decision.mergeFrom.data)));
+            }
             if (!decision.cloudId) {
-              writeSyncMeta(window.localStorage, { cloudId: null, cloudUpdatedAt: null, userId: newUser.id });
+              writeSyncMeta(window.localStorage, { cloudId: null, cloudUpdatedAt: null, userId: newUser.id, cloudRevision: null });
             }
             lastCloudSaveRef.current = '';
             setCloudSyncEpoch(epoch => epoch + 1);
@@ -616,6 +671,45 @@ export default function DnDCharacterSheet() {
     setToast({ title, description });
     setTimeout(() => setToast(null), 3000);
   }, []);
+
+  // ── Игрок вернулся на вкладку: мастер мог записать в лист итоги боя и опыт ──
+  // Если локальных несохранённых правок нет, подтягиваем свежую строку. Если есть —
+  // ничего не трогаем: ближайшее сохранение само получит конфликт и сольёт изменения.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    const refreshFromCloud = async () => {
+      if (document.visibilityState !== 'visible') return;
+      const cloudId = cloudCharIdRef.current;
+      if (!cloudId || isCloudSyncingRef.current || cloudSaveInProgressRef.current) return;
+      if (readSyncMeta(window.localStorage).dirty) return;
+      try {
+        const headers = await getAuthHeaders();
+        const res = await fetch(`/api/characters?id=${encodeURIComponent(cloudId)}`, { headers });
+        if (!res.ok) return;
+        const { character: row } = await res.json();
+        if (cancelled || !row?.data || cloudCharIdRef.current !== cloudId) return;
+        if (typeof row.revision !== 'number' || row.revision === cloudRevisionRef.current) return;
+        // За время запроса игрок мог начать править лист — тогда не перебиваем.
+        if (readSyncMeta(window.localStorage).dirty) return;
+        const normalized = normalizeCharacterData(row.data);
+        markCloudApplied(normalized, row.portrait_url || null, row, user.id);
+        lastCloudSaveRef.current = JSON.stringify({ ...normalized, _portraitUrl: row.portrait_url || null });
+        setChar(normalized);
+        setPortraitUrl(row.portrait_url || null);
+        showToast('Лист обновлён после игры', 'Подтянуты хиты, ячейки заклинаний и опыт');
+      } catch {
+        /* сеть недоступна — останемся на текущей версии */
+      }
+    };
+    document.addEventListener('visibilitychange', refreshFromCloud);
+    window.addEventListener('focus', refreshFromCloud);
+    return () => {
+      cancelled = true;
+      document.removeEventListener('visibilitychange', refreshFromCloud);
+      window.removeEventListener('focus', refreshFromCloud);
+    };
+  }, [user, getAuthHeaders, markCloudApplied, showToast]);
 
   // ── Handle shared character import from /share/[code] ──
   useEffect(() => {

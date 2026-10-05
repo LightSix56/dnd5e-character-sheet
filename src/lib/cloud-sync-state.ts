@@ -21,6 +21,8 @@ export interface CloudSyncMeta {
   cloudUpdatedAt: string | null;
   /** Аккаунт, которому принадлежит cloudId. */
   userId: string | null;
+  /** Ревизия облачной строки, с которой лист был загружен или последний раз сохранён. */
+  cloudRevision: number | null;
 }
 
 export const EMPTY_SYNC_META: CloudSyncMeta = {
@@ -28,6 +30,7 @@ export const EMPTY_SYNC_META: CloudSyncMeta = {
   cloudId: null,
   cloudUpdatedAt: null,
   userId: null,
+  cloudRevision: null,
 };
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
@@ -44,6 +47,10 @@ export function readSyncMeta(storage: StorageLike | null | undefined): CloudSync
       cloudId: typeof parsed.cloudId === 'string' ? parsed.cloudId : null,
       cloudUpdatedAt: typeof parsed.cloudUpdatedAt === 'string' ? parsed.cloudUpdatedAt : null,
       userId: typeof parsed.userId === 'string' ? parsed.userId : null,
+      cloudRevision:
+        typeof parsed.cloudRevision === 'number' && Number.isInteger(parsed.cloudRevision) && parsed.cloudRevision >= 0
+          ? parsed.cloudRevision
+          : null,
     };
   } catch {
     return { ...EMPTY_SYNC_META };
@@ -69,6 +76,8 @@ export interface CloudCharacterSummary {
   id: string;
   name?: string | null;
   updated_at?: string | null;
+  /** Заполнено у версии персонажа для кампании: в такую строку пишет ещё и сайт мастера. */
+  campaign_id?: string | null;
 }
 
 export type LoginSyncDecision<T extends CloudCharacterSummary> =
@@ -79,7 +88,16 @@ export type LoginSyncDecision<T extends CloudCharacterSummary> =
    * либо (null) отдельной новой записью. conflict — облачную версию успели изменить
    * с другого устройства, поэтому её не перезаписываем.
    */
-  | { action: 'keep-local'; cloudId: string | null; conflict: boolean };
+  | {
+      action: 'keep-local';
+      cloudId: string | null;
+      conflict: boolean;
+      /**
+       * Версия кампании, которую за это время изменил сайт мастера (итоги боя, опыт).
+       * Отдельную копию не создаём: локальные правки сливаются с её игровым состоянием.
+       */
+      mergeFrom?: T;
+    };
 
 function sameInstant(a?: string | null, b?: string | null): boolean {
   if (!a || !b) return false;
@@ -113,6 +131,12 @@ export function resolveLoginSync<T extends CloudCharacterSummary>(input: {
   // Облачную версию не трогали с момента нашей последней синхронизации — просто дописываем правки.
   if (sameInstant(linked.updated_at, meta.cloudUpdatedAt)) {
     return { action: 'keep-local', cloudId: linked.id, conflict: false };
+  }
+
+  // Версию кампании меняет ещё и мастер. Копия здесь расколола бы героя надвое,
+  // поэтому пишем в ту же запись, а игровое состояние берём из облачной строки.
+  if (linked.campaign_id) {
+    return { action: 'keep-local', cloudId: linked.id, conflict: false, mergeFrom: linked };
   }
 
   // Изменения есть и здесь, и в облаке: сохраняем локальные отдельной копией, облачные остаются.

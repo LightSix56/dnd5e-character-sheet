@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createRouteClient, getAuthenticatedUser } from '@/lib/supabase/route';
 import { utf8ByteLength } from '@/lib/request-guards';
 import { validateCharacterName, isNamelessCharacter } from '@/lib/character-validation';
+import {
+  CHARACTER_COLUMNS,
+  CHARACTER_META_COLUMNS,
+  CHARACTER_IN_ROOM_MESSAGE,
+  SAVE_CONFLICT_MESSAGE,
+  decideSaveOutcome,
+  isForeignKeyViolation,
+  parseExpectedRevision,
+} from '@/lib/character-save';
 
 const MAX_CHARACTER_BYTES = 5 * 1024 * 1024;
 
@@ -14,11 +23,31 @@ export async function GET(request: NextRequest) {
   const { user, error: authError } = await getAuthenticatedUser(supabase, request);
   if (!user) return NextResponse.json({ error: authError?.message || 'Unauthorized' }, { status: 401 });
 
+  // ?id=<uuid> — одна строка: клиент сверяет ревизию листа, когда игрок возвращается на вкладку.
+  const singleId = request.nextUrl.searchParams.get('id');
+  if (singleId !== null) {
+    if (!isValidUUID(singleId)) {
+      return NextResponse.json({ error: 'Некорректный формат ID' }, { status: 400 });
+    }
+    const { data: one, error: oneError } = await supabase
+      .from('characters')
+      .select(CHARACTER_COLUMNS)
+      .eq('id', singleId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (oneError) {
+      console.error('[API Characters GET one] Error:', oneError.message);
+      return NextResponse.json({ error: oneError.message }, { status: 500 });
+    }
+    if (!one) return NextResponse.json({ error: 'Character not found' }, { status: 404 });
+    return NextResponse.json({ character: one });
+  }
+
   // Безымянные черновики не удаляем: чтение списка не должно менять данные.
   // Они не попадают в облако (POST/PUT их отклоняют) и просто отфильтровываются ниже.
   const { data, error } = await supabase
     .from('characters')
-    .select('id, name, data, portrait_url, created_at, updated_at')
+    .select(CHARACTER_COLUMNS)
     .eq('user_id', user.id)
     .order('updated_at', { ascending: false });
 
@@ -27,7 +56,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const validCharacters = (data || []).filter(c => !isNamelessCharacter(c.name));
+  const rows = (data || []) as unknown as Array<{ name?: string | null }>;
+  const validCharacters = rows.filter(c => !isNamelessCharacter(c.name));
   return NextResponse.json({ characters: validCharacters });
 }
 
@@ -53,6 +83,9 @@ export async function POST(request: NextRequest) {
     data?: unknown;
     portrait_url?: unknown;
   };
+  // Поля кампании (campaign_id, campaign_name, source_character_id) и revision из тела
+  // намеренно не читаются: их выставляет только сервер мастера и триггер базы.
+  const expectedRevision = parseExpectedRevision((body as { expectedRevision?: unknown }).expectedRevision);
 
   // Validate ID format if supplied
   if (id !== undefined && id !== null && !isValidUUID(id)) {
@@ -87,12 +120,16 @@ export async function POST(request: NextRequest) {
 
   // If ID provided — try to UPDATE existing character first
   if (id) {
-    const { data: updated, error: updateError } = await supabase
+    let updateQuery = supabase
       .from('characters')
       .update({ name: safeName, data: data || {}, portrait_url: safePortraitUrl, updated_at: new Date().toISOString() })
       .eq('id', id)
-      .eq('user_id', user.id)
-      .select('id, name, portrait_url, created_at, updated_at')
+      .eq('user_id', user.id);
+    // Ревизия передана — обновляем, только если лист с тех пор никто не менял.
+    if (expectedRevision !== null) updateQuery = updateQuery.eq('revision', expectedRevision);
+
+    const { data: updated, error: updateError } = await updateQuery
+      .select(CHARACTER_META_COLUMNS)
       .maybeSingle();
 
     if (updateError) {
@@ -100,8 +137,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
-    if (updated) {
+    let currentRow: unknown = null;
+    if (!updated && expectedRevision !== null) {
+      const { data: current, error: currentError } = await supabase
+        .from('characters')
+        .select(CHARACTER_COLUMNS)
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (currentError) {
+        console.error('[API Characters POST reread] Error:', currentError.message);
+        return NextResponse.json({ error: currentError.message }, { status: 500 });
+      }
+      currentRow = current;
+    }
+
+    const outcome = decideSaveOutcome({ expectedRevision, updatedRow: updated, currentRow });
+    if (outcome === 'updated') {
       return NextResponse.json({ character: updated });
+    }
+    if (outcome === 'conflict') {
+      // Лист успели изменить (например, мастер записал итоги боя). Ничего не затираем —
+      // отдаём свежую строку, клиент сольёт изменения и сохранит заново.
+      return NextResponse.json(
+        { error: SAVE_CONFLICT_MESSAGE, conflict: true, character: currentRow },
+        { status: 409 }
+      );
     }
     // If character with this id does not exist, fall through to insert
   }
@@ -120,7 +181,7 @@ export async function POST(request: NextRequest) {
   const { data: inserted, error: insertError } = await supabase
     .from('characters')
     .insert(insertPayload)
-    .select('id, name, portrait_url, created_at, updated_at')
+    .select(CHARACTER_META_COLUMNS)
     .maybeSingle();
 
   if (insertError) {
@@ -182,7 +243,7 @@ export async function PUT(request: NextRequest) {
     .update({ name: safeName, data: data || {}, portrait_url: safePortraitUrl, updated_at: new Date().toISOString() })
     .eq('id', id)
     .eq('user_id', user.id)
-    .select('id, name, portrait_url, created_at, updated_at')
+    .select(CHARACTER_META_COLUMNS)
     .maybeSingle();
 
   if (error) {
@@ -208,6 +269,9 @@ export async function DELETE(request: NextRequest) {
     .eq('id', id)
     .eq('user_id', user.id);
 
+  if (isForeignKeyViolation(error)) {
+    return NextResponse.json({ error: CHARACTER_IN_ROOM_MESSAGE }, { status: 409 });
+  }
   if (error) {
     console.error('[API Characters DELETE] Error:', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -44,7 +44,7 @@ describe('cloud sync state storage', () => {
     const storage = memoryStorage();
     writeSyncMeta(storage, { cloudId: 'char-old', cloudUpdatedAt: 't1', userId: USER });
     const next = writeSyncMeta(storage, { dirty: true });
-    assert.deepEqual(next, { dirty: true, cloudId: 'char-old', cloudUpdatedAt: 't1', userId: USER });
+    assert.deepEqual(next, { dirty: true, cloudId: 'char-old', cloudUpdatedAt: 't1', userId: USER, cloudRevision: null });
     assert.deepEqual(readSyncMeta(storage), next);
   });
 });

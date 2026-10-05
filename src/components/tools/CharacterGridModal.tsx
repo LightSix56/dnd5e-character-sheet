@@ -14,6 +14,12 @@ import {
   CrossedSwordsIcon,
   HourglassIcon,
 } from '@/components/dnd-icons';
+import {
+  groupCharacterVersions,
+  filterCharacterGroups,
+  flattenCharacterGroups,
+  isCampaignVersion,
+} from '@/lib/character-grouping';
 
 export interface SavedCharacter {
   id: string;
@@ -23,6 +29,11 @@ export interface SavedCharacter {
   created_at?: string;
   updated_at?: string;
   isLocal?: boolean;
+  revision?: number | null;
+  /** Заполнено у версии персонажа для кампании. */
+  campaign_id?: string | null;
+  campaign_name?: string | null;
+  source_character_id?: string | null;
 }
 
 export interface CharacterGridModalProps {
@@ -457,12 +468,15 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
     return list;
   }, [characters, cloudCharacters, localCharacter]);
 
-  // Real-time filtering by Name, Class, or Race
+  // Real-time filtering by Name, Class, or Race.
+  // Версии для кампаний идут сразу за своим оригиналом; если совпала только версия,
+  // оригинал остаётся рядом, чтобы было видно, чей это герой.
   const filteredCharacters = useMemo(() => {
+    const groups = groupCharacterVersions(allCharacters);
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return allCharacters;
+    if (!q) return flattenCharacterGroups(groups);
 
-    return allCharacters.filter(c => {
+    const matched = filterCharacterGroups(groups, c => {
       const name = (c.name || c.data?.name || '').toLowerCase();
       const cls = (c.data?.className || '').toLowerCase();
       const subclass = (c.data?.subclass || '').toLowerCase();
@@ -474,9 +488,11 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
         cls.includes(q) ||
         subclass.includes(q) ||
         race.includes(q) ||
-        subrace.includes(q)
+        subrace.includes(q) ||
+        (c.campaign_name || '').toLowerCase().includes(q)
       );
     });
+    return flattenCharacterGroups(matched);
   }, [allCharacters, searchQuery]);
 
   return (
@@ -623,7 +639,10 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredCharacters.map(char => {
                 const charData = char.data || {};
-                const name = char.name || charData.name || 'Безымянный герой';
+                const isVersion = isCampaignVersion(char);
+                // У версии имя строки — «Токсин (Встреча)»; на карточке показываем имя героя,
+                // а кампанию — отдельной плашкой.
+                const name = (isVersion ? charData.name || char.name : char.name || charData.name) || 'Безымянный герой';
                 const level = charData.level || 1;
                 const className = charData.className || 'Приключенец';
                 const subclass = charData.subclass;
@@ -641,7 +660,7 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                 return (
                   <div
                     key={char.id}
-                    className="relative group bg-[#FBF0DC]/85 hover:bg-[#FBF0DC] border-2 border-[#8B6914]/35 hover:border-[#C9A84C] rounded-lg p-3.5 shadow-md hover:shadow-xl transition-all duration-200 flex flex-col justify-between overflow-hidden hover:-translate-y-0.5"
+                    className={`relative group bg-[#FBF0DC]/85 hover:bg-[#FBF0DC] border-2 border-[#8B6914]/35 hover:border-[#C9A84C] rounded-lg p-3.5 shadow-md hover:shadow-xl transition-all duration-200 flex flex-col justify-between overflow-hidden hover:-translate-y-0.5 ${isVersion ? 'border-l-[6px] border-l-[#C9A84C]' : ''}`}
                     style={{
                       boxShadow:
                         '0 3px 10px rgba(60, 36, 21, 0.12), inset 0 1px 0 rgba(255,255,255,0.4)',
@@ -737,6 +756,19 @@ export const CharacterGridModal = React.memo(function CharacterGridModal({
                               {subclass ? ` (${subclass})` : ''}
                             </span>
                           </div>
+
+                          {/* Campaign version badge */}
+                          {isVersion && (
+                            <div className="mt-1">
+                              <span
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold text-[#3D2012] bg-[#C9A84C]/25 border border-[#8B6914]/45 truncate max-w-full"
+                                title="Отдельная копия героя для этой кампании. Оригинал и другие кампании не меняются."
+                              >
+                                <CrossedSwordsIcon size={11} />
+                                <span className="truncate">Кампания: {char.campaign_name || 'без названия'}</span>
+                              </span>
+                            </div>
+                          )}
 
                           {/* Race Badge */}
                           <div className="mt-1">

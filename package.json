@@ -18,6 +18,7 @@
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
     "clsx": "^2.1.1",
+    "dnd-shared": "github:LightSix56/dnd-shared#7394891d4919165000520afe9bcfdf80c42cdf88",
     "docx": "^9.6.1",
     "framer-motion": "^12.23.2",
     "next": "^16.1.1",

@@ -1,42 +1,13 @@
 import type { DndSpell } from './types';
-import { CANTRIPS } from './cantrips';
-import { LEVEL_1_SPELLS } from './level-1';
-import { LEVEL_2_SPELLS } from './level-2';
-import { LEVEL_3_SPELLS } from './level-3';
-import { LEVEL_4_SPELLS } from './level-4';
-import { LEVEL_5_SPELLS } from './level-5';
-import { LEVEL_6_SPELLS } from './level-6';
-import { LEVEL_7_SPELLS } from './level-7';
-import { LEVEL_8_SPELLS } from './level-8';
-import { LEVEL_9_SPELLS } from './level-9';
+import { CORE_SPELLS } from 'dnd-shared/core';
 
 export * from './types';
-export * from './cantrips';
-export * from './level-1';
-export * from './level-2';
-export * from './level-3';
-export * from './level-4';
-export * from './level-5';
-export * from './level-6';
-export * from './level-7';
-export * from './level-8';
-export * from './level-9';
 
 /**
- * Unified Official D&D 5e Spells Compendium (524 spells from WotC Official Sources)
+ * Единый компендиум заклинаний. Данные живут в общей библиотеке dnd-shared
+ * (её же использует сайт ИИ-мастера), здесь только типизация и поиск.
  */
-export const DND_COMPENDIUM_SPELLS: DndSpell[] = [
-  ...CANTRIPS,
-  ...LEVEL_1_SPELLS,
-  ...LEVEL_2_SPELLS,
-  ...LEVEL_3_SPELLS,
-  ...LEVEL_4_SPELLS,
-  ...LEVEL_5_SPELLS,
-  ...LEVEL_6_SPELLS,
-  ...LEVEL_7_SPELLS,
-  ...LEVEL_8_SPELLS,
-  ...LEVEL_9_SPELLS,
-];
+export const DND_COMPENDIUM_SPELLS: DndSpell[] = CORE_SPELLS as unknown as DndSpell[];
 
 // Historical / SRD synonyms mapping for maximum backward compatibility
 const SPELL_ALIASES: Record<string, string> = {
